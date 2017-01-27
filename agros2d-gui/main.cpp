@@ -31,6 +31,10 @@
 #include "boost/archive/archive_exception.hpp"
 #include <deal.II/base/exceptions.h>
 
+#ifdef AGROS_BUILD_STATIC
+#include "../plugins/plugins_static.h"
+#endif
+
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
 public:

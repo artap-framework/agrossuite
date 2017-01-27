@@ -64,7 +64,7 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
     stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
@@ -92,10 +92,10 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
 
-    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros2d_logo.png").absolutePath()).toStdString());
 
     problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
 
@@ -255,7 +255,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
         }
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     // setHtml(...) doesn't work
     // webView->setHtml(QString::fromStdString(info));
@@ -271,7 +271,7 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
 
-    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros2d_logo.png").absolutePath()).toStdString());
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
 
     // python
@@ -282,7 +282,7 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
         problemInfo.SetValue("PROBLEM_PYTHON", python.toStdString());
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/python.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/python.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     writeStringContent(tempProblemDir() + "/info.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/info.html"));
@@ -309,10 +309,10 @@ void InfoWidget::welcome()
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");
 
-    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros2d_logo.png").absolutePath()).toStdString());
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));

@@ -264,30 +264,40 @@ void Agros2DGenerator::createStructure()
 
     ctemplate::TemplateDictionary output("project_output");
     QMap<QString, QString> modules = Module::availableModules();
-    QList<QString> couplings = couplingList()->availableCouplings();
-
     foreach (QString moduleId, modules.keys())
     {
         ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
         field->SetValue("ID", moduleId.toStdString());
+        field->SetValue("CLASS", (moduleId[0].toUpper() + moduleId.right(moduleId.length() - 1)).toStdString());
     }
 
+    // QMap<QString, QString> modules = Module::availableModules();
     //    foreach (QString couplingId, couplings)
     //    {
     //        ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
     //        field->SetValue("ID", couplingId.toStdString());
     //    }
 
-    // generate plugins project file
     // expand template
-    std::string text;
+    // generate plugins project file
+    std::string textProject;
     ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/plugins_CMakeLists_txt.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
-                              ctemplate::DO_NOT_STRIP, &output, &text);
+                              ctemplate::DO_NOT_STRIP, &output, &textProject);
     // save to file
     writeStringContent(QString("%1/%2/CMakeLists.txt").
                        arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT),
-                       QString::fromStdString(text));
+                       QString::fromStdString(textProject));
+
+    // generate static include
+    std::string textStatic;
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/plugins_plugins_static_h.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+                              ctemplate::DO_NOT_STRIP, &output, &textStatic);
+    // save to file
+    writeStringContent(QString("%1/%2/plugins_static.h").
+                       arg(QCoreApplication::applicationDirPath()).
+                       arg(GENERATOR_PLUGINROOT),
+                       QString::fromStdString(textStatic));
 
     exit(0);
 }

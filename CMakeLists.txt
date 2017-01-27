@@ -42,6 +42,21 @@ ELSE()
 ENDIF()
 INCLUDE(CMake.vars OPTIONAL)
 
+# set static build
+SET(PLUGINS)
+IF (AGROS_BUILD_STATIC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
+
+    FILE(GLOB module_files "${CMAKE_HOME_DIRECTORY}/resources/modules/*.xml")
+    foreach(MODULEFILE ${module_files})
+      GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
+
+      FIND_LIBRARY(plugin_${basefile} libagros2d_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
+
+      SET(PLUGINS ${PLUGINS}  ${plugin_${basefile}})
+    endforeach()
+ENDIF (AGROS_BUILD_STATIC)
+
 # Handle OpenMP should it be included in DealII.
 IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   find_package(OpenMP REQUIRED)
@@ -258,8 +273,10 @@ endif(WITH_MPI)
 message("CMake: Start Agros2D")
 message("=====================")
 ADD_SUBDIRECTORY(agros2d-library)
-ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
+# solver
+ADD_SUBDIRECTORY(agros2d-solver)
+# Python interface
 ADD_SUBDIRECTORY(agros2d-python)
 # GUI
 ADD_SUBDIRECTORY(agros2d-gui)
@@ -317,30 +334,30 @@ set(info resources/modules/acoustic.xml
          resources/couplings/magnetic-heat.xml
          #resources/couplings/magnetic-flow.xml
          #resources/couplings/flow-heat.xml
-         resources/templates/generator/filter_cpp.tpl
-         resources/templates/generator/filter_h.tpl
-         resources/templates/generator/force_cpp.tpl
-         resources/templates/generator/force_h.tpl
-         resources/templates/generator/localvalue_h.tpl
-         resources/templates/generator/localvalue_cpp.tpl
-         resources/templates/generator/surfaceintegral_cpp.tpl
-         resources/templates/generator/surfaceintegral_h.tpl
-         resources/templates/generator/volumeintegral_cpp.tpl
-         resources/templates/generator/volumeintegral_h.tpl
-         resources/templates/generator/interface_h.tpl
-         resources/templates/generator/module_CMakeLists_txt.tpl
-         resources/templates/generator/weakform_cpp.tpl
-         resources/templates/generator/weakform_h.tpl
-         resources/templates/generator/plugins_CMakeLists_txt.tpl
-         resources/templates/generator/interface_cpp.tpl
-         resources/templates/generator/doc_index.tpl
-         resources/templates/generator/equations.tpl
-         resources/templates/generator/equations.tex
-         resources/templates/panels/empty.tpl
-         resources/templates/panels/material.tpl
-         resources/templates/panels/problem.tpl
-         resources/templates/panels/welcome.tpl
-         resources/templates/panels/style_common.css
+         resources_source/generator/filter_cpp.tpl
+         resources_source/generator/filter_h.tpl
+         resources_source/generator/force_cpp.tpl
+         resources_source/generator/force_h.tpl
+         resources_source/generator/localvalue_h.tpl
+         resources_source/generator/localvalue_cpp.tpl
+         resources_source/generator/surfaceintegral_cpp.tpl
+         resources_source/generator/surfaceintegral_h.tpl
+         resources_source/generator/volumeintegral_cpp.tpl
+         resources_source/generator/volumeintegral_h.tpl
+         resources_source/generator/interface_h.tpl
+         resources_source/generator/module_CMakeLists_txt.tpl
+         resources_source/generator/weakform_cpp.tpl
+         resources_source/generator/weakform_h.tpl
+         resources_source/generator/plugins_CMakeLists_txt.tpl
+         resources_source/generator/interface_cpp.tpl
+         resources_source/generator/doc_index.tpl
+         resources_source/generator/equations.tpl
+         resources_source/generator/equations.tex
+         resources/templates/empty.tpl
+         resources/templates/material.tpl
+         resources/templates/problem.tpl
+         resources/templates/welcome.tpl
+         resources/templates/style_common.css
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})

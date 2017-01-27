@@ -30,6 +30,10 @@
 
 #include "../3rdparty/tclap/CmdLine.h"
 
+#ifdef AGROS_BUILD_STATIC
+#include "../plugins/plugins_static.h"
+#endif
+
 int main(int argc, char *argv[])
 {
     try

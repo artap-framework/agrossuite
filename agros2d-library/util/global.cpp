@@ -128,6 +128,18 @@ Agros2D *Agros2D::singleton()
 static QMap<QString, PluginInterface *> plugins;
 PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
 {
+#ifdef AGROS_BUILD_STATIC
+    foreach (QObject *obj, QPluginLoader::staticInstances())
+    {
+        PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
+
+        if (plugin->fieldId() == pluginName)
+            return plugin;
+    }
+
+    assert(0);
+    return nullptr;
+#else
     if (plugins.contains(pluginName))
         return plugins[pluginName];
 
@@ -165,6 +177,7 @@ PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
     delete loader;
 
     return plugin;
+#endif
 }
 
 // create script from model

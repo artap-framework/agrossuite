@@ -11,6 +11,10 @@
 #include "util/system_utils.h"
 #include "logview.h"
 
+#ifdef AGROS_BUILD_STATIC
+#include "../plugins/plugins_static.h"
+#endif
+
 static QCoreApplication *app = nullptr;
 static LogStdOut *logStd = nullptr;
 

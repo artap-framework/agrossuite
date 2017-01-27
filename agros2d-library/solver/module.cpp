@@ -40,7 +40,7 @@
 #include "../../resources_source/classes/module_xml.h"
 
 QMap<QString, QString> Module::availableModules()
-{
+{  
     static QMap<QString, QString> modules;
 
     // read modules

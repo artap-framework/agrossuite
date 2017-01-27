@@ -258,7 +258,7 @@ QString datadir()
 #ifdef Q_WS_WIN
     // local installation
     // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/libs/agros2d_library.dll"))
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 #endif
 
@@ -266,17 +266,17 @@ QString datadir()
 #ifdef Q_WS_X11 
     // local installation
     // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/libs/libagros2d_library.so"))
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 
     // python
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../libs/libagros2d_library.so"))
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/../..";
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/libs/libagros2d_library.so"))
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/";
 
     // system installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/libs/libagros2d_library.so"))
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath() + "/../share/agros2d";
 #endif
 

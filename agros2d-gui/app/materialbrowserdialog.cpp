@@ -597,7 +597,7 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
     stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
 
     trvMaterial = new QTreeWidget(this);
@@ -786,7 +786,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
             XMLMaterial::material *material = material_xsd.get();
 
             materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-            materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
+            materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
             materialInfo.SetValue("NAME", material->general().name());
             if (material->general().description().present())
@@ -896,7 +896,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
         }
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
 
     // setHtml(...) doesn't work
     // webView->setHtml(QString::fromStdString(info));
