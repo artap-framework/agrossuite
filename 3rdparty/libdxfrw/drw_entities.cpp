@@ -286,7 +286,8 @@ bool DRW_Entity::parseDwg(DRW::Version version, dwgBuffer *buf, dwgBuffer* strBu
 
     duint8 entmode = buf->get2Bits(); //BB
     if (entmode == 0)
-        entmode = 2;
+        ownerHandle= true;
+//        entmode = 2;
     else if(entmode ==2)
         entmode = 0;
     space = (DRW::Space)entmode; //RLZ verify cast values
@@ -347,13 +348,13 @@ bool DRW_Entity::parseDwg(DRW::Version version, dwgBuffer *buf, dwgBuffer* strBu
     if (version > DRW::AC1018) {//2007+
         materialFlag = buf->get2Bits(); //BB
         DRW_DBG("materialFlag: "); DRW_DBG(materialFlag);
-        duint8 shadowFlag = buf->getRawChar8(); //RC
+        shadowFlag = buf->getRawChar8(); //RC
         DRW_DBG("shadowFlag: "); DRW_DBG(shadowFlag); DRW_DBG("\n");
     }
     if (version > DRW::AC1021) {//2010+
-        duint8 shadowFlag = buf->get2Bits(); //RC
-        DRW_DBG("shadowFlag 2: "); DRW_DBG(shadowFlag); DRW_DBG("\n");
-        duint8 unk = buf->getBit();
+        duint8 visualFlags = buf->get2Bits(); //full & face visual style
+        DRW_DBG("shadowFlag 2: "); DRW_DBG(visualFlags); DRW_DBG("\n");
+        duint8 unk = buf->getBit(); //edge visual style
         DRW_DBG("unknown bit: "); DRW_DBG(unk); DRW_DBG("\n");
     }
     dint16 invisibleFlag = buf->getBitShort(); //BS
@@ -376,7 +377,7 @@ bool DRW_Entity::parseDwgEntHandle(DRW::Version version, dwgBuffer *buf){
         buf->setBitPos(objSize & 7);
     }
 
-    if(space == 2){//entity are in block
+    if(ownerHandle){//entity are in block or in a polyline
         dwgHandle ownerH = buf->getOffsetHandle(handle);
         DRW_DBG("owner (parent) Handle: "); DRW_DBGHL(ownerH.code, ownerH.size, ownerH.ref); DRW_DBG("\n");
         DRW_DBG("   Remaining bytes: "); DRW_DBG(buf->numRemainingBytes()); DRW_DBG("\n");
@@ -443,6 +444,11 @@ bool DRW_Entity::parseDwgEntHandle(DRW::Version version, dwgBuffer *buf){
             if (materialFlag == 3) {
                 dwgHandle materialH = buf->getOffsetHandle(handle);
                 DRW_DBG(" material Handle: "); DRW_DBGHL(materialH.code, materialH.size, materialH.ref); DRW_DBG("\n");
+                DRW_DBG("\n Remaining bytes: "); DRW_DBG(buf->numRemainingBytes()); DRW_DBG("\n");
+            }
+            if (shadowFlag == 3) {
+                dwgHandle shadowH = buf->getOffsetHandle(handle);
+                DRW_DBG(" shadow Handle: "); DRW_DBGHL(shadowH.code, shadowH.size, shadowH.ref); DRW_DBG("\n");
                 DRW_DBG("\n Remaining bytes: "); DRW_DBG(buf->numRemainingBytes()); DRW_DBG("\n");
             }
         }
@@ -1013,6 +1019,7 @@ void DRW_Insert::parseCode(int code, dxfReader *reader){
         break;
     case 50:
         angle = reader->getDouble();
+        angle = angle/ARAD; //convert to radian
         break;
     case 70:
         colcount = reader->getInt32();
@@ -1863,7 +1870,7 @@ bool DRW_Hatch::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
     //read loops
     for (dint32 i = 0 ; i < loopsnum; ++i){
         loop = new DRW_HatchLoop(buf->getBitLong());
-        havePixelSize = loop->type & 4;
+        havePixelSize |= loop->type & 4;
         if (!(loop->type & 2)){ //Not polyline
             dint32 numPathSeg = buf->getBitLong();
             for (dint32 j = 0; j<numPathSeg;++j){

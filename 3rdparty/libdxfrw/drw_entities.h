@@ -119,6 +119,7 @@ public:
         nextEntLink = prevEntLink = 0;
         numReactors = xDictFlag = 0;
         curr = NULL;
+        ownerHandle= false;
     }
 
     DRW_Entity(const DRW_Entity& e) {
@@ -144,6 +145,7 @@ public:
         numReactors = e.numReactors;
         xDictFlag = e.xDictFlag;
         curr = NULL;
+        ownerHandle= false;
 //        curr = e.curr;
         for (std::vector<DRW_Variant*>::const_iterator it=e.extData.begin(); it!=e.extData.end(); ++it){
             extData.push_back(new DRW_Variant(*(*it)));
@@ -209,10 +211,12 @@ protected: //only for read dwg
     duint8 plotFlags; //presence of plot style //BB
     duint8 ltFlags; //presence of linetype handle //BB
     duint8 materialFlag; //presence of material handle //BB
+    duint8 shadowFlag; //presence of shadow handle ?? (in dwg may be plotflag)//RC
     dwgHandle lTypeH;
     dwgHandle layerH;
     duint32 nextEntLink;
     duint32 prevEntLink;
+    bool ownerHandle;
 
     duint8 xDictFlag;
     dint32 numReactors; //
@@ -569,7 +573,7 @@ public:
     double xscale;           /*!< x scale factor, code 41 */
     double yscale;           /*!< y scale factor, code 42 */
     double zscale;           /*!< z scale factor, code 43 */
-    double angle;            /*!< rotation angle, code 50 */
+    double angle;            /*!< rotation angle in radians, code 50 */
     int colcount;            /*!< column count, code 70 */
     int rowcount;            /*!< row count, code 71 */
     double colspace;         /*!< column space, code 44 */
