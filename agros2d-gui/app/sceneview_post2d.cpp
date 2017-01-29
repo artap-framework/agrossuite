@@ -245,7 +245,7 @@ void SceneViewPost2D::paintGL()
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
         {
             Module::LocalVariable localVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                                              m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString());
+                                                                                                                                            m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString());
             QString text = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString() != "" ? localVariable.name() : "";
             if ((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
                 text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
@@ -262,7 +262,7 @@ void SceneViewPost2D::paintGL()
 void SceneViewPost2D::resizeGL(int w, int h)
 {
     if (m_postprocessorWidget->currentComputation()->isSolved())
-       paletteCreate();
+        paletteCreate();
 
     SceneViewCommon::resizeGL(w, h);
 }
@@ -530,13 +530,190 @@ void SceneViewPost2D::paintVectors()
         MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
         dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(ma.doFHandler(), ma.solution());
 
+        QList<PostTriangle> triangleX = m_postprocessorWidget->currentComputation()->postDeal()->vectorXValues();
+        QList<PostTriangle> triangleY = m_postprocessorWidget->currentComputation()->postDeal()->vectorYValues();
+
         // min max
         double rangeMin =  numeric_limits<double>::max();
         double rangeMax = -numeric_limits<double>::max();
+        for (int i = 0; i < m_postprocessorWidget->currentComputation()->postDeal()->vectorXValues().size(); i++)
+        {
+            double valueX = (triangleX[i].values[0] + triangleX[i].values[1] + triangleX[i].values[2]) / 3.0;
+            double valueY = (triangleY[i].values[0] + triangleY[i].values[1] + triangleY[i].values[2]) / 3.0;
+            double valueSqr = valueX*valueX + valueY*valueY;
+
+            if (valueSqr < rangeMin) rangeMin = valueSqr;
+            if (valueSqr > rangeMax) rangeMax = valueSqr;
+        }
+        rangeMin = sqrt(rangeMin);
+        rangeMax = sqrt(rangeMax);
+
+        // range
+        double irange = 1.0 / (rangeMax - rangeMin);
+        // special case: constant solution
+        if (fabs(rangeMax - rangeMin) < EPS_ZERO)
+            irange = 1.0;
 
         int countX = rect.width() / gs;
         int countY = rect.height() / gs;
 
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glBegin(GL_TRIANGLES);
+        for (int i = 0; i < m_postprocessorWidget->currentComputation()->postDeal()->vectorXValues().size(); i++)
+        {
+            // triangleX and triangleY have same coordinates (+ swap 1 <-> 2)
+            dealii::Point<2> vertices[3];
+            vertices[0] = triangleX[i].vertices[0];
+            vertices[1] = triangleX[i].vertices[2];
+            vertices[2] = triangleX[i].vertices[1];
+
+            Point a(vertices[0][0], vertices[0][1]);
+            Point b(vertices[1][0], vertices[1][1]);
+            Point c(vertices[2][0], vertices[2][1]);
+
+            RectPoint r;
+            r.start = Point(qMin(qMin(a.x, b.x), c.x), qMin(qMin(a.y, b.y), c.y));
+            r.end = Point(qMax(qMax(a.x, b.x), c.x), qMax(qMax(a.y, b.y), c.y));
+
+            // double area
+            double area2 = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);
+
+            // plane equation
+            double aa = b.x*c.y - c.x*b.y;
+            double ab = c.x*a.y - a.x*c.y;
+            double ac = a.x*b.y - b.x*a.y;
+            double ba = b.y - c.y;
+            double bb = c.y - a.y;
+            double bc = a.y - b.y;
+            double ca = c.x - b.x;
+            double cb = a.x - c.x;
+            double cc = b.x - a.x;
+            double ax = (aa * triangleX[i].values[0] + ab * triangleX[i].values[1] + ac * triangleX[i].values[2]) / area2;
+            double bx = (ba * triangleX[i].values[0] + bb * triangleX[i].values[1] + bc * triangleX[i].values[2]) / area2;
+            double cx = (ca * triangleX[i].values[0] + cb * triangleX[i].values[1] + cc * triangleX[i].values[2]) / area2;
+            double ay = (aa * triangleY[i].values[0] + ab * triangleY[i].values[1] + ac * triangleY[i].values[2]) / area2;
+            double by = (ba * triangleY[i].values[0] + bb * triangleY[i].values[1] + bc * triangleY[i].values[2]) / area2;
+            double cy = (ca * triangleY[i].values[0] + cb * triangleY[i].values[1] + cc * triangleY[i].values[2]) / area2;
+
+            for (int j = floor(r.start.x / gs); j < ceil(r.end.x / gs); j++)
+            {
+                for (int k = floor(r.start.y / gs); k < ceil(r.end.y / gs); k++)
+                {
+                    Point point(j*gs, k*gs);
+                    if (k % 2 == 0) point.x += gs/2.0;
+
+                    // find in triangle
+                    bool inTriangle = true;
+                    for (int l = 0; l < 3; l++)
+                    {
+                        int p = l + 1;
+                        if (p == 3)
+                            p = 0;
+                        double z = (vertices[p][0] - vertices[l][0]) * (point.y - vertices[l][1]) - (vertices[p][1] - vertices[l][1]) *
+                                (point.x - vertices[l][0]);
+                        if (z < 0)
+                        {
+                            inTriangle = false;
+                            break;
+                        }
+                    }
+
+                    if (inTriangle)
+                    {
+                        // view
+                        double dx = ax + bx * point.x + cx * point.y;
+                        double dy = ay + by * point.x + cy * point.y;
+                        double value = sqrt(dx*dx + dy*dy);
+                        double angle = atan2(dy, dx);
+                        if ((m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorProportional).toBool()) &&
+                                (fabs(rangeMin - rangeMax) > EPS_ZERO))
+                        {
+                            if ((value / rangeMax) < 1e-6)
+                            {
+                                dx = 0.0;
+                                dy = 0.0;
+                            }
+                            else
+                            {
+                                dx = ((value - rangeMin) * irange) * m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
+                                dy = ((value - rangeMin) * irange) * m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
+                            }
+                        }
+                        else
+                        {
+                            dx = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
+                            dy = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
+                        }
+                        double dm = sqrt(dx*dx + dy*dy);
+                        // color
+                        if ((m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorColor).toBool())
+                                && (fabs(rangeMin - rangeMax) > EPS_ZERO))
+                        {
+                            double color = 0.7 - 0.7 * (value - rangeMin) * irange;
+                            glColor3d(color, color, color);
+                        }
+                        else
+                        {
+                            glColor3d(COLORVECTORS[0], COLORVECTORS[1], COLORVECTORS[2]);
+                        }
+                        // tail
+                        Point shiftCenter(0.0, 0.0);
+                        if ((VectorCenter) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Head)
+                            shiftCenter = Point(- 2.0*dm * cos(angle), - 2.0*dm * sin(angle)); // head
+                        if ((VectorCenter) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Center)
+                            shiftCenter = Point(- dm * cos(angle), - dm * sin(angle)); // center
+                        if ((VectorType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Arrow)
+                        {
+                            // arrow and shaft
+                            // head for an arrow
+                            double vh1x = point.x + dm/5.0 * cos(angle - M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
+                            double vh1y = point.y + dm/5.0 * sin(angle - M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
+                            double vh2x = point.x + dm/5.0 * cos(angle + M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
+                            double vh2y = point.y + dm/5.0 * sin(angle + M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
+                            double vh3x = point.x + 2.0 * dm * cos(angle) + shiftCenter.x;
+                            double vh3y = point.y + 2.0 * dm * sin(angle) + shiftCenter.y;
+                            glVertex2d(vh1x, vh1y);
+                            glVertex2d(vh2x, vh2y);
+                            glVertex2d(vh3x, vh3y);
+
+                            // shaft for an arrow
+                            double vs1x = point.x + dm/15.0 * cos(angle + M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
+                            double vs1y = point.y + dm/15.0 * sin(angle + M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
+                            double vs2x = point.x + dm/15.0 * cos(angle - M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
+                            double vs2y = point.y + dm/15.0 * sin(angle - M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
+                            double vs3x = vs1x - dm * cos(angle);
+                            double vs3y = vs1y - dm * sin(angle);
+                            double vs4x = vs2x - dm * cos(angle);
+                            double vs4y = vs2y - dm * sin(angle);
+
+                            glVertex2d(vs1x, vs1y);
+                            glVertex2d(vs2x, vs2y);
+                            glVertex2d(vs3x, vs3y);
+                            glVertex2d(vs4x, vs4y);
+                            glVertex2d(vs3x, vs3y);
+                            glVertex2d(vs2x, vs2y);
+                        }
+                        else if ((VectorType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Cone)
+                        {
+                            // cone
+                            double vh1x = point.x + dm/3.5 * cos(angle - M_PI/2.0) + shiftCenter.x;
+                            double vh1y = point.y + dm/3.5 * sin(angle - M_PI/2.0) + shiftCenter.y;
+                            double vh2x = point.x + dm/3.5 * cos(angle + M_PI/2.0) + shiftCenter.x;
+                            double vh2y = point.y + dm/3.5 * sin(angle + M_PI/2.0) + shiftCenter.y;
+                            double vh3x = point.x + 2.0 * dm * cos(angle) + shiftCenter.x;
+                            double vh3y = point.y + 2.0 * dm * sin(angle) + shiftCenter.y;
+                            glVertex2d(vh1x, vh1y);
+                            glVertex2d(vh2x, vh2y);
+                            glVertex2d(vh3x, vh3y);
+                        }
+                    }
+                }
+            }
+        }
+        glEnd();
+
+        /*
         QList<dealii::Point<2> > points;
         QList<dealii::Tensor<1, 2> > gradients;
         for (int i = 0; i < countX; i++)
@@ -674,6 +851,7 @@ void SceneViewPost2D::paintVectors()
             }
         }
         glEnd();
+        */
 
         glDisable(GL_POLYGON_OFFSET_FILL);
 
@@ -834,7 +1012,7 @@ void SceneViewPost2D::exportVTKScalarView(const QString &fileName)
 void SceneViewPost2D::exportVTKContourView(const QString &fileName)
 {
     Module::LocalVariable variable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                                 m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContourVariable).toString());
+                                                                                                                               m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContourVariable).toString());
     PhysicFieldVariableComp comp = variable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
 
     exportVTK(fileName,
@@ -868,7 +1046,7 @@ void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable
 
         std::shared_ptr<PostDataOut> data_out = m_postprocessorWidget->currentComputation()->postDeal()->viewScalarFilter(
                     m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                variable), physicFieldVariableComp);
+                                                                                                              variable), physicFieldVariableComp);
 
         std::ofstream output (fn.toStdString());
         data_out->write_vtk(output);
