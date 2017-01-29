@@ -8,19 +8,18 @@ Add path to binaries (dogygen.exe) to the Windows system variable PATH
 
 2) Dependencies
 
-??? 2.1) Compile deal.ii in Agros Suite subfolder dealii (we expect, that Agros suite project is, for example in C:\agros2d folder):
+2.1) Compile deal.ii in Agros Suite subfolder dealii (we expect, that Agros suite project is, for example in C:\agros2d folder):
       cd C:\agros2d\dealii
       mkdir build
       cd build
-      cmake -D CMAKE_INSTALL_PREFIX=C:\agros2d\dealii\install ..
---- ???
+      cmake -G "Visual Studio 14 Win64" -D CMAKE_INSTALL_PREFIX=your_agros_folder\dealii\install ..
 
-2.2) Improve path to the Windows dependecies, for exaample "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
+2.2) Improve path to the Windows dependecies, for example "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
 
 The beginning of the file "CMake.vars.Windows":
 # SET dependencies directory.
 # If individual dependencies are not all in this common directory, it has to be changed further down.
-SET(DEPENDENCIES_DIR "C:\\agros_dependecies")
+SET(DEPENDENCIES_DIR "C:/agros_dependecies")
 SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 
 3) Needed to download | build (in x86 || x64 depending on the target platform of Agros2D):
@@ -79,7 +78,6 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 5.1) CMake
 For MS Visual Studio 2015 (version 14):
 
-  - x86: cmake -G "Visual Studio 14"
-  - x64: cmake -G "Visual Studio 14 Win64"
+  - cmake -G "Visual Studio 14 Win64"
 
 5.2) Open in Visual Studio and build
