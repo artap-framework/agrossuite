@@ -173,6 +173,18 @@ void PostprocessorScenePost3DWidget::save()
     if (radPost3DScalarField3DSolid->isChecked()) m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarView3DMode, SceneViewPost3DMode_ScalarView3DSolid);
     if (radPost3DModel->isChecked()) m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarView3DMode, SceneViewPost3DMode_Model);
 
+    // solid
+    QStringList hideList;
+    for (int i = 0; i < lstSolidMaterials->count(); i++)
+    {
+        if (lstSolidMaterials->item(i)->checkState() == Qt::Unchecked)
+        {
+            SceneMaterial *material = lstSolidMaterials->item(i)->data(Qt::UserRole).value<SceneMaterial *>();
+            hideList.append(material->name());
+        }
+    }
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::SolidViewHide, hideList);
+
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarView3DLighting, chkView3DLighting->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarView3DAngle, txtView3DAngle->value());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarView3DBackground, chkView3DBackground->isChecked());

@@ -582,7 +582,8 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // int& elem_marker = it.get_marker();
 
                 // find marker
-                SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros2D::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
+                // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
+                SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
                 SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                 // hide material
