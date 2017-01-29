@@ -17,5 +17,9 @@ SET(SOURCES src/acovarianceupdate.cc
         src/ipopcmastrategy.cc
         src/surrogatestrategy.cc)
 
-ADD_LIBRARY(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+IF (AGROS_BUILD_STATIC)
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
+ELSE()
+    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+ENDIF()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME})

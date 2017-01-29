@@ -141,7 +141,11 @@ SET ( NLOPT_SOURCES
 	stogo/global.cc stogo/linalg.cc stogo/local.cc stogo/stogo.cc stogo/tools.cc stogo/global.h stogo/linalg.h stogo/local.h stogo/stogo_config.h stogo/stogo.h stogo/tools.h 
         )
 
-set(NLOPT_BUILD_SHARED OFF) # "Build NLOPT as a shared library"
+IF (AGROS_BUILD_STATIC)
+    set(NLOPT_BUILD_SHARED OFF) # "Build NLOPT as a shared library"
+ELSE()
+    set(NLOPT_BUILD_SHARED ON) # "Build NLOPT as a shared library"
+ENDIF()
 
 IF(NLOPT_BUILD_SHARED)
   ADD_DEFINITIONS(-DNLOPT_DLL)

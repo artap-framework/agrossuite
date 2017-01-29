@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = "C:/Uzivatele/pkropik/Veda_projekty/Agros2D_dvlp/agros2d/3rdparty/bayesopt/doc"
+OUTPUT_DIRECTORY       = "/home/karban/Projects/agros2d-dealii/3rdparty/bayesopt/doc"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -665,7 +665,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = "C:/Uzivatele/pkropik/Veda_projekty/Agros2D_dvlp/agros2d/3rdparty/bayesopt" 
+INPUT                  = "/home/karban/Projects/agros2d-dealii/3rdparty/bayesopt" 
 USE_MDFILE_AS_MAINPAGE = README.md
 
 # This tag can be used to specify the character encoding of the source files
@@ -726,7 +726,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = "C:/Uzivatele/pkropik/Veda_projekty/Agros2D_dvlp/agros2d/3rdparty/bayesopt/examples"
+EXAMPLE_PATH           = "/home/karban/Projects/agros2d-dealii/3rdparty/bayesopt/examples"
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -746,7 +746,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = "C:/Uzivatele/pkropik/Veda_projekty/Agros2D_dvlp/agros2d/3rdparty/bayesopt"
+IMAGE_PATH             = "/home/karban/Projects/agros2d-dealii/3rdparty/bayesopt"
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1253,13 +1253,13 @@ LATEX_OUTPUT           = "latex"
 # generating bitmaps for formulas in the HTML output, but not in the
 # Makefile that is written to the output directory.
 
-LATEX_CMD_NAME         = "C:/texlive/2014/bin/win32/latex.exe"
+LATEX_CMD_NAME         = "/usr/bin/latex"
 
 # The MAKEINDEX_CMD_NAME tag can be used to specify the command name to
 # generate index for LaTeX. If left blank `makeindex' will be used as the
 # default command name.
 
-MAKEINDEX_CMD_NAME     = "C:/texlive/2014/bin/win32/makeindex.exe"
+MAKEINDEX_CMD_NAME     = "/usr/bin/makeindex"
 
 # If the COMPACT_LATEX tag is set to YES Doxygen generates more compact
 # LaTeX documents. This may be useful for small projects and may help to
@@ -1303,7 +1303,7 @@ PDF_HYPERLINKS         = YES
 # plain latex in the generated Makefile. Set this option to YES to get a
 # higher quality PDF documentation.
 
-USE_PDFLATEX           = NO
+USE_PDFLATEX           = YES
 
 # If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \\batchmode.
 # command to the generated LaTeX files. This will instruct LaTeX to keep
@@ -1629,7 +1629,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT               = NO
+HAVE_DOT               = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is
 # allowed to run in parallel. When set to 0 (the default) doxygen will
@@ -1752,7 +1752,7 @@ INTERACTIVE_SVG        = NO
 # The tag DOT_PATH can be used to specify the path where the dot tool can be
 # found. If left blank, it is assumed the dot tool can be found in the path.
 
-DOT_PATH               = ""
+DOT_PATH               = "/usr/bin"
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that
 # contain dot files that are included in the documentation (see the
