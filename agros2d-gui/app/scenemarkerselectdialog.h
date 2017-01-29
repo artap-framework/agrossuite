@@ -33,7 +33,7 @@ class SceneMarkerSelectDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SceneMarkerSelectDialog(SceneViewPost2D *sceneView, SceneModePostprocessor mode, QWidget *parent = 0);
+    SceneMarkerSelectDialog(SceneViewPost2D *sceneView, SceneModePostprocessor mode, Computation *computation);
 
 private slots:
     void doAccept();
@@ -53,7 +53,7 @@ private:
     QListWidget *lstSurface;
     QListWidget *lstVolume;
 
-    Computation *computation() const;
+    Computation *m_computation;
 };
 
 #endif // SCENEMARKERSELECTDIALOG_H

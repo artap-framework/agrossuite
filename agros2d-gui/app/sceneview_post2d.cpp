@@ -890,7 +890,7 @@ void SceneViewPost2D::selectByMarker()
 {
     SceneModePostprocessor mode = (actPostprocessorModeSurfaceIntegral->isChecked()) ? SceneModePostprocessor_SurfaceIntegral : SceneModePostprocessor_VolumeIntegral;
 
-    SceneMarkerSelectDialog sceneMarkerSelectDialog(this, mode, QApplication::activeWindow());
+    SceneMarkerSelectDialog sceneMarkerSelectDialog(this, mode, m_postprocessorWidget->currentComputation().data());
     if (sceneMarkerSelectDialog.exec() == QDialog::Accepted)
         emit mousePressed();
 }
