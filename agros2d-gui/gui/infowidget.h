@@ -41,7 +41,7 @@ protected:
 
 public slots:
     void clear();
-    void showProblemInfo(ProblemBase *problem);
+    void showProblemInfo(ProblemBase *problem, const QString &name = "");
     void showPythonInfo(const QString &fileName);
 };
 

@@ -84,7 +84,7 @@ void InfoWidgetGeneral::clear()
     webView->setHtml("");
 }
 
-void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
+void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &name)
 {
     // return;
 
@@ -100,8 +100,11 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
 
     problemInfo.SetValue("NAME_LABEL", tr("Name:").toStdString());
-    if (Problem *preprocessor = dynamic_cast<Problem *>(problem))
-        problemInfo.SetValue("NAME", QFileInfo(preprocessor->archiveFileName()).baseName().toStdString());
+    if (!name.isEmpty())
+        problemInfo.SetValue("NAME", name.toStdString());
+    else
+        if (Problem *preprocessor = dynamic_cast<Problem *>(problem))
+            problemInfo.SetValue("NAME", QFileInfo(preprocessor->archiveFileName()).baseName().toStdString());
 
     // general
     problemInfo.SetValue("GENERAL_LABEL", tr("General").toStdString());
@@ -272,13 +275,16 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
     ctemplate::TemplateDictionary problemInfo("info");
 
     problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros2d_logo.png").absolutePath()).toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
+    problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     // python
     if (QFile::exists(fileName))
     {
+        problemInfo.SetValue("NAME", QFileInfo(fileName).baseName().toStdString());
+
         // replace current path in index.html
-        QString python = readFileContent(fileName   );
+        QString python = readFileContent(fileName);
         problemInfo.SetValue("PROBLEM_PYTHON", python.toStdString());
     }
 
@@ -310,7 +316,7 @@ void InfoWidget::welcome()
     ctemplate::TemplateDictionary problemInfo("welcome");
 
     problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros2d_logo.png").absolutePath()).toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 

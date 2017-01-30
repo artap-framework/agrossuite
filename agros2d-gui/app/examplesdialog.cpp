@@ -357,12 +357,19 @@ void ExamplesWidget::problemInfo(const QString &fileName)
 
             QString fn = QString("%1/%2").arg(tempProblemDir()).arg(problemName);
             this->problemInfo(fn);
+
+            // show info
+            QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
+            problem->readProblemFromJson(fn);
+            m_infoWidget->showProblemInfo(problem.data(), fileInfo.baseName());
+
             QFile::remove(fn);
 
             return;
         }
         else if (fileInfo.suffix() == "json")
         {
+            // show info
             QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
             problem->readProblemFromJson(fileName);
             m_infoWidget->showProblemInfo(problem.data());

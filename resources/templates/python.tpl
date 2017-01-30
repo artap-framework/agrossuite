@@ -5,8 +5,10 @@
 	<meta name="generator" content="Agros2D" />
 	<style type="text/css">
 		{{STYLESHEET}}
+        </style>
 
-		/**
+        <style type="text/css">
+                /**
 		 * GitHub theme
 		 *
 		 * @author Craig Campbell
@@ -93,17 +95,16 @@
 		pre .regexp {
 		    color: #009926;
 		}		
-	</style>
-	<script language="javascript" type="text/javascript" src="{{PANELS_DIRECTORY}}/js/rainbow-python.js"></script>
+        </style>
+        <script language="javascript" type="text/javascript" src="{{PANELS_DIRECTORY}}/js/rainbow-python.js"></script>
 </head>
 <body>
 
-
 <img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS2D}}" /> 
+<h1>{{NAME}}</h1>
 
 {{PROBLEM_DETAILS}}
 
-<h1>Script</h1>
 <pre><code data-language="python">{{PROBLEM_PYTHON}}</code></pre>
 
 <div class="cleaner"></div>
