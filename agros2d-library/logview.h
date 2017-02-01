@@ -24,17 +24,22 @@
 #include "solver/solver.h"
 #include "solver/solver_utils.h"
 
+#include "../3rdparty/spdlog/spdlog.h"
+
 class FieldInfo;
 class SolverAgros;
 
 class AGROS_LIBRARY_API Log: public QObject
 {
     Q_OBJECT
+private:
+      std::shared_ptr<spdlog::logger>  m_console;
+
 public:
     Log();
 
-    inline void printHeading(const QString &message) { emit headingMsg(message); }
-    inline void printMessage(const QString &module, const QString &message) { emit messageMsg(module, message); }
+    inline void printHeading(const QString &message) { emit headingMsg(message); }    
+    void printMessage(const QString &module, const QString &message);
     inline void printError(const QString &module, const QString &message) { emit errorMsg(module, message); }
     inline void printWarning(const QString &module, const QString &message) { emit warningMsg(module, message); }
     inline void printDebug(const QString &module, const QString &message) { emit debugMsg(module, message); }
@@ -49,8 +54,7 @@ public:
     inline void addIcon(const QIcon &icn, const QString &label) { emit addIconImg(icn, label); }
 
 signals:
-    void headingMsg(const QString &message);
-    void messageMsg(const QString &module, const QString &message);
+    void headingMsg(const QString &message);    
     void errorMsg(const QString &module, const QString &message);
     void warningMsg(const QString &module, const QString &message);
     void debugMsg(const QString &module, const QString &message);

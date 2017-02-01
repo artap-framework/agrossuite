@@ -138,6 +138,7 @@ SET(NSGA3_LIBRARY agros2d_3rdparty_nsga3)
 SET(LIMBO_LIBRARY agros2d_3rdparty_limbo)
 SET(CMAES_LIBRARY agros2d_3rdparty_cmaes)
 SET(QTAWESOME_LIBRARY agros2d_3rdparty_qtawesome)
+SET(SPDLOG_LIBRARY agros2d_3rdparty_spdlog)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
