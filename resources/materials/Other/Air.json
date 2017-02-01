@@ -1,0 +1,69 @@
+{
+    "general": {
+        "description": "",
+        "name": "Air",
+        "version": 1
+    },
+    "properties": [
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Density",
+            "shortname": "<i>&rho;</i>",
+            "source": "",
+            "unit": "kg/m<sup>3</sup>",
+            "values": {
+                "constant": "1.25",
+                "table": {
+                    "keys": "",
+                    "values": ""
+                }
+            }
+        },
+        {
+            "independent_shortname": "",
+            "independent_unit": "",
+            "name": "Speed of sound",
+            "shortname": "<i>c</i>",
+            "source": "",
+            "unit": "m/s",
+            "values": {
+                "constant": "343",
+                "table": {
+                    "keys": "",
+                    "values": ""
+                }
+            }
+        },
+        {
+            "independent_shortname": "",
+            "independent_unit": "",
+            "name": "Relative permittivity",
+            "shortname": "<i>&epsilon;</i><sub>r</sub>",
+            "source": "",
+            "unit": "-",
+            "values": {
+                "constant": "1",
+                "table": {
+                    "keys": "",
+                    "values": ""
+                }
+            }
+        },
+        {
+            "independent_shortname": "",
+            "independent_unit": "",
+            "name": "Relative permeability",
+            "shortname": "<i>&mu;</i><sub>r</sub>",
+            "source": "",
+            "unit": "-",
+            "values": {
+                "constant": "1",
+                "table": {
+                    "keys": "",
+                    "values": ""
+                }
+            }
+        }
+    ]
+}

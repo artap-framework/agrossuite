@@ -38,15 +38,189 @@
 #include "ctemplate/template.h"
 #include "qcustomplot/qcustomplot.h"
 
+const QString GENERAL = "general";
+const QString VERSION = "version";
+const QString NAME = "name";
+const QString DESCRIPTION = "description";
+
+const QString PROPERTIES = "properties";
+const QString SOURCE = "source";
+const QString SHORTNAME = "shortname";
+const QString UNIT = "unit";
+const QString INDEPENDENT_SHORTNAME = "independent_shortname";
+const QString INDEPENDENT_UNIT = "independent_unit";
+
+const QString CONSTANT = "constant";
+const QString TABLE = "table";
+const QString KEYS = "keys";
+const QString VALUES = "values";
+const QString FUNCTION = "function";
+const QString LOWER = "lower";
+const QString UPPER = "upper";
+
+void LibraryMaterial::read(const QString &fileName)
+{
+    if (QFile::exists(fileName))
+    {
+        properties.clear();
+        
+        // open file
+        QFile file(fileName);
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+            QJsonObject rootJson = doc.object();
+            
+            QJsonObject generalJson = rootJson[GENERAL].toObject();
+            name = generalJson[NAME].toString();
+            description = generalJson[DESCRIPTION].toString();
+            
+            QJsonArray propertiesJson = rootJson[PROPERTIES].toArray();
+            for (int i = 0; i < propertiesJson.size(); i++)
+            {
+                Property prop;
+                
+                QJsonObject propertyJson = propertiesJson[i].toObject();
+                
+                prop.name = propertyJson[NAME].toString();
+                prop.source = propertyJson[SOURCE].toString();
+                
+                prop.shortname = propertyJson[SHORTNAME].toString();
+                prop.unit = propertyJson[UNIT].toString();
+                
+                prop.independent_shortname = propertyJson[INDEPENDENT_SHORTNAME].toString();
+                prop.independent_unit = propertyJson[INDEPENDENT_UNIT].toString();
+                
+                QJsonObject valuesJson = propertyJson[VALUES].toObject();
+                
+                // constant
+                if (!valuesJson[CONSTANT].isUndefined())
+                {
+                    prop.value_constant = valuesJson[CONSTANT].toInt();
+                }
+                
+                // table
+                if (!valuesJson[TABLE].isUndefined())
+                {
+                    QJsonObject tableJson = valuesJson[TABLE].toObject();
+                    
+                    QStringList keysString = tableJson[KEYS].toString().split(";");
+                    QStringList valuesString = tableJson[VALUES].toString().split(";");
+                    
+                    for (int j = 0; j < keysString.size(); j++)
+                    {
+                        if ((!keysString.at(j).isEmpty()) && (j < valuesString.count()) && (!valuesString.at(j).isEmpty()))
+                        {
+                            prop.value_table_keys.append(keysString.at(j).toDouble());
+                            prop.value_table_values.append(valuesString.at(j).toDouble());
+                        }
+                    }
+                }
+                
+                // function
+                if (!valuesJson[FUNCTION].isUndefined())
+                {
+                    // TODO
+                }
+                
+                properties.append(prop);
+            }
+        }
+    }
+}
+
+void LibraryMaterial::write(const QString &fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open material file.");
+        return;
+    }
+
+    // root object
+    QJsonObject rootJson;
+
+    // general
+    QJsonObject generalJson;
+
+    generalJson[VERSION] = 1;
+    generalJson[NAME] = name;
+    generalJson[DESCRIPTION] = description;
+
+    rootJson[GENERAL] = generalJson;
+
+    // properties
+    QJsonArray propertiesJson;
+    for (unsigned int i = 0; i < properties.size(); i++)
+    {
+        QJsonObject propertyJson;
+
+        propertyJson[NAME] = properties[i].name;
+        propertyJson[SOURCE] = properties[i].source;
+
+        propertyJson[SHORTNAME] = properties[i].shortname;
+        propertyJson[UNIT] = properties[i].unit;
+
+        propertyJson[INDEPENDENT_SHORTNAME] = properties[i].independent_shortname;
+        propertyJson[INDEPENDENT_UNIT] = properties[i].independent_unit;
+
+        QJsonObject valuesJson;
+
+        // constant
+        valuesJson[CONSTANT] = properties[i].value_constant;
+
+        if (properties[i].type == NonlinearityType::Table)
+        {
+            QStringList keysString;
+            QStringList valuesString;
+
+            QJsonObject tableJson;
+            assert(properties[i].value_table_keys.size() == properties[i].value_table_values.size());
+            for (int j = 0; j < properties[i].value_table_keys.size(); j++)
+            {
+                keysString.append(QString::number(properties[i].value_table_keys[j]));
+                valuesString.append(QString::number(properties[i].value_table_values[j]));
+            }
+
+            tableJson[KEYS] = keysString.join(";");
+            tableJson[VALUES] = valuesString.join(";");
+
+            valuesJson[TABLE] = tableJson;
+        }
+        else if (properties[i].type == NonlinearityType::Function)
+        {
+            QJsonObject functionJson;
+            functionJson[FUNCTION] = properties[i].value_function_function;
+            functionJson[LOWER] = properties[i].value_function_lower;
+            functionJson[UPPER] = properties[i].value_function_upper;
+
+            valuesJson[FUNCTION] = functionJson;
+        }
+        else
+            assert(0);
+
+        propertyJson[VALUES] = valuesJson;
+        propertiesJson.append(propertyJson);
+    }
+
+    rootJson[PROPERTIES] = propertiesJson;
+
+    // save to file
+    QJsonDocument doc(rootJson);
+    file.write(doc.toJson(QJsonDocument::Indented));
+}
+
 MaterialEditDialog::MaterialEditDialog(const QString &fileName, QWidget *parent) : QDialog(parent),
     m_fileName(fileName)
 {
     setWindowTitle(tr("Material editor"));
-
+    
     createControls();
-
+    
     readMaterial();
-
+    
     QSettings settings;
     restoreGeometry(settings.value("MaterialEditDialog/Geometry", saveGeometry()).toByteArray());
 }
@@ -67,24 +241,24 @@ void MaterialEditDialog::createControls()
     lstProperties = new QListWidget(this);
     lstProperties->setMouseTracking(true);
     lstProperties->setMaximumWidth(200);
-
+    
     connect(lstProperties, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(doPropertyChanged(QListWidgetItem *, QListWidgetItem *)));
-
+    
     txtName = new QLineEdit();
     txtDescription = new QLineEdit();
-
+    
     QGridLayout *layoutNameAndDescription = new QGridLayout();
     layoutNameAndDescription->addWidget(new QLabel(tr("Name:")), 0, 0);
     layoutNameAndDescription->addWidget(txtName, 0, 1);
     layoutNameAndDescription->addWidget(new QLabel(tr("Description:")), 1, 0);
     layoutNameAndDescription->addWidget(txtDescription, 2, 0, 1, 3);
-
+    
     QPushButton *btnAddProperty = new QPushButton(tr("Add..."));
     btnAddProperty->setDefault(false);
-
+    
     QAction *actAddCustom = new QAction(tr("Custom property"), this);
     connect(actAddCustom, SIGNAL(triggered()), this, SLOT(addProperty()));
-
+    
     // TODO: more general
     QAction *actAddThermalConductivity = new QAction(tr("Thermal conductivity"), this);
     connect(actAddThermalConductivity, SIGNAL(triggered()), this, SLOT(addPropertyThermalConductivity()));
@@ -94,7 +268,7 @@ void MaterialEditDialog::createControls()
     connect(actAddDensity, SIGNAL(triggered()), this, SLOT(addPropertyDensity()));
     QAction *actAddMagneticPermeability = new QAction(tr("Magnetic permeability"), this);
     connect(actAddMagneticPermeability, SIGNAL(triggered()), this, SLOT(addPropertyMagneticPermeability()));
-
+    
     QMenu *menu = new QMenu();
     menu->addAction(actAddCustom);
     menu->addSeparator();
@@ -103,92 +277,92 @@ void MaterialEditDialog::createControls()
     menu->addAction(actAddDensity);
     menu->addSeparator();
     menu->addAction(actAddMagneticPermeability);
-
+    
     btnAddProperty->setMenu(menu);
-
+    
     btnDeleteProperty = new QPushButton(tr("Delete"));
     btnDeleteProperty->setDefault(false);
     connect(btnDeleteProperty, SIGNAL(clicked()), this, SLOT(deleteProperty()));
-
+    
     QGridLayout *layoutList = new QGridLayout();
     layoutList->addWidget(lstProperties, 0, 0, 1, 2);
     layoutList->addWidget(btnAddProperty, 1, 0);
     layoutList->addWidget(btnDeleteProperty, 1, 1);
-
+    
     propertyGUI = createPropertyGUI();
-
+    
     QHBoxLayout *layoutNonlinearProperties = new QHBoxLayout();
     layoutNonlinearProperties->addLayout(layoutList);
     layoutNonlinearProperties->addWidget(propertyGUI, 1);
-
+    
     // table
     txtPropertyTableKeys = new QPlainTextEdit();
     txtPropertyTableValues = new QPlainTextEdit();
-
+    
     QGridLayout *layoutTable = new QGridLayout();
     layoutTable->addWidget(new QLabel(tr("Keys:")), 0, 0);
     layoutTable->addWidget(txtPropertyTableKeys, 1, 0);
     layoutTable->addWidget(new QLabel(tr("Values:")), 0, 1);
     layoutTable->addWidget(txtPropertyTableValues, 1, 1);
-
+    
     widNonlinearTable = new QGroupBox(tr("Table"));
     widNonlinearTable->setLayout(layoutTable);
-
+    
     // function
-    // txtPropertyFunction = new ScriptEditor(currentPythonEngine(), this);
-    txtPropertyFunctionFrom = new LineEditDouble(0.0);
-    txtPropertyFunctionTo = new LineEditDouble(0.0);
-
+    txtPropertyFunction = new QPlainTextEdit(this);
+    txtPropertyFunctionLower = new LineEditDouble(0.0);
+    txtPropertyFunctionUpper = new LineEditDouble(0.0);
+    
     QGridLayout *layoutFunction = new QGridLayout();
-    // layoutFunction->addWidget(txtPropertyFunction, 0, 0, 1, 4);
+    layoutFunction->addWidget(txtPropertyFunction, 0, 0, 1, 4);
     layoutFunction->addWidget(new QLabel(tr("From:")), 1, 0);
-    layoutFunction->addWidget(txtPropertyFunctionFrom, 1, 1);
+    layoutFunction->addWidget(txtPropertyFunctionLower, 1, 1);
     layoutFunction->addWidget(new QLabel(tr("To:")), 1, 2);
-    layoutFunction->addWidget(txtPropertyFunctionTo, 1, 3);
+    layoutFunction->addWidget(txtPropertyFunctionUpper, 1, 3);
     layoutFunction->setRowStretch(0, 1);
-
+    
     widNonlinearFunction = new QGroupBox(tr("Nonlinear function"));
     widNonlinearFunction->setLayout(layoutFunction);
-
+    
     chartNonlinear = new QCustomPlot();
     chartNonlinear->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     chartNonlinear->setMinimumHeight(120);
     chartNonlinear->addGraph();
     chartNonlinear->graph(0)->setLineStyle(QCPGraph::lsLine);
-
+    
     QHBoxLayout *layoutChartNonlinear = new QHBoxLayout();
     layoutChartNonlinear->addWidget(chartNonlinear);
-
+    
     widChartNonlinear = new QGroupBox(tr("Chart"));
     widChartNonlinear->setLayout(layoutChartNonlinear);
-
+    
     layoutNonlinearType = new QStackedLayout();
     layoutNonlinearType->addWidget(widNonlinearFunction);
     layoutNonlinearType->addWidget(widNonlinearTable);
-
+    
     QHBoxLayout *layoutNonlinearChart = new QHBoxLayout();
     layoutNonlinearChart->addLayout(layoutNonlinearType, 2);
     layoutNonlinearChart->addWidget(widChartNonlinear, 1);
-
+    
     QVBoxLayout *layoutNonlinear = new QVBoxLayout();
     layoutNonlinear->addLayout(layoutNonlinearProperties);
     layoutNonlinear->addLayout(layoutNonlinearChart, 1);
-
+    
     // dialog buttons
     QPushButton *btnPlot = new QPushButton(tr("Plot"));
     connect(btnPlot, SIGNAL(clicked()), this, SLOT(drawChart()));
-
+    
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     buttonBox->addButton(btnPlot, QDialogButtonBox::ActionRole);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-
+    
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addLayout(layoutNameAndDescription);
     layout->addLayout(layoutNonlinear, 1);
     layout->addStretch();
     layout->addWidget(buttonBox);
-
+    
     setLayout(layout);
 }
 
@@ -205,14 +379,14 @@ QWidget *MaterialEditDialog::createPropertyGUI()
     txtPropertyIndependentVariableUnit = new QLineEdit();
     connect(txtPropertyIndependentVariableUnit, SIGNAL(textChanged(QString)), this, SLOT(setFunctionLabel()));
     cmbPropertyNonlinearityType = new QComboBox();
-    cmbPropertyNonlinearityType->addItem(tr("Function"), MaterialEditDialog::Function);
-    cmbPropertyNonlinearityType->addItem(tr("Table"), MaterialEditDialog::Table);
+    cmbPropertyNonlinearityType->addItem(tr("Function"), LibraryMaterial::Function);
+    cmbPropertyNonlinearityType->addItem(tr("Table"), LibraryMaterial::Table);
     connect(cmbPropertyNonlinearityType, SIGNAL(activated(int)), this, SLOT(doNonlinearDependenceChanged(int)));
     lblPropertyFunction = new QLabel();
-
+    
     // constant
     txtPropertyConstant = new LineEditDouble(0.0);
-
+    
     // table and function tab
     QGridLayout *layoutProperty = new QGridLayout();
     layoutProperty->addWidget(new QLabel(tr("Name:")), 0, 0);
@@ -234,10 +408,10 @@ QWidget *MaterialEditDialog::createPropertyGUI()
     layoutProperty->addWidget(new QLabel(tr("Function:")), 5, 2);
     layoutProperty->addWidget(lblPropertyFunction, 5, 3);
     layoutProperty->setRowStretch(11, 1);
-
+    
     QWidget *widget = new QWidget(this);
     widget->setLayout(layoutProperty);
-
+    
     return widget;
 }
 
@@ -245,42 +419,37 @@ void MaterialEditDialog::readMaterial()
 {
     if (QFile::exists(m_fileName))
     {
-        std::unique_ptr<XMLMaterial::material> material_xsd = XMLMaterial::material_(compatibleFilename(m_fileName).toStdString(), xml_schema::flags::dont_validate);
-        XMLMaterial::material *material = material_xsd.get();
-
-        txtName->setText(QString::fromStdString(material->general().name()));
-        if (material->general().description().present())
-            txtDescription->setText(QString::fromStdString(material->general().description().get()));
-
-        m_properties.clear();
+        m_material.read(m_fileName);
+        
+        txtName->setText(m_material.name);
+        txtDescription->setText(m_material.description);
+        
         lstProperties->clear();
-
+        
         // properties
-        for (unsigned int i = 0; i < material->properties().property().size(); i++)
+        for (unsigned int i = 0; i < m_material.properties.size(); i++)
         {
-            XMLMaterial::property prop = material->properties().property().at(i);
-            m_properties.append(prop);
-
+            LibraryMaterial::Property prop = m_material.properties[i];
+            
             // item
             QListWidgetItem *item = new QListWidgetItem(lstProperties);
-            item->setText(QString::fromStdString(prop.name()));
+            item->setText(prop.name);
             item->setData(Qt::UserRole, lstProperties->count() - 1);
-
+            
             lstProperties->addItem(item);
         }
-
+        
         propertyGUI->setEnabled(lstProperties->count() > 0);
         btnDeleteProperty->setEnabled(lstProperties->count() > 0);
-
+        
         if (lstProperties->count() > 0)
         {
             lstProperties->setCurrentRow(0);
-            readProperty(m_properties.at(0));
+            readProperty(m_material.properties[0]);
         }
         else
         {
-            readProperty();
-
+            // readProperty();
         }
     }
 }
@@ -288,102 +457,76 @@ void MaterialEditDialog::readMaterial()
 bool MaterialEditDialog::writeMaterial()
 {
     if (lstProperties->currentItem())
-        m_properties.replace(lstProperties->currentRow(), writeProperty());
-
+        m_material.properties.replace(lstProperties->currentRow(), writeProperty());
+    
     QFileInfo fileInfo(m_fileName);
     if (fileInfo.baseName() != txtName->text())
     {
         bool move = true;
-
+        
         // rename file
         QString newFilename = fileInfo.absolutePath() + "/" + txtName->text() + ".mat";
         if (QFile::exists(newFilename))
             move = (QMessageBox::question(this, tr("File exists"), tr("Material '%1' already exists. Do you wish replace this file?").arg(newFilename)) == 0);
-
+        
         if (move)
         {
             QFile::remove(m_fileName);
             m_fileName = newFilename;
         }
     }
-
-    try
-    {
-        // general
-        XMLMaterial::general general(txtName->text().toStdString());
-        general.description().set(txtDescription->text().toStdString());
-
-        // properties
-        XMLMaterial::properties properties;
-        foreach(XMLMaterial::property prop, m_properties)
-        {
-            // add property
-            properties.property().push_back(prop);
-        }
-
-        // material
-        XMLMaterial::material material(general, properties);
-
-        std::string mesh_schema_location("");
-
-        // TODO: set path more general
-        mesh_schema_location.append(QString("%1/material_xml.xsd").arg(QFileInfo(datadir() + XSDROOT).absoluteFilePath()).toStdString());
-        ::xml_schema::namespace_info namespace_info_mesh("XMLMaterial", mesh_schema_location);
-
-        ::xml_schema::namespace_infomap namespace_info_map;
-        namespace_info_map.insert(std::pair<std::basic_string<char>, xml_schema::namespace_info>("material", namespace_info_mesh));
-
-        std::ofstream out(compatibleFilename(m_fileName).toStdString().c_str());
-        XMLMaterial::material_(out, material, namespace_info_map);
-
-        return true;
-    }
-    catch (const xml_schema::exception& e)
-    {
-        std::cerr << e << std::endl;
-
-        return false;
-    }
+    
+    // general
+    m_material.name = txtName->text();
+    m_material.description = txtDescription->text();
+    m_material.write(m_fileName);
+    
+    return true;
 }
 
-void MaterialEditDialog::addProperty(const QString &name, const QString &shortname, const QString &unit, const QString &nonlinearityKind,
+void MaterialEditDialog::addProperty(const QString &name, const QString &shortname, const QString &unit, LibraryMaterial::NonlinearityType nonlinearityType,
                                      const QString &indepedentShortname, const QString &indepedentUnit)
 {
     bool ok = false;
     QString propName = name;
-
+    
     if (propName.isEmpty())
         propName = QInputDialog::getText(this, tr("Add property"),
                                          tr("Name:"), QLineEdit::Normal, "", &ok);
     else
         ok = true;
-
+    
     if (ok && !propName.isEmpty())
     {
-        XMLMaterial::property prop(propName.toStdString(),
-                                   shortname.toStdString(),
-                                   unit.toStdString(),
-                                   "",
-                                   nonlinearityKind.toStdString(),
-                                   indepedentShortname.toStdString(),
-                                   indepedentUnit.toStdString());
-
-        XMLMaterial::nonlinearity nonlinearity;
-        nonlinearity.function().set(XMLMaterial::function("def agros2d_material(t):\n"
-                                                          "    return 0.0",
-                                                          0, 100));
-        prop.nonlinearity().set(nonlinearity);
-        m_properties.append(prop);
-
+        LibraryMaterial::Property prop;
+        prop.name = propName;
+        prop.source = "";
+        
+        prop.shortname = shortname;
+        
+        prop.unit = unit;
+        prop.type = nonlinearityType;
+        
+        prop.independent_shortname = indepedentShortname;
+        prop.independent_unit = indepedentUnit;
+        
+        prop.value_constant = 0;
+        
+        prop.value_function_function = "";
+        prop.value_function_lower = 0;
+        prop.value_function_upper = 100;
+        
+        m_material.properties.append(prop);
+        
         // item
         QListWidgetItem *item = new QListWidgetItem(lstProperties);
-        item->setText(QString::fromStdString(prop.name()));
-
+        item->setText(prop.name);
+        
         lstProperties->addItem(item);
         lstProperties->setCurrentItem(item);
         propertyGUI->setEnabled(lstProperties->count() > 0);
         btnDeleteProperty->setEnabled(lstProperties->count() > 0);
-
+        
         readProperty(prop);
     }
 }
@@ -398,73 +541,59 @@ void MaterialEditDialog::deleteProperty()
         {
             int row = lstProperties->row(lstProperties->currentItem());
             lstProperties->takeItem(row);
-            m_properties.removeAt(row);
-
+            m_material.properties.removeAt(row);
+            
             propertyGUI->setEnabled(lstProperties->count() > 0);
             btnDeleteProperty->setEnabled(lstProperties->count() > 0);
-
+            
             if (lstProperties->count() > 0)
             {
                 lstProperties->setCurrentRow(0);
-                readProperty(m_properties.at(0));
+                readProperty(m_material.properties.at(0));
             }
             else
             {
-                readProperty();
+                // readProperty();
             }
         }
     }
 }
 
-void MaterialEditDialog::readProperty(XMLMaterial::property prop)
+void MaterialEditDialog::readProperty(LibraryMaterial::Property prop)
 {
-    txtPropertyName->setText(QString::fromStdString(prop.name()));
-    txtPropertyShortname->setText(QString::fromStdString(prop.shortname()));
-    txtPropertyUnit->setText(QString::fromStdString(prop.unit()));
-    txtPropertySource->setText(QString::fromStdString(prop.source()));
-    cmbPropertyNonlinearityType->setCurrentIndex(cmbPropertyNonlinearityType->findData(nonlinearityTypeFromStringKey(QString::fromStdString(prop.nonlinearity_kind()))));
-    txtPropertyIndependentVariableShortname->setText(QString::fromStdString(prop.independent_shortname()));
-    txtPropertyIndependentVariableUnit->setText(QString::fromStdString(prop.independent_unit()));
-
+    txtPropertyName->setText(prop.name);
+    txtPropertyShortname->setText(prop.shortname);
+    txtPropertyUnit->setText(prop.unit);
+    txtPropertySource->setText(prop.source);
+    cmbPropertyNonlinearityType->setCurrentIndex(cmbPropertyNonlinearityType->findData(prop.type));
+    txtPropertyIndependentVariableShortname->setText(prop.independent_shortname);
+    txtPropertyIndependentVariableUnit->setText(prop.independent_unit);
+    
     // clear
     txtPropertyConstant->setValue(0.0);
     txtPropertyTableKeys->clear();
     txtPropertyTableValues->clear();
-    // txtPropertyFunction->clear();
-    txtPropertyFunctionFrom->setValue(0.0);
-    txtPropertyFunctionTo->setValue(0.0);
-
+    txtPropertyFunction->clear();
+    txtPropertyFunctionLower->setValue(0.0);
+    txtPropertyFunctionUpper->setValue(0.0);
+    
     // constant
-    if (prop.constant().present())
-        txtPropertyConstant->setValue(prop.constant().get().value());
-
+    txtPropertyConstant->setValue(prop.value_constant);
+    
     // table
-    if (prop.nonlinearity().present())
+    for (int i = 0; i < prop.value_table_keys.size(); i++)
     {
-        if (prop.nonlinearity().get().table().present())
-        {
-            XMLMaterial::table table = prop.nonlinearity().get().table().get();
-
-            txtPropertyTableKeys->setPlainText(QString::fromStdString(table.keys()));
-            txtPropertyTableValues->setPlainText(QString::fromStdString(table.values()));
-        }
+        txtPropertyTableKeys->appendPlainText(QString::number(prop.value_table_keys[i]));
+        txtPropertyTableValues->appendPlainText(QString::number(prop.value_table_values[i]));
     }
-
+    
     // function
-    if (prop.nonlinearity().present())
-    {
-        if (prop.nonlinearity().get().function().present())
-        {
-            XMLMaterial::function function = prop.nonlinearity().get().function().get();
-
-            // txtPropertyFunction->setPlainText(QString::fromStdString(function.body()));
-            txtPropertyFunctionFrom->setValue(function.interval_from());
-            txtPropertyFunctionTo->setValue(function.interval_to());
-        }
-    }
-
+    txtPropertyFunction->setPlainText(prop.value_function_function);
+    txtPropertyFunctionLower->setValue(prop.value_function_lower);
+    txtPropertyFunctionUpper->setValue(prop.value_function_upper);
+    
     doNonlinearDependenceChanged(cmbPropertyNonlinearityType->currentIndex());
-
+    
     // draw chart
     drawChart();
 }
@@ -480,24 +609,24 @@ void MaterialEditDialog::setFunctionLabel()
 
 void MaterialEditDialog::drawChart()
 {
-    assert(0);
-
+    // assert(0);
+    
     QVector<double> keys;
     QVector<double> values;
 
-    /*
-    if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Function)
+    if (((LibraryMaterial::NonlinearityType)
+         cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == LibraryMaterial::Function)
     {
-        currentPythonEngineAgros()->materialValues(txtPropertyFunction->toPlainText(),
-                                                   txtPropertyFunctionFrom->value(),
-                                                   txtPropertyFunctionTo->value(),
-                                                   &keys, &values, 500);
+        // currentPythonEngineAgros()->materialValues(txtPropertyFunction->toPlainText(),
+        //                                            txtPropertyFunctionFrom->value(),
+        //                                            txtPropertyFunctionTo->value(),
+        //                                            &keys, &values, 500);
     }
     else
     {
         QStringList keysString = txtPropertyTableKeys->toPlainText().split("\n");
         QStringList valuesString = txtPropertyTableValues->toPlainText().split("\n");
-
+        
         for (int j = 0; j < keysString.size(); j++)
         {
             if ((!keysString.at(j).isEmpty()) && (j < valuesString.count()) && (!valuesString.at(j).isEmpty()))
@@ -507,67 +636,72 @@ void MaterialEditDialog::drawChart()
             }
         }
     }
-    */
 
     chartNonlinear->graph(0)->setData(keys, values);
     chartNonlinear->rescaleAxes();
     chartNonlinear->replot(QCustomPlot::rpQueued);
 }
 
-XMLMaterial::property MaterialEditDialog::writeProperty()
+LibraryMaterial::Property MaterialEditDialog::writeProperty()
 {
+    LibraryMaterial::Property prop;
+    
     // property
-    XMLMaterial::property prop(txtPropertyName->text().toStdString(),
-                               txtPropertyShortname->text().toStdString(),
-                               txtPropertyUnit->text().toStdString(),
-                               txtPropertySource->text().toStdString(),
-                               nonlinearityTypeToStringKey((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()).toStdString(),
-                               txtPropertyIndependentVariableShortname->text().toStdString(),
-                               txtPropertyIndependentVariableUnit->text().toStdString());
-
+    prop.name = txtPropertyName->text();
+    prop.source = txtPropertySource->text();
+    
+    prop.shortname = txtPropertyShortname->text();
+    prop.unit = txtPropertyUnit->text();
+    
+    prop.independent_shortname = txtPropertyIndependentVariableShortname->text();
+    prop.independent_unit = txtPropertyIndependentVariableUnit->text();
+    
+    prop.type = (LibraryMaterial::NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt();
+    // nonlinearityTypeToStringKey(
+    
     // constant
-    prop.constant().set(XMLMaterial::constant(txtPropertyConstant->value()));
-
+    prop.value_constant = txtPropertyConstant->value();
+    
     // dependence
-    XMLMaterial::nonlinearity nonlinearity;
-
-    // table
-    /*
-    if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Function)
+    if ((LibraryMaterial::NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()
+            == LibraryMaterial::Table)
     {
-        // function
-        nonlinearity.function().set(XMLMaterial::function(txtPropertyFunction->toPlainText().toStdString(),
-                                                          txtPropertyFunctionFrom->value(),
-                                                          txtPropertyFunctionTo->value()));
+        QStringList keys = txtPropertyTableKeys->toPlainText().split("\n");
+        QStringList values = txtPropertyTableValues->toPlainText().split("\n");
+        for (int i = 0; i < keys.size(); i++)
+        {
+            prop.value_table_keys.append(keys[i].toDouble());
+            prop.value_table_values.append(values[i].toDouble());
+        }
+    }
+    else if ((LibraryMaterial::NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()
+             == LibraryMaterial::Function)
+    {
+        prop.value_function_function = txtPropertyFunction->toPlainText();
+        prop.value_function_lower = txtPropertyFunctionLower->value();
+        prop.value_function_upper = txtPropertyFunctionUpper->value();
     }
     else
-    */
-    if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Table)
-    {
-        nonlinearity.table().set(XMLMaterial::table(txtPropertyTableKeys->toPlainText().toStdString(),
-                                                    txtPropertyTableValues->toPlainText().toStdString()));
-    }
-
-    prop.nonlinearity().set(nonlinearity);
-
+        assert(0);
+    
     return prop;
 }
 
 void MaterialEditDialog::doNonlinearDependenceChanged(int index)
 {
-    if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Function)
+    if (((LibraryMaterial::NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == LibraryMaterial::Function)
         layoutNonlinearType->setCurrentWidget(widNonlinearFunction);
-    else if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Table)
+    else if (((LibraryMaterial::NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == LibraryMaterial::Table)
         layoutNonlinearType->setCurrentWidget(widNonlinearTable);
 }
 
 void MaterialEditDialog::doPropertyChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (previous)
-        m_properties.replace(lstProperties->row(previous), writeProperty());
-
+        m_material.properties.replace(lstProperties->row(previous), writeProperty());
+    
     if (current)
-        readProperty(m_properties.at(lstProperties->row(current)));
+        readProperty(m_material.properties.at(lstProperties->row(current)));
 }
 
 void MaterialEditDialog::doAccept()
@@ -583,87 +717,87 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
 {
     setWindowTitle(tr("Material Browser"));
     setModal(true);
-
+    
     // problem information
     webView = new QWebView(this);
     webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-
+    
     connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-
+    
     // stylesheet
     std::string style;
     ctemplate::TemplateDictionary stylesheet("style");
     stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
     stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
-
+    
     ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
-
+    
     trvMaterial = new QTreeWidget(this);
     trvMaterial->setMouseTracking(true);
     trvMaterial->setColumnCount(1);
     trvMaterial->setIconSize(QSize(24, 24));
     trvMaterial->setHeaderHidden(true);
     trvMaterial->setMinimumWidth(230);
-
+    
     connect(trvMaterial, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvMaterial, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-
+    
     btnNew = new QPushButton();
     btnNew->setText(tr("New"));
     btnNew->setDefault(false);
     connect(btnNew, SIGNAL(clicked()), this, SLOT(doNew()));
-
+    
     btnEdit = new QPushButton();
     btnEdit->setText(tr("Edit"));
     btnEdit->setDefault(false);
     btnEdit->setEnabled(false);
     connect(btnEdit, SIGNAL(clicked()), this, SLOT(doEdit()));
-
+    
     btnDelete = new QPushButton();
     btnDelete->setText(tr("Delete"));
     btnDelete->setDefault(false);
     btnDelete->setEnabled(false);
     connect(btnDelete, SIGNAL(clicked()), this, SLOT(doDelete()));
-
+    
     QGridLayout *layoutProperties = new QGridLayout();
     layoutProperties->addWidget(trvMaterial, 0, 0, 1, 3);
     layoutProperties->addWidget(btnNew, 2, 0);
     layoutProperties->addWidget(btnEdit, 2, 1);
     layoutProperties->addWidget(btnDelete, 2, 2);
-
+    
     QHBoxLayout *layoutSurface = new QHBoxLayout();
     layoutSurface->addLayout(layoutProperties);
     layoutSurface->addWidget(webView, 1);
-
+    
     QWidget *widget = new QWidget();
     widget->setLayout(layoutSurface);
-
+    
     QPushButton *btnClose = new QPushButton();
     btnClose->setText(tr("Close"));
     btnClose->setDefault(true);
     connect(btnClose, SIGNAL(clicked()), this, SLOT(close()));
-
+    
     QHBoxLayout *layoutButtons = new QHBoxLayout();
     layoutButtons->addStretch(1);
     layoutButtons->addWidget(btnClose);
-
+    
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(widget, 1);
     layout->addStretch();
     layout->addLayout(layoutButtons);
-
+    
     setLayout(layout);
-
+    
     readMaterials();
-
+    
     QSettings settings;
     restoreGeometry(settings.value("MaterialBrowserDialog/Geometry", saveGeometry()).toByteArray());
 }
 
 MaterialBrowserDialog::~MaterialBrowserDialog()
-{    
+{
     QSettings settings;
     settings.setValue("MaterialBrowserDialog/Geometry", saveGeometry());
 }
@@ -679,7 +813,7 @@ void MaterialBrowserDialog::doItemChanged(QTreeWidgetItem *current, QTreeWidgetI
     webView->setHtml("");
     btnEdit->setEnabled(false);
     btnDelete->setEnabled(false);
-
+    
     if (current)
     {
         m_selectedFilename = current->data(0, Qt::UserRole).toString();
@@ -707,27 +841,27 @@ void MaterialBrowserDialog::readMaterials()
 {
     // clear listview
     trvMaterial->clear();
-
+    
     // read materials
     QDir dirSystem(QString("%1/resources/materials").arg(datadir()));
     dirSystem.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
     readMaterials(dirSystem, trvMaterial->invisibleRootItem());
-
+    
     // user materials
     QFont fnt = trvMaterial->font();
     fnt.setBold(true);
-
+    
     QTreeWidgetItem *customMaterialsItem = new QTreeWidgetItem(trvMaterial->invisibleRootItem());
     customMaterialsItem->setText(0, tr("Custom materials"));
     customMaterialsItem->setFont(0, fnt);
     customMaterialsItem->setExpanded(true);
-
+    
     QDir dirUser(QString("%1/materials").arg(userDataDir()));
     if (!dirUser.exists())
         QDir(userDataDir()).mkpath(dirUser.absolutePath());
     dirUser.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
     readMaterials(dirUser, customMaterialsItem);
-
+    
     if (!m_selectedFilename.isEmpty())
     {
         // qDebug() << QFileInfo(m_selectedFilename).baseName();
@@ -749,21 +883,21 @@ void MaterialBrowserDialog::readMaterials(QDir dir, QTreeWidgetItem *parentItem)
         QFileInfo fileInfo = listExamples.at(i);
         if (fileInfo.fileName() == "." || fileInfo.fileName() == "..")
             continue;
-
+        
         if (fileInfo.isDir())
         {
             QFont fnt = trvMaterial->font();
             fnt.setBold(true);
-
+            
             QTreeWidgetItem *dirItem = new QTreeWidgetItem(parentItem);
             dirItem->setText(0, fileInfo.fileName());
             dirItem->setFont(0, fnt);
             dirItem->setExpanded(true);
-
+            
             // recursive read
             readMaterials(fileInfo.absoluteFilePath(), dirItem);
         }
-        else if (fileInfo.suffix() == "mat")
+        else if (fileInfo.suffix() == "json")
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(parentItem);
             item->setText(0, fileInfo.baseName());
@@ -772,68 +906,76 @@ void MaterialBrowserDialog::readMaterials(QDir dir, QTreeWidgetItem *parentItem)
     }
 }
 
-void MaterialBrowserDialog::materialInfo(const QString &fileName)
+/*
+void MaterialBrowserDialog::convertJson(const QString &fileName)
 {
-    // template
-    std::string info;
-    ctemplate::TemplateDictionary materialInfo("info");
-
     if (QFile::exists(fileName))
     {
         try
         {
             std::unique_ptr<XMLMaterial::material> material_xsd = XMLMaterial::material_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
             XMLMaterial::material *material = material_xsd.get();
-
-            materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-            materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
-
-            materialInfo.SetValue("NAME", material->general().name());
-            if (material->general().description().present())
-                materialInfo.SetValue("DESCRIPTION", material->general().description().get());
-
+            
+            QFile file(QFileInfo(fileName).absolutePath() + "/" + QFileInfo(fileName).baseName() + ".json");
+            
+            if (!file.open(QIODevice::WriteOnly))
+            {
+                qWarning("Couldn't open problem file.");
+                return;
+            }
+            
+            // root object
+            QJsonObject rootJson;
+            
+            // general
+            QJsonObject generalJson;
+            
+            generalJson[VERSION] = 1;
+            generalJson[NAME] = QString::fromStdString(material->general().name());
+            generalJson[DESCRIPTION] = material->general().description().present() ? QString::fromStdString(material->general().description().get()) : "";
+            
+            rootJson[GENERAL] = generalJson;
+            
             // properties
+            QJsonArray propertiesJson;
             for (unsigned int i = 0; i < material->properties().property().size(); i++)
             {
                 XMLMaterial::property prop = material->properties().property().at(i);
-
-                ctemplate::TemplateDictionary *propSection = materialInfo.AddSectionDictionary("PROPERTIES_SECTION");
-
-                propSection->SetValue("PROPERTY_LABEL", prop.name());
-                propSection->SetValue("PROPERTY_SOURCE", prop.source());
-
-                propSection->SetValue("PROPERTY_SHORTNAME_LABEL", tr("Variable:").toStdString());
-                propSection->SetValue("PROPERTY_SHORTNAME", prop.shortname());
-                propSection->SetValue("PROPERTY_UNIT_LABEL", tr("Unit:").toStdString());
-                propSection->SetValue("PROPERTY_UNIT", prop.unit());
-
-                propSection->SetValue("PROPERTY_INDEPENDENT_SHORTNAME_LABEL", tr("Independent variable:").toStdString());
-                propSection->SetValue("PROPERTY_INDEPENDENT_SHORTNAME", prop.independent_shortname());
-                propSection->SetValue("PROPERTY_INDEPENDENT_UNIT_LABEL", tr("Independent unit:").toStdString());
-                propSection->SetValue("PROPERTY_INDEPENDENT_UNIT", prop.independent_unit());
-
-                if (m_select)
-                    propSection->ShowSection("PROPERTY_SELECTABLE");
-
+                
+                QJsonObject propertyJson;
+                
+                propertyJson[NAME] = QString::fromStdString(prop.name());
+                propertyJson[SOURCE] = QString::fromStdString(prop.source());
+                
+                propertyJson[SHORTNAME] = QString::fromStdString(prop.shortname());
+                propertyJson[UNIT] = QString::fromStdString(prop.unit());
+                
+                propertyJson[INDEPENDENT_SHORTNAME] = QString::fromStdString(prop.independent_shortname());
+                propertyJson[INDEPENDENT_UNIT] = QString::fromStdString(prop.independent_unit());
+                
+                
+                QJsonObject valuesJson;
+                
+                // constant
                 if (prop.constant().present())
                 {
                     XMLMaterial::constant constant = prop.constant().get();
-                    propSection->SetValue("PROPERTY_CONSTANT_LABEL", tr("Constant:").toStdString());
-                    propSection->SetValue("PROPERTY_CONSTANT", QString::number(constant.value()).toStdString());
+                    valuesJson[CONSTANT] = QString::number(constant.value());
                 }
-
+                
                 if (prop.nonlinearity().present())
                 {
                     QVector<double> keys;
                     QVector<double> values;
-
+                    
                     if (prop.nonlinearity().get().table().present())
                     {
                         XMLMaterial::table table = prop.nonlinearity().get().table().get();
-
+                        
                         QStringList keysString = QString::fromStdString(table.keys()).split("\n");
                         QStringList valuesString = QString::fromStdString(table.values()).split("\n");
-
+                        
+                        QJsonObject tableJson;
                         for (int j = 0; j < keysString.size(); j++)
                         {
                             if ((!keysString.at(j).isEmpty()) && (j < valuesString.count()) && (!valuesString.at(j).isEmpty()))
@@ -842,65 +984,130 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
                                 values.append(valuesString.at(j).toDouble());
                             }
                         }
+                        
+                        tableJson[KEYS] = keysString.join(";");
+                        tableJson[VALUES] = valuesString.join(";");
+                        
+                        valuesJson[TABLE] = tableJson;
                     }
-
+                    
                     if (prop.nonlinearity().get().function().present())
                     {
                         XMLMaterial::function function = prop.nonlinearity().get().function().get();
-
-                        assert(0);
-                        /*
-                        currentPythonEngineAgros()->materialValues(QString::fromStdString(function.body()),
-                                                                   function.interval_from(),
-                                                                   function.interval_to(),
-                                                                   &keys, &values);
-                        */
-                    }
-
-                    if (keys.size() > 0)
-                    {
-                        QString keysString;
-                        QString valuesString;
-
-                        QString chart = "[";
-                        for (int i = 0; i < keys.size(); i++)
-                        {
-                            chart += QString("[%1, %2], ").arg(keys[i]).arg(values[i]);
-                            keysString += QString("%1").arg(keys[i]) + ((i < keys.size() - 1) ? "," : "");
-                            valuesString += QString("%1").arg(values[i]) + ((i < keys.size() - 1) ? "," : "");
-                        }
-                        chart += "]";
-
-                        QString id = QUuid::createUuid().toString().remove("{").remove("}");
-
-                        propSection->SetValue("PROPERTY_CHART", QString("chart_%1").arg(id).toStdString());
-                        propSection->SetValue("PROPERTY_CHART_SCRIPT", QString("<script type=\"text/javascript\">$(function () { $.plot($(\"#chart_%1\"), [ { data: %2, color: \"rgb(61, 61, 251)\", lines: { show: true }, points: { show: false } } ], { grid: { hoverable : false }, xaxes: [ { axisLabel: '%3 (%4)' } ], yaxes: [ { axisLabel: '%5 (%6)' } ] });});</script>")
-                                              .arg(id)
-                                              .arg(chart)
-                                              .arg(QString::fromStdString(prop.independent_shortname()))
-                                              .arg(QString::fromStdString(prop.independent_unit()))
-                                              .arg(QString::fromStdString(prop.shortname()))
-                                              .arg(QString::fromStdString(prop.unit())).toStdString());
-
-                        propSection->SetValue("PROPERTY_X", keysString.toStdString());
-                        propSection->SetValue("PROPERTY_Y", valuesString.toStdString());
-
-                        propSection->ShowSection("PROPERTY_NONLINEAR");
+                        
+                        QJsonObject functionJson;
+                        functionJson[FUNCTION] = QString::fromStdString(function.body()).replace("def agros2d_material(t) :\n", "");
+                        functionJson[LOWER] = function.interval_from();
+                        functionJson[UPPER] = function.interval_to();
+                        
+                        valuesJson[FUNCTION] = functionJson;
                     }
                 }
+                
+                propertyJson[VALUES] = valuesJson;
+                propertiesJson.append(propertyJson);
             }
+            rootJson[PROPERTIES] = propertiesJson;
+            
+            // save to file
+            QJsonDocument doc(rootJson);
+            file.write(doc.toJson(QJsonDocument::Indented));
         }
         catch (const xml_schema::exception& e)
         {
             std::cerr << e << std::endl;
         }
     }
-
+}
+*/
+void MaterialBrowserDialog::materialInfo(const QString &fileName)
+{
+    // template
+    std::string info;
+    ctemplate::TemplateDictionary materialInfo("info");
+    
+    if (QFile::exists(fileName))
+    {
+        LibraryMaterial material;
+        material.read(fileName);
+        
+        materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
+        materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
+        
+        materialInfo.SetValue("NAME", material.name.toStdString());
+        materialInfo.SetValue("DESCRIPTION", material.description.toStdString());
+        
+        // properties
+        for (int i = 0; i < material.properties.size(); i++)
+        {
+            LibraryMaterial::Property prop =  material.properties[i];
+            
+            ctemplate::TemplateDictionary *propSection = materialInfo.AddSectionDictionary("PROPERTIES_SECTION");
+            
+            propSection->SetValue("PROPERTY_LABEL", prop.name.toStdString());
+            propSection->SetValue("PROPERTY_SOURCE", prop.source.toStdString());
+            
+            propSection->SetValue("PROPERTY_SHORTNAME_LABEL", tr("Variable:").toStdString());
+            propSection->SetValue("PROPERTY_SHORTNAME", prop.shortname.toStdString());
+            propSection->SetValue("PROPERTY_UNIT_LABEL", tr("Unit:").toStdString());
+            propSection->SetValue("PROPERTY_UNIT", prop.unit.toStdString());
+            
+            propSection->SetValue("PROPERTY_INDEPENDENT_SHORTNAME_LABEL", tr("Independent variable:").toStdString());
+            propSection->SetValue("PROPERTY_INDEPENDENT_SHORTNAME", prop.independent_shortname.toStdString());
+            propSection->SetValue("PROPERTY_INDEPENDENT_UNIT_LABEL", tr("Independent unit:").toStdString());
+            propSection->SetValue("PROPERTY_INDEPENDENT_UNIT", prop.independent_unit.toStdString());
+            
+            if (m_select)
+                propSection->ShowSection("PROPERTY_SELECTABLE");
+            
+            // constant
+            propSection->SetValue("PROPERTY_CONSTANT_LABEL", tr("Constant:").toStdString());
+            propSection->SetValue("PROPERTY_CONSTANT", QString::number(prop.value_constant).toStdString());
+            
+            // function
+            if (!prop.value_function_function.trimmed().isEmpty())
+            {
+                // TODO
+            }
+            
+            if (prop.value_table_keys.size() > 0)
+            {
+                QString keysString;
+                QString valuesString;
+                
+                QString chart = "[";
+                for (int i = 0; i < prop.value_table_keys.size(); i++)
+                {
+                    chart += QString("[%1, %2], ").arg(prop.value_table_keys[i]).arg(prop.value_table_values[i]);
+                    keysString += QString("%1").arg(prop.value_table_keys[i]) + ((i < prop.value_table_keys.size() - 1) ? "," : "");
+                    valuesString += QString("%1").arg(prop.value_table_values[i]) + ((i < prop.value_table_values.size() - 1) ? "," : "");
+                }
+                chart += "]";
+                
+                QString id = QUuid::createUuid().toString().remove("{").remove("}");
+                
+                propSection->SetValue("PROPERTY_CHART", QString("chart_%1").arg(id).toStdString());
+                propSection->SetValue("PROPERTY_CHART_SCRIPT", QString("<script type=\"text/javascript\">$(function () { $.plot($(\"#chart_%1\"), [ { data: %2, color: \"rgb(61, 61, 251)\", lines: { show: true }, points: { show: false } } ], { grid: { hoverable : false }, xaxes: [ { axisLabel: '%3 (%4)' } ], yaxes: [ { axisLabel: '%5 (%6)' } ] });});</script>")
+                                      .arg(id)
+                                      .arg(chart)
+                                      .arg(prop.independent_shortname)
+                                      .arg(prop.independent_unit)
+                                      .arg(prop.shortname)
+                                      .arg(prop.unit).toStdString());
+                
+                propSection->SetValue("PROPERTY_X", keysString.toStdString());
+                propSection->SetValue("PROPERTY_Y", valuesString.toStdString());
+                
+                propSection->ShowSection("PROPERTY_NONLINEAR");
+            }
+        }
+    }
+    
     ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
-
+    
     // setHtml(...) doesn't work
     // webView->setHtml(QString::fromStdString(info));
-
+    
     // load(...) works
     writeStringContent(tempProblemDir() + "/material.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/material.html"));
@@ -914,7 +1121,7 @@ void MaterialBrowserDialog::linkClicked(const QUrl &url)
         m_selected_x.clear();
         m_selected_y.clear();
         m_selected_constant = 0.0;
-
+        
 #if QT_VERSION < 0x050000
         QStringList keysString = url.queryItemValue("x").split(",");
         QStringList valuesString = url.queryItemValue("y").split(",");
@@ -924,64 +1131,40 @@ void MaterialBrowserDialog::linkClicked(const QUrl &url)
         QStringList valuesString = QUrlQuery(url).queryItemValue("y").split(",");
         m_selected_constant = QUrlQuery(url).queryItemValue("constant").toDouble();
 #endif
-
+        
         for (int j = 0; j < keysString.size(); j++)
         {
             m_selected_x.append(keysString.at(j).toDouble());
             m_selected_y.append(valuesString.at(j).toDouble());
         }
-
+        
         accept();
     }
 }
 
 void MaterialBrowserDialog::doNew()
-{
-    try
+{    
+    bool ok = false;
+    QString name = QInputDialog::getText(this, tr("Add custom material"),
+                                         tr("Name:"), QLineEdit::Normal, "", &ok);
+    if (ok && !name.isEmpty())
     {
-        bool ok = false;
-        QString name = QInputDialog::getText(this, tr("Add custom material"),
-                                             tr("Name:"), QLineEdit::Normal, "", &ok);
-        if (ok && !name.isEmpty())
+        QString fileName = QString("%1/materials/%2.json").arg(userDataDir()).arg(name);
+        if (QFile::exists(fileName))
         {
-            QString fileName = QString("%1/materials/%2.mat").arg(userDataDir()).arg(name);
-            if (QFile::exists(fileName))
-            {
-                QMessageBox::warning(this, tr("Material"), tr("Material already exists."));
-                return;
-            }
-
-            // general
-            XMLMaterial::general general(name.toStdString());
-
-            // properties
-            XMLMaterial::properties properties;
-
-            // material
-            XMLMaterial::material material(general, properties);
-
-            std::string mesh_schema_location("");
-
-            // TODO: set path more general
-            mesh_schema_location.append(QString("%1/material_xml.xsd").arg(QFileInfo(datadir() + XSDROOT).absoluteFilePath()).toStdString());
-            ::xml_schema::namespace_info namespace_info_mesh("XMLMaterial", mesh_schema_location);
-
-            ::xml_schema::namespace_infomap namespace_info_map;
-            namespace_info_map.insert(std::pair<std::basic_string<char>, xml_schema::namespace_info>("material", namespace_info_mesh));
-
-            std::ofstream out(compatibleFilename(fileName).toStdString().c_str());
-            XMLMaterial::material_(out, material, namespace_info_map);
-
-            // select item and edit
-            m_selectedFilename = fileName;
-            readMaterials();
-
-            doEdit();
+            QMessageBox::warning(this, tr("Material"), tr("Material already exists."));
+            return;
         }
-    }
-    catch (const xml_schema::exception& e)
-    {
-        std::cerr << e << std::endl;
+        
+        LibraryMaterial material;
+        material.name = name;
+        material.write(fileName);
+        
+        // select item and edit
+        m_selectedFilename = fileName;
+        readMaterials();
+        
+        doEdit();
     }
 }
 
@@ -989,7 +1172,7 @@ void MaterialBrowserDialog::doEdit()
 {
     if (!btnEdit->isEnabled())
         return;
-
+    
     MaterialEditDialog dialog(m_selectedFilename, this);
     if (dialog.showDialog() == QDialog::Accepted)
     {
@@ -1010,7 +1193,7 @@ void MaterialBrowserDialog::doDelete()
         {
             QFile::remove(m_selectedFilename);
             m_selectedFilename = "";
-
+            
             readMaterials();
         }
     }
