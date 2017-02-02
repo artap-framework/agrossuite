@@ -73,7 +73,6 @@ private:
     void createActions();
 
 
-
 private slots:
     void contextMenu(const QPoint &pos);
     void showTimestamp();
@@ -87,7 +86,6 @@ public: // ToDo: Improve
     void printMessage(const QString &module, const QString &message);
     void appendImage(const QString &fileName);
     void appendHtml(const QString &html);
-
 
 };
 
@@ -159,27 +157,27 @@ private slots:
 
 class AGROS_LIBRARY_API LogGui : public Log
 {
-      LogWidget *m_logWidget;
+      QVector<LogWidget * > m_logWidgets;
       LogDialog *m_logDialog;
 
 public:
     LogGui();
-    void setWidget(LogWidget * logWidget) { m_logWidget = logWidget; }
+    void setWidget(LogWidget * logWidget);
+    void removeWidget(LogWidget * logWidget);
     void setDialog(LogDialog * logDialog) { m_logDialog = logDialog; }
-    inline void printHeading(const QString &message) { m_logWidget->printHeading(message);  }
-    inline void printMessage(const QString &module, const QString &message) { m_logWidget->printMessage(module, message); }
-    inline void printError(const QString &module, const QString &message) { m_logWidget->printError(module, message);
-                                                                            m_logDialog->printError(module, message);}
-    inline void printWarning(const QString &module, const QString &message) { m_logWidget->printWarning(module, message);}
-    inline void printDebug(const QString &module, const QString &message) {  m_logWidget->printDebug(module, message);}
+    void printHeading(const QString &message);
+    void printMessage(const QString &module, const QString &message);
+    void printError(const QString &module, const QString &message);
+    void printWarning(const QString &module, const QString &message);
+    void printDebug(const QString &module, const QString &message);
 
     inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions)
     { m_logDialog->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions); }
     inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { m_logDialog->updateAdaptivityChartInfo( fieldInfo, timeStep, adaptivityStep);}
     inline void updateTransientChartInfo(double actualTime) { m_logDialog->updateTransientChartInfo( actualTime);}
 
-    inline void appendImage(const QString &fileName) { m_logWidget->appendImage(fileName); }
-    inline void appendHtml(const QString &html) { m_logWidget->appendHtml(html); }
+    void appendImage(const QString &fileName);
+    void appendHtml(const QString &html);
 
     inline void addIcon(const QIcon &icn, const QString &label) { m_logDialog->addIcon(icn, label);}
 

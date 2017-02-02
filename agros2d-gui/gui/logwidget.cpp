@@ -35,12 +35,13 @@ LogGui::LogGui()
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
     : QWidget(logWidget), m_logWidget(logWidget)
 {
-    (static_cast <LogGui *>(Agros2D::log()))->setWidget(m_logWidget);
+
 }
 
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     m_printCounter(0)
-{
+{    
+   (static_cast <LogGui *>(Agros2D::log()))->setWidget(this);
     plainLog = new QTextEdit(this);
     plainLog->setReadOnly(true);
     // plainLog->setMaximumBlockCount(500);
@@ -62,7 +63,7 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
 #endif
     mnuInfo->addSeparator();
     mnuInfo->addAction(actClear);
-/*
+    /*
     connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
     connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
     connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
@@ -76,11 +77,12 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
 
     // create log directory
-    QDir().mkdir(QString("%1/log").arg(tempProblemDir()));    
+    QDir().mkdir(QString("%1/log").arg(tempProblemDir()));
 }
 
 LogWidget::~LogWidget()
 {
+    (static_cast <LogGui *>(Agros2D::log()))->removeWidget(this);
 }
 
 void LogWidget::clear()
@@ -206,7 +208,6 @@ void LogWidget::appendHtml(const QString &html)
     plainLog->append(QString());
     plainLog->append(html);
     plainLog->append(QString());
-
     ensureCursorVisible();
 }
 
@@ -233,7 +234,7 @@ LogView::LogView(QWidget *parent) : QWidget(parent)
 }
 
 LogView::~LogView()
-{
+{    
     delete m_logConfigWidget;
 }
 
@@ -296,6 +297,8 @@ void LogDialog::createControls()
     connect(Agros2D::log(), SIGNAL(addIconImg(QIcon, QString)), this, SLOT(addIcon(QIcon, QString))); */
 
     m_logWidget = new LogWidget(this);
+    // (static_cast <LogGui *>(Agros2D::log()))->setWidget(m_logWidget);
+
 
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -606,5 +609,65 @@ void LogDialog::tryClose()
     else
     {
         close();
+    }
+}
+
+
+void LogGui::setWidget(LogWidget *logWidget)
+{
+    m_logWidgets.push_back(logWidget);
+}
+
+void LogGui::removeWidget(LogWidget *logWidget)
+{
+    m_logWidgets.removeOne(logWidget);
+}
+
+void LogGui::printMessage(const QString &module, const QString &message)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->printMessage(module, message);
+    }
+}
+
+void LogGui::printError(const QString &module, const QString &message)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->printError(module, message);
+    }
+}
+
+void LogGui::printHeading(const QString &message)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->printHeading(message);
+    }
+}
+
+void LogGui::printWarning(const QString &module, const QString &message)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->printWarning(module, message);
+    }
+}
+
+void LogGui::printDebug(const QString &module, const QString &message)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->printDebug(module, message);
+    }
+}
+
+void LogGui::appendImage(const QString &fileName)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->appendImage(fileName);
+    }
+}
+
+void LogGui::appendHtml(const QString &html)
+{
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        logWidget->appendHtml(html);
     }
 }
