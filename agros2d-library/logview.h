@@ -20,6 +20,8 @@
 #ifndef TOOLTIPVIEW_H
 #define TOOLTIPVIEW_H
 
+#include <functional>
+
 #include "util/util.h"
 #include "solver/solver.h"
 #include "solver/solver_utils.h"
@@ -29,58 +31,56 @@
 class FieldInfo;
 class SolverAgros;
 
-class AGROS_LIBRARY_API Log: public QObject
+class AGROS_LIBRARY_API Log
 {
-    Q_OBJECT
-private:
-      std::shared_ptr<spdlog::logger>  m_console;
 
 public:
-    Log();
+    Log() {}
 
-    inline void printHeading(const QString &message) { emit headingMsg(message); }    
-    void printMessage(const QString &module, const QString &message);
-    inline void printError(const QString &module, const QString &message) { emit errorMsg(module, message); }
-    inline void printWarning(const QString &module, const QString &message) { emit warningMsg(module, message); }
-    inline void printDebug(const QString &module, const QString &message) { emit debugMsg(module, message); }
+    virtual void printHeading(const QString &message) = 0;
+    virtual void printMessage(const QString &module, const QString &message) = 0;
+    virtual void printError(const QString &module, const QString &message) = 0;
+    virtual void printWarning(const QString &module, const QString &message) = 0;
+    virtual void printDebug(const QString &module, const QString &message) = 0;
 
-    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) { emit updateNonlinearChart(phase, steps, relativeChangeOfSolutions); }
-    inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { emit updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep); }
-    inline void updateTransientChartInfo(double actualTime) { emit updateTransientChart(actualTime); }
+    virtual inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) = 0;
+    virtual inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) = 0;
+    virtual inline void updateTransientChartInfo(double actualTime) = 0;
 
-    inline void appendImage(const QString &fileName) { emit appendImg(fileName); }
-    inline void appendHtml(const QString &html) { emit appendHtm(html); }
+    virtual inline void appendImage(const QString &fileName) = 0;
+    virtual inline void appendHtml(const QString &html) = 0;
 
-    inline void addIcon(const QIcon &icn, const QString &label) { emit addIconImg(icn, label); }
-
-signals:
-    void headingMsg(const QString &message);    
-    void errorMsg(const QString &module, const QString &message);
-    void warningMsg(const QString &module, const QString &message);
-    void debugMsg(const QString &module, const QString &message);
-
-    void updateNonlinearChart(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions);
-    void updateAdaptivityChart(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
-    void updateTransientChart(double actualTime);
-
-    void appendImg(const QString &fileName);
-    void appendHtm(const QString &html);
-
-    void addIconImg(const QIcon &icn, const QString &label);
+    virtual inline void addIcon(const QIcon &icn, const QString &label) = 0;
 };
 
-class AGROS_LIBRARY_API LogStdOut : public QObject
+class AGROS_LIBRARY_API LogStdOut : public Log
 {
-    Q_OBJECT
+
 public:
+
     LogStdOut();
 
-private slots:
-    void printHeading(const QString &message);
-    void printMessage(const QString &module, const QString &message);
-    void printError(const QString &module, const QString &message);
-    void printWarning(const QString &module, const QString &message);
-    void printDebug(const QString &module, const QString &message);
+    virtual void printHeading(const QString &message);
+    virtual void printMessage(const QString &module, const QString &message);
+    virtual void printError(const QString &module, const QString &message);
+    virtual void printWarning(const QString &module, const QString &message);
+    virtual void printDebug(const QString &module, const QString &message);
+
+    virtual inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {}
+    virtual inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {}
+    virtual inline void updateTransientChartInfo(double actualTime) {}
+
+    virtual inline void appendImage(const QString &fileName) {}
+    virtual inline void appendHtml(const QString &html) {}
+
+    virtual inline void addIcon(const QIcon &icn, const QString &label) {}
+
+private:
+      std::shared_ptr<spdlog::logger>  m_console;
+      void (*m_handler) (const QString &module, const QString &message);
 };
+
+
+
 
 #endif // TOOLTIPVIEW_H

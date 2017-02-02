@@ -360,7 +360,7 @@ void StudyLimbo::solve()
             || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
             || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")))
     {
-        Agros2D::log()->errorMsg(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
+        Agros2D::log()->printError(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
         emit solved();
         return;
     }

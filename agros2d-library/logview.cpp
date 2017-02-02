@@ -34,32 +34,23 @@
 // *******************************************************************************************************
 
 
-Log::Log()
+/* void Log::printMessage(const QString &module, const QString &message)
 {
-    m_console = spdlog::stdout_color_mt("console");
+    m_console->info((QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString());
+    m_handler(module, message);
+} */
+
+
+
+LogStdOut::LogStdOut()
+{
+    /* m_console = spdlog::stdout_color_mt("console");
     qRegisterMetaType<QVector<double> >("QVector<double>");
     qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
     size_t q_size = 4096; //queue size must be power of 2
     spdlog::set_async_mode(q_size);
     auto async_file = spdlog::daily_logger_st("async_file_logger", "async_log.txt");
-    async_file->info("Pokus");
-}
-
-void Log::printMessage(const QString &module, const QString &message)
-{
-    m_console->info((QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString());
-}
-
-// *******************************************************************************************
-
-LogStdOut::LogStdOut() : QObject()
-{
-
-    connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
-    // connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
+    async_file->info("Pokus"); */
 }
 
 void LogStdOut::printHeading(const QString &message)
@@ -86,5 +77,3 @@ void LogStdOut::printDebug(const QString &module, const QString &message)
 {
     std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
-
-

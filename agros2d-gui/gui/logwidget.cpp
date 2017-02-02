@@ -24,9 +24,18 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+LogGui::LogGui()
+{
+    // qRegisterMetaType<QVector<double> >("QVector<double>");
+    // qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
+}
+
+
+
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
     : QWidget(logWidget), m_logWidget(logWidget)
 {
+    (static_cast <LogGui *>(Agros2D::log()))->setWidget(m_logWidget);
 }
 
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
@@ -53,21 +62,21 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
 #endif
     mnuInfo->addSeparator();
     mnuInfo->addAction(actClear);
-
+/*
     connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
-    // connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
+    connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
     connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
     connect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
     connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
 
     connect(Agros2D::log(), SIGNAL(appendImg(QString)), this, SLOT(appendImage(QString)));
-    connect(Agros2D::log(), SIGNAL(appendHtm(QString)), this, SLOT(appendHtml(QString)));
+     connect(Agros2D::log(), SIGNAL(appendHtm(QString)), this, SLOT(appendHtml(QString))); */
 
     plainLog->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
 
     // create log directory
-    QDir().mkdir(QString("%1/log").arg(tempProblemDir()));
+    QDir().mkdir(QString("%1/log").arg(tempProblemDir()));    
 }
 
 LogWidget::~LogWidget()
@@ -278,12 +287,13 @@ LogDialog::~LogDialog()
 
 void LogDialog::createControls()
 {
+    /*
     connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
     connect(Agros2D::log(), SIGNAL(updateNonlinearChart(SolverAgros::Phase, const QVector<double>, const QVector<double>)),
-            this, SLOT(updateNonlinearChartInfo(SolverAgros::Phase, const QVector<double>, const QVector<double>)));
+           this, SLOT(updateNonlinearChartInfo(SolverAgros::Phase, const QVector<double>, const QVector<double>)));
     connect(Agros2D::log(), SIGNAL(updateAdaptivityChart(const FieldInfo *, int, int)), this, SLOT(updateAdaptivityChartInfo(const FieldInfo *, int, int)));
     connect(Agros2D::log(), SIGNAL(updateTransientChart(double)), this, SLOT(updateTransientChartInfo(double)));
-    connect(Agros2D::log(), SIGNAL(addIconImg(QIcon, QString)), this, SLOT(addIcon(QIcon, QString)));
+    connect(Agros2D::log(), SIGNAL(addIconImg(QIcon, QString)), this, SLOT(addIcon(QIcon, QString))); */
 
     m_logWidget = new LogWidget(this);
 

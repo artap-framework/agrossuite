@@ -20,6 +20,7 @@
 #include <QApplication>
 
 #include "util/util.h"
+#include "gui/logwidget.h"
 #include "util/conf.h"
 #include "util/global.h"
 #include "util/system_utils.h"
@@ -68,8 +69,9 @@ public:
         // force number format
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
+        LogGui * log = new LogGui;
         // init singleton
-        Agros2D::createSingleton();
+        Agros2D::createSingleton(log);
     }
 
     virtual ~AgrosApplication() {}

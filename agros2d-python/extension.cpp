@@ -42,7 +42,7 @@ public:
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
         // init singleton
-        Agros2D::createSingleton();
+        Agros2D::createSingleton(NULL);
 
         // enable log
         logStd = new LogStdOut();

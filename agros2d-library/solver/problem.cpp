@@ -904,7 +904,7 @@ bool ProblemBase::mesh()
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal(this));
             break;
         default:
-            Agros2D::log()->errorMsg(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+            Agros2D::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
             assert(0);
             break;
         }

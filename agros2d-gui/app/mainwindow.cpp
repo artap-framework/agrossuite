@@ -876,6 +876,8 @@ void MainWindow::doSolve()
     LogDialog *logDialog = new LogDialog(computation.data(), tr("Solver"));
     logDialog->show();
 
+    (static_cast <LogGui *>(Agros2D::log()))->setDialog(logDialog);
+
     computation->solveWithThread();
 }
 

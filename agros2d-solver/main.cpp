@@ -78,12 +78,15 @@ int main(int argc, char *argv[])
                     // force number format
                     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
-                    // init singleton
-                    Agros2D::createSingleton();
-
+                    LogStdOut *log = NULL;
                     // enable log
                     if (logArg.getValue())
-                        LogStdOut *log = new LogStdOut();
+                        log = new LogStdOut();
+
+
+                    // init singleton
+                    Agros2D::createSingleton(log);
+
 
                     QTime time;
                     time.start();

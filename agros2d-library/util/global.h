@@ -37,9 +37,9 @@ class AGROS_LIBRARY_API Agros2D : public QObject
 public:
     Agros2D(const Agros2D &);
     Agros2D & operator = (const Agros2D &);
-    Agros2D();
+    Agros2D(Log *log);
 
-    static void createSingleton();
+    static void createSingleton(Log * log);
     static Agros2D* singleton();
 
     static inline Config *configComputer() { return Agros2D::singleton()->m_configComputer; }
