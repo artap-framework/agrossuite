@@ -1,0 +1,60 @@
+{
+    "general": {
+        "description": "alloy with 99.0 Cu minimum (wt%)",
+        "name": "Copper UNS C11000",
+        "version": 1
+    },
+    "properties": [
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Thermal conductivity",
+            "shortname": "<i>&lambda;</i>",
+            "source": "ASM Handbook, vol 2, 10th edition, ASM International (1992)",
+            "type": "function",
+            "unit": "W/m.K",
+            "values": {
+                "constant": 387.17000000000002,
+                "function": {
+                    "function": "(t >= 194.0 and t <= 973.0)*(-4.525271e-07*t*t*t +6.661624e-04*t*t -3.752528e-01*t +4.513077e+02)\n",
+                    "lower": 194,
+                    "upper": 973
+                }
+            }
+        },
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Specific heat",
+            "shortname": "<i>c</i><sub>p</sub>",
+            "source": "G.K. White and S.J. Collocott, J. Phys. Chem. Ref. Data, vol 13, no 4, p1251 (1984)",
+            "type": "function",
+            "unit": "J/kg.K",
+            "values": {
+                "constant": 382.61000000000001,
+                "function": {
+                    "function": "(t >= 293.0 and t <= 1300.0)*(1.140747e-10*t*t*t*t -1.971221e-07*t*t*t +5.535252e-05*t*t +1.338348e-01*t +3.427640e+02)\n",
+                    "lower": 293,
+                    "upper": 1300
+                }
+            }
+        },
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Density",
+            "shortname": "<i>&rho;</i>",
+            "source": "ASM Handbook, vol 2, 10th edition, ASM International (1992); calculated from the linear expansion",
+            "type": "function",
+            "unit": "kg/m<sup>3</sup>",
+            "values": {
+                "constant": 8889.5,
+                "function": {
+                    "function": "(t >= 83.0 and t <= 1373.0)*(-1.475948e-04*t*t -3.630825e-01*t +9.008531e+03)\n",
+                    "lower": 83,
+                    "upper": 1373
+                }
+            }
+        }
+    ]
+}

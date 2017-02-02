@@ -70,8 +70,6 @@ endforeach()
 
 SET(SOURCES
     # sceneview_vtk2d.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
     datatable.cpp
@@ -143,8 +141,6 @@ SOURCE_GROUP(
 
 SOURCE_GROUP(
   "Source Files\\Generated Classes" FILES 
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp  
 )

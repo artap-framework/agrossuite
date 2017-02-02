@@ -25,10 +25,68 @@
 
 #include <QWebView>
 
-#include "../resources_source/classes/material_xml.h"
-
 class LineEditDouble;
 class QCustomPlot;
+
+struct LibraryMaterial
+{
+    enum NonlinearityType
+    {
+        Function = 1,
+        Table = 2
+    };
+
+    static inline QString nonlinearityTypeToStringKey(NonlinearityType type)
+    {
+        if (type == LibraryMaterial::Table)
+            return "table";
+        else
+            return "function";
+    }
+
+    static inline NonlinearityType nonlinearityTypeFromStringKey(const QString &type)
+    {
+        if (type == "function")
+            return LibraryMaterial::Function;
+        else
+            return LibraryMaterial::Table;
+    }
+
+    struct Property
+    {
+        Property() : name(""), source(""), type(LibraryMaterial::Table), shortname(""), unit(""),
+            independent_shortname(""), independent_unit(""), value_constant(0.0),
+            value_table_keys(QVector<double>()), value_table_values(QVector<double>()),
+            value_function_function(""), value_function_lower(0.0), value_function_upper(0.0) {}
+
+        QString name;
+        QString source;
+        NonlinearityType type;
+
+        QString shortname;
+        QString unit;
+
+        QString independent_shortname;
+        QString independent_unit;
+
+        double value_constant;
+
+        QVector<double> value_table_keys;
+        QVector<double> value_table_values;
+
+        QString value_function_function;
+        double value_function_lower;
+        double value_function_upper;
+    };
+
+    QString name;
+    QString description;
+
+    QList<Property> properties;
+
+    void read(const QString &fileName);
+    void write(const QString &fileName);
+};
 
 class MaterialEditDialog : public QDialog
 {
@@ -45,29 +103,6 @@ protected:
     void readMaterial();
     bool writeMaterial();
 
-    enum NonlinearityType
-    {
-        Function = 1,
-        Table = 2
-    };
-
-    inline QString nonlinearityTypeToStringKey(NonlinearityType type)
-    {
-        if (type == MaterialEditDialog::Table)
-            return "table";
-        else
-            return "function";
-    }
-
-    inline NonlinearityType nonlinearityTypeFromStringKey(const QString &type)
-    {
-        if (type == "table")
-            return MaterialEditDialog::Table;
-        else
-            return MaterialEditDialog::Function;
-    }
-
-
 private:
     QString m_fileName;
 
@@ -75,7 +110,7 @@ private:
     QLineEdit *txtDescription;
 
     QListWidget *lstProperties;
-    QList<XMLMaterial::property> m_properties;
+    LibraryMaterial m_material;
 
     // properties
     QWidget *propertyGUI;
@@ -94,9 +129,9 @@ private:
     QPlainTextEdit *txtPropertyTableKeys;
     QPlainTextEdit *txtPropertyTableValues;
 
-    // ScriptEditor *txtPropertyFunction;
-    LineEditDouble *txtPropertyFunctionFrom;
-    LineEditDouble *txtPropertyFunctionTo;
+    QPlainTextEdit *txtPropertyFunction;
+    LineEditDouble *txtPropertyFunctionLower;
+    LineEditDouble *txtPropertyFunctionUpper;
 
     QGroupBox *widNonlinearTable;
     QGroupBox *widNonlinearFunction;
@@ -108,18 +143,18 @@ private:
 
     QWidget *createPropertyGUI();
 
-    void readProperty(XMLMaterial::property prop = XMLMaterial::property("", "", "", "", "none", "", ""));
-    XMLMaterial::property writeProperty();
+    void readProperty(LibraryMaterial::Property prop);
+    LibraryMaterial::Property writeProperty();
 
 private slots:
     void doAccept();
-    void addProperty(const QString &name = "", const QString &shortname = "", const QString &unit = "", const QString &nonlinearityKind = "",
+    void addProperty(const QString &name = "", const QString &shortname = "", const QString &unit = "", LibraryMaterial::NonlinearityType nonlinearityType = LibraryMaterial::Table,
                      const QString &indepedentShortname = "", const QString &indepedentUnit = "");
     // TODO: more general
-    inline void addPropertyThermalConductivity() { addProperty("Thermal conductivity", "<i>&lambda;</i>", "W/m.K", "function", "<i>T</i>", "K"); }
-    inline void addPropertySpecificHeat() { addProperty("Specific heat", "<i>c</i><sub>p</sub>", "J/kg.K", "function", "<i>T</i>", "K"); }
-    inline void addPropertyDensity() { addProperty("Density", "<i>&rho;</i>", "kg/m<sup>3</sup>", "function", "<i>T</i>", "K"); }
-    inline void addPropertyMagneticPermeability() { addProperty("Magnetic permeability", "<i>&mu;</i><sub>r</sub>", "-", "function", "<i>B</i>", "T"); }
+    inline void addPropertyThermalConductivity() { addProperty("Thermal conductivity", "<i>&lambda;</i>", "W/m.K", LibraryMaterial::Table, "<i>T</i>", "K"); }
+    inline void addPropertySpecificHeat() { addProperty("Specific heat", "<i>c</i><sub>p</sub>", "J/kg.K", LibraryMaterial::Table, "<i>T</i>", "K"); }
+    inline void addPropertyDensity() { addProperty("Density", "<i>&rho;</i>", "kg/m<sup>3</sup>", LibraryMaterial::Table, "<i>T</i>", "K"); }
+    inline void addPropertyMagneticPermeability() { addProperty("Magnetic permeability", "<i>&mu;</i><sub>r</sub>", "-", LibraryMaterial::Table, "<i>B</i>", "T"); }
 
     void deleteProperty();
 
@@ -146,7 +181,7 @@ public:
 protected:
     void readMaterials();
     void readMaterials(QDir dir, QTreeWidgetItem *parentItem);
-    void materialInfo(const QString &fileName);
+    void materialInfo(const QString &fileName);    
 
 private:
     QWebView *webView;

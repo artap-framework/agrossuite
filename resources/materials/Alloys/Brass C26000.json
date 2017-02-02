@@ -1,0 +1,43 @@
+{
+    "general": {
+        "description": "70 Cu, 30 Zn (wt%)",
+        "name": "Brass C26000",
+        "version": 1
+    },
+    "properties": [
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Thermal conductivity",
+            "shortname": "<i>&lambda;</i>",
+            "source": "C.Y. Ho, M.W. Ackerman, K.Y. Wu, S.G. Oh and T.N. Havill, J. Phys, Chem. Ref. Data, v7(3), p959 (1978)",
+            "type": "function",
+            "unit": "W/m.K",
+            "values": {
+                "constant": 120.7,
+                "function": {
+                    "function": "(t >= 4.0 and t < 25.0)*(1.563265e-04*t*t*t*t -1.078035e-02*t*t*t +2.349984e-01*t*t -2.222831e-01*t +1.663355e+00) +\n(t >= 25.0 and t < 80.0)*(-8.112726e-07*t*t*t*t +2.688640e-04*t*t*t -3.393482e-02*t*t +2.240856e+00*t -3.097651e+00) +\n(t >= 80.0 and t < 273.0)*(8.160246e-09*t*t*t*t -6.551882e-06*t*t*t +1.465282e-03*t*t +2.004722e-01*t +4.101933e+01) +\n(t >= 273.0 and t <= 700.0)*(-1.126189e-09*t*t*t*t +2.253105e-06*t*t*t -1.769220e-03*t*t +7.525353e-01*t +3.718885e+00)",
+                    "lower": 4,
+                    "upper": 700
+                }
+            }
+        },
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Density",
+            "shortname": "<i>&rho;</i>",
+            "source": "Low-Temperature Properties of Copper and Copper Alloys, #104/5 from Copper Development Assoc., Greenwich, CT",
+            "type": "function",
+            "unit": "kg/m<sup>3</sup>",
+            "values": {
+                "constant": 8530,
+                "function": {
+                    "function": "(t >= 20.0 and t <= 293.0)*(-8.958979e-09*t*t*t*t +8.393364e-06*t*t*t -3.070050e-03*t*t +7.216494e-02*t +8.627319e+03)",
+                    "lower": 20,
+                    "upper": 293
+                }
+            }
+        }
+    ]
+}

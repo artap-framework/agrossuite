@@ -1,0 +1,25 @@
+{
+    "general": {
+        "description": "",
+        "name": "CSN 11373",
+        "version": 1
+    },
+    "properties": [
+        {
+            "independent_shortname": "<i>B</i>",
+            "independent_unit": "T",
+            "name": "Magnetic permeability",
+            "shortname": "<i>&mu;</i><sub>r</sub>",
+            "source": "SN 006004",
+            "type": "table",
+            "unit": "-",
+            "values": {
+                "constant": 0,
+                "table": {
+                    "keys": "0;1.45;1.62;1.75;1.835;1.95",
+                    "values": "461.55;461.55;257.83;139.26;97.35;77.59"
+                }
+            }
+        }
+    ]
+}

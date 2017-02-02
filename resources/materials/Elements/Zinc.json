@@ -1,0 +1,60 @@
+{
+    "general": {
+        "description": "",
+        "name": "Zinc",
+        "version": 1
+    },
+    "properties": [
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Thermal conductivity",
+            "shortname": "<i>&lambda;</i>",
+            "source": "C.Y. Ho, R.W. Powell and P.E. Liley, J. Phys. Chem. Ref. Data, v1, p279 (1972)",
+            "type": "function",
+            "unit": "W/m.K",
+            "values": {
+                "constant": 115,
+                "function": {
+                    "function": "(t >= 0.0 and t < 9.0)*(2.706808e-01*t*t*t*t*t -2.655161e+00*t*t*t*t -2.718274e+01*t*t*t +1.389875e+02*t*t +1.750994e+03*t) +\n(t >= 9.0 and t < 30.0)*(-4.348847e-03*t*t*t*t*t +5.035428e-01*t*t*t*t -2.348013e+01*t*t*t +5.571501e+02*t*t -6.855608e+03*t +3.644601e+04) +\n(t >= 30.0 and t < 100.0)*(-1.029048e-06*t*t*t*t*t +3.785208e-04*t*t*t*t -5.554990e-02*t*t*t +4.111120e+00*t*t -1.566486e+02*t +2.658764e+03) +\n(t >= 100.0 and t <= 693.0)*(-5.778175e-05*t*t +1.274300e-02*t +1.168392e+02)\n\n",
+                    "lower": 0,
+                    "upper": 693
+                }
+            }
+        },
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Specific heat",
+            "shortname": "<i>c</i><sub>p</sub>",
+            "source": "B.J. McBride, S. Gordon and M.A. Reno, NASA Technical Paper 3287 (1993)",
+            "type": "function",
+            "unit": "J/kg.K",
+            "values": {
+                "constant": 388,
+                "function": {
+                    "function": "(t >= 100.0 and t < 320.0)*(-1.258998e-08*t*t*t*t +1.945167e-05*t*t*t -1.099511e-02*t*t +2.827810e+00*t +1.066220e+02) +\n(t >= 320.0 and t <= 693.0)*(7.366442e-07*t*t*t -7.026091e-04*t*t +3.410779e-01*t +3.297327e+02)",
+                    "lower": 100,
+                    "upper": 693
+                }
+            }
+        },
+        {
+            "independent_shortname": "<i>T</i>",
+            "independent_unit": "K",
+            "name": "Density",
+            "shortname": "<i>&rho;</i>",
+            "source": "R.W. Meyerhoff and J.F. Smith, J. Applied Physics, v33, p219 (1962) and E.A. Owen and E.L. Yates, Phil. Mag. S7, v17, p113 (1934)",
+            "type": "function",
+            "unit": "kg/m<sup>3</sup>",
+            "values": {
+                "constant": 7138,
+                "function": {
+                    "function": "(t >= 0.0 and t < 300.0)*(-1.986628e-08*t*t*t*t +1.518314e-05*t*t*t -4.442600e-03*t*t +1.347873e-02*t +7.280967e+03) +\n(t >= 300.0 and t <= 890.0)*(-1.783429e-04*t*t -5.059331e-01*t +7.302000e+03)\n\n",
+                    "lower": 0,
+                    "upper": 890
+                }
+            }
+        }
+    ]
+}
