@@ -11,6 +11,7 @@
             "name": "Magnetic permeability",
             "shortname": "<i>&mu;</i><sub>r</sub>",
             "source": "SN 006004",
+            "type": "table",
             "unit": "-",
             "values": {
                 "constant": 0,

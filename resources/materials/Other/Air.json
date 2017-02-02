@@ -11,12 +11,13 @@
             "name": "Density",
             "shortname": "<i>&rho;</i>",
             "source": "",
+            "type": "table",
             "unit": "kg/m<sup>3</sup>",
             "values": {
-                "constant": "1.25",
+                "constant": 1.25,
                 "table": {
-                    "keys": "",
-                    "values": ""
+                    "keys": "0",
+                    "values": "0"
                 }
             }
         },
@@ -26,9 +27,10 @@
             "name": "Speed of sound",
             "shortname": "<i>c</i>",
             "source": "",
+            "type": "table",
             "unit": "m/s",
             "values": {
-                "constant": "343",
+                "constant": 343,
                 "table": {
                     "keys": "",
                     "values": ""
@@ -41,9 +43,10 @@
             "name": "Relative permittivity",
             "shortname": "<i>&epsilon;</i><sub>r</sub>",
             "source": "",
+            "type": "table",
             "unit": "-",
             "values": {
-                "constant": "1",
+                "constant": 1,
                 "table": {
                     "keys": "",
                     "values": ""
@@ -56,9 +59,10 @@
             "name": "Relative permeability",
             "shortname": "<i>&mu;</i><sub>r</sub>",
             "source": "",
+            "type": "table",
             "unit": "-",
             "values": {
-                "constant": "1",
+                "constant": 1,
                 "table": {
                     "keys": "",
                     "values": ""

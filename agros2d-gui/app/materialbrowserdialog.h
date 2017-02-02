@@ -46,17 +46,17 @@ struct LibraryMaterial
 
     static inline NonlinearityType nonlinearityTypeFromStringKey(const QString &type)
     {
-        if (type == "table")
-            return LibraryMaterial::Table;
-        else
+        if (type == "function")
             return LibraryMaterial::Function;
+        else
+            return LibraryMaterial::Table;
     }
 
     struct Property
     {
         Property() : name(""), source(""), type(LibraryMaterial::Table), shortname(""), unit(""),
             independent_shortname(""), independent_unit(""), value_constant(0.0),
-            value_table_keys(QList<double>()), value_table_values(QList<double>()),
+            value_table_keys(QVector<double>()), value_table_values(QVector<double>()),
             value_function_function(""), value_function_lower(0.0), value_function_upper(0.0) {}
 
         QString name;
@@ -71,8 +71,8 @@ struct LibraryMaterial
 
         double value_constant;
 
-        QList<double> value_table_keys;
-        QList<double> value_table_values;
+        QVector<double> value_table_keys;
+        QVector<double> value_table_values;
 
         QString value_function_function;
         double value_function_lower;
@@ -181,9 +181,7 @@ public:
 protected:
     void readMaterials();
     void readMaterials(QDir dir, QTreeWidgetItem *parentItem);
-    void materialInfo(const QString &fileName);
-
-    void convertJson(const QString &fileName);
+    void materialInfo(const QString &fileName);    
 
 private:
     QWebView *webView;
