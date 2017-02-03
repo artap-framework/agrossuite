@@ -40,8 +40,7 @@ LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
 
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     m_printCounter(0)
-{    
-   (static_cast <LogGui *>(Agros2D::log()))->setWidget(this);
+{       
     plainLog = new QTextEdit(this);
     plainLog->setReadOnly(true);
     // plainLog->setMaximumBlockCount(500);
@@ -77,12 +76,13 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
 
     // create log directory
+    (static_cast <LogGui *>(Agros2D::log()))->addLogWidget(this);
     QDir().mkdir(QString("%1/log").arg(tempProblemDir()));
 }
 
 LogWidget::~LogWidget()
 {
-    (static_cast <LogGui *>(Agros2D::log()))->removeWidget(this);
+    (static_cast <LogGui *>(Agros2D::log()))->removeLogWidget(this);
 }
 
 void LogWidget::clear()
@@ -613,14 +613,20 @@ void LogDialog::tryClose()
 }
 
 
-void LogGui::setWidget(LogWidget *logWidget)
+void LogGui::addLogWidget(LogWidget *logWidget)
 {
-    m_logWidgets.push_back(logWidget);
+    m_logWidgets.append(logWidget);
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        qCritical() << "+ ";
+    }
 }
 
-void LogGui::removeWidget(LogWidget *logWidget)
+void LogGui::removeLogWidget(LogWidget *logWidget)
 {
     m_logWidgets.removeOne(logWidget);
+    foreach (LogWidget* logWidget, m_logWidgets) {
+        qCritical() << "- ";
+    }
 }
 
 void LogGui::printMessage(const QString &module, const QString &message)

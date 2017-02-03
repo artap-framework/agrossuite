@@ -162,8 +162,8 @@ class AGROS_LIBRARY_API LogGui : public Log
 
 public:
     LogGui();
-    void setWidget(LogWidget * logWidget);
-    void removeWidget(LogWidget * logWidget);
+    void addLogWidget(LogWidget * logWidget);
+    void removeLogWidget(LogWidget * logWidget);
     void setDialog(LogDialog * logDialog) { m_logDialog = logDialog; }
     void printHeading(const QString &message);
     void printMessage(const QString &module, const QString &message);
