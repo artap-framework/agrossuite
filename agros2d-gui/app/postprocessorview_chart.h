@@ -25,7 +25,7 @@
 #include "solver/plugin_interface.h"
 
 class SceneViewChart;
-class SceneViewSimpleGeometryChart;
+class SceneViewChartSimpleGeometry;
 class LocalValue;
 
 // definition of chart line
@@ -60,7 +60,7 @@ private:
     SceneViewChart *sceneChart;
 
     // variable widget
-    SceneViewSimpleGeometryChart *geometryViewer;
+    SceneViewChartSimpleGeometry *geometryViewer;
 
     QTabWidget* tbxAnalysisType;
 

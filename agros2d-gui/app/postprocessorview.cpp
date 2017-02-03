@@ -173,7 +173,7 @@ void PostprocessorWidget::refresh()
     actSceneModeResults->setEnabled(enabled);
 
     // reset computations
-    if (Agros2D::computations().isEmpty())
+    if (!enabled)
         m_currentComputation.clear();
 
     // update field widget

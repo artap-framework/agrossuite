@@ -69,6 +69,8 @@ private:
 
     QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
     QStringList headers();
+
+    friend class PostprocessorSceneChartWidget;
 };
 
 #endif // CHARTDIALOG_H

@@ -90,7 +90,7 @@ void PostprocessorSceneChartWidget::createControls()
     layoutVariable->addWidget(cmbFieldVariableComp, 1, 1);
 
     // viewer
-    geometryViewer = new SceneViewSimpleGeometryChart(this);
+    geometryViewer = new SceneViewChartSimpleGeometry(sceneChart->m_postprocessorWidget); // friend class
     geometryViewer->setMinimumHeight(100);
     
     btnSaveImage = new QPushButton();
@@ -294,10 +294,6 @@ void PostprocessorSceneChartWidget::refresh()
 {
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget && m_fieldWidget->selectedField()))
         return;
-
-    // set computation
-    if (!m_fieldWidget->selectedComputation().isNull())
-        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(m_fieldWidget->selectedComputation()));
 
     fillComboBoxScalarVariable(m_fieldWidget->selectedComputation()->config()->coordinateType(), m_fieldWidget->selectedField(), cmbFieldVariable);
     doFieldVariable(cmbFieldVariable->currentIndex());
