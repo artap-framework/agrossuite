@@ -78,15 +78,10 @@ int main(int argc, char *argv[])
                     // force number format
                     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
-                    LogStdOut *log = NULL;
-                    // enable log
-                    if (logArg.getValue())
-                        log = new LogStdOut();
+                    QSharedPointer<Log> log;
 
-
-                    // init singleton
-                    Agros2D::createSingleton(log);
-
+                    // init singleton + enable log
+                    Agros2D::createSingleton(logArg.getValue() ? QSharedPointer<Log>(new LogStdOut()) : QSharedPointer<Log>());
 
                     QTime time;
                     time.start();
@@ -127,6 +122,7 @@ int main(int argc, char *argv[])
                     catch (AgrosException &e)
                     {
                         Agros2D::log()->printError(QObject::tr("Problem"), e.toString());
+
                         return -1;
                     }
 

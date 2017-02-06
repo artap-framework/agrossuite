@@ -26,7 +26,7 @@
 #include "solver/solver.h"
 #include "solver/solver_utils.h"
 
-#include "../3rdparty/spdlog/spdlog.h"
+// #include "../3rdparty/spdlog/spdlog.h"
 
 class FieldInfo;
 class SolverAgros;
@@ -36,6 +36,7 @@ class AGROS_LIBRARY_API Log
 
 public:
     Log() {}
+    virtual ~Log() {}
 
     virtual void printHeading(const QString &message) = 0;
     virtual void printMessage(const QString &module, const QString &message) = 0;
@@ -57,7 +58,6 @@ class AGROS_LIBRARY_API LogStdOut : public Log
 {
 
 public:
-
     LogStdOut();
 
     virtual void printHeading(const QString &message);
@@ -76,11 +76,8 @@ public:
     virtual inline void addIcon(const QIcon &icn, const QString &label) {}
 
 private:
-      std::shared_ptr<spdlog::logger>  m_console;
+      // std::shared_ptr<spdlog::logger>  m_console;
       void (*m_handler) (const QString &module, const QString &message);
 };
-
-
-
 
 #endif // TOOLTIPVIEW_H

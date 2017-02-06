@@ -167,6 +167,7 @@ private slots:
 class AGROS_LIBRARY_API ConnectLog : public QObject
 {
     Q_OBJECT
+
 public:
     ConnectLog() {}
 
@@ -189,10 +190,9 @@ signals:
 
 class AGROS_LIBRARY_API LogGui : public Log
 {
-    ConnectLog *m_connectLog;
-
 public:
     LogGui();
+
     void setConnectLog(ConnectLog *connectLog) { m_connectLog = connectLog; }
     void printHeading(const QString &message) {emit m_connectLog->headingMsg(message);}
     void printMessage(const QString &module, const QString &message){emit m_connectLog->messageMsg(module, message);}
@@ -208,6 +208,9 @@ public:
     void appendHtml(const QString &html) {emit m_connectLog->appendHtm(html);}
 
     inline void addIcon(const QIcon &icn, const QString &label) {emit m_connectLog->addIcon(icn, label);}
+
+protected:
+    ConnectLog *m_connectLog;
 };
 
 #endif // GUI_LOGWIDGET_H

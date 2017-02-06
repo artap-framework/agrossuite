@@ -29,7 +29,7 @@
 #include "solver/solver.h"
 #include "solver/solutionstore.h"
 
-#include "../3rdparty/spdlog/spdlog.h"
+// #include "../3rdparty/spdlog/spdlog.h"
 
 
 /* void Log::printMessage(const QString &module, const QString &message)

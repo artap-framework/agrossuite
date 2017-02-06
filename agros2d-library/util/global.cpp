@@ -67,7 +67,7 @@ void clearAgros2DCache()
 
 static QSharedPointer<Agros2D> m_singleton;
 
-Agros2D::Agros2D(Log * log)
+Agros2D::Agros2D(QSharedPointer<Log> log) : m_log(log)
 {
     clearAgros2DCache();
 
@@ -77,9 +77,6 @@ Agros2D::Agros2D(Log * log)
     initLists();
 
     m_configComputer = new Config();
-
-    // log
-    m_log = log;
 }
 
 void Agros2D::clear()
@@ -88,7 +85,6 @@ void Agros2D::clear()
     m_singleton.data()->m_computations.clear();
 
     delete m_singleton.data()->m_configComputer;
-    delete m_singleton.data()->m_log;
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
@@ -115,7 +111,7 @@ void Agros2D::clearComputations()
     Agros2D::singleton()->m_computations.clear();
 }
 
-void Agros2D::createSingleton(Log *log)
+void Agros2D::createSingleton(QSharedPointer<Log> log)
 {
     m_singleton = QSharedPointer<Agros2D>(new Agros2D(log));
 }

@@ -42,14 +42,11 @@ public:
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
         // init singleton
-        Agros2D::createSingleton(NULL);
-
-        // enable log
-        logStd = new LogStdOut();
+        Agros2D::createSingleton(QSharedPointer<Log>(new LogStdOut()));
     }
+
     ~LibInstance()
     {
-        delete logStd;
         delete app;
         // qDebug() << __FILE__ << "has been unloaded";
     }

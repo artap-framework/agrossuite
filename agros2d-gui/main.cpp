@@ -69,9 +69,8 @@ public:
         // force number format
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
-        LogGui * log = new LogGui;
         // init singleton
-        Agros2D::createSingleton(log);
+        Agros2D::createSingleton(QSharedPointer<Log>(new LogGui));
     }
 
     virtual ~AgrosApplication() {}
@@ -113,6 +112,8 @@ public:
 
         return false;
     }
+
+    LogGui *log;
 };
 
 int main(int argc, char *argv[])

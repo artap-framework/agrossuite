@@ -37,9 +37,9 @@ class AGROS_LIBRARY_API Agros2D : public QObject
 public:
     Agros2D(const Agros2D &);
     Agros2D & operator = (const Agros2D &);
-    Agros2D(Log *log);
+    Agros2D(QSharedPointer<Log> log);
 
-    static void createSingleton(Log * log);
+    static void createSingleton(QSharedPointer<Log> log);
     static Agros2D* singleton();
 
     static inline Config *configComputer() { return Agros2D::singleton()->m_configComputer; }
@@ -50,7 +50,7 @@ public:
     static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
     static void clearComputations();
 
-    static inline Log *log() { return Agros2D::singleton()->m_log; }
+    static inline Log *log() { return Agros2D::singleton()->m_log.data(); }
 
     static PluginInterface *loadPlugin(const QString &pluginName);
 
@@ -63,8 +63,8 @@ private:
     Problem *m_problem;
     // computations
     QMap<QString, QSharedPointer<Computation> > m_computations;
-    // log and memory monitor
-    Log *m_log;
+    // log
+    QSharedPointer<Log> m_log;
 };
 
 // create script from model

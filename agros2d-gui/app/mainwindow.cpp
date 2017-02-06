@@ -94,6 +94,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // view info
     m_connectLog = new ConnectLog();
     logView = new LogView(this, m_connectLog);
+    (static_cast<LogGui * > (Agros2D::log()))->setConnectLog(m_connectLog);
 
     // OptiLab
     optiLab = new OptiLab(this);
@@ -874,11 +875,6 @@ void MainWindow::doSolve()
 
     LogDialog *logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
     logDialog->show();
-
-    (static_cast<LogGui * > (Agros2D::log()))->setConnectLog(m_connectLog);
-
-
-
 
     computation->solveWithThread();
 }
