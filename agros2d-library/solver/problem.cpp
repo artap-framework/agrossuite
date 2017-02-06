@@ -541,7 +541,7 @@ ProblemBase::~ProblemBase()
     clearFieldsAndConfig();
 
     delete m_scene;
-    delete m_config;
+    delete m_config;  
 }
 
 int ProblemBase::numAdaptiveFields() const
@@ -1932,7 +1932,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     }
 
     // create dir
-    QDir(cacheProblemDir()).mkdir(m_problemDir);
+    QDir(cacheProblemDir()).mkdir(m_problemDir);    
 }
 
 Computation::~Computation()

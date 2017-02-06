@@ -48,10 +48,6 @@ SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
     setMinimumSize(100, 50);
 }
 
-SceneViewSimpleGeometry::~SceneViewSimpleGeometry()
-{
-}
-
 void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
 {
     if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
@@ -167,36 +163,45 @@ void SceneViewSimpleGeometry::paintGeometry()
 
 // *********************************************************************************************************
 
-SceneViewSimpleGeometryChart::SceneViewSimpleGeometryChart(QWidget *parent) : SceneViewSimpleGeometry(parent)
+SceneViewChartSimpleGeometry::SceneViewChartSimpleGeometry(PostprocessorWidget *postprocessorWidget)
+    : SceneViewCommon2D(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
 {
 }
 
-SceneViewSimpleGeometryChart::~SceneViewSimpleGeometryChart()
-{
-}
-
-void SceneViewSimpleGeometryChart::paintGL()
-{
-    SceneViewSimpleGeometry::paintGL();
-
-    paintChartLine();
-}
-
-void SceneViewSimpleGeometryChart::setChartLine(const ChartLine &chartLine)
+void SceneViewChartSimpleGeometry::setChartLine(const ChartLine &chartLine)
 {
     m_chartLine = chartLine;
 
     updateGL();
 }
 
-void SceneViewSimpleGeometryChart::paintChartLine()
+void SceneViewChartSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
 {
-    if (m_problem.isNull())
+    if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
+        return;
+
+    double sceneWidth = end.x - start.x;
+    double sceneHeight = end.y - start.y;
+
+    double maxScene = ((width() / height()) < (sceneWidth / sceneHeight)) ? sceneWidth/aspect() : sceneHeight;
+
+    if (maxScene > 0.0)
+        m_scale2d = 1.8/maxScene;
+
+    m_offset2d.x = (start.x + end.x) / 2.0;
+    m_offset2d.y = (start.y + end.y) / 2.0;
+
+    setZoom(0);
+}
+
+void SceneViewChartSimpleGeometry::paintChartLine()
+{
+    if (m_postprocessorWidget->currentComputation().isNull())
         return;
 
     loadProjection2d(true);
 
-    RectPoint rect = m_problem->scene()->boundingBox();
+    RectPoint rect = problem()->scene()->boundingBox();
     double dm = qMax(rect.width(), rect.height()) / 25.0;
 
     glColor3d(0.9, 0.1, 0.1);
@@ -238,5 +243,96 @@ void SceneViewSimpleGeometryChart::paintChartLine()
         glEnd();
 
         glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+}
+
+void SceneViewChartSimpleGeometry::clear()
+{
+    doZoomBestFit();
+}
+
+void SceneViewChartSimpleGeometry::paintGL()
+{
+    if (!isVisible()) return;
+    makeCurrent();
+
+    glClearColor(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2], 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // geometry
+    paintGeometry();
+
+    // chart line
+    paintChartLine();
+}
+
+void SceneViewChartSimpleGeometry::paintGeometry()
+{
+    if (m_postprocessorWidget->currentComputation().isNull())
+        return;
+
+    loadProjection2d(true);
+
+    // edges
+    foreach (SceneFace *edge, problem()->scene()->faces->items())
+    {
+        glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
+        glLineWidth(EDGEWIDTH);
+
+        if (edge->isStraight())
+        {
+            glBegin(GL_LINES);
+            glVertex2d(edge->nodeStart()->point().x, edge->nodeStart()->point().y);
+            glVertex2d(edge->nodeEnd()->point().x, edge->nodeEnd()->point().y);
+            glEnd();
+        }
+        else
+        {
+            Point center = edge->center();
+            double radius = edge->radius();
+            double startAngle = atan2(center.y - edge->nodeStart()->point().y, center.x - edge->nodeStart()->point().x) / M_PI*180.0 - 180.0;
+
+            drawArc(center, radius, startAngle, edge->angle());
+        }
+    }
+
+    try
+    {
+        if (problem()->scene()->crossings().isEmpty())
+        {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            // blended rectangle
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glBegin(GL_TRIANGLES);
+            QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_postprocessorWidget->currentComputation()->scene()->loopsInfo()->polygonTriangles());
+            while (i.hasNext())
+            {
+                i.next();
+
+                if (i.key()->isHole())
+                    glColor4f(0.3, 0.1, 0.7, 0.00);
+                else
+                    glColor4f(0.3, 0.1, 0.7, 0.10);
+
+                foreach (LoopsInfo::Triangle triangle, i.value())
+                {
+                    glVertex2d(triangle.a.x, triangle.a.y);
+                    glVertex2d(triangle.b.x, triangle.b.y);
+                    glVertex2d(triangle.c.x, triangle.c.y);
+                }
+            }
+            glEnd();
+
+            glDisable(GL_BLEND);
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+    }
+    catch (AgrosException& ame)
+    {
+        // therefore catch exceptions and do nothing
     }
 }

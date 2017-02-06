@@ -24,6 +24,7 @@
 
 #include "sceneview_common2d.h"
 #include "postprocessorview_chart.h"
+#include "solver/problem.h"
 
 class PostprocessorWidget;
 
@@ -37,7 +38,7 @@ public slots:
 
 public:
     SceneViewSimpleGeometry(QWidget *parent);
-    virtual ~SceneViewSimpleGeometry();
+    virtual ~SceneViewSimpleGeometry() {}
 
     void setProblem(QSharedPointer<ProblemBase> problem) { m_problem = problem; updateGL(); }
 
@@ -52,21 +53,31 @@ protected:
     void paintGeometry(); // paint nodes, edges and labels
 };
 
-class SceneViewSimpleGeometryChart : public SceneViewSimpleGeometry
+class SceneViewChartSimpleGeometry : public SceneViewCommon2D
 {
     Q_OBJECT
 
+public slots:
+    virtual void clear();
+
 public:
-    SceneViewSimpleGeometryChart(QWidget *parent);
-    virtual ~SceneViewSimpleGeometryChart();
+    SceneViewChartSimpleGeometry(PostprocessorWidget *postprocessorWidget);
+    virtual ~SceneViewChartSimpleGeometry() {}
 
     void setChartLine(const ChartLine &chartLine);
 
-protected:
+protected:    
+    virtual void doZoomRegion(const Point &start, const Point &end);
+
+    virtual ProblemBase *problem() const { return dynamic_cast<ProblemBase *>(m_postprocessorWidget->currentComputation().data()); }
+
     void paintGL();
+    void paintGeometry(); // paint nodes, edges and labels
     void paintChartLine();
 
     ChartLine m_chartLine;
+
+    PostprocessorWidget *m_postprocessorWidget;
 };
 
 #endif // SCENEVIEWGEOMETRYCHART_H
