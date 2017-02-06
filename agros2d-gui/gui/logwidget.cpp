@@ -26,8 +26,8 @@
 
 LogGui::LogGui()
 {
-    // qRegisterMetaType<QVector<double> >("QVector<double>");
-    // qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
+     qRegisterMetaType<QVector<double> >("QVector<double>");
+     qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
 }
 
 
@@ -38,8 +38,8 @@ LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
 
 }
 
-LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
-    m_printCounter(0)
+LogWidget::LogWidget(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
+    m_printCounter(0), m_connectLog(connectLog)
 {       
     plainLog = new QTextEdit(this);
     plainLog->setReadOnly(true);
@@ -62,27 +62,26 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
 #endif
     mnuInfo->addSeparator();
     mnuInfo->addAction(actClear);
-    /*
-    connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
-    connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
 
-    connect(Agros2D::log(), SIGNAL(appendImg(QString)), this, SLOT(appendImage(QString)));
-     connect(Agros2D::log(), SIGNAL(appendHtm(QString)), this, SLOT(appendHtml(QString))); */
+    connect(m_connectLog, SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
+    connect(m_connectLog, SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
+    connect(m_connectLog, SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
+    connect(m_connectLog, SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
+    connect(m_connectLog, SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
+
+    connect(m_connectLog, SIGNAL(appendImg(QString)), this, SLOT(appendImage(QString)));
+    connect(m_connectLog, SIGNAL(appendHtm(QString)), this, SLOT(appendHtml(QString)));
 
     plainLog->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
 
     // create log directory
-    (static_cast <LogGui *>(Agros2D::log()))->addLogWidget(this);
+
     QDir().mkdir(QString("%1/log").arg(tempProblemDir()));
 }
 
 LogWidget::~LogWidget()
-{
-    (static_cast <LogGui *>(Agros2D::log()))->removeLogWidget(this);
+{    
 }
 
 void LogWidget::clear()
@@ -213,7 +212,8 @@ void LogWidget::appendHtml(const QString &html)
 
 // *******************************************************************************************************
 
-LogView::LogView(QWidget *parent) : QWidget(parent)
+LogView::LogView(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
+  m_connectLog(connectLog)
 {
     setObjectName("LogView");
 
@@ -221,7 +221,7 @@ LogView::LogView(QWidget *parent) : QWidget(parent)
     actLog->setShortcut(Qt::Key_F10);
     actLog->setCheckable(true);
 
-    m_logWidget = new LogWidget(this);
+    m_logWidget = new LogWidget(this, m_connectLog);
     m_logWidget->welcomeMessage();
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
@@ -234,18 +234,17 @@ LogView::LogView(QWidget *parent) : QWidget(parent)
 }
 
 LogView::~LogView()
-{    
+{        
     delete m_logConfigWidget;
 }
 
-// *******************************************************************************************************
-
-LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
+LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
     m_nonlinearChart(nullptr), m_nonlinearErrorGraph(nullptr), m_nonlinearProgress(nullptr),
     m_adaptivityChart(nullptr), m_adaptivityErrorGraph(nullptr), m_adaptivityDOFsGraph(nullptr), m_adaptivityProgress(nullptr),
     m_timeChart(nullptr), m_timeTimeStepGraph(nullptr), m_timeProgress(nullptr),
-    m_progress(nullptr)
+    m_progress(nullptr),
+    m_connectLog(connectLog)
 {
     setModal(true);
 
@@ -283,22 +282,20 @@ void LogDialog::reject()
 }
 
 LogDialog::~LogDialog()
-{
+{    
 }
 
 void LogDialog::createControls()
 {
-    /*
-    connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
-    connect(Agros2D::log(), SIGNAL(updateNonlinearChart(SolverAgros::Phase, const QVector<double>, const QVector<double>)),
+
+    connect(m_connectLog, SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
+    connect(m_connectLog, SIGNAL(updateNonlinearChart(SolverAgros::Phase, const QVector<double>, const QVector<double>)),
            this, SLOT(updateNonlinearChartInfo(SolverAgros::Phase, const QVector<double>, const QVector<double>)));
-    connect(Agros2D::log(), SIGNAL(updateAdaptivityChart(const FieldInfo *, int, int)), this, SLOT(updateAdaptivityChartInfo(const FieldInfo *, int, int)));
-    connect(Agros2D::log(), SIGNAL(updateTransientChart(double)), this, SLOT(updateTransientChartInfo(double)));
-    connect(Agros2D::log(), SIGNAL(addIconImg(QIcon, QString)), this, SLOT(addIcon(QIcon, QString))); */
+    connect(m_connectLog, SIGNAL(updateAdaptivityChart(const FieldInfo *, int, int)), this, SLOT(updateAdaptivityChartInfo(const FieldInfo *, int, int)));
+    connect(m_connectLog, SIGNAL(updateTransientChart(double)), this, SLOT(updateTransientChartInfo(double)));
+    connect(m_connectLog, SIGNAL(addIcon(QIcon, QString)), this, SLOT(addIcon(QIcon, QString)));
 
-    m_logWidget = new LogWidget(this);
-    // (static_cast <LogGui *>(Agros2D::log()))->setWidget(m_logWidget);
-
+    m_logWidget = new LogWidget(this, m_connectLog);
 
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -609,71 +606,5 @@ void LogDialog::tryClose()
     else
     {
         close();
-    }
-}
-
-
-void LogGui::addLogWidget(LogWidget *logWidget)
-{
-    m_logWidgets.append(logWidget);
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        qCritical() << "+ ";
-    }
-}
-
-void LogGui::removeLogWidget(LogWidget *logWidget)
-{
-    m_logWidgets.removeOne(logWidget);
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        qCritical() << "- ";
-    }
-}
-
-void LogGui::printMessage(const QString &module, const QString &message)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->printMessage(module, message);
-    }
-}
-
-void LogGui::printError(const QString &module, const QString &message)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->printError(module, message);
-    }
-}
-
-void LogGui::printHeading(const QString &message)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->printHeading(message);
-    }
-}
-
-void LogGui::printWarning(const QString &module, const QString &message)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->printWarning(module, message);
-    }
-}
-
-void LogGui::printDebug(const QString &module, const QString &message)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->printDebug(module, message);
-    }
-}
-
-void LogGui::appendImage(const QString &fileName)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->appendImage(fileName);
-    }
-}
-
-void LogGui::appendHtml(const QString &html)
-{
-    foreach (LogWidget* logWidget, m_logWidgets) {
-        logWidget->appendHtml(html);
     }
 }

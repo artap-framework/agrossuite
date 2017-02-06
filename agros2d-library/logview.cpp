@@ -31,8 +31,6 @@
 
 #include "../3rdparty/spdlog/spdlog.h"
 
-// *******************************************************************************************************
-
 
 /* void Log::printMessage(const QString &module, const QString &message)
 {

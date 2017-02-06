@@ -27,7 +27,7 @@
 class QCustomPlot;
 class QCPGraph;
 class LogWidget;
-
+class ConnectLog;
 
 
 class LogConfigWidget : public QWidget
@@ -45,8 +45,9 @@ class AGROS_LIBRARY_API LogWidget : public QWidget
 {
     Q_OBJECT
 public:
-    LogWidget(QWidget *parent = 0);
+    LogWidget(QWidget *parent = 0, ConnectLog *connectLog = 0);
     ~LogWidget();
+    void setConnectLog(ConnectLog * connectLog) { m_connectLog = connectLog; }
 
     void welcomeMessage();
 
@@ -70,30 +71,34 @@ private:
 
     int m_printCounter;
 
+    ConnectLog *m_connectLog;
+
+
     void createActions();
+
 
 
 private slots:
     void contextMenu(const QPoint &pos);
-    void showTimestamp();
-    void showDebug();
 
-public: // ToDo: Improve
+    void printMessage(const QString &module, const QString &message);
     void printError(const QString &module, const QString &message);
     void printWarning(const QString &module, const QString &message);
     void printDebug(const QString &module, const QString &message);
     void printHeading(const QString &message);
-    void printMessage(const QString &module, const QString &message);
+
     void appendImage(const QString &fileName);
     void appendHtml(const QString &html);
 
+    void showTimestamp();
+    void showDebug();
 };
 
 class AGROS_LIBRARY_API LogView : public QWidget
 {
     Q_OBJECT
 public:
-    LogView(QWidget *parent = 0);
+    LogView(QWidget *parent = 0, ConnectLog *connectLog = 0);
     ~LogView();
 
     QAction *actLog;
@@ -103,14 +108,17 @@ public:
 private:
     LogWidget *m_logWidget;
     LogConfigWidget *m_logConfigWidget;
+
+    ConnectLog *m_connectLog;
 };
 
 class AGROS_LIBRARY_API LogDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogDialog(Computation *computation, const QString &title = tr("Progress..."));
+    LogDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
     ~LogDialog();
+
 
 protected:
     virtual void closeEvent(QCloseEvent *e);
@@ -140,9 +148,11 @@ private:
 
     Computation *m_computation;
 
+    ConnectLog *m_connectLog;
+
     void createControls();
 
-public:
+private slots:
     void printError(const QString &module, const QString &message);
 
     void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions);
@@ -151,35 +161,53 @@ public:
 
     void addIcon(const QIcon &icn, const QString &label);
 
-private slots:
     void tryClose();
+};
+
+class AGROS_LIBRARY_API ConnectLog : public QObject
+{
+    Q_OBJECT
+public:
+    ConnectLog() {}
+
+signals:
+    void headingMsg(const QString &message);
+    void messageMsg(const QString &module, const QString &message);
+    void errorMsg(const QString &module, const QString &message);
+    void warningMsg(const QString &module, const QString &message);
+    void debugMsg(const QString &module, const QString &message);
+
+    void updateNonlinearChart(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions);
+    void updateAdaptivityChart(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+    void updateTransientChart(double actualTime);
+
+    void appendImg(const QString &fileName);
+    void appendHtm(const QString &html);
+
+    void addIcon(const QIcon &icn, const QString &label);
 };
 
 class AGROS_LIBRARY_API LogGui : public Log
 {
-      QVector<LogWidget * > m_logWidgets;
-      LogDialog *m_logDialog;
+    ConnectLog *m_connectLog;
 
 public:
     LogGui();
-    void addLogWidget(LogWidget * logWidget);
-    void removeLogWidget(LogWidget * logWidget);
-    void setDialog(LogDialog * logDialog) { m_logDialog = logDialog; }
-    void printHeading(const QString &message);
-    void printMessage(const QString &module, const QString &message);
-    void printError(const QString &module, const QString &message);
-    void printWarning(const QString &module, const QString &message);
-    void printDebug(const QString &module, const QString &message);
+    void setConnectLog(ConnectLog *connectLog) { m_connectLog = connectLog; }
+    void printHeading(const QString &message) {emit m_connectLog->headingMsg(message);}
+    void printMessage(const QString &module, const QString &message){emit m_connectLog->messageMsg(module, message);}
+    void printError(const QString &module, const QString &message){emit m_connectLog->errorMsg(module, message);}
+    void printWarning(const QString &module, const QString &message){emit m_connectLog->warningMsg(module, message);}
+    void printDebug(const QString &module, const QString &message){emit m_connectLog->debugMsg(module, message);}
 
-    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions)
-    { m_logDialog->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions); }
-    inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { m_logDialog->updateAdaptivityChartInfo( fieldInfo, timeStep, adaptivityStep);}
-    inline void updateTransientChartInfo(double actualTime) { m_logDialog->updateTransientChartInfo( actualTime);}
+    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {emit  m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
+    inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {emit m_connectLog->updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep);}
+    inline void updateTransientChartInfo(double actualTime) { emit m_connectLog->updateTransientChart(actualTime);}
 
-    void appendImage(const QString &fileName);
-    void appendHtml(const QString &html);
+    void appendImage(const QString &fileName) {emit m_connectLog->appendImg(fileName);}
+    void appendHtml(const QString &html) {emit m_connectLog->appendHtm(html);}
 
-    inline void addIcon(const QIcon &icn, const QString &label) { m_logDialog->addIcon(icn, label);}
-
+    inline void addIcon(const QIcon &icn, const QString &label) {emit m_connectLog->addIcon(icn, label);}
 };
+
 #endif // GUI_LOGWIDGET_H

@@ -23,6 +23,7 @@
 #include "gui/other.h"
 #include "util/util.h"
 #include "util/enums.h"
+#include "gui/logwidget.h"
 
 class SceneViewPost2D;
 class SceneViewPost3D;
@@ -188,6 +189,7 @@ private:
     PostprocessorWidget *postprocessorWidget;
 
     LogView *logView;
+    ConnectLog *m_connectLog;
 
     QSplitter *splitterMain;
 

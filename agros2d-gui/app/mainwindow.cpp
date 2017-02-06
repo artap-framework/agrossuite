@@ -92,7 +92,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
 
     // view info
-    logView = new LogView(this);
+    m_connectLog = new ConnectLog();
+    logView = new LogView(this, m_connectLog);
 
     // OptiLab
     optiLab = new OptiLab(this);
@@ -154,9 +155,7 @@ MainWindow::~MainWindow()
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
-    removeDirectory(tempProblemDir());
-
-    delete logStdOut;
+    removeDirectory(tempProblemDir());    
 }
 
 void MainWindow::createActions()
@@ -873,10 +872,13 @@ void MainWindow::doSolve()
     connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
     connect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
 
-    LogDialog *logDialog = new LogDialog(computation.data(), tr("Solver"));
+    LogDialog *logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
     logDialog->show();
 
-    (static_cast <LogGui *>(Agros2D::log()))->setDialog(logDialog);
+    (static_cast<LogGui * > (Agros2D::log()))->setConnectLog(m_connectLog);
+
+
+
 
     computation->solveWithThread();
 }
