@@ -9,10 +9,17 @@ Add path to binaries (dogygen.exe) to the Windows system variable PATH
 2) Dependencies
 
 2.1) Compile deal.ii in Agros Suite subfolder dealii (we expect, that Agros suite project is, for example in C:\agros2d folder):
+In the Agros2D folder (for example C:\agros2d) prepare a copy of CMake.vars.Windows to file CMake.vars. There You can make Your individual settings.
+Into this CMake.vars add a variable settings (at the beginning of the file, after dependencies folder settings):
+
+      SET(BOOST_ROOT "your_agros_folder\\dealii\\bundled\\boost-1.62.0")
+
+A continue with commands:
+ 
       cd C:\agros2d\dealii
       mkdir build
       cd build
-      cmake -G "Visual Studio 14 Win64" -D CMAKE_INSTALL_PREFIX=your_agros_folder\dealii\install ..
+      cmake -G "Visual Studio 14 Win64" -D CMAKE_INSTALL_PREFIX=your_agros_folder\dealii\install .. -DDEAL_II_FORCE_BUNDLED_BOOST:BOOL=TRUE
 
 2.2) Improve path to the Windows dependecies, for example "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
 
@@ -26,12 +33,15 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 
 3.0) Qt
 
-  - Qt 5.3 for the correct platform (x86 / x64), for VS 2013, with OpenGL
+  - Qt for the correct platform (x86 / x64), for VS 2015, with OpenGL
+  https://www.qt.io/download-open-source/
 
+---- NOT INSTALL - bundled now ----
 3.1) Xerces & XSD
 
   - http://www.codesynthesis.com/products/xsd/download.xhtml
   - XSD version 4.0+ necessary (for C++11 support)
+-----------------------------------
 
 3.4) ZLIB
 
@@ -70,8 +80,6 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
   - C:\Python34;C:\Python34\Scripts
   - c:\Qt\Qt5.3.0\5.3\msvc2013_opengl\bin\ (or appropriate)
   - <PATH TO AGROS REPOSITORY>\libs\
-  - C:\hpfem\dependencies\bin / C:\hpfem\dependencies-64\bin
-
 
 5) Build
 
