@@ -29,7 +29,10 @@ class GFace;
 
 class MeshGeneratorGMSH : public MeshGenerator
 {
-    Q_OBJECT
+public:
+    MeshGeneratorGMSH(ProblemBase *problem);
+
+    virtual bool mesh();
 
 private:
     bool writeToGmshInternal();
@@ -46,15 +49,6 @@ private:
     QMap<SceneFace *, GEdge *> edgesMap;
     // faces
     QMap<SceneLabel *, GFace *> facesMap;
-
-private slots:
-    void meshGmshError(QProcess::ProcessError error);
-    void meshGmshCreated(int exitCode);
-
-public:
-    MeshGeneratorGMSH(ProblemBase *problem);
-
-    virtual bool mesh();
 };
 
 #endif //MESHGENERATOR_GMSH_H

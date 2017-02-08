@@ -36,7 +36,7 @@ ParameterDialog::ParameterDialog(QWidget *parent)
 ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
     : QDialog(parent), m_key(key)
 {
-    m_value = Agros2D::problem()->config()->parameters()->number(key);
+    m_value = Agros::problem()->config()->parameters()->number(key);
 
     createControls();
 }
@@ -98,7 +98,7 @@ bool ParameterDialog::save()
     // check parameter name
     try
     {
-        Agros2D::problem()->config()->checkVariableName(txtParameterName->text(), m_key);
+        Agros::problem()->config()->checkVariableName(txtParameterName->text(), m_key);
     }
     catch (AgrosException &e)
     {
@@ -109,16 +109,16 @@ bool ParameterDialog::save()
         return false;
     }
 
-    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+    QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     parameters[txtParameterName->text()] = ProblemParameter(txtParameterName->text(), txtParameterValue->value());
 
     // remove old parameter
     if (!m_key.isEmpty() && txtParameterName->text() != m_key)
         parameters.remove(m_key);
 
-    if (Agros2D::problem()->checkAndApplyParameters(parameters))
+    if (Agros::problem()->checkAndApplyParameters(parameters))
     {
-        Agros2D::problem()->scene()->invalidate();
+        Agros::problem()->scene()->invalidate();
         return true;
     }
 
@@ -127,12 +127,12 @@ bool ParameterDialog::save()
 
 bool ParameterDialog::remove()
 {
-    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+    QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     parameters.remove(m_key);
 
-    if (Agros2D::problem()->checkAndApplyParameters(parameters))
+    if (Agros::problem()->checkAndApplyParameters(parameters))
     {
-        Agros2D::problem()->scene()->invalidate();
+        Agros::problem()->scene()->invalidate();
         return true;
     }
 
@@ -144,7 +144,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
     lblParametersError->setVisible(false);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 
-    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+    QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
 
     if (str.isEmpty())
     {
@@ -163,7 +163,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
 
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str, m_key);
+        Agros::problem()->config()->checkVariableName(str, m_key);
     }
     catch (AgrosException &e)
     {

@@ -164,7 +164,7 @@ struct StateEval
         // qDebug() << "opt.get_population()" << opt.get_population();
 
         // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+        QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
         // set parameters
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -360,7 +360,7 @@ void StudyLimbo::solve()
             || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
             || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")))
     {
-        Agros2D::log()->printError(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
+        Agros::log()->printError(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
         emit solved();
         return;
     }

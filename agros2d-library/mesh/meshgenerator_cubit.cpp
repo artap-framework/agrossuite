@@ -47,17 +47,13 @@ MeshGeneratorCubitExternal::MeshGeneratorCubitExternal(ProblemBase *problem)
 
 bool MeshGeneratorCubitExternal::mesh()
 {
-    m_isError = !prepare();
-
     // create triangle files
-    if (writeToCubit())
+    if (prepare() && writeToCubit())
     {
         // exec cubit
-        m_process = QSharedPointer<QProcess>(new QProcess());
-        m_process.data()->setStandardOutputFile(tempProblemFileName() + ".cubit.out");
-        m_process.data()->setStandardErrorFile(tempProblemFileName() + ".cubit.err");
-        connect(m_process.data(), SIGNAL(error(QProcess::ProcessError)), this, SLOT(meshCubitError(QProcess::ProcessError)));
-        connect(m_process.data(), SIGNAL(finished(int)), this, SLOT(meshCubitCreated(int)));
+        QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
+        process->setStandardOutputFile(tempProblemFileName() + ".cubit.out");
+        process->setStandardErrorFile(tempProblemFileName() + ".cubit.err");
 
         QString cubitBinary = "cubit";
         if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
@@ -69,62 +65,42 @@ bool MeshGeneratorCubitExternal::mesh()
                 arg(cubitBinary).
                 arg(tempProblemFileName());
 
-        m_process.data()->start(cubitCommand, QIODevice::ReadOnly);
+        process->start(cubitCommand, QIODevice::ReadOnly);
 
-        // execute an event loop to process the request (nearly-synchronous)
-        QEventLoop eventLoop;
-        connect(m_process.data(), SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
-        connect(m_process.data(), SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
-        eventLoop.exec();
-    }
-    else
-    {
-        m_isError = true;
-    }
-
-    return !m_isError;
-}
-
-void MeshGeneratorCubitExternal::meshCubitError(QProcess::ProcessError error)
-{
-    m_isError = true;
-    Agros2D::log()->printError(tr("Mesh generator"), tr("Could not start Triangle"));
-    m_process.data()->kill();
-    m_process.data()->close();
-}
-
-void MeshGeneratorCubitExternal::meshCubitCreated(int exitCode)
-{
-    if (exitCode == 0)
-    {
-        // Agros2D::log()->printDebug(tr("Mesh generator"), tr("Mesh files were created"));
-
-        // convert triangle mesh to L mesh
-        if (readLSDynaMeshFormat())
+        if (!process->waitForStarted())
         {
-            // Agros2D::log()->printDebug(tr("Mesh generator"), tr("Mesh was converted to deai.II mesh file"));
+            Agros::log()->printError(tr("Mesh generator"), tr("Could not start CUBIT"));
+            process->kill();
+            process->close();
 
-            //  remove triangle temp files
-            // QFile::remove(tempProblemFileName() + ".jou");
-            // QFile::remove(tempProblemFileName() + ".k");
-            // QFile::remove(tempProblemFileName() + ".cubit.out");
-            // QFile::remove(tempProblemFileName() + ".cubit.err");
+            return false;
         }
-        else
+
+        if (process->waitForFinished(-1))
         {
-            m_isError = true;
+            if ((process->exitCode() == 0) && readLSDynaMeshFormat())
+            {
+                //  remove triangle temp files
+                // QFile::remove(tempProblemFileName() + ".jou");
+                // QFile::remove(tempProblemFileName() + ".k");
+                // QFile::remove(tempProblemFileName() + ".cubit.out");
+                // QFile::remove(tempProblemFileName() + ".cubit.err");
+
+                return true;
+            }
+            else
+            {
+                QString errorMessage = readFileContent(tempProblemFileName() + ".triangle.err");
+                errorMessage.insert(0, "\n");
+                errorMessage.append("\n");
+                Agros::log()->printError(tr("Mesh generator"), errorMessage);
+
+                return false;
+            }
         }
     }
-    else
-    {
-        m_isError = true;
-        QString errorMessage = readFileContent(tempProblemFileName() + ".triangle.err");
-        errorMessage.insert(0, "\n");
-        errorMessage.append("\n");
-        Agros2D::log()->printError(tr("Mesh generator"), errorMessage);
-    }
 
-    m_process.data()->close();
+    return false;
 }
 
 bool MeshGeneratorCubitExternal::writeToCubit()
@@ -132,12 +108,12 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // basic check
     if (m_problem->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
         return false;
     }
     if (m_problem->scene()->faces->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
         return false;
     }
 
@@ -145,7 +121,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Could not create CUBIT journal file (%1)").arg(file.errorString()));
+        Agros::log()->printError(tr("Mesh generator"), tr("Could not create CUBIT journal file (%1)").arg(file.errorString()));
         return false;
     }
     QTextStream out(&file);
@@ -215,7 +191,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     }
     catch (AgrosMeshException& ame)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), ame.toString());
+        Agros::log()->printError(tr("Mesh generator"), ame.toString());
         std::cout << "Missing Label";
         return false;
     }
@@ -229,7 +205,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
         {
             for (int j = 0; j < m_problem->scene()->loopsInfo()->loops().at(i).size(); j++)
             {
-                // if (Agros2D::problem()->scene()->loopsInfo()->loops().at(i)[j].reverse)
+                // if (Agros::problem()->scene()->loopsInfo()->loops().at(i)[j].reverse)
                 //     outLoops.append("-");
                 outLoopsLines[i+1] += QString("%1 ").arg(m_problem->scene()->loopsInfo()->loops().at(i)[j].edge + 1);
             }
@@ -247,7 +223,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
             outLoops.append(QString("Create Surface Curve "));
             for (int j = 0; j < m_problem->scene()->loopsInfo()->labelLoops()[label].count(); j++)
             {
-                // outLoops.append(QString("%1 ").arg(Agros2D::problem()->scene()->loopsInfo()->labelLoops()[label][j] + 1));
+                // outLoops.append(QString("%1 ").arg(Agros::problem()->scene()->loopsInfo()->labelLoops()[label][j] + 1));
                 outLoops.append(QString("%1 ").arg(outLoopsLines[m_problem->scene()->loopsInfo()->labelLoops()[label][j] + 1]));
             }
             outLoops.append(QString("\n"));
@@ -285,7 +261,7 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
     QFile fileInput(tempProblemFileName() + ".k");
     if (!fileInput.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Could not read LSDyna node file"));
+        Agros::log()->printError(tr("Mesh generator"), tr("Could not read LSDyna node file"));
         return false;
     }
     QTextStream inLSDyna(&fileInput);

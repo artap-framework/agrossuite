@@ -70,7 +70,7 @@ public:
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
         // init singleton
-        Agros2D::createSingleton(QSharedPointer<Log>(new LogGui));
+        Agros::createSingleton(QSharedPointer<Log>(new LogGui));
     }
 
     virtual ~AgrosApplication() {}
@@ -134,9 +134,9 @@ int main(int argc, char *argv[])
         AgrosApplication a(argc, argv);
 
         // setting gui style
-        setGUIStyle(Agros2D::configComputer()->value(Config::Config_GUIStyle).toString());
+        setGUIStyle(Agros::configComputer()->value(Config::Config_GUIStyle).toString());
         // language
-        setLocale(Agros2D::configComputer()->value(Config::Config_Locale).toString());
+        setLocale(Agros::configComputer()->value(Config::Config_Locale).toString());
         a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
         MainWindow w(argc, argv);

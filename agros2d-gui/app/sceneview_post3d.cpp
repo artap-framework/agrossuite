@@ -146,7 +146,7 @@ void SceneViewPost3D::paintGL()
         emit labelCenter(tr("Postprocessor 3D"));
     }
 
-    if (Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 }
 
 void SceneViewPost3D::initLighting()
@@ -484,7 +484,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // int& elem_marker = it.get_marker();
 
                 // find marker
-                // SceneLabel *label = Agros2D::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
+                // SceneLabel *label = Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
                 SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
                 SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
@@ -540,7 +540,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // if ((linTrisBoundaries.contains(linTris[i][0]) || linTrisBoundaries.contains(linTris[i][1]) || linTrisBoundaries.contains(linTris[i][2])))
                 {
                     // find marker
-                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros2D::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(linTrisMarkers[i]).marker.c_str()));
+                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(linTrisMarkers[i]).marker.c_str()));
                     SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                     // hide material
@@ -627,7 +627,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // if ((linTrisBoundaries.contains(linTris[i][0]) || linTrisBoundaries.contains(linTris[i][1]) || linTrisBoundaries.contains(linTris[i][2])))
                 {
                     // find marker
-                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros2D::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
+                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
                     SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                     // hide material

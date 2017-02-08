@@ -25,8 +25,6 @@
 
 class Config : public QObject
 {
-    Q_OBJECT
-
 public:
     Config();
     ~Config();

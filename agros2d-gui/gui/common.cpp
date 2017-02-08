@@ -96,7 +96,7 @@ int columnMinimumWidth()
 
 void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
 {
-    // if (!Agros2D::problem()->isSolved())
+    // if (!Agros::problem()->isSolved())
     //     return;
 
     // store variable
@@ -117,7 +117,7 @@ void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldI
 
 void fillComboBoxContourVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
 {
-    // if (!Agros2D::problem()->isSolved())
+    // if (!Agros::problem()->isSolved())
     //     return;
 
     // store variable
@@ -139,7 +139,7 @@ void fillComboBoxContourVariable(CoordinateType coordinateType, FieldInfo *field
 
 void fillComboBoxVectorVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
 {
-    // if (!Agros2D::problem()->isSolved())
+    // if (!Agros::problem()->isSolved())
     //     return;
 
     // store variable

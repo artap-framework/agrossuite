@@ -216,7 +216,7 @@ bool ValueLineEdit::evaluate(bool quiet)
         {
             Value val = value();
 
-            btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::problem()->isTransient());
+            btnEditTimeDep->setVisible(m_hasTimeDep && Agros::problem()->isTransient());
             btnMaterialDialog->setVisible(!m_isSource && !m_hasNonlin);
 
             if (val.isEvaluated())
@@ -247,7 +247,7 @@ bool ValueLineEdit::evaluate(bool quiet)
                     valueChanged = (evaluatedNumber != m_number);
                     m_number = evaluatedNumber;
                     setValueLabel(QString("%1").arg(m_number, 0, 'g', 3), QApplication::palette().color(QPalette::WindowText),
-                                  Agros2D::configComputer()->value(Config::Config_ShowResults).toBool());
+                                  Agros::configComputer()->value(Config::Config_ShowResults).toBool());
                     isOk = true;
                 }
             }
@@ -339,7 +339,7 @@ void ValueLineEdit::setLayoutValue()
     }
 
     btnDataTableDialog->setVisible(m_hasNonlin);
-    btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::problem()->isTransient());
+    btnEditTimeDep->setVisible(m_hasTimeDep && Agros::problem()->isTransient());
     btnMaterialDialog->setVisible(!m_isSource && !m_hasNonlin);
 }
 

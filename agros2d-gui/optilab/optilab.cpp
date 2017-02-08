@@ -108,8 +108,8 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     actRunStudy->setShortcut(QKeySequence(tr("Alt+S")));
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
 
-    connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -192,9 +192,9 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
         // study - set filter
-        if (Agros2D::problem()->studies()->items().count() > 0)
+        if (Agros::problem()->studies()->items().count() > 0)
         {
-            Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+            Study *study = Agros::problem()->studies()->items().at(cmbStudies->currentIndex());
             study->setValue(Study::View_Filter, txtFilter->text());
         }
     }
@@ -204,7 +204,7 @@ void OptiLabWidget::refresh()
 
     cmbStudies->clear();
     trvComputations->clear();
-    foreach (Study *study, Agros2D::problem()->studies()->items())
+    foreach (Study *study, Agros::problem()->studies()->items())
         cmbStudies->addItem(studyTypeString(study->type()));
 
     cmbStudies->blockSignals(false);
@@ -232,7 +232,7 @@ void OptiLabWidget::studyChanged(int index)
     trvComputations->clear();
 
     // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+    Study *study = Agros::problem()->studies()->items().at(cmbStudies->currentIndex());
 
     if (study)
     {
@@ -301,7 +301,7 @@ void OptiLabWidget::solveStudy()
         return;
 
     // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+    Study *study = Agros::problem()->studies()->items().at(cmbStudies->currentIndex());
 
     LogOptimizationDialog *log = new LogOptimizationDialog(study);
     log->show();
@@ -325,8 +325,8 @@ void OptiLabWidget::doComputationSelected(const QString &key)
                 trvComputations->scrollToItem(item);
 
                 // refresh chart
-                if (!key.isEmpty() && Agros2D::computations().contains(key))
-                    emit chartRefreshed(Agros2D::computations()[key]->problemDir());
+                if (!key.isEmpty() && Agros::computations().contains(key))
+                    emit chartRefreshed(Agros::computations()[key]->problemDir());
 
                 return;
             }
@@ -350,10 +350,10 @@ void OptiLabWidget::doComputationDelete(bool)
     if (trvComputations->currentItem())
     {
         QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
-        if (!key.isEmpty() && Agros2D::computations().contains(key))
+        if (!key.isEmpty() && Agros::computations().contains(key))
         {
-            Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-            study->removeComputation(Agros2D::computations()[key]);
+            Study *study = Agros::problem()->studies()->items().at(cmbStudies->currentIndex());
+            study->removeComputation(Agros::computations()[key]);
 
             refresh();
         }
@@ -365,9 +365,9 @@ void OptiLabWidget::doComputationSolve(bool)
     if (trvComputations->currentItem())
     {
         QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
-        if (!key.isEmpty() && Agros2D::computations().contains(key))
+        if (!key.isEmpty() && Agros::computations().contains(key))
         {
-            Agros2D::computations()[key]->solveWithThread();
+            Agros::computations()[key]->solveWithThread();
         }
     }
 }
@@ -390,7 +390,7 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 
     createControls();
 
-    connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
     connect(m_optiLabWidget, SIGNAL(chartRefreshed(QString)), this, SLOT(doChartRefreshed(QString)));
@@ -680,7 +680,7 @@ void OptiLab::createControls()
 
 void OptiLab::refresh()
 {
-    actSceneModeOptiLab->setEnabled(!Agros2D::problem()->studies()->items().isEmpty());
+    actSceneModeOptiLab->setEnabled(!Agros::problem()->studies()->items().isEmpty());
 }
 
 void OptiLab::chartContextMenu(const QPoint &pos)
@@ -821,7 +821,7 @@ void OptiLab::doComputationSelected(const QString &key)
     }
     else
     {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
         if (computations.count() > 0)
         {
             QSharedPointer<Computation> computation = computations[key];

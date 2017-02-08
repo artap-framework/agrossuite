@@ -78,21 +78,21 @@ void AgrosSolver::solveProblem()
 
     try
     {
-        Agros2D::problem()->readProblemFromArchive(m_fileName);
+        Agros::problem()->readProblemFromArchive(m_fileName);
 
-        Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
+        Agros::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 
         // solve
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+        QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
         computation->solve();
 
         // save solution
-        Agros2D::problem()->writeProblemToArchive(m_fileName, false);
+        Agros::problem()->writeProblemToArchive(m_fileName, false);
 
-        Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
+        Agros::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
         // clear all
-        Agros2D::problem()->clearFields();
+        Agros::problem()->clearFields();
 
         m_status = 0;
         QApplication::exit(0);
@@ -100,7 +100,7 @@ void AgrosSolver::solveProblem()
     }
     catch (AgrosException &e)
     {
-        Agros2D::log()->printError(tr("Problem"), e.toString());
+        Agros::log()->printError(tr("Problem"), e.toString());
         QApplication::exit(-1);
         return;
     }
@@ -110,7 +110,7 @@ void AgrosSolver::runScript()
 {
     if (!QFile::exists(m_fileName))
     {
-        Agros2D::log()->printMessage(tr("Scripting Engine"), tr("Python script '%1' not found").arg(m_fileName));
+        Agros::log()->printMessage(tr("Scripting Engine"), tr("Python script '%1' not found").arg(m_fileName));
         QApplication::exit(-1);
     }
 
@@ -135,10 +135,10 @@ void AgrosSolver::runCommand()
 
     if (successfulRun)
     {
-        Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
+        Agros::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
-        Agros2D::problem()->scene()->clear();
-        Agros2D::clear();
+        Agros::problem()->scene()->clear();
+        Agros::clear();
 
         m_status = 0;
         QApplication::exit(0);
@@ -147,7 +147,7 @@ void AgrosSolver::runCommand()
     else
     {
         ErrorResult result = currentPythonEngineAgros()->parseError();
-        Agros2D::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
+        Agros::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
                                   arg(result.error()).
                                   arg(result.line()).
                                   arg(result.tracebackToString()));
@@ -199,8 +199,8 @@ void AgrosSolver::runTest()
             Py_XDECREF(result);
         }
 
-        Agros2D::problem()->clearFieldsAndConfig();
-        Agros2D::clear();
+        Agros::problem()->clearFieldsAndConfig();
+        Agros::clear();
 
         m_status = 0;
         QApplication::exit(0);
@@ -209,7 +209,7 @@ void AgrosSolver::runTest()
     else
     {
         ErrorResult result = currentPythonEngineAgros()->parseError();
-        Agros2D::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
+        Agros::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
                                      arg(result.error()).
                                      arg(result.line()).
                                      arg(result.tracebackToString()));

@@ -276,11 +276,11 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         linearSolver.solveExternal(system, rhs, sln);
         break;
     default:
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
     }
 
-    if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
+    if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
         QDateTime datetime(QDateTime::currentDateTime());
         QString tm = QString("%1").arg(datetime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
@@ -463,8 +463,8 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         /*
         std::stringstream refineHistory(std::ios::out | std::ios::in | std::ios::binary);
         std::stringstream coarsenHistory(std::ios::out | std::ios::in | std::ios::binary);
-        Agros2D::problem()->calculationMesh().save_refine_flags(refineHistory);
-        Agros2D::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
+        Agros::problem()->calculationMesh().save_refine_flags(refineHistory);
+        Agros::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
         */
         std::cout << "Number of degrees of freedom: " << dual->doFHandler.n_dofs() << std::endl;
 
@@ -798,9 +798,9 @@ void SolverDeal::solveSteadyState()
             m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
 
             if (adaptiveStep > 0)
-                Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, adaptiveStep);
+                Agros::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, adaptiveStep);
 
-            Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2 %, DOFs: %3)").
+            Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2 %, DOFs: %3)").
                                          arg(adaptiveStep + 1).
                                          arg(relChangeSol).
                                          arg(primal->doFHandler.n_dofs()));
@@ -821,7 +821,7 @@ void SolverDeal::solveSteadyState()
             if (!successfulRun)
             {
                 ErrorResult result = currentPythonEngine()->parseError();
-                Agros2D::log()->printError(QObject::tr("Adaptivity callback"), result.error());
+                Agros::log()->printError(QObject::tr("Adaptivity callback"), result.error());
             }
             if (!cont)
                 break;
@@ -840,7 +840,7 @@ void SolverDeal::solveSteadyState()
         chart.setDOFs(adaptiveSteps, adaptiveDOFs);
         QString fn = chart.save();
 
-        Agros2D::log()->appendImage(fn);
+        Agros::log()->appendImage(fn);
         */
     }
 }
@@ -969,7 +969,7 @@ void SolverDeal::solveTransient()
                     bdf2Table.setOrderAndPreviousSteps(order, stepLengths);
                 primal->transientBDF(actualTimeStep, primal->solution, solutions, bdf2Table);
 
-                Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Constant step %1/%2, time %3 s").
                                              arg(timeStep).
                                              arg(m_computation->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
@@ -1025,7 +1025,7 @@ void SolverDeal::solveTransient()
                 nextTimeStepLength = min(nextTimeStepLength, actualTimeStep * maxTimeStepRatio);
                 nextTimeStepLength = max(nextTimeStepLength, actualTimeStep / maxTimeStepRatio);
 
-                Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Adaptive step, time %1 s, rel. error %2, step size %4 -> %5 (%6 %), average err/len %7").
                                              arg(m_time).
                                              arg(error * 100.0).
@@ -1064,7 +1064,7 @@ void SolverDeal::solveTransient()
                         primal->solution = initialSolution;
                 }
 
-                Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Transient step refused"));
             }
             else
@@ -1072,7 +1072,7 @@ void SolverDeal::solveTransient()
                 primal->constraintsAll.distribute(primal->solution);
 
                 m_computation->setActualTimeStepLength(actualTimeStep);
-                Agros2D::log()->updateTransientChartInfo(m_time);
+                Agros::log()->updateTransientChartInfo(m_time);
 
                 solutionID = FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptiveStep);
                 SolutionStore::SolutionRunTimeDetails runTime;
@@ -1093,7 +1093,7 @@ void SolverDeal::solveTransient()
                 if (!successfulRun)
                 {
                     ErrorResult result = currentPythonEngine()->parseError();
-                    Agros2D::log()->printError(QObject::tr("Transient callback"), result.error());
+                    Agros::log()->printError(QObject::tr("Transient callback"), result.error());
                 }
 
                 if (!cont)
@@ -1133,13 +1133,13 @@ void SolverDeal::solveTransient()
                             break;
                     }
 
-                    Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
+                    Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
                                                  arg(1).
                                                  arg(0.0).
                                                  arg(primal->doFHandler.n_dofs()));
 
                     if (adaptiveStep > 0)
-                        Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, timeStep, adaptiveStep);
+                        Agros::log()->updateAdaptivityChartInfo(m_fieldInfo, timeStep, adaptiveStep);
 
                     solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(primal->doFHandler);
                     previousSolutions.clear();
@@ -1198,6 +1198,6 @@ void SolverDeal::solveTransient()
     chart.setTotalTime(transientSteps, m_computation->timeStepTimes().toVector());
     QString fn = chart.save();
 
-    Agros2D::log()->appendImage(fn);
+    Agros::log()->appendImage(fn);
     */
 }

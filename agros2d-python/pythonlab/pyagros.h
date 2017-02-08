@@ -45,14 +45,14 @@ std::string pyDatadir(std::string str = "");
 struct PyOptions
 {
     // cache size
-    inline int getCacheSize() const { return Agros2D::configComputer()->value(Config::Config_CacheSize).toInt(); }
+    inline int getCacheSize() const { return Agros::configComputer()->value(Config::Config_CacheSize).toInt(); }
     void setCacheSize(int size);
 
     // save matrix and rhs
-    inline bool getSaveMatrixRHS() const { return Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
-    inline void setSaveMatrixRHS(bool save) { Agros2D::configComputer()->setValue(Config::Config_LinearSystemSave, save); }
+    inline bool getSaveMatrixRHS() const { return Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
+    inline void setSaveMatrixRHS(bool save) { Agros::configComputer()->setValue(Config::Config_LinearSystemSave, save); }
 
-    inline std::string getDumpFormat() const { return dumpFormatToStringKey((MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt()).toStdString(); }
+    inline std::string getDumpFormat() const { return dumpFormatToStringKey((MatrixExportFormat) Agros::configComputer()->value(Config::Config_LinearSystemFormat).toInt()).toStdString(); }
     void setDumpFormat(std::string format);
 };
 

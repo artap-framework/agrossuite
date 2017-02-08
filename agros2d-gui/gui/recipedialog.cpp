@@ -52,8 +52,8 @@ void RecipeDialog::createControls()
     grpName->setLayout(nameLayout);
 
     cmbField = new QComboBox(this);
-    foreach (QString fieldId, Agros2D::problem()->fieldInfos().keys())
-        cmbField->addItem(Agros2D::problem()->fieldInfo(fieldId)->name(), fieldId);
+    foreach (QString fieldId, Agros::problem()->fieldInfos().keys())
+        cmbField->addItem(Agros::problem()->fieldInfo(fieldId)->name(), fieldId);
     cmbField->setCurrentIndex(cmbField->findData(m_recipe->fieldId()));
     connect(cmbField, SIGNAL(currentIndexChanged(int)), this, SLOT(fieldChanged(int)));
 
@@ -153,7 +153,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
 {
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str, m_recipe->name());
+        Agros::problem()->config()->checkVariableName(str, m_recipe->name());
     }
     catch (AgrosException &e)
     {
@@ -165,7 +165,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
     }
 
     /*
-    foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+    foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
     {
         if (str == m_recipe->name())
             continue;
@@ -217,10 +217,10 @@ QWidget *LocalValueRecipeDialog::createRecipeControls()
 
 void LocalValueRecipeDialog::fieldChanged(int index)
 {
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
+    FieldInfo *fieldInfo = Agros::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
 
     cmbVariable->clear();
-    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables(Agros2D::problem()->config()->coordinateType()))
+    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables(Agros::problem()->config()->coordinateType()))
         cmbVariable->addItem(variable.name(), variable.id());
 
     int selected = cmbVariable->findData(recipe()->variable());
@@ -232,8 +232,8 @@ void LocalValueRecipeDialog::fieldChanged(int index)
 
 void LocalValueRecipeDialog::variableChanged(int index)
 {
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
-    Module::LocalVariable physicFieldVariable = fieldInfo->localVariable(Agros2D::problem()->config()->coordinateType(),
+    FieldInfo *fieldInfo = Agros::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
+    Module::LocalVariable physicFieldVariable = fieldInfo->localVariable(Agros::problem()->config()->coordinateType(),
                                                                          cmbVariable->itemData(index).toString());
 
     cmbVariableComp->clear();
@@ -244,8 +244,8 @@ void LocalValueRecipeDialog::variableChanged(int index)
     else
     {
         cmbVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
-        cmbVariableComp->addItem(Agros2D::problem()->config()->labelX(), PhysicFieldVariableComp_X);
-        cmbVariableComp->addItem(Agros2D::problem()->config()->labelY(), PhysicFieldVariableComp_Y);
+        cmbVariableComp->addItem(Agros::problem()->config()->labelX(), PhysicFieldVariableComp_X);
+        cmbVariableComp->addItem(Agros::problem()->config()->labelY(), PhysicFieldVariableComp_Y);
     }
 
     int selected = cmbVariableComp->findData(recipe()->variableComponent());
@@ -283,7 +283,7 @@ QWidget *SurfaceIntegralRecipeDialog::createRecipeControls()
 
     lstEdges = new QListWidget(this);
 
-    for (int i = 0; i < Agros2D::problem()->scene()->faces->items().count(); i++)
+    for (int i = 0; i < Agros::problem()->scene()->faces->items().count(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstEdges);
         item->setText(QString("%1").arg(i));
@@ -302,10 +302,10 @@ QWidget *SurfaceIntegralRecipeDialog::createRecipeControls()
 
 void SurfaceIntegralRecipeDialog::fieldChanged(int index)
 {
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
+    FieldInfo *fieldInfo = Agros::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
 
     cmbVariable->clear();
-    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals(Agros2D::problem()->config()->coordinateType()))
+    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals(Agros::problem()->config()->coordinateType()))
         cmbVariable->addItem(variable.name(), variable.id());
 
     int selected = cmbVariable->findData(recipe()->variable());
@@ -348,7 +348,7 @@ QWidget *VolumeIntegralRecipeDialog::createRecipeControls()
 
     lstVolumes = new QListWidget(this);
 
-    for (int i = 0; i < Agros2D::problem()->scene()->labels->items().count(); i++)
+    for (int i = 0; i < Agros::problem()->scene()->labels->items().count(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstVolumes);
         item->setText(QString("%1").arg(i));
@@ -367,10 +367,10 @@ QWidget *VolumeIntegralRecipeDialog::createRecipeControls()
 
 void VolumeIntegralRecipeDialog::fieldChanged(int index)
 {
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
+    FieldInfo *fieldInfo = Agros::problem()->fieldInfo(cmbField->currentData(Qt::UserRole).toString());
 
     cmbVariable->clear();
-    foreach (Module::Integral variable, fieldInfo->volumeIntegrals(Agros2D::problem()->config()->coordinateType()))
+    foreach (Module::Integral variable, fieldInfo->volumeIntegrals(Agros::problem()->config()->coordinateType()))
         cmbVariable->addItem(variable.name(), variable.id());
 
     int selected = cmbVariable->findData(recipe()->variable());

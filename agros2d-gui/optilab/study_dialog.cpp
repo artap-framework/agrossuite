@@ -91,7 +91,7 @@ void LogOptimizationDialog::tryClose()
 {
     if (m_study->isSolving())
     {
-        Agros2D::log()->printError(tr("Solver"), tr("Stydy is being aborted."));
+        Agros::log()->printError(tr("Solver"), tr("Stydy is being aborted."));
     }
     else
     {
@@ -359,7 +359,7 @@ void LogOptimizationDialog::solved()
     const int height = 400;
 
     totalChart->savePng(fn, width, height);
-    Agros2D::log()->appendImage(fn);
+    Agros::log()->appendImage(fn);
 
     tryClose();
 }
@@ -637,7 +637,7 @@ void StudyDialog::readParameters()
         item->setTextAlignment(2, Qt::AlignRight);
     }
     
-    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters()->items().count());
+    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros::problem()->config()->parameters()->items().count());
     
     doParameterItemChanged(nullptr, nullptr);
 }
@@ -864,7 +864,7 @@ void StudyDialog::doDuplicate()
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
-                Agros2D::problem()->studies()->addStudy(study);
+                Agros::problem()->studies()->addStudy(study);
                 
                 close();
             }
@@ -937,7 +937,7 @@ bool StudyFunctionalDialog::checkFunctional(const QString &str)
 {
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str);
+        Agros::problem()->config()->checkVariableName(str);
     }
     catch (AgrosException &e)
     {
@@ -1146,7 +1146,7 @@ ParameterSelectDialog::ParameterSelectDialog(Study *study, QWidget *parent) : QD
     lstParameters->setMinimumHeight(26*3);
     
     // remaining parameters
-    foreach (QString name, Agros2D::problem()->config()->parameters()->items().keys())
+    foreach (QString name, Agros::problem()->config()->parameters()->items().keys())
     {
         bool skip = false;
         foreach (Parameter parameter, m_study->parameters())

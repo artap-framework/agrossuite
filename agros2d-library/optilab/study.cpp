@@ -63,7 +63,7 @@ void ComputationSet::load(QJsonObject &object)
     QJsonArray computationSetArrayJson = computationSetJson[COMPUTATIONS].toArray();
     for (int i = 0; i < computationSetArrayJson.size(); i++)
     {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
         QSharedPointer<Computation> computation = computations[computationSetArrayJson[i].toString()];
         // TODO: temporary fix (remove bad solution)
         if (!computation.isNull())
@@ -265,7 +265,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
         }
         catch (AgrosException &e)
         {
-            Agros2D::log()->printError(tr("Problem"), e.toString());
+            Agros::log()->printError(tr("Problem"), e.toString());
             throw AgrosSolverException(tr("Problem was not solved."));
         }
     }
@@ -336,7 +336,7 @@ double Study::doeEvaluatePoint(const QVector<double> &x)
         }
         catch (AgrosException &e)
         {
-            Agros2D::log()->printError(tr("Problem"), e.toString());
+            Agros::log()->printError(tr("Problem"), e.toString());
             return std::numeric_limits<double>::max();
         }
     }
@@ -579,7 +579,7 @@ QVariant Study::variant()
 void Study::doAbortSolve()
 {
     m_abort = true;
-    Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
+    Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
 void Study::setDefaultValues()

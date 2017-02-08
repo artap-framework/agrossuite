@@ -81,27 +81,27 @@ int main(int argc, char *argv[])
                     QSharedPointer<Log> log;
 
                     // init singleton + enable log
-                    Agros2D::createSingleton(logArg.getValue() ? QSharedPointer<Log>(new LogStdOut()) : QSharedPointer<Log>());
+                    Agros::createSingleton(logArg.getValue() ? QSharedPointer<Log>(new LogStdOut()) : QSharedPointer<Log>());
 
                     QTime time;
                     time.start();
 
                     try
                     {
-                        Agros2D::problem()->readProblemFromArchive(QString::fromStdString(problemArg.getValue()));
+                        Agros::problem()->readProblemFromArchive(QString::fromStdString(problemArg.getValue()));
 
-                        Agros2D::log()->printMessage(QObject::tr("Problem"), QObject::tr("Problem '%1' successfuly loaded").arg(QString::fromStdString(problemArg.getValue())));
+                        Agros::log()->printMessage(QObject::tr("Problem"), QObject::tr("Problem '%1' successfuly loaded").arg(QString::fromStdString(problemArg.getValue())));
 
                         if (studyArg.getValue() == -1)
                         {
                             // solve problem
-                            QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+                            QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
                             computation->solve();
                         }
                         else
                         {
                             // run study
-                            Study *study = Agros2D::problem()->studies()->items().at(studyArg.getValue());
+                            Study *study = Agros::problem()->studies()->items().at(studyArg.getValue());
 
                             // solve
                             if (study)
@@ -110,18 +110,18 @@ int main(int argc, char *argv[])
 
                         // save solution
                         if (writeArg.getValue())
-                            Agros2D::problem()->writeProblemToArchive(QString::fromStdString(problemArg.getValue()), false);
+                            Agros::problem()->writeProblemToArchive(QString::fromStdString(problemArg.getValue()), false);
 
-                        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
+                        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
                         // clear all
-                        Agros2D::problem()->clearFields();
+                        Agros::problem()->clearFields();
 
                         return -1;
                     }
                     catch (AgrosException &e)
                     {
-                        Agros2D::log()->printError(QObject::tr("Problem"), e.toString());
+                        Agros::log()->printError(QObject::tr("Problem"), e.toString());
 
                         return -1;
                     }

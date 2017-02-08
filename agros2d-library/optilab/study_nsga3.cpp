@@ -92,7 +92,7 @@ public:
             return false;
 
         // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+        QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
         // m_study->addComputation(computation);
 
         // training patterns
@@ -148,7 +148,7 @@ public:
                         totalValue += ((double) m_study->functionals()[i].weight() / totalWeight) * mu[i];
                     }
 
-                    Agros2D::computations().remove(computation->problemDir());
+                    Agros::computations().remove(computation->problemDir());
 
                     countSurrogate++;
 

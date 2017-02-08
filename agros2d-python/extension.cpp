@@ -42,7 +42,7 @@ public:
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
         // init singleton
-        Agros2D::createSingleton(QSharedPointer<Log>(new LogStdOut()));
+        Agros::createSingleton(QSharedPointer<Log>(new LogStdOut()));
     }
 
     ~LibInstance()

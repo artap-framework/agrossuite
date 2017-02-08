@@ -254,7 +254,7 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
     createControls();
 
     connect(btnAbort, SIGNAL(clicked()), m_computation, SLOT(doAbortSolve()));
-    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(tryClose()));
+    connect(Agros::problem(), SIGNAL(meshed()), this, SLOT(tryClose()));
     connect(m_computation, SIGNAL(solved()), this, SLOT(tryClose()));
 
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
@@ -601,7 +601,7 @@ void LogDialog::tryClose()
 {
     if (m_computation->isSolving())
     {
-        Agros2D::log()->printError(tr("Solver"), tr("Solution is being aborted."));
+        Agros::log()->printError(tr("Solver"), tr("Solution is being aborted."));
     }
     else
     {

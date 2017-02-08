@@ -149,7 +149,7 @@ bool ProblemFunctionDialog::save()
     // check function name
     try
     {
-        Agros2D::problem()->config()->checkVariableName(txtFunctionName->text(), m_function->name());
+        Agros::problem()->config()->checkVariableName(txtFunctionName->text(), m_function->name());
 
         m_function->setName(txtFunctionName->text());
         m_function->setLowerBound(txtLowerBound->value());
@@ -200,7 +200,7 @@ void ProblemFunctionDialog::functionNameTextChanged(const QString &str)
 
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str, m_function->name());
+        Agros::problem()->config()->checkVariableName(str, m_function->name());
     }
     catch (AgrosException &e)
     {

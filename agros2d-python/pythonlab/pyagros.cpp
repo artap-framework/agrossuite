@@ -43,10 +43,10 @@ void openFile(const std::string &file, bool openWithSolution)
 {
     try
     {
-        Agros2D::problem()->readProblemFromArchive(QString::fromStdString(file));
+        Agros::problem()->readProblemFromArchive(QString::fromStdString(file));
 
         // if (openWithSolution)
-        //    Agros2D::computation()->readSolutionFromFile(QString::fromStdString(file));
+        //    Agros::computation()->readSolutionFromFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {
@@ -58,10 +58,10 @@ void saveFile(const std::string &file, bool saveWithSolution)
 {
     try
     {
-        Agros2D::problem()->writeProblemToArchive(QString::fromStdString(file), !saveWithSolution);
+        Agros::problem()->writeProblemToArchive(QString::fromStdString(file), !saveWithSolution);
 
         // if (saveWithSolution || silentMode())
-        //    Agros2D::computation()->writeSolutionToFile(QString::fromStdString(file));
+        //    Agros::computation()->writeSolutionToFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {
@@ -87,13 +87,13 @@ void PyOptions::setCacheSize(int size)
     if (size < 2 || size > 50)
         throw out_of_range(QObject::tr("Cache size is out of range (2 - 50).").toStdString());
 
-    Agros2D::configComputer()->setValue(Config::Config_CacheSize, size);
+    Agros::configComputer()->setValue(Config::Config_CacheSize, size);
 }
 
 void PyOptions::setDumpFormat(std::string format)
 {
     if (dumpFormatStringKeys().contains(QString::fromStdString(format)))
-        Agros2D::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) dumpFormatFromStringKey(QString::fromStdString(format)));
+        Agros::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) dumpFormatFromStringKey(QString::fromStdString(format)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(dumpFormatStringKeys())).toStdString());
 }

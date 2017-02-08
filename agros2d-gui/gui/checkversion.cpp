@@ -19,9 +19,8 @@
 
 #include "checkversion.h"
 
-#include "util.h"
-#include "../config.h"
-#include "../util/system_utils.h"
+#include "util/util.h"
+#include "util/system_utils.h"
 
 QString esc(const QString &str)
 {

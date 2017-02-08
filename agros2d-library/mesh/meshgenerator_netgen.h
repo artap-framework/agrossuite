@@ -61,12 +61,6 @@ public:
 
 class MeshGeneratorNetgen : public MeshGenerator
 {
-    Q_OBJECT
-
-private slots:
-    bool writeToNetgen();
-    bool readNetgenMeshFormat();
-
 public:
     MeshGeneratorNetgen();
 
@@ -74,6 +68,9 @@ public:
 
 private:
     SplineGeometry2dAgros *geom;
+
+    bool writeToNetgen();
+    bool readNetgenMeshFormat();
 };
 
 

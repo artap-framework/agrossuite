@@ -40,8 +40,6 @@ namespace XMLSubdomains
 
 class AGROS_LIBRARY_API MeshGenerator : public QObject
 {
-    Q_OBJECT
-
 public:
     MeshGenerator(ProblemBase *problem);
 
@@ -218,9 +216,6 @@ protected:
     void getDataCountsForSingleSubdomain(FieldInfo* fieldInfo, int& element_number_count, int& boundary_edge_number_count, int& inner_edge_number_count);
 
     bool prepare();
-
-    bool m_isError;
-    QSharedPointer<QProcess> m_process;
 
     dealii::Triangulation<2> m_triangulation;
 

@@ -79,10 +79,10 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
     // boundary conditions, materials and geometry information
     createControls();
 
-    connect(Agros2D::problem()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
+    connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
+    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -333,8 +333,8 @@ void PreprocessorWidget::keyPressEvent(QKeyEvent *event)
 
 void PreprocessorWidget::refresh()
 {
-    txtGridStep->setText(QString::number(Agros2D::problem()->config()->value(ProblemConfig::GridStep).toDouble()));
-    chkSnapToGrid->setChecked(Agros2D::problem()->config()->value(ProblemConfig::SnapToGrid).toBool());
+    txtGridStep->setText(QString::number(Agros::problem()->config()->value(ProblemConfig::GridStep).toDouble()));
+    chkSnapToGrid->setChecked(Agros::problem()->config()->value(ProblemConfig::SnapToGrid).toBool());
 
     trvWidget->blockSignals(true);
     trvWidget->setUpdatesEnabled(false);
@@ -361,7 +361,7 @@ void PreprocessorWidget::refresh()
     problemProperties(problemPropertiesNode);
 
     // parameters
-    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+    QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     if (parameters.count() > 0)
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
@@ -381,7 +381,7 @@ void PreprocessorWidget::refresh()
     }
 
     // functions
-    ProblemFunctions *functions = Agros2D::problem()->config()->functions();
+    ProblemFunctions *functions = Agros::problem()->config()->functions();
     if (functions->items().count() > 0)
     {
         QTreeWidgetItem *functionNode = new QTreeWidgetItem(problemNode);
@@ -408,7 +408,7 @@ void PreprocessorWidget::refresh()
     fieldsNode->setExpanded(true);
 
     // field and markers
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(fieldsNode);
@@ -433,12 +433,12 @@ void PreprocessorWidget::refresh()
         materialsNode->setFont(0, fnt);
         materialsNode->setExpanded(true);
 
-        foreach (SceneMaterial *material, Agros2D::problem()->scene()->materials->filter(fieldInfo).items())
+        foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(fieldInfo).items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(materialsNode);
 
             item->setText(0, material->name());
-            if (Agros2D::problem()->scene()->labels->haveMarker(material).isEmpty())
+            if (Agros::problem()->scene()->labels->haveMarker(material).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, material->variant());
             item->setData(1, Qt::UserRole, PreprocessorWidget::Material);
@@ -451,7 +451,7 @@ void PreprocessorWidget::refresh()
         boundaryConditionsNode->setFont(0, fnt);
         boundaryConditionsNode->setExpanded(true);
 
-        foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(fieldInfo).items())
+        foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(boundaryConditionsNode);
 
@@ -459,7 +459,7 @@ void PreprocessorWidget::refresh()
 
             item->setText(0, boundary->name());
             item->setText(1, boundaryType.name());
-            if (Agros2D::problem()->scene()->faces->haveMarker(boundary).isEmpty())
+            if (Agros::problem()->scene()->faces->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
             item->setData(1, Qt::UserRole, PreprocessorWidget::Boundary);
@@ -480,7 +480,7 @@ void PreprocessorWidget::refresh()
     nodesNode->setFont(0, fnt);
 
     int inode = 0;
-    foreach (SceneNode *node, Agros2D::problem()->scene()->nodes->items())
+    foreach (SceneNode *node, Agros::problem()->scene()->nodes->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(nodesNode);
 
@@ -501,7 +501,7 @@ void PreprocessorWidget::refresh()
     edgesNode->setFont(0, fnt);
 
     int iedge = 0;
-    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
+    foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(edgesNode);
 
@@ -523,7 +523,7 @@ void PreprocessorWidget::refresh()
     labelsNode->setFont(0, fnt);
 
     int ilabel = 0;
-    foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
+    foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(labelsNode);
 
@@ -545,27 +545,27 @@ void PreprocessorWidget::refresh()
     optilabNode->setExpanded(true);
 
     // recipes
-    if (Agros2D::problem()->recipes()->items().count() > 0)
+    if (Agros::problem()->recipes()->items().count() > 0)
     {
         QTreeWidgetItem *recipesNode = new QTreeWidgetItem(optilabNode);
         recipesNode->setText(0, tr("Recipes"));
         recipesNode->setFont(0, fnt);
         // recipesNode->setExpanded(true);
 
-        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+        foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
 
             item->setText(0, QString("%1").arg(recipe->name()));
-            item->setData(0, Qt::UserRole, recipe->variant());
+            item->setData(0, Qt::UserRole, recipe->name());
             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
             item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
         }
     }
 
-    if (Agros2D::problem()->studies()->items().count() > 0)
+    if (Agros::problem()->studies()->items().count() > 0)
     {
-        foreach (Study *study, Agros2D::problem()->studies()->items())
+        foreach (Study *study, Agros::problem()->studies()->items())
         {
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
@@ -621,23 +621,23 @@ void PreprocessorWidget::refresh()
     trvWidget->blockSignals(false);
 
     mnuBoundariesAndMaterials->clear();
-    if (Agros2D::problem()->fieldInfos().count() == 1)
+    if (Agros::problem()->fieldInfos().count() == 1)
     {
         // one material and boundary
         mnuBoundariesAndMaterials->addAction(actNewBoundary);
         mnuBoundariesAndMaterials->addAction(actNewMaterial);
     }
-    else if (Agros2D::problem()->fieldInfos().count() > 1)
+    else if (Agros::problem()->fieldInfos().count() > 1)
     {
         // multiple materials and boundaries
         QMenu *mnuSubBoundaries = new QMenu(tr("New boundary condition"), mnuBoundariesAndMaterials);
         mnuBoundariesAndMaterials->addMenu(mnuSubBoundaries);
-        foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+        foreach(FieldInfo* fieldInfo, Agros::problem()->fieldInfos())
             mnuSubBoundaries->addAction(actNewBoundaries[fieldInfo->fieldId()]);
 
         QMenu *mnuSubMaterials = new QMenu(tr("New material"), mnuBoundariesAndMaterials);
         mnuBoundariesAndMaterials->addMenu(mnuSubMaterials);
-        foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+        foreach(FieldInfo* fieldInfo, Agros::problem()->fieldInfos())
             mnuSubMaterials->addAction(actNewMaterials[fieldInfo->fieldId()]);
     }
 }
@@ -655,21 +655,21 @@ QString PreprocessorWidget::problemPropertiesToString()
     QString html = "<body style=\"font-size: 11px;\">";
     html += QString("<h4>%1</h4>").arg(tr("Problem properties"));
     html += "<table width=\"100%\">";
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Coordinate type:")).arg(coordinateTypeString(Agros2D::problem()->config()->coordinateType()));
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Mesh type:")).arg(meshTypeString(Agros2D::problem()->config()->meshType()));
-    if (Agros2D::problem()->isHarmonic())
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Coordinate type:")).arg(coordinateTypeString(Agros::problem()->config()->coordinateType()));
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Mesh type:")).arg(meshTypeString(Agros::problem()->config()->meshType()));
+    if (Agros::problem()->isHarmonic())
     {
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Frequency:")).arg(Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz");
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Frequency:")).arg(Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz");
     }
-    if (Agros2D::problem()->isTransient())
+    if (Agros::problem()->isTransient())
     {
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Method:")).arg(timeStepMethodString((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Order:")).arg(QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()));
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Tolerance (%):")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Initial step size:")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Constant time step:")).arg(QString::number(Agros2D::problem()->config()->constantTimeStepLength()) + " s");
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of const. time steps:")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Total time:")).arg(QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s");
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Method:")).arg(timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Order:")).arg(QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()));
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Tolerance (%):")).arg(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Initial step size:")).arg(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Constant time step:")).arg(QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s");
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of const. time steps:")).arg(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Total time:")).arg(QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s");
     }
 
     html += "</table>";
@@ -698,21 +698,21 @@ QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
 
 void PreprocessorWidget::problemProperties(QTreeWidgetItem *item)
 {
-    propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros2D::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
-    propertiesItem(item, tr("Mesh type"), meshTypeString(Agros2D::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
-    if (Agros2D::problem()->isHarmonic())
+    propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
+    propertiesItem(item, tr("Mesh type"), meshTypeString(Agros::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
+    if (Agros::problem()->isHarmonic())
     {
-        propertiesItem(item, tr("Frequency"), Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Frequency"), Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
     }
-    if (Agros2D::problem()->isTransient())
+    if (Agros::problem()->isTransient())
     {
-        propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Order"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Tolerance"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Initial step size"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Constant time step"), QString::number(Agros2D::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Total time"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Order"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Tolerance"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Initial step size"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Constant time step"), QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Total time"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
     }
 }
 
@@ -747,9 +747,9 @@ void PreprocessorWidget::doContextMenu(const QPoint &pos)
     if (current)
         trvWidget->setCurrentItem(current);
 
-    actNewRecipeLocalValue->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
-    actNewRecipeSurfaceIntegral->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
-    actNewRecipeVolumeIntegral->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
+    actNewRecipeLocalValue->setEnabled(Agros::problem()->fieldInfos().count() > 0);
+    actNewRecipeSurfaceIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
+    actNewRecipeVolumeIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
 
     mnuPreprocessor->exec(QCursor::pos());
 }
@@ -761,8 +761,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
     actProperties->setEnabled(false);
     actDelete->setEnabled(false);
 
-    Agros2D::problem()->scene()->selectNone();
-    Agros2D::problem()->scene()->highlightNone();
+    Agros::problem()->scene()->selectNone();
+    Agros::problem()->scene()->highlightNone();
 
     if (current)
     {
@@ -795,7 +795,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             SceneBoundary *objectBoundary = current->data(0, Qt::UserRole).value<SceneBoundary *>();
             m_sceneViewPreprocessor->actOperateOnEdges->trigger();
 
-            Agros2D::problem()->scene()->faces->haveMarker(objectBoundary).setSelected();
+            Agros::problem()->scene()->faces->haveMarker(objectBoundary).setSelected();
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
@@ -809,7 +809,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             SceneMaterial *objectMaterial = current->data(0, Qt::UserRole).value<SceneMaterial *>();
             m_sceneViewPreprocessor->actOperateOnLabels->trigger();
 
-            Agros2D::problem()->scene()->labels->haveMarker(objectMaterial).setSelected();
+            Agros::problem()->scene()->labels->haveMarker(objectMaterial).setSelected();
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
@@ -948,7 +948,7 @@ void PreprocessorWidget::doProperties()
         {
             // function
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            ProblemFunction *function = Agros2D::problem()->config()->functions()->function(key);
+            ProblemFunction *function = Agros::problem()->config()->functions()->function(key);
 
             ProblemFunctionDialog *dialog = nullptr;
             if (function->type() == ProblemFunctionType_Analytic)
@@ -966,7 +966,7 @@ void PreprocessorWidget::doProperties()
         else if (type == PreprocessorWidget::FieldProperties)
         {
             // field properties
-            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
+            FieldInfo *fieldInfo = Agros::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
 
             FieldDialog fieldDialog(fieldInfo, this);
             if (fieldDialog.exec() == QDialog::Accepted)
@@ -1022,7 +1022,7 @@ void PreprocessorWidget::doProperties()
         }
         else if (type == PreprocessorWidget::OptilabRecipe)
         {
-            ResultRecipe *recipe = trvWidget->currentItem()->data(0, Qt::UserRole).value<ResultRecipe *>();
+            ResultRecipe *recipe = Agros::problem()->recipes()->recipe(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
 
             RecipeDialog *dialog = nullptr;
             if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
@@ -1061,55 +1061,55 @@ void PreprocessorWidget::doDelete()
 
             if (SceneNode *node = dynamic_cast<SceneNode *>(objectBasic))
             {
-                Agros2D::problem()->scene()->nodes->remove(node);
+                Agros::problem()->scene()->nodes->remove(node);
             }
 
             else if (SceneFace *edge = dynamic_cast<SceneFace *>(objectBasic))
             {
-                Agros2D::problem()->scene()->faces->remove(edge);
+                Agros::problem()->scene()->faces->remove(edge);
             }
 
             else if (SceneLabel *label = dynamic_cast<SceneLabel *>(objectBasic))
             {
-                Agros2D::problem()->scene()->labels->remove(label);
+                Agros::problem()->scene()->labels->remove(label);
             }
         }
         else if (type == PreprocessorWidget::Material)
         {
             // label marker
             SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
-            Agros2D::problem()->scene()->removeMaterial(objectMaterial);
+            Agros::problem()->scene()->removeMaterial(objectMaterial);
         }
         else if (type == PreprocessorWidget::Boundary)
         {
             // edge marker
             SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
-            Agros2D::problem()->scene()->removeBoundary(objectBoundary);
+            Agros::problem()->scene()->removeBoundary(objectBoundary);
         }
         else if (type == PreprocessorWidget::ModelParameter)
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+            QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
             parameters.remove(key);
 
-            Agros2D::problem()->checkAndApplyParameters(parameters);
+            Agros::problem()->checkAndApplyParameters(parameters);
         }
         else if (type == PreprocessorWidget::ModelFunction)
         {
             // function
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            Agros2D::problem()->config()->functions()->remove(key);
+            Agros::problem()->config()->functions()->remove(key);
         }
         else if (type == PreprocessorWidget::FieldProperties)
         {
             // parameter
-            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
+            FieldInfo *fieldInfo = Agros::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
 
             if (QMessageBox::question(this, tr("Delete"), tr("Physical field '%1' will be pernamently deleted. Are you sure?").
                                       arg(fieldInfo->name()), tr("&Yes"), tr("&No")) == 0)
             {
-                Agros2D::problem()->removeField(fieldInfo);
+                Agros::problem()->removeField(fieldInfo);
             }
         }
         else if (type == PreprocessorWidget::OptilabStudy)
@@ -1120,18 +1120,18 @@ void PreprocessorWidget::doDelete()
             if (QMessageBox::question(this, tr("Delete"), tr("Study '%1' will be pernamently deleted. Are you sure?").
                                       arg(studyTypeString(study->type())), tr("&Yes"), tr("&No")) == 0)
             {
-                Agros2D::problem()->studies()->removeStudy(study);
+                Agros::problem()->studies()->removeStudy(study);
             }
         }
         else if (type == PreprocessorWidget::OptilabRecipe)
         {
             // recipe
-            ResultRecipe *recipe = trvWidget->currentItem()->data(0, Qt::UserRole).value<ResultRecipe *>();
+            ResultRecipe *recipe = Agros::problem()->recipes()->recipe(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
 
             if (QMessageBox::question(this, tr("Delete"), tr("Recipe '%1' will be pernamently deleted. Are you sure?").
                                       arg(recipe->name()), tr("&Yes"), tr("&No")) == 0)
             {
-                Agros2D::problem()->recipes()->removeRecipe(recipe);
+                Agros::problem()->recipes()->removeRecipe(recipe);
             }
         }
 
@@ -1157,7 +1157,7 @@ void PreprocessorWidget::doNewFunctionAnalytic()
     ProblemFunctionAnalyticDialog dialog(function, this);
     if (dialog.showDialog() == QDialog::Accepted)
     {
-        Agros2D::problem()->config()->functions()->add(function);
+        Agros::problem()->config()->functions()->add(function);
 
         m_sceneViewPreprocessor->refresh();
         refresh();
@@ -1183,7 +1183,7 @@ void PreprocessorWidget::doNewFunctionInterpolation()
 void PreprocessorWidget::doNewField()
 {
     // select field dialog
-    FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
+    FieldSelectDialog dialog(Agros::problem()->fieldInfos().keys(), this);
     if (dialog.exec() == QDialog::Accepted)
     {
         // add field
@@ -1192,7 +1192,7 @@ void PreprocessorWidget::doNewField()
         FieldDialog fieldDialog(fieldInfo, this);
         if (fieldDialog.exec() == QDialog::Accepted)
         {
-            Agros2D::problem()->addField(fieldInfo);
+            Agros::problem()->addField(fieldInfo);
 
             refresh();
             // emit changed();
@@ -1218,7 +1218,7 @@ void PreprocessorWidget::doNewStudy()
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
-                Agros2D::problem()->studies()->addStudy(study);
+                Agros::problem()->studies()->addStudy(study);
 
                 refresh();
             }
@@ -1247,10 +1247,10 @@ void PreprocessorWidget::doNewRecipeVolumeIntegral()
 
 void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
 {
-    if (Agros2D::problem()->fieldInfos().count() > 0)
+    if (Agros::problem()->fieldInfos().count() > 0)
     {
         ResultRecipe *recipe = ResultRecipe::factory(type);
-        recipe->setFieldId(Agros2D::problem()->fieldInfos().first()->fieldId());
+        recipe->setFieldId(Agros::problem()->fieldInfos().first()->fieldId());
 
         RecipeDialog *dialog = nullptr;
         if (type == ResultRecipeType_LocalValue)
@@ -1270,7 +1270,7 @@ void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
 
         if (dialog->showDialog() == QDialog::Accepted)
         {
-            Agros2D::problem()->recipes()->addRecipe(recipe);
+            Agros::problem()->recipes()->addRecipe(recipe);
             refresh();
         }
         else
@@ -1282,8 +1282,8 @@ void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
 
 void PreprocessorWidget::doApply()
 {
-    Agros2D::problem()->config()->setValue(ProblemConfig::GridStep, txtGridStep->text().toDouble());
-    Agros2D::problem()->config()->setValue(ProblemConfig::SnapToGrid, chkSnapToGrid->isChecked());
+    Agros::problem()->config()->setValue(ProblemConfig::GridStep, txtGridStep->text().toDouble());
+    Agros::problem()->config()->setValue(ProblemConfig::SnapToGrid, chkSnapToGrid->isChecked());
 }
 
 void PreprocessorWidget::doTransform()
@@ -1294,12 +1294,12 @@ void PreprocessorWidget::doTransform()
 
 void PreprocessorWidget::doNewNode(const Point &point)
 {
-    SceneNode *node = new SceneNode(Agros2D::problem()->scene(), PointValue(Agros2D::problem(), point));
+    SceneNode *node = new SceneNode(Agros::problem()->scene(), PointValue(Agros::problem(), point));
     SceneNodeDialog *dialog = new SceneNodeDialog(node, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
-        SceneNode *nodeAdded = Agros2D::problem()->scene()->addNode(node);
+        SceneNode *nodeAdded = Agros::problem()->scene()->addNode(node);
         if (nodeAdded == node) undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
     }
     else
@@ -1308,12 +1308,12 @@ void PreprocessorWidget::doNewNode(const Point &point)
 
 void PreprocessorWidget::doNewEdge()
 {
-    SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), Agros2D::problem()->scene()->nodes->at(0), Agros2D::problem()->scene()->nodes->at(1), Value(Agros2D::problem(), 0.0));
+    SceneFace *edge = new SceneFace(Agros::problem()->scene(), Agros::problem()->scene()->nodes->at(0), Agros::problem()->scene()->nodes->at(1), Value(Agros::problem(), 0.0));
     SceneFaceDialog *dialog = new SceneFaceDialog(edge, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
-        SceneFace *edgeAdded = Agros2D::problem()->scene()->addFace(edge);
+        SceneFace *edgeAdded = Agros::problem()->scene()->addFace(edge);
         if (edgeAdded == edge)
             undoStack()->push(getAddCommand(edge));
     }
@@ -1323,12 +1323,12 @@ void PreprocessorWidget::doNewEdge()
 
 void PreprocessorWidget::doNewLabel(const Point &point)
 {
-    SceneLabel *label = new SceneLabel(Agros2D::problem()->scene(), PointValue(Agros2D::problem(), point), 0.0);
+    SceneLabel *label = new SceneLabel(Agros::problem()->scene(), PointValue(Agros::problem(), point), 0.0);
     SceneLabelDialog *dialog = new SceneLabelDialog(label, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
-        SceneLabel *labelAdded = Agros2D::problem()->scene()->addLabel(label);
+        SceneLabel *labelAdded = Agros::problem()->scene()->addLabel(label);
 
         if (labelAdded == label)
             undoStack()->push(getAddCommand(label));
@@ -1339,21 +1339,21 @@ void PreprocessorWidget::doNewLabel(const Point &point)
 
 void PreprocessorWidget::doNewBoundary()
 {
-    doNewBoundary(Agros2D::problem()->fieldInfos().begin().key());
+    doNewBoundary(Agros::problem()->fieldInfos().begin().key());
 }
 
 void PreprocessorWidget::doNewBoundary(QString field)
 {
-    SceneBoundary *boundary = new SceneBoundary(Agros2D::problem()->scene(),
-                                                Agros2D::problem()->fieldInfo(field),
+    SceneBoundary *boundary = new SceneBoundary(Agros::problem()->scene(),
+                                                Agros::problem()->fieldInfo(field),
                                                 tr("new boundary"),
-                                                Agros2D::problem()->fieldInfo(field)->boundaryTypeDefault().id());
+                                                Agros::problem()->fieldInfo(field)->boundaryTypeDefault().id());
 
     SceneBoundaryDialog *dialog = new SceneBoundaryDialog(boundary, this);
     if (dialog)
     {
         if (dialog->exec() == QDialog::Accepted)
-            Agros2D::problem()->scene()->addBoundary(boundary);
+            Agros::problem()->scene()->addBoundary(boundary);
         else
         {
             delete boundary;
@@ -1368,20 +1368,20 @@ void PreprocessorWidget::doNewBoundary(QString field)
 
 void PreprocessorWidget::doNewMaterial()
 {
-    doNewMaterial(Agros2D::problem()->fieldInfos().begin().key());
+    doNewMaterial(Agros::problem()->fieldInfos().begin().key());
 }
 
 void PreprocessorWidget::doNewMaterial(QString field)
 {
-    SceneMaterial *material = new SceneMaterial(Agros2D::problem()->scene(),
-                                                Agros2D::problem()->fieldInfo(field),
+    SceneMaterial *material = new SceneMaterial(Agros::problem()->scene(),
+                                                Agros::problem()->fieldInfo(field),
                                                 tr("new material"));
 
     SceneMaterialDialog *dialog = new SceneMaterialDialog(material, this);
     if (dialog)
     {
         if (dialog->exec() == QDialog::Accepted)
-            Agros2D::problem()->scene()->addMaterial(material);
+            Agros::problem()->scene()->addMaterial(material);
         else
         {
             delete material;

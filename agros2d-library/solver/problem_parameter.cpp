@@ -112,7 +112,7 @@ void ProblemParameters::set(const QString &key, double val)
         if (m_parameters.keys().contains(key) && fabs(number(key) - val) < EPS_ZERO)
             return;
 
-        Agros2D::problem()->config()->checkVariableName(key, key);
+        Agros::problem()->config()->checkVariableName(key, key);
         m_parameters[key] = ProblemParameter(key, val);
 
         // create new table - invalidate

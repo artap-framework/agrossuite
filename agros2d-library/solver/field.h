@@ -49,8 +49,6 @@ const int LABEL_OUTSIDE_FIELD = -10000;
 
 class AGROS_LIBRARY_API FieldInfo : public QObject
 {
-    Q_OBJECT
-
 public:
     FieldInfo(QString fieldId);
     ~FieldInfo();
@@ -113,17 +111,17 @@ public:
 
     // linearity
     inline LinearityType linearityType() const {return m_setting[Linearity].value<LinearityType>(); }
-    void setLinearityType(const LinearityType linearityType) { m_setting[Linearity] = QVariant::fromValue(linearityType); emit changed(); }
+    void setLinearityType(const LinearityType linearityType) { m_setting[Linearity] = QVariant::fromValue(linearityType); }
 
     QList<LinearityType> availableLinearityTypes(AnalysisType at) const;
 
     // adaptivity
     inline AdaptivityMethod adaptivityType() const { return m_setting[Adaptivity].value<AdaptivityMethod>(); }
-    void setAdaptivityType(const AdaptivityMethod adaptivityType) { m_setting[Adaptivity] = QVariant::fromValue(adaptivityType); emit changed(); }
+    void setAdaptivityType(const AdaptivityMethod adaptivityType) { m_setting[Adaptivity] = QVariant::fromValue(adaptivityType); }
 
     // matrix
     inline MatrixSolverType matrixSolver() const { return m_setting[LinearSolver].value<MatrixSolverType>(); }
-    void setMatrixSolver(const MatrixSolverType matrixSolver) { m_setting[LinearSolver] = QVariant::fromValue(matrixSolver); emit changed(); }
+    void setMatrixSolver(const MatrixSolverType matrixSolver) { m_setting[LinearSolver] = QVariant::fromValue(matrixSolver); }
 
     // number of solutions
     inline int numberOfSolutions() const { return m_numberOfSolutions; }
@@ -149,12 +147,12 @@ public:
     inline QStringList stringKeys() { return m_settingKey.values(); }
 
     inline QVariant value(Type type) const { return m_setting[type]; }
-    inline void setValue(Type type, int value, bool emitChanged = true) {  m_setting[type] = value; if (emitChanged) emit changed(); }
-    inline void setValue(Type type, double value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, bool value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, const std::string &value, bool emitChanged = true) { setValue(type, QString::fromStdString(value), emitChanged); }
-    inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, const QStringList &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, int value) {  m_setting[type] = value; }
+    inline void setValue(Type type, double value) {  m_setting[type] = value; }
+    inline void setValue(Type type, bool value) {  m_setting[type] = value; }
+    inline void setValue(Type type, const std::string &value) { setValue(type, QString::fromStdString(value)); }
+    inline void setValue(Type type, const QString &value) { m_setting[type] = value; }
+    inline void setValue(Type type, const QStringList &value) { m_setting[type] = value; }
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
@@ -227,10 +225,6 @@ public:
     QList<LinearityType> availableLinearityTypes() const {return m_availableLinearityTypes;}
 
     double labelArea(int agrosLabel) const;
-
-signals:
-    void changed();
-
 private:
     /// plugin
     PluginInterface *m_plugin;

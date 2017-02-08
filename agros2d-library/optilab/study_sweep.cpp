@@ -56,7 +56,7 @@ SweepProblem::SweepProblem(StudySweep *study, bayesopt::Parameters par)
 double SweepProblem::evaluateSample(const vectord& x)
 {
     // computation
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
     // set parameters
     for (int i = 0; i < m_study->parameters().count(); i++)

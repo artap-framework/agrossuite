@@ -42,12 +42,12 @@ FieldInfo::FieldInfo(QString fieldId)
     // read plugin
     try
     {
-        m_plugin = Agros2D::loadPlugin(m_fieldId);
+        m_plugin = Agros::loadPlugin(m_fieldId);
 
     }
     catch (AgrosPluginException &e)
     {
-        Agros2D::log()->printError("Solver", "Cannot load plugin");
+        Agros::log()->printError("Solver", "Cannot load plugin");
         throw;
     }
 
@@ -539,7 +539,7 @@ QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
                     if (variable.id().toStdString() == qty.id())
                     {
                         QString nonlinearExpression;
-                        if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
+                        if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
                             nonlinearExpression = QString::fromStdString(qty.nonlinearity_planar().get());
                         else
                             if (qty.nonlinearity_axi().present())

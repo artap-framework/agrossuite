@@ -52,7 +52,7 @@ BayesOptProblem::BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par)
 double BayesOptProblem::evaluateSample(const vectord &x)
 {   
     // computation
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
     // set parameters
     vectord query(m_study->parameters().count());
@@ -131,7 +131,7 @@ bool BayesOptProblem::checkReachability(const vectord &x)
         return true;
 
     // computation
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
     // set parameters
     for (int i = 0; i < m_study->parameters().count(); i++)

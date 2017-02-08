@@ -34,8 +34,6 @@ class SceneMaterial;
 
 class ParticleTracing : public QObject
 {
-    Q_OBJECT
-
 public:
     ParticleTracing(Computation *computation, QList<double> particleMassesList, QObject *parent = 0);
     ~ParticleTracing();

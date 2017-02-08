@@ -65,9 +65,9 @@ void clearAgros2DCache()
 
 }
 
-static QSharedPointer<Agros2D> m_singleton;
+static QSharedPointer<Agros> m_singleton;
 
-Agros2D::Agros2D(QSharedPointer<Log> log) : m_log(log)
+Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 {
     clearAgros2DCache();
 
@@ -79,7 +79,7 @@ Agros2D::Agros2D(QSharedPointer<Log> log) : m_log(log)
     m_configComputer = new Config();
 }
 
-void Agros2D::clear()
+void Agros::clear()
 {    
     delete m_singleton.data()->m_problem;
     m_singleton.data()->m_computations.clear();
@@ -91,38 +91,38 @@ void Agros2D::clear()
     removeDirectory(tempProblemDir());
 }
 
-void Agros2D::addComputation(const QString &problemDir, QSharedPointer<Computation> comp)
+void Agros::addComputation(const QString &problemDir, QSharedPointer<Computation> comp)
 {
-    Agros2D::singleton()->m_computations[problemDir] = comp;
+    Agros::singleton()->m_computations[problemDir] = comp;
 }
 
-void Agros2D::clearComputations()
+void Agros::clearComputations()
 {
-    foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->m_computations)
+    foreach (QSharedPointer<Computation> computation, Agros::singleton()->m_computations)
     {
         // clear solutions
         computation->clearFieldsAndConfig();
         // remove computation from studies
-        Agros2D::singleton()->problem()->studies()->removeComputation(computation);
+        Agros::singleton()->problem()->studies()->removeComputation(computation);
         // remove from list
-        Agros2D::singleton()->m_computations.remove(computation->problemDir());
+        Agros::singleton()->m_computations.remove(computation->problemDir());
     }
 
-    Agros2D::singleton()->m_computations.clear();
+    Agros::singleton()->m_computations.clear();
 }
 
-void Agros2D::createSingleton(QSharedPointer<Log> log)
+void Agros::createSingleton(QSharedPointer<Log> log)
 {
-    m_singleton = QSharedPointer<Agros2D>(new Agros2D(log));
+    m_singleton = QSharedPointer<Agros>(new Agros(log));
 }
 
-Agros2D *Agros2D::singleton()
+Agros *Agros::singleton()
 {
     return m_singleton.data();
 }
 
 static QMap<QString, PluginInterface *> plugins;
-PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
+PluginInterface *Agros::loadPlugin(const QString &pluginName)
 {
 #ifdef AGROS_BUILD_STATIC
     foreach (QObject *obj, QPluginLoader::staticInstances())
@@ -187,48 +187,48 @@ QString createPythonFromModel()
     // model
     str += "# problem\n";
     str += QString("problem = a2d.problem(clear = True)\n");
-    str += QString("problem.coordinate_type = \"%1\"\n").arg(coordinateTypeToStringKey(Agros2D::problem()->config()->coordinateType()));
-    str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros2D::problem()->config()->meshType()));
+    str += QString("problem.coordinate_type = \"%1\"\n").arg(coordinateTypeToStringKey(Agros::problem()->config()->coordinateType()));
+    str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros::problem()->config()->meshType()));
 
     // parameters
-    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
+    QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     foreach (QString key, parameters.keys())
         str += QString("problem.parameters[\"%1\"] = %2\n").arg(key).arg(parameters[key].value());
     if (parameters.count() > 0)
         str += "\n";
 
-    if (Agros2D::problem()->isHarmonic())
+    if (Agros::problem()->isHarmonic())
         str += QString("problem.frequency = %1\n").
-                arg(Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString());
+                arg(Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString());
 
-    if (Agros2D::problem()->isTransient())
+    if (Agros::problem()->isTransient())
     {
         str += QString("problem.time_step_method = \"%1\"\n"
                        "problem.time_method_order = %2\n"
                        "problem.time_total = %3\n").
-                arg(timeStepMethodToStringKey((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
-                arg(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()).
-                arg(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+                arg(timeStepMethodToStringKey((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
+                arg(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()).
+                arg(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
 
-        if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
+        if (((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
         {
             str += QString("problem.time_method_tolerance = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
+                    arg(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
         }
         else
         {
             str += QString("problem.time_steps = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
+                    arg(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
         }
-        if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) != TimeStepMethod_Fixed &&
-                (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0))
+        if (((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) != TimeStepMethod_Fixed &&
+                (Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0))
             str += QString("problem.time_initial_time_step = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
+                    arg(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
     }
 
     // fields
     str += "# fields\n";
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         str += QString("# %1\n").arg(fieldInfo->fieldId());
         str += QString("%1 = problem.field(\"%2\")\n").
@@ -269,7 +269,7 @@ QString createPythonFromModel()
                     arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
         }
 
-        if (Agros2D::problem()->isTransient())
+        if (Agros::problem()->isTransient())
         {
             if (fieldInfo->analysisType() == analysisTypeFromStringKey("transient"))
             {
@@ -335,7 +335,7 @@ QString createPythonFromModel()
                         arg(fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
             }
 
-            if (Agros2D::problem()->isTransient())
+            if (Agros::problem()->isTransient())
             {
                 str += QString("%1.adaptivity_parameters['transient_back_steps'] = %2\n").
                         arg(fieldInfo->fieldId()).
@@ -416,7 +416,7 @@ QString createPythonFromModel()
         str += "\n";
 
         str += "# boundaries\n";
-        foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(fieldInfo).items())
+        foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
             const QMap<uint, QSharedPointer<Value> > values = boundary->values();
 
@@ -460,7 +460,7 @@ QString createPythonFromModel()
         str += "\n";
 
         str += "# materials\n";
-        foreach (SceneMaterial *material, Agros2D::problem()->scene()->materials->filter(fieldInfo).items())
+        foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(fieldInfo).items())
         {
             const QMap<uint, QSharedPointer<Value> > values = material->values();
 
@@ -527,9 +527,9 @@ QString createPythonFromModel()
     str += "geometry = problem.geometry()\n";
 
     // edges
-    if (Agros2D::problem()->scene()->faces->count() > 0)
+    if (Agros::problem()->scene()->faces->count() > 0)
     {
-        foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
+        foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
         {
             Value startPointX = edge->nodeStart()->pointValue().x();
             Value startPointY = edge->nodeStart()->pointValue().y();
@@ -556,15 +556,15 @@ QString createPythonFromModel()
             }
 
             // boundaries
-            if (Agros2D::problem()->fieldInfos().count() > 0)
+            if (Agros::problem()->fieldInfos().count() > 0)
             {
                 int boundariesCount = 0;
                 QString boundaries = ", boundaries = {";
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
                     SceneBoundary *marker = edge->marker(fieldInfo);
 
-                    if (marker != Agros2D::problem()->scene()->boundaries->getNone(fieldInfo))
+                    if (marker != Agros::problem()->scene()->boundaries->getNone(fieldInfo))
                     {
                         boundaries += QString("\"%1\" : \"%2\", ").
                                 arg(fieldInfo->fieldId()).
@@ -584,9 +584,9 @@ QString createPythonFromModel()
     }
 
     // labels
-    if (Agros2D::problem()->scene()->labels->count() > 0)
+    if (Agros::problem()->scene()->labels->count() > 0)
     {
-        foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
+        foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
         {
             Value pointX = label->pointValue().x();
             Value pointY = label->pointValue().y();
@@ -598,11 +598,11 @@ QString createPythonFromModel()
                 str += ", area = " + QString::number(label->area());
 
             // refinements
-            if (Agros2D::problem()->fieldInfos().count() > 0)
+            if (Agros::problem()->fieldInfos().count() > 0)
             {
                 int refinementsCount = 0;
                 QString refinements = ", refinements = {";
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
                     if (fieldInfo->labelRefinement(label) > 0)
                     {
@@ -619,11 +619,11 @@ QString createPythonFromModel()
             }
 
             // orders
-            if (Agros2D::problem()->fieldInfos().count() > 0)
+            if (Agros::problem()->fieldInfos().count() > 0)
             {
                 int ordersCount = 0;
                 QString orders = ", orders = {";
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
                     if (fieldInfo->labelPolynomialOrder(label) != fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt())
                     {
@@ -640,10 +640,10 @@ QString createPythonFromModel()
             }
 
             // materials
-            if (Agros2D::problem()->fieldInfos().count() > 0)
+            if (Agros::problem()->fieldInfos().count() > 0)
             {
                 QString materials = ", materials = {";
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
                     SceneMaterial *marker = label->marker(fieldInfo);
 
@@ -661,10 +661,10 @@ QString createPythonFromModel()
         str += "\n";
     }
 
-    if (Agros2D::problem()->recipes()->items().count() > 0)
+    if (Agros::problem()->recipes()->items().count() > 0)
     {
         str += "# recipes \n";
-        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+        foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
         {
             if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
             {
@@ -717,10 +717,10 @@ QString createPythonFromModel()
         str += "\n";
     }
 
-    if (Agros2D::problem()->studies()->items().count() > 0)
+    if (Agros::problem()->studies()->items().count() > 0)
     {
         str += "# studies\n";
-        foreach (Study *study, Agros2D::problem()->studies()->items())
+        foreach (Study *study, Agros::problem()->studies()->items())
         {
             str += QString("study_%1 = problem.add_study(\"%1\")\n").arg(studyTypeToStringKey(study->type()));
 

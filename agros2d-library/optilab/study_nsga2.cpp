@@ -47,7 +47,7 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
     // qDebug() << "opt.get_population()" << opt.get_population();
 
     // computation
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
     // set parameters
     for (int i = 0; i < localStudy->parameters().count(); i++)
@@ -184,7 +184,7 @@ void StudyNSGA2::solve()
     }
     catch (nsga2::nsga2exception &e)
     {
-        Agros2D::log()->printError(tr("NSGA2"), e.what());
+        Agros::log()->printError(tr("NSGA2"), e.what());
         m_isSolving = false;
     }
 

@@ -454,10 +454,10 @@ void MeshGenerator::writeTodealii()
         }
         // todo: co je hranice?
         // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...
-        //            if (Agros2D::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
+        //            if (Agros::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
         //                continue;
 
-        //            if (Agros2D::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
+        //            if (Agros::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(Agros::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros::problem()->fieldInfo("current")))
         //                continue;
 
 
@@ -546,7 +546,7 @@ bool MeshGenerator::prepare()
     }
     catch (AgrosMeshException& ame)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), ame.toString());
+        Agros::log()->printError(tr("Mesh generator"), ame.toString());
         return false;
     }
 

@@ -68,7 +68,6 @@ AGROS_LIBRARY_API CouplingList *couplingList();
 
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {
-    Q_OBJECT
 public:
     CouplingInfo(FieldInfo* sourceField, FieldInfo* targetField,
                  CouplingType couplingType = CouplingType_Weak);
@@ -98,9 +97,6 @@ private:
 
     // coupling type
     CouplingType m_couplingType;
-
-signals:
-    void invalidated();
 };
 
 #endif // COUPLING_H

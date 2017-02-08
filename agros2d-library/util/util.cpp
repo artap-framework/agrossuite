@@ -18,7 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "util/util.h"
-#include "checkversion_version.h"
+#include "agros_version.h"
 
 #ifdef Q_WS_WIN
 #include "Windows.h"

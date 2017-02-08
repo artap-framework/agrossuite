@@ -47,82 +47,82 @@ ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 void ConfigComputerDialog::load()
 {
     // gui style
-    cmbGUIStyle->setCurrentIndex(cmbGUIStyle->findText(Agros2D::configComputer()->value(Config::Config_GUIStyle).toString()));
+    cmbGUIStyle->setCurrentIndex(cmbGUIStyle->findText(Agros::configComputer()->value(Config::Config_GUIStyle).toString()));
     if (cmbGUIStyle->currentIndex() == -1 && cmbGUIStyle->count() > 0) cmbGUIStyle->setCurrentIndex(0);
 
     // language
-    cmbLanguage->setCurrentIndex(cmbLanguage->findText(Agros2D::configComputer()->value(Config::Config_Locale).toString()));
+    cmbLanguage->setCurrentIndex(cmbLanguage->findText(Agros::configComputer()->value(Config::Config_Locale).toString()));
     if (cmbLanguage->currentIndex() == -1 && cmbLanguage->count() > 0)
         cmbLanguage->setCurrentIndex(0);
 
     // external python editor
-    txtExternalPythonEditor->setText(Agros2D::configComputer()->value(Config::Config_ExternalPythonEditor).toString());
+    txtExternalPythonEditor->setText(Agros::configComputer()->value(Config::Config_ExternalPythonEditor).toString());
 
     // show result in line edit value widget
-    chkLineEditValueShowResult->setChecked(Agros2D::configComputer()->value(Config::Config_ShowResults).toBool());
+    chkLineEditValueShowResult->setChecked(Agros::configComputer()->value(Config::Config_ShowResults).toBool());
 
     // development
-    chkDiscreteSaveMatrixRHS->setChecked(Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool());
-    cmbDumpFormat->setCurrentIndex(cmbDumpFormat->findData((MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt(), Qt::UserRole));
+    chkDiscreteSaveMatrixRHS->setChecked(Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool());
+    cmbDumpFormat->setCurrentIndex(cmbDumpFormat->findData((MatrixExportFormat) Agros::configComputer()->value(Config::Config_LinearSystemFormat).toInt(), Qt::UserRole));
 
     // cache size
-    txtCacheSize->setValue(Agros2D::configComputer()->value(Config::Config_CacheSize).toInt());
+    txtCacheSize->setValue(Agros::configComputer()->value(Config::Config_CacheSize).toInt());
 
     // std log
-    chkLogStdOut->setChecked(Agros2D::configComputer()->value(Config::Config_LogStdOut).toBool());
+    chkLogStdOut->setChecked(Agros::configComputer()->value(Config::Config_LogStdOut).toBool());
 
     // workspace
-    chkShowGrid->setChecked(Agros2D::configComputer()->value(Config::Config_ShowGrid).toBool());
-    chkShowAxes->setChecked(Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool());
-    chkShowRulers->setChecked(Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool());
+    chkShowGrid->setChecked(Agros::configComputer()->value(Config::Config_ShowGrid).toBool());
+    chkShowAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowAxes).toBool());
+    chkShowRulers->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
 
-    cmbRulersFont->setCurrentIndex(cmbRulersFont->findData(Agros2D::configComputer()->value(Config::Config_RulersFontFamily).toString()));
-    txtRulersFontSizes->setValue(Agros2D::configComputer()->value(Config::Config_RulersFontPointSize).toInt());
-    cmbPostFont->setCurrentIndex(cmbPostFont->findData(Agros2D::configComputer()->value(Config::Config_PostFontFamily).toString()));
-    txtPostFontSizes->setValue(Agros2D::configComputer()->value(Config::Config_PostFontPointSize).toInt());
+    cmbRulersFont->setCurrentIndex(cmbRulersFont->findData(Agros::configComputer()->value(Config::Config_RulersFontFamily).toString()));
+    txtRulersFontSizes->setValue(Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt());
+    cmbPostFont->setCurrentIndex(cmbPostFont->findData(Agros::configComputer()->value(Config::Config_PostFontFamily).toString()));
+    txtPostFontSizes->setValue(Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt());
 }
 
 void ConfigComputerDialog::save()
 {
     // gui style
-    Agros2D::configComputer()->setValue(Config::Config_GUIStyle, cmbGUIStyle->currentText());
+    Agros::configComputer()->setValue(Config::Config_GUIStyle, cmbGUIStyle->currentText());
     setGUIStyle(cmbGUIStyle->currentText());
 
     // language
-    if (Agros2D::configComputer()->value(Config::Config_Locale).toString() != cmbLanguage->currentText())
+    if (Agros::configComputer()->value(Config::Config_Locale).toString() != cmbLanguage->currentText())
         QMessageBox::warning(QApplication::activeWindow(),
                              tr("Language change"),
                              tr("Interface language has been changed. You must restart the application."));
-    Agros2D::configComputer()->setValue(Config::Config_Locale, cmbLanguage->currentText());
+    Agros::configComputer()->setValue(Config::Config_Locale, cmbLanguage->currentText());
 
     // external python editor
-    Agros2D::configComputer()->setValue(Config::Config_ExternalPythonEditor, txtExternalPythonEditor->text());
+    Agros::configComputer()->setValue(Config::Config_ExternalPythonEditor, txtExternalPythonEditor->text());
 
     // show result in line edit value widget
-    Agros2D::configComputer()->setValue(Config::Config_ShowResults, chkLineEditValueShowResult->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowResults, chkLineEditValueShowResult->isChecked());
 
     // development
-    Agros2D::configComputer()->setValue(Config::Config_LinearSystemSave, chkDiscreteSaveMatrixRHS->isChecked());
-    Agros2D::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) cmbDumpFormat->itemData(cmbDumpFormat->currentIndex(), Qt::UserRole).toInt());
+    Agros::configComputer()->setValue(Config::Config_LinearSystemSave, chkDiscreteSaveMatrixRHS->isChecked());
+    Agros::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) cmbDumpFormat->itemData(cmbDumpFormat->currentIndex(), Qt::UserRole).toInt());
 
     // cache size
-    Agros2D::configComputer()->setValue(Config::Config_CacheSize, txtCacheSize->value());
+    Agros::configComputer()->setValue(Config::Config_CacheSize, txtCacheSize->value());
 
     // std log
-    Agros2D::configComputer()->setValue(Config::Config_LogStdOut, chkLogStdOut->isChecked());
+    Agros::configComputer()->setValue(Config::Config_LogStdOut, chkLogStdOut->isChecked());
 
     // workspace
-    Agros2D::configComputer()->setValue(Config::Config_ShowGrid, chkShowGrid->isChecked());
-    Agros2D::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
-    Agros2D::configComputer()->setValue(Config::Config_ShowAxes, chkShowAxes->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowGrid, chkShowGrid->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowAxes, chkShowAxes->isChecked());
 
-    Agros2D::configComputer()->setValue(Config::Config_RulersFontFamily, cmbRulersFont->itemData(cmbRulersFont->currentIndex()).toString());
-    Agros2D::configComputer()->setValue(Config::Config_RulersFontPointSize, txtRulersFontSizes->value());
-    Agros2D::configComputer()->setValue(Config::Config_PostFontFamily, cmbPostFont->itemData(cmbPostFont->currentIndex()).toString());
-    Agros2D::configComputer()->setValue(Config::Config_PostFontPointSize, txtPostFontSizes->value());
+    Agros::configComputer()->setValue(Config::Config_RulersFontFamily, cmbRulersFont->itemData(cmbRulersFont->currentIndex()).toString());
+    Agros::configComputer()->setValue(Config::Config_RulersFontPointSize, txtRulersFontSizes->value());
+    Agros::configComputer()->setValue(Config::Config_PostFontFamily, cmbPostFont->itemData(cmbPostFont->currentIndex()).toString());
+    Agros::configComputer()->setValue(Config::Config_PostFontPointSize, txtPostFontSizes->value());
 
     // save
-    Agros2D::configComputer()->save();
+    Agros::configComputer()->save();
 }
 
 void ConfigComputerDialog::createControls()

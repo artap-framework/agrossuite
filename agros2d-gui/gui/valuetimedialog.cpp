@@ -67,7 +67,7 @@ void ValueTimeDialog::createControls()
     connect(txtLineEdit, SIGNAL(textChanged(QString)), this, SLOT(checkExpression()));
 
     txtTimeTotal = new ValueLineEdit();
-    txtTimeTotal->setValue(Value(m_problem, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()));
+    txtTimeTotal->setValue(Value(m_problem, Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()));
 
     cmbPresets = new QComboBox();
     cmbPresets->addItem(tr("select a preset..."));

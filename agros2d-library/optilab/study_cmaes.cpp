@@ -66,7 +66,7 @@ public:
         }
 
         // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+        QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
         // set parameters
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -341,13 +341,13 @@ void StudyCMAES::solve()
     if (result > 0)
     {
     if (result == nlopt::SUCCESS)
-        Agros2D::log()->printMessage(tr("NLopt"), tr("Successful"));
+        Agros::log()->printMessage(tr("NLopt"), tr("Successful"));
     else if (result == nlopt::FTOL_REACHED)
-        Agros2D::log()->printMessage(tr("NLopt"), tr("Functional tolerance reached"));
+        Agros::log()->printMessage(tr("NLopt"), tr("Functional tolerance reached"));
     else if (result == nlopt::XTOL_REACHED)
-        Agros2D::log()->printMessage(tr("NLopt"), tr("Parameter tolerance reached"));
+        Agros::log()->printMessage(tr("NLopt"), tr("Parameter tolerance reached"));
     else if (result == nlopt::MAXEVAL_REACHED)
-        Agros2D::log()->printMessage(tr("NLopt"), tr("Maximum iterations reached"));
+        Agros::log()->printMessage(tr("NLopt"), tr("Maximum iterations reached"));
     }
     */
 }

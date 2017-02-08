@@ -28,8 +28,6 @@ class SceneFace;
 
 class LoopsInfo : public QObject
 {
-    Q_OBJECT
-
 public:
     LoopsInfo(Scene *scene);
     virtual ~LoopsInfo() {}
@@ -99,9 +97,8 @@ public:
 
     inline bool isProcessPolygonError() { return m_isProcessPolygonError; }
 
-public slots:   
-    void processPolygonTriangles(bool force = false);
     void clear();
+    void processPolygonTriangles(bool force = false);
 
 private:
     Scene *m_scene;

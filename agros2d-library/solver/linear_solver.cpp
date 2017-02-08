@@ -84,7 +84,7 @@ void SolverLinearSolver::solveUMFPACK(dealii::SparseMatrix<double> &system,
                                       dealii::Vector<double> &sln,
                                       bool reuseDecomposition)
 {
-    Agros2D::log()->printDebug(QObject::tr("Solver"),
+    Agros::log()->printDebug(QObject::tr("Solver"),
                                QObject::tr("Direct solver - UMFPACK"));
 
     if (!reuseDecomposition)
@@ -111,7 +111,7 @@ void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
     QString name = commandContent.at(0);
     QString command = commandContent.at(1);
 
-    Agros2D::log()->printDebug(QObject::tr("Solver"),
+    Agros::log()->printDebug(QObject::tr("Solver"),
                                QObject::tr("External solver - %1").arg(name));
 
     AgrosExternalSolver ext(&system, &rhs);
@@ -127,7 +127,7 @@ void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
                                      dealii::Vector<double> &rhs,
                                      dealii::Vector<double> &sln)
 {
-    Agros2D::log()->printDebug(QObject::tr("Solver"),
+    Agros::log()->printDebug(QObject::tr("Solver"),
                                QObject::tr("Iterative solver: deal.II (%1, %2)")
                                .arg(iterLinearSolverDealIIMethodString((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()))
                                .arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));
@@ -144,7 +144,7 @@ void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
     }
         break;
     default:
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Preconditioner '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Preconditioner '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
     }
 
@@ -173,7 +173,7 @@ void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
     }
         break;
     default:
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method (deal.II) '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method (deal.II) '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
     }
 }

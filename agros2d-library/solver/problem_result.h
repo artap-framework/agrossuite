@@ -26,7 +26,6 @@
 
 class ResultRecipe : public QObject
 {
-    Q_OBJECT
 public:
     ResultRecipe(const QString &name, const QString &fieldId, const QString &variable,
                  int timeStep, int adaptivityStep);

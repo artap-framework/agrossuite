@@ -23,8 +23,8 @@
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
 #include "gui/logwidget.h"
+#include "gui/checkversion.h"
 #include "util/global.h"
-#include "util/checkversion.h"
 
 #include "app/scenegeometrydialog.h"
 #include "app/scenemarkerdialog.h"
@@ -67,7 +67,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // log stdout
     logStdOut = NULL;
-    if (Agros2D::configComputer()->value(Config::Config_LogStdOut).toBool())
+    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
         logStdOut = new LogStdOut();
 
     // scene
@@ -79,8 +79,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // preprocessor
     problemWidget = new PreprocessorWidget(sceneViewProblem, this);
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), problemWidget, SLOT(refresh()));
-    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(Agros::problem(), SIGNAL(fieldsChanged()), problemWidget, SLOT(refresh()));
+    connect(Agros::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
     // postprocessor
     postprocessorWidget = new PostprocessorWidget();
 
@@ -94,7 +94,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // view info
     m_connectLog = new ConnectLog();
     logView = new LogView(this, m_connectLog);
-    (static_cast<LogGui * > (Agros2D::log()))->setConnectLog(m_connectLog);
+    (static_cast<LogGui * > (Agros::log()))->setConnectLog(m_connectLog);
 
     // OptiLab
     optiLab = new OptiLab(this);
@@ -106,10 +106,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // info
     connect(tabViewLayout, SIGNAL(currentChanged(int)), this, SLOT(setControls()));
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::problem(), SIGNAL(fileNameChanged(QString)), this, SLOT(doSetWindowTitle(QString)));
+    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(Agros::problem(), SIGNAL(fileNameChanged(QString)), this, SLOT(doSetWindowTitle(QString)));
 
-    connect(Agros2D::problem()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewProblem, SLOT(refresh()));
 
@@ -118,7 +118,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     sceneViewProblem->clear();
 
-    Agros2D::problem()->clearFieldsAndConfig();
+    Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
     sceneViewProblem->doZoomBestFit();
@@ -550,9 +550,9 @@ void MainWindow::setRecentFiles()
     QSettings settings;
     QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
 
-    if (!Agros2D::problem()->archiveFileName().isEmpty())
+    if (!Agros::problem()->archiveFileName().isEmpty())
     {
-        QFileInfo fileInfo(Agros2D::problem()->archiveFileName());
+        QFileInfo fileInfo(Agros::problem()->archiveFileName());
         if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
             recentFiles.insert(0, fileInfo.absoluteFilePath());
         else
@@ -607,23 +607,23 @@ void MainWindow::doDocumentNew()
     if (dialog.exec() == QDialog::Accepted)
     {
         // clear preprocessor
-        Agros2D::problem()->clearFieldsAndConfig();
+        Agros::problem()->clearFieldsAndConfig();
 
         // add field
         try
         {
             FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());
 
-            Agros2D::problem()->addField(fieldInfo);
+            Agros::problem()->addField(fieldInfo);
 
             sceneViewProblem->actSceneModeProblem->trigger();
             sceneViewProblem->doZoomBestFit();
         }
         catch (AgrosPluginException& e)
         {
-            Agros2D::problem()->scene()->clear();
+            Agros::problem()->scene()->clear();
 
-            Agros2D::log()->printError(tr("Problem"), e.toString());
+            Agros::log()->printError(tr("Problem"), e.toString());
         }
     }
 }
@@ -651,7 +651,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         QFileInfo fileInfo(fileNameDocument);
         if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
-            Agros2D::problem()->readProblemFromFile(fileNameDocument);
+            Agros::problem()->readProblemFromFile(fileNameDocument);
 
             setRecentFiles();
 
@@ -661,11 +661,11 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             return;
         }
 
-        Agros2D::log()->printError(tr("Problem"), tr("Unknown suffix."));
+        Agros::log()->printError(tr("Problem"), tr("Unknown suffix."));
     }
     else
     {
-        Agros2D::log()->printError(tr("Problem"), tr("File '%1' is not found.").arg(fileNameDocument));
+        Agros::log()->printError(tr("Problem"), tr("File '%1' is not found.").arg(fileNameDocument));
     }
 }
 
@@ -677,16 +677,16 @@ void MainWindow::doDocumentOpenRecent(QAction *action)
 
 void MainWindow::doDocumentSave()
 {
-    if (QFile::exists(Agros2D::problem()->archiveFileName()))
+    if (QFile::exists(Agros::problem()->archiveFileName()))
     {
         try
         {
             // write to archive
-            Agros2D::problem()->writeProblemToArchive(Agros2D::problem()->archiveFileName(), false);
+            Agros::problem()->writeProblemToArchive(Agros::problem()->archiveFileName(), false);
         }
         catch (AgrosException &e)
         {
-            Agros2D::log()->printError(tr("Problem"), e.toString());
+            Agros::log()->printError(tr("Problem"), e.toString());
         }
     }
     else
@@ -700,7 +700,7 @@ void MainWindow::doDeleteSolutions()
     sceneViewProblem->actSceneModeProblem->trigger();
 
     // clear solutions
-    foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->computations())
+    foreach (QSharedPointer<Computation> computation, Agros::singleton()->computations())
         computation->clearSolution();
 
     optiLab->optiLabWidget()->refresh();
@@ -713,7 +713,7 @@ void MainWindow::doDeleteSolutionsAndResults()
     sceneViewProblem->actSceneModeProblem->trigger();
 
     // clear all computations
-    Agros2D::clearComputations();
+    Agros::clearComputations();
 
     optiLab->optiLabWidget()->refresh();
     sceneViewProblem->refresh();
@@ -733,12 +733,12 @@ void MainWindow::doDocumentSaveAs()
 
         try
         {
-            Agros2D::problem()->writeProblemToArchive(fileName, false);
+            Agros::problem()->writeProblemToArchive(fileName, false);
             setRecentFiles();
         }
         catch (AgrosException &e)
         {
-            Agros2D::log()->printError(tr("Problem"), e.toString());
+            Agros::log()->printError(tr("Problem"), e.toString());
         }
     }
 }
@@ -746,7 +746,7 @@ void MainWindow::doDocumentSaveAs()
 void MainWindow::doDocumentClose()
 {
     // clear problem
-    Agros2D::problem()->clearFieldsAndConfig();
+    Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
 }
@@ -759,7 +759,7 @@ void MainWindow::doDocumentImportDXF()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Import file"), dir, tr("DXF files (*.dxf)"));
     if (!fileName.isEmpty())
     {
-        Agros2D::problem()->scene()->importFromDxf(fileName);
+        Agros::problem()->scene()->importFromDxf(fileName);
         sceneViewProblem->doZoomBestFit();
 
         QFileInfo fileInfo(fileName);
@@ -778,7 +778,7 @@ void MainWindow::doDocumentExportDXF()
     {
         QFileInfo fileInfo(fileName);
         if (fileInfo.suffix().toLower() != "dxf") fileName += ".dxf";
-        Agros2D::problem()->scene()->exportToDxf(fileName);
+        Agros::problem()->scene()->exportToDxf(fileName);
 
         if (fileInfo.absoluteDir() != tempProblemDir())
             settings.setValue("General/LastDXFDir", fileInfo.absolutePath());
@@ -842,7 +842,7 @@ void MainWindow::doCreatePythonFromModel()
 
     writeStringContent(fn, script);
 
-    QStringList splitted = Agros2D::configComputer()->value(Config::Config_ExternalPythonEditor).toString().split(' ');
+    QStringList splitted = Agros::configComputer()->value(Config::Config_ExternalPythonEditor).toString().split(' ');
 
     if (splitted.size() > 0)
     {
@@ -860,14 +860,14 @@ void MainWindow::doCreatePythonFromModel()
 void MainWindow::doSolve()
 {
     // disconnect signals
-    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    foreach (QSharedPointer<Computation> computation, Agros::computations().values())
     {
         disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
     }
 
     // create computation from preprocessor
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(false);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(false);
 
     // connect signals
     connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
@@ -882,14 +882,14 @@ void MainWindow::doSolve()
 void MainWindow::doSolveNewComputation()
 {
     // disconnect signals
-    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    foreach (QSharedPointer<Computation> computation, Agros::computations().values())
     {
         disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
     }
 
     // create computation from preprocessor
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
     // connect signals
     if (computation.isNull())
@@ -981,8 +981,8 @@ void MainWindow::setControls()
     setUpdatesEnabled(false);
     setEnabled(true);
 
-    actDeleteSolutions->setEnabled(!Agros2D::computations().isEmpty());
-    actDeleteSolutionsAndResults->setEnabled(!Agros2D::computations().isEmpty());
+    actDeleteSolutions->setEnabled(!Agros::computations().isEmpty());
+    actDeleteSolutionsAndResults->setEnabled(!Agros::computations().isEmpty());
 
     // set controls
     actSolve->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
@@ -1145,15 +1145,15 @@ void MainWindow::doDocumentExportMeshFile()
             QFile::remove(fileName + ".msh");
 
         // create mesh
-        bool isMeshed = Agros2D::problem()->isMeshed();
-        if (Agros2D::problem()->mesh())
+        bool isMeshed = Agros::problem()->isMeshed();
+        if (Agros::problem()->mesh())
         {
             std::ofstream ofsMesh(fileName.toStdString());
             boost::archive::binary_oarchive sbMesh(ofsMesh);
-            Agros2D::problem()->initialMesh().save(sbMesh, 0);
+            Agros::problem()->initialMesh().save(sbMesh, 0);
 
             // if (!isMeshed)
-            // Agros2D::problem()->initialMesh().clear();
+            // Agros::problem()->initialMesh().clear();
 
             // copy file
             QFile::copy(cacheProblemDir() + "/initial.msh", fileName);
@@ -1162,7 +1162,7 @@ void MainWindow::doDocumentExportMeshFile()
         }
         else
         {
-            Agros2D::log()->printMessage(tr("Problem"), tr("The problem is not meshed"));
+            Agros::log()->printMessage(tr("Problem"), tr("The problem is not meshed"));
         }
     }
 }
@@ -1180,7 +1180,7 @@ void MainWindow::doExportVTKGeometry()
     if (!fn.endsWith(".vtk"))
         fn.append(".vtk");
 
-    Agros2D::problem()->scene()->exportVTKGeometry(fn);
+    Agros::problem()->scene()->exportVTKGeometry(fn);
 
     if (!fn.isEmpty())
     {

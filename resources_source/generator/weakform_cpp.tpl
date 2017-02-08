@@ -101,7 +101,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
 
     // while (cell_and_source_begin != cell_and_source_end)
     // {
-    //     if (!Agros2D::problem()->scene()->labels->at(std::get<0>(cell_and_source_begin.iterators)->material_id() - 1)->marker(m_fieldInfo)->isNone())
+    //     if (!Agros::problem()->scene()->labels->at(std::get<0>(cell_and_source_begin.iterators)->material_id() - 1)->marker(m_fieldInfo)->isNone())
     //         break;
     //     else
     //         ++cell_and_source_begin;

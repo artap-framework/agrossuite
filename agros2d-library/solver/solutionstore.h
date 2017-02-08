@@ -30,7 +30,6 @@ class Computation;
 
 class AGROS_LIBRARY_API SolutionStore : public QObject
 {
-    Q_OBJECT
 public:
     SolutionStore(Computation *parentProblem);
     ~SolutionStore();
@@ -87,9 +86,7 @@ public:
     bool saveRunTimeDetails();
     SolutionRunTimeDetails multiSolutionRunTimeDetail(FieldSolutionID solutionID) const { assert(m_multiSolutionRunTimeDetails.contains(solutionID)); return m_multiSolutionRunTimeDetails[solutionID]; }
 
-    inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }
-
-public slots:
+    inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }    
     void clear();
 
 private:
@@ -102,7 +99,7 @@ private:
 
     void insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution);
 
-    QString baseStoreFileName(FieldSolutionID solutionID) const;
+    QString baseStoreFileName(FieldSolutionID solutionID) const;    
 };
 
 #endif // SOLUTIONSTORE_H

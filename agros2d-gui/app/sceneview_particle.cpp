@@ -122,7 +122,7 @@ void SceneViewParticleTracing::paintGL()
     if (m_postprocessorWidget->currentComputation()->isSolved())
     {
         // todo: what is better?
-        //paintGeometrySurface(Agros2D::problem()->configView()->particleShowBlendedFaces);
+        //paintGeometrySurface(Agros::problem()->configView()->particleShowBlendedFaces);
         if(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ParticleShowBlendedFaces).toBool())
             paintGeometrySurface(true);
 
@@ -136,7 +136,7 @@ void SceneViewParticleTracing::paintGL()
 
     emit labelCenter(tr("Particle tracing"));
 
-    if (Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 }
 
 void SceneViewParticleTracing::resizeGL(int w, int h)
@@ -528,10 +528,10 @@ void SceneViewParticleTracing::paintParticleTracing()
         {
             // starting point
             /*
-            glPointSize(Agros2D::problem()->configView()->value(ProblemConfigView::NodeSize).toInt() * 1.2);
+            glPointSize(Agros::problem()->configView()->value(ProblemConfigView::NodeSize).toInt() * 1.2);
             glColor3d(0.0, 0.0, 0.0);
             glBegin(GL_POINTS);
-            if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+            if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar)
                 glVertex3d(m_positionsList[k][0].x, m_positionsList[k][0].y, -depth/2.0 + (m_positionsList[k][0].z - positionMin) * depth/(positionMax - positionMin));
             else
                 glVertex3d(m_positionsList[k][0].x * cos(m_positionsList[k][0].z), m_positionsList[k][0].y, m_positionsList[k][0].x * sin(m_positionsList[k][0].z));
@@ -652,7 +652,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
     int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * (QString::number(-1.0, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()).length() + 1);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // contextHeight() - 20.0
-    Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
+    Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (width() - (45.0 + textWidth));
     int numTicks = 11;
 
@@ -797,7 +797,7 @@ void SceneViewParticleTracing::processParticleTracing()
 
     if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
     {
-        Agros2D::log()->printMessage(tr("Post View"), tr("Particle view"));
+        Agros::log()->printMessage(tr("Post View"), tr("Particle view"));
 
         m_velocityMin =  numeric_limits<double>::max();
         m_velocityMax = -numeric_limits<double>::max();
@@ -860,7 +860,7 @@ void SceneViewParticleTracing::processParticleTracing()
         }
         catch (AgrosException& e)
         {
-            Agros2D::log()->printWarning(tr("Particle tracing"), tr("Particle tracing failed (%1)").arg(e.what()));
+            Agros::log()->printWarning(tr("Particle tracing"), tr("Particle tracing failed (%1)").arg(e.what()));
             m_velocityMin = 0.0;
             m_velocityMax = 0.0;
 
@@ -868,7 +868,7 @@ void SceneViewParticleTracing::processParticleTracing()
         }
         catch (...)
         {
-            Agros2D::log()->printWarning(tr("Particle tracing"), tr("Catched unknown exception in particle tracing"));
+            Agros::log()->printWarning(tr("Particle tracing"), tr("Catched unknown exception in particle tracing"));
             m_velocityMin = 0.0;
             m_velocityMax = 0.0;
 
@@ -876,12 +876,12 @@ void SceneViewParticleTracing::processParticleTracing()
         }
 
         for (int k = 0; k < m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt(); k++)
-            Agros2D::log()->printMessage(tr("Particle Tracing"), tr("Particle %1: %2 steps, final time %3 s").
+            Agros::log()->printMessage(tr("Particle Tracing"), tr("Particle %1: %2 steps, final time %3 s").
                                          arg(k + 1).
                                          arg(m_timesList[k].count()).
                                          arg(m_timesList[k].last()));
     }
-    Agros2D::log()->printDebug(tr("Particle Tracing"), tr("Total cpu time %1 ms").arg(cpuTime.elapsed()));
+    Agros::log()->printDebug(tr("Particle Tracing"), tr("Total cpu time %1 ms").arg(cpuTime.elapsed()));
 
     refresh();
 }

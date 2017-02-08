@@ -20,7 +20,7 @@
 #ifndef UTIL_CHECKVERSION_H
 #define UTIL_CHECKVERSION_H
 
-#include "util.h"
+#include "util/util.h"
 
 #include <QtNetwork>
 

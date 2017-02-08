@@ -39,11 +39,11 @@
 
 CouplingsWidget::CouplingsWidget(QWidget *parent) : QWidget(parent)
 {
-    Agros2D::problem()->synchronizeCouplings();
+    Agros::problem()->synchronizeCouplings();
 
     createContent();
 
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
+    connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
 }
 
 void CouplingsWidget::createContent()
@@ -79,7 +79,7 @@ void CouplingsWidget::createContent()
 void CouplingsWidget::save()
 {
     int row = 0;
-    foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos())
+    foreach (CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
     {
         couplingInfo->setCouplingType((CouplingType) m_comboBoxes[row]->itemData(m_comboBoxes[row]->currentIndex()).toInt());
 
@@ -89,12 +89,12 @@ void CouplingsWidget::save()
 
 void CouplingsWidget::refresh()
 {
-    Agros2D::problem()->synchronizeCouplings();
+    Agros::problem()->synchronizeCouplings();
 
     setUpdatesEnabled(false);
 
     int row = 0;
-    foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos())
+    foreach (CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
     {
         m_comboBoxes[row]->blockSignals(true);
         m_comboBoxes[row]->setUpdatesEnabled(false);
@@ -228,7 +228,7 @@ void ProblemWidget::createControls()
 
     // couplings
     couplingsWidget = new CouplingsWidget(this);
-    connect(Agros2D::problem(), SIGNAL(couplingsChanged()), couplingsWidget, SLOT(refresh()));
+    connect(Agros::problem(), SIGNAL(couplingsChanged()), couplingsWidget, SLOT(refresh()));
     connect(couplingsWidget, SIGNAL(changed()), couplingsWidget, SLOT(save()));
 
     QVBoxLayout *layoutCouplings = new QVBoxLayout();
@@ -268,27 +268,27 @@ void ProblemWidget::fillComboBox()
 void ProblemWidget::load()
 {
     // main
-    cmbCoordinateType->setCurrentIndex(cmbCoordinateType->findData(Agros2D::problem()->config()->coordinateType()));
+    cmbCoordinateType->setCurrentIndex(cmbCoordinateType->findData(Agros::problem()->config()->coordinateType()));
     if (cmbCoordinateType->currentIndex() == -1)
         cmbCoordinateType->setCurrentIndex(0);
 
     // mesh type
-    cmbMeshType->setCurrentIndex(cmbMeshType->findData(Agros2D::problem()->config()->meshType()));
+    cmbMeshType->setCurrentIndex(cmbMeshType->findData(Agros::problem()->config()->meshType()));
 
     // harmonic magnetic
-    grpHarmonicAnalysis->setVisible(Agros2D::problem()->isHarmonic());
-    txtFrequency->setValue(Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>());
+    grpHarmonicAnalysis->setVisible(Agros::problem()->isHarmonic());
+    txtFrequency->setValue(Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>());
 
     // transient
-    grpTransientAnalysis->setVisible(Agros2D::problem()->isTransient());
-    txtTransientSteps->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
-    txtTransientTimeTotal->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-    txtTransientTolerance->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
-    chkTransientInitialStepSize->setChecked(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0);
+    grpTransientAnalysis->setVisible(Agros::problem()->isTransient());
+    txtTransientSteps->setValue(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
+    txtTransientTimeTotal->setValue(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+    txtTransientTolerance->setValue(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
+    chkTransientInitialStepSize->setChecked(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0);
     txtTransientInitialStepSize->setEnabled(chkTransientInitialStepSize->isChecked());
-    txtTransientInitialStepSize->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
-    txtTransientOrder->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt());
-    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
+    txtTransientInitialStepSize->setValue(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
+    txtTransientOrder->setValue(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt());
+    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
     if (cmbTransientMethod->currentIndex() == -1)
         cmbTransientMethod->setCurrentIndex(0);
 
@@ -298,7 +298,7 @@ void ProblemWidget::load()
     // fieldsToolbar->refresh();
     couplingsWidget->refresh();
 
-    grpCouplings->setVisible(Agros2D::problem()->couplingInfos().count() > 0);
+    grpCouplings->setVisible(Agros::problem()->couplingInfos().count() > 0);
 
     transientChanged();
 }
@@ -306,33 +306,33 @@ void ProblemWidget::load()
 void ProblemWidget::save()
 {
     // save properties
-    Agros2D::problem()->config()->blockSignals(true);
+    Agros::problem()->config()->blockSignals(true);
 
-    Agros2D::problem()->config()->setCoordinateType((CoordinateType) cmbCoordinateType->itemData(cmbCoordinateType->currentIndex()).toInt());
-    Agros2D::problem()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
+    Agros::problem()->config()->setCoordinateType((CoordinateType) cmbCoordinateType->itemData(cmbCoordinateType->currentIndex()).toInt());
+    Agros::problem()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
 
-    Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, txtTransientOrder->value());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, txtTransientTolerance->value());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, txtTransientSteps->value());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeTotal, txtTransientTimeTotal->value());
+    Agros::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
+    Agros::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
+    Agros::problem()->config()->setValue(ProblemConfig::TimeOrder, txtTransientOrder->value());
+    Agros::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, txtTransientTolerance->value());
+    Agros::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, txtTransientSteps->value());
+    Agros::problem()->config()->setValue(ProblemConfig::TimeTotal, txtTransientTimeTotal->value());
     txtTransientInitialStepSize->setEnabled(chkTransientInitialStepSize->isChecked());
     if (chkTransientInitialStepSize->isChecked())
     {
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, txtTransientInitialStepSize->value());
+        Agros::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, txtTransientInitialStepSize->value());
     }
     else
     {
         txtTransientInitialStepSize->setValue(0.0);
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, 0.0);
+        Agros::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, 0.0);
     }
 
     // save couplings
     couplingsWidget->save();
 
-    Agros2D::problem()->config()->blockSignals(false);
-    Agros2D::problem()->config()->refresh();
+    Agros::problem()->config()->blockSignals(false);
+    Agros::problem()->config()->refresh();
 
     emit changed();
 }

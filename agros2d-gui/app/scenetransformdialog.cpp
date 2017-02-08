@@ -48,12 +48,12 @@ SceneTransformDialog::~SceneTransformDialog()
 
 void SceneTransformDialog::showDialog()
 {
-    lstTranslateX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lstTranslateY->setText(Agros2D::problem()->config()->labelY() + ":");
-    lstRotateBasePointX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lstRotateBasePointY->setText(Agros2D::problem()->config()->labelY() + ":");
-    lstScaleBasePointX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lstScaleBasePointY->setText(Agros2D::problem()->config()->labelY() + ":");
+    lstTranslateX->setText(Agros::problem()->config()->labelX() + ":");
+    lstTranslateY->setText(Agros::problem()->config()->labelY() + ":");
+    lstRotateBasePointX->setText(Agros::problem()->config()->labelX() + ":");
+    lstRotateBasePointY->setText(Agros::problem()->config()->labelY() + ":");
+    lstScaleBasePointX->setText(Agros::problem()->config()->labelX() + ":");
+    lstScaleBasePointY->setText(Agros::problem()->config()->labelY() + ":");
 
     show();
 }
@@ -167,7 +167,7 @@ void SceneTransformDialog::doTransform()
     {
         if (!txtTranslateX->evaluate(false)) return;
         if (!txtTranslateY->evaluate(false)) return;
-        Agros2D::problem()->scene()->transformTranslate(Point(txtTranslateX->number(), txtTranslateY->number()), chkCopy->isChecked(), chkWithMarkers->isChecked());
+        Agros::problem()->scene()->transformTranslate(Point(txtTranslateX->number(), txtTranslateY->number()), chkCopy->isChecked(), chkWithMarkers->isChecked());
     }
 
     if (tabWidget->currentWidget() == widRotate)
@@ -175,7 +175,7 @@ void SceneTransformDialog::doTransform()
         if (!txtRotateBasePointX->evaluate(false)) return;
         if (!txtRotateBasePointY->evaluate(false)) return;
         if (!txtRotateAngle->evaluate(false)) return;
-        Agros2D::problem()->scene()->transformRotate(Point(txtRotateBasePointX->number(), txtRotateBasePointY->number()), txtRotateAngle->number(), chkCopy->isChecked(), chkWithMarkers->isChecked());
+        Agros::problem()->scene()->transformRotate(Point(txtRotateBasePointX->number(), txtRotateBasePointY->number()), txtRotateAngle->number(), chkCopy->isChecked(), chkWithMarkers->isChecked());
     }
 
     if (tabWidget->currentWidget() == widScale)
@@ -183,7 +183,7 @@ void SceneTransformDialog::doTransform()
         if (!txtScaleBasePointX->evaluate(false)) return;
         if (!txtScaleBasePointY->evaluate(false)) return;
         if (!txtScaleFactor->evaluate(false)) return;
-        Agros2D::problem()->scene()->transformScale(Point(txtScaleBasePointX->number(), txtScaleBasePointY->number()), txtScaleFactor->number(), chkCopy->isChecked(), chkWithMarkers->isChecked());
+        Agros::problem()->scene()->transformScale(Point(txtScaleBasePointX->number(), txtScaleBasePointY->number()), txtScaleFactor->number(), chkCopy->isChecked(), chkWithMarkers->isChecked());
     }
 
     m_sceneViewPreprocessor->refresh();

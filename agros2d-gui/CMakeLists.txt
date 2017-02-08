@@ -48,6 +48,7 @@ SET(SOURCES main.cpp
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
+    gui/checkversion.cpp
     app/chartdialog.cpp
     app/confdialog.cpp
     app/examplesdialog.cpp
@@ -76,7 +77,7 @@ SET(SOURCES main.cpp
     app/sceneview_post3d.cpp
     app/sceneview_post.cpp
     # app/sceneview_vtk2d.cpp
-    app/videodialog.cpp
+    app/videodialog.cpp    
     optilab/optilab.cpp
     optilab/study_dialog.cpp
     optilab/study_methoddialog.cpp)
@@ -104,6 +105,7 @@ SET(HEADERS gui/about.h
     gui/valuedatatabledialog.h
     gui/valuelineedit.h
     gui/valuetimedialog.h
+    gui/checkversion.h
     app/chartdialog.h
     app/confdialog.h
     app/examplesdialog.h
@@ -133,7 +135,7 @@ SET(HEADERS gui/about.h
     app/sceneview_post3d.h
     app/sceneview_post.h
     # app/sceneview_vtk2d.h
-    app/videodialog.h
+    app/videodialog.h    
     optilab/optilab.h
     optilab/study_dialog.h
     optilab/study_methoddialog.h)

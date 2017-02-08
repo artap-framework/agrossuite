@@ -141,12 +141,12 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
     // last solution (if exists - adaptivity)    
     /*
     FieldSolutionID solutionID(m_fieldInfo,
-                               Agros2D::solutionStore()->lastTimeStep(m_fieldInfo),
-                               Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo));
+                               Agros::solutionStore()->lastTimeStep(m_fieldInfo),
+                               Agros::solutionStore()->lastAdaptiveStep(m_fieldInfo));
 
-    if (Agros2D::solutionStore()->contains(solutionID))
+    if (Agros::solutionStore()->contains(solutionID))
     {
-        MultiArray lastSolution = Agros2D::solutionStore()->multiArray(solutionID);
+        MultiArray lastSolution = Agros::solutionStore()->multiArray(solutionID);
         solutionNonlinearPrevious = lastSolution.solution();
     }
     */
@@ -217,12 +217,12 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
         if (criteriaReached)
             phase = SolverAgros::Phase_Finished;
 
-        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
+        Agros::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
                                      .arg(iteration)
                                      .arg(QString::number(nonlinearRelativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(dampingFactor));
 
-        Agros2D::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
+        Agros::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     }
 
     constraintsAll.distribute(solution);
@@ -233,7 +233,7 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
     chart.setError(nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     QString fn = chart.save();
 
-    Agros2D::log()->appendImage(fn);
+    Agros::log()->appendImage(fn);
     */
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
@@ -266,7 +266,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     // system_rhs.print(std::cout);
     double residualNorm = systemRHS.l2_norm();
 
-    Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial residual norm: %1")
+    Agros::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial residual norm: %1")
                                  .arg(residualNorm));
 
     // initial damping factor
@@ -440,13 +440,13 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
         if (criteriaReached)
             phase = SolverAgros::Phase_Finished;
 
-        Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)")
+        Agros::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)")
                                      .arg(iteration)
                                      .arg(QString::number(nonlinearRelativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(QString::number(residualNorm, 'e', 3))
                                      .arg(dampingFactor));
 
-        Agros2D::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
+        Agros::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     }
 
     // put the final solution into the solution
@@ -460,7 +460,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     chart.setError(nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     QString fn = chart.save();
 
-    Agros2D::log()->appendImage(fn);
+    Agros::log()->appendImage(fn);
     */
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }

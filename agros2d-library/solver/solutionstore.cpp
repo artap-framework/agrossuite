@@ -367,7 +367,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
     assert(!m_multiSolutionDealCache.contains(solutionID));
 
     // flush cache
-    if (m_multiSolutionDealCache.count() > Agros2D::configComputer()->value(Config::Config_CacheSize).toInt())
+    if (m_multiSolutionDealCache.count() > Agros::configComputer()->value(Config::Config_CacheSize).toInt())
     {
         assert(!m_multiSolutionCacheIDOrder.empty());
         // find first item of current field (coupled fields cannot be removed)

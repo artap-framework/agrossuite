@@ -304,7 +304,7 @@ void ProblemConfig::checkVariableName(const QString &keyToCheck, const QString &
     }
 
     // recipes
-    foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+    foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
     {
         if (!keyToSkip.isEmpty() && recipe->name() == keyToSkip)
             continue;

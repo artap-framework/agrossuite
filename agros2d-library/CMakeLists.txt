@@ -125,7 +125,6 @@ SET(SOURCES
     util/global.cpp
     util/loops.cpp
     util/util.cpp
-    util/checkversion.cpp
     util/point.cpp
     util/system_utils.cpp
     util/spline.cpp
@@ -254,7 +253,6 @@ SET(HEADERS
   util/global.h
   util/loops.h
   util/util.h
-  util/checkversion.h
   util/point.h
   util/system_utils.h
   util/spline.h

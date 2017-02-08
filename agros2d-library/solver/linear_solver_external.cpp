@@ -93,25 +93,46 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
             arg(m_commandParameters);
 
     // exec
-    m_process = new QProcess();
-    m_process->setStandardOutputFile(tempProblemDir() + "/solver.out");
-    m_process->setStandardErrorFile(tempProblemDir() + "/solver.err");
-    connect(m_process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
-    connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
+    QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
+    process->setStandardOutputFile(tempProblemDir() + "/solver.out");
+    process->setStandardErrorFile(tempProblemDir() + "/solver.err");
+    process->start(command);
 
-    m_process->start(command);
-
-    // execute an event loop to process the request (nearly-synchronous)
-    QEventLoop eventLoop;
-    QObject::connect(m_process, SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
-    QObject::connect(m_process, SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
-
-    if (QFile::exists(fileSln))
+    if (!process->waitForStarted())
     {
-        std::ifstream readSln(fileSln.toStdString());
-        m_solution.block_read(readSln);
-        readSln.close();
+        QString msg = tr("Could not start external solver");
+
+        Agros::log()->printError(tr("External solver"), msg);
+        std::cerr << msg.toStdString() << std::endl;
+
+        return;
+    }
+
+    if (process->waitForFinished(-1))
+    {
+        if (QFile::exists(fileSln))
+        {
+            std::ifstream readSln(fileSln.toStdString());
+            m_solution.block_read(readSln);
+            readSln.close();
+        }
+
+        QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out").trimmed();
+        if (!solverOutputMessage.isEmpty())
+        {
+            solverOutputMessage.insert(0, "\n");
+            Agros::log()->printWarning(tr("External solver"), solverOutputMessage);
+            std::cerr << solverOutputMessage.toStdString() << std::endl;
+        }
+
+        if (process->exitCode() != 0)
+        {
+            QString errorMessage = readFileContent(tempProblemDir() + "/solver.err");
+            errorMessage.insert(0, "\n");
+            errorMessage.append("\n");
+            Agros::log()->printError(tr("External solver"), process->errorString());
+            Agros::log()->printError(tr("External solver"), errorMessage);
+        }
     }
 
     if (m_initial_guess)
@@ -128,31 +149,4 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
 void AgrosExternalSolver::solve()
 {
     solve(nullptr);
-}
-
-void AgrosExternalSolver::processError(QProcess::ProcessError error)
-{
-    Agros2D::log()->printError(tr("Solver"), tr("Could not start external solver"));
-    m_process->kill();
-}
-
-void AgrosExternalSolver::processFinished(int exitCode)
-{
-    QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out").trimmed();
-    if (!solverOutputMessage.isEmpty())
-    {
-        solverOutputMessage.insert(0, "\n");
-        Agros2D::log()->printWarning(tr("External solver"), solverOutputMessage);
-    }
-
-    if (exitCode == 0)
-    {
-    }
-    else
-    {
-        QString errorMessage = readFileContent(tempProblemDir() + "/solver.err");
-        errorMessage.insert(0, "\n");
-        errorMessage.append("\n");
-        Agros2D::log()->printError(tr("External solver"), errorMessage);
-    }
 }

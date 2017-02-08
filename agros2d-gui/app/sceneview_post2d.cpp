@@ -201,7 +201,7 @@ void SceneViewPost2D::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     // grid
-    if (Agros2D::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
+    if (Agros::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
 
     // view
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
@@ -229,14 +229,14 @@ void SceneViewPost2D::paintGL()
     }
 
     // rulers
-    if (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool())
+    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
     {
         paintRulers();
         paintRulersHints();
     }
 
     // axes
-    if (Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 
     paintZoomRegion();
 
@@ -927,7 +927,7 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface()
                 glLineWidth(2.0);
                 glBegin(GL_LINES);
                 glVertex2d((edge->nodeStart()->point().x + edge->nodeEnd()->point().x) / 2., (edge->nodeStart()->point().y + edge->nodeEnd()->point().y) / 2.);
-                SceneLabel* label = Agros2D::m_postprocessorWidget->currentComputation()->scene()->labels->at(edge->innerLabelIdx());
+                SceneLabel* label = Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(edge->innerLabelIdx());
                 glVertex2d(label->point().x, label->point().y);
 
                 glEnd();

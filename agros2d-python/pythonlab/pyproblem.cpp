@@ -103,7 +103,7 @@ void PyProblemBase::checkExistingFields(const QString &sourceField, const QStrin
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
-    m_problem = QSharedPointer<Problem>(Agros2D::problem());
+    m_problem = QSharedPointer<Problem>(Agros::problem());
 
     if (clearProblem)
         clear();
@@ -196,7 +196,7 @@ void PyProblem::load(const std::string &fn)
 {
     QString fileName = QString::fromStdString(fn);
     if (QFile::exists(fileName))
-        Agros2D::problem()->readProblemFromArchive(fileName);
+        Agros::problem()->readProblemFromArchive(fileName);
     else
         throw logic_error(QObject::tr("File '%1' does not exists.").arg(fileName).toStdString());
 }
@@ -204,7 +204,7 @@ void PyProblem::load(const std::string &fn)
 void PyProblem::save(const std::string &fn)
 {
     QString fileName = QString::fromStdString(fn);
-    Agros2D::problem()->writeProblemToArchive(fileName, false);
+    Agros::problem()->writeProblemToArchive(fileName, false);
 }
 
 std::string PyProblem::typeOfStudyAtIndex(int index)
@@ -222,12 +222,12 @@ std::string PyProblem::typeOfStudyAtIndex(int index)
 
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 {    
-    m_problem = Agros2D::problem()->createComputation(newComputation);
+    m_problem = Agros::problem()->createComputation(newComputation);
 }
 
 PyComputation::PyComputation(const string &computation) : PyProblemBase()
 {
-    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+    QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
     QString key = QString::fromStdString(computation);
     if (computations.contains(key))
         m_problem = computations[key];

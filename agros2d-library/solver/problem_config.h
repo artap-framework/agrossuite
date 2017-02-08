@@ -42,7 +42,6 @@ Q_DECLARE_METATYPE(StringToDoubleMap)
 
 class ProblemConfig : public QObject
 {
-    Q_OBJECT
 public:
     enum Type
     {
@@ -75,11 +74,11 @@ public:
 
     // coordinates
     inline CoordinateType coordinateType() const { return m_config[ProblemConfig::Coordinate].value<CoordinateType>(); }
-    void setCoordinateType(const CoordinateType coordinateType) { m_config[ProblemConfig::Coordinate] = QVariant::fromValue(coordinateType); emit changed(); }
+    void setCoordinateType(const CoordinateType coordinateType) { m_config[ProblemConfig::Coordinate] = QVariant::fromValue(coordinateType); }
 
     // mesh
     inline MeshType meshType() const { return m_config[ProblemConfig::Mesh].value<MeshType>(); }
-    void setMeshType(const MeshType meshType) { m_config[ProblemConfig::Mesh] = QVariant::fromValue(meshType); emit changed(); }
+    void setMeshType(const MeshType meshType) { m_config[ProblemConfig::Mesh] = QVariant::fromValue(meshType); }
 
     // load and save
     void load(XMLProblem::problem_config *configxsd);
@@ -91,11 +90,11 @@ public:
     inline Type stringKeyToType(const QString &key) const { return m_configKey.key(key); }
 
     inline QVariant value(Type type) const { return m_config[type]; }
-    inline void setValue(Type type, int value, bool emitChanged = true) {  m_config[type] = value; if (emitChanged) emit changed(); }
-    inline void setValue(Type type, double value, bool emitChanged = true) {  m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, bool value, bool emitChanged = true) {  m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, Value value, bool emitChanged = true) { m_config[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, int value) {  m_config[type] = value; }
+    inline void setValue(Type type, double value) {  m_config[type] = value; }
+    inline void setValue(Type type, bool value) {  m_config[type] = value; }
+    inline void setValue(Type type, const QString &value) { m_config[type] = value; }
+    inline void setValue(Type type, Value value) { m_config[type] = QVariant::fromValue(value); }
 
     inline QVariant defaultValue(Type type) {  return m_configDefault[type]; }
 
@@ -112,10 +111,7 @@ public:
 
     void checkVariableName(const QString &key, const QString &keyToSkip = "");
 
-    void refresh() { emit changed(); }
-
-signals:
-    void changed();
+    void refresh() { }
 
 private:
     QMap<Type, QVariant> m_config;
@@ -136,8 +132,6 @@ private:
 
 class PostprocessorSetting : public QObject
 {
-    Q_OBJECT
-
 public:
     enum Type
     {

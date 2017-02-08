@@ -394,6 +394,8 @@ void Scene::clear()
     m_numberOfConnectedNodeEdges.clear();
     m_crossings.clear();
 
+    m_loopsInfo->processPolygonTriangles();
+
     stopInvalidating(false);
     blockSignals(false);
 
@@ -515,7 +517,7 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
         SceneNode *obstructNode = getNode(newPoint.point());
         if (obstructNode && !obstructNode->isSelected())
         {
-            Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing point would be overwritten"));
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing point would be overwritten"));
             return false;
         }
 
@@ -596,7 +598,7 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
         SceneFace *obstructEdge = getFace(newPointStart.point(), newPointEnd.point());
         if (obstructEdge && !obstructEdge->isSelected())
         {
-            Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing edge would be overwritten"));
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing edge would be overwritten"));
             return false;
         }
 
@@ -646,7 +648,7 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
         SceneLabel *obstructLabel = getLabel(newPoint.point());
         if (obstructLabel && !obstructLabel->isSelected())
         {
-            Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing label would be overwritten"));
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing label would be overwritten"));
             return false;
         }
 
@@ -730,6 +732,8 @@ void Scene::cacheGeometryConstraints()
 {
     // actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
     // actNewLabel->setEnabled(materials->length() >= 1);
+
+    m_loopsInfo->processPolygonTriangles();
 
     foreach (SceneFace *edge, faces->items())
         edge->computeCenterAndRadius();
@@ -815,7 +819,7 @@ void Scene::exportVTKGeometry(const QString &fileName)
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        Agros2D::log()->printError(tr("VTK Geometry export"), tr("Could not create VTK file (%1)").arg(file.errorString()));
+        Agros::log()->printError(tr("VTK Geometry export"), tr("Could not create VTK file (%1)").arg(file.errorString()));
         return;
     }
     QTextStream out(&file);
@@ -877,7 +881,7 @@ void Scene::checkNodeConnect(SceneNode *node)
                 Value edgeAngle = edgeCheck->angleValue();
                 faces->remove(edgeCheck);
 
-                SceneFace *edge = new SceneFace(this, nodeStart, nodeEnd, Value(Agros2D::problem(), 0.0));
+                SceneFace *edge = new SceneFace(this, nodeStart, nodeEnd, Value(Agros::problem(), 0.0));
                 edge->setAngleValue(edgeAngle);
             }
         }

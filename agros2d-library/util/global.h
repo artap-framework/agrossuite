@@ -30,27 +30,25 @@ class SolutionStore;
 class Log;
 class PluginInterface;
 
-class AGROS_LIBRARY_API Agros2D : public QObject
+class AGROS_LIBRARY_API Agros
 {
-    Q_OBJECT
-
 public:
-    Agros2D(const Agros2D &);
-    Agros2D & operator = (const Agros2D &);
-    Agros2D(QSharedPointer<Log> log);
+    Agros(const Agros &);
+    Agros & operator = (const Agros &);
+    Agros(QSharedPointer<Log> log);
 
     static void createSingleton(QSharedPointer<Log> log);
-    static Agros2D* singleton();
+    static Agros* singleton();
 
-    static inline Config *configComputer() { return Agros2D::singleton()->m_configComputer; }
+    static inline Config *configComputer() { return Agros::singleton()->m_configComputer; }
 
-    static inline Problem *problem() { return Agros2D::singleton()->m_problem; }
+    static inline Problem *problem() { return Agros::singleton()->m_problem; }
 
-    static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros2D::singleton()->m_computations; }
+    static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros::singleton()->m_computations; }
     static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
     static void clearComputations();
 
-    static inline Log *log() { return Agros2D::singleton()->m_log.data(); }
+    static inline Log *log() { return Agros::singleton()->m_log.data(); }
 
     static PluginInterface *loadPlugin(const QString &pluginName);
 

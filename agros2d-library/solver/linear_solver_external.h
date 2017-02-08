@@ -32,8 +32,6 @@
 
 class AgrosExternalSolver : public QObject
 {
-    Q_OBJECT
-
 public:
     AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
                         const dealii::Vector<double> *system_rhs,
@@ -49,8 +47,6 @@ public:
     dealii::Vector<double> &solution() { return m_solution; }
 
 protected:
-    QProcess *m_process;
-
     // matrix
     const dealii::SparseMatrix<double> *m_system_matrix;
     // rhs
@@ -63,10 +59,6 @@ protected:
     QString m_command;
     QString m_commandEnvironment;
     QString m_commandParameters;
-
-protected slots:
-    void processError(QProcess::ProcessError error);
-    void processFinished(int exitCode);
 };
 
 #endif // SOLVER_EXTERNAL_H

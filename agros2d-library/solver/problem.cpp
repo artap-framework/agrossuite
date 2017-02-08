@@ -113,7 +113,7 @@ void PostDeal::processRangeContour()
 {
     if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(PostprocessorSetting::ShowContourView).toBool()))
     {
-        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()));
 
         QString variableName = m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString();
         Module::LocalVariable variable = m_activeViewField->localVariable(m_computation->config()->coordinateType(), variableName);
@@ -148,7 +148,7 @@ void PostDeal::processRangeScalar()
             && ((m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
                 || (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
     {
-        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
                                                                                                   m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
@@ -177,7 +177,7 @@ void PostDeal::processRangeVector()
             }
         }
 
-        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
                                                                                                    m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
@@ -230,7 +230,7 @@ void PostDeal::processSolved()
     if (m_computation->solutionStore()->contains(fsid))
     {
         // add icon to progress
-        // Agros2D::log()->addIcon(icon("scene-post2d"), tr("Postprocessor"));
+        // Agros::log()->addIcon(icon("scene-post2d"), tr("Postprocessor"));
 
         processRangeContour();
         processRangeScalar();
@@ -510,7 +510,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 
 void SolveThread::run()
 {
-    Agros2D::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
+    Agros::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
 
     dealii::deal_II_exceptions::disable_abort_on_exception();
 
@@ -631,7 +631,7 @@ bool ProblemBase::applyParametersInternal()
         {
             if (!node->pointValue().x().isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
+                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
                                            arg(m_scene->nodes->items().indexOf(node)).
                                            arg(m_config->labelX()).
                                            arg(node->pointValue().x().error()));
@@ -640,7 +640,7 @@ bool ProblemBase::applyParametersInternal()
             }
             if (!node->pointValue().y().isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
+                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
                                            arg(m_scene->nodes->items().indexOf(node)).
                                            arg(m_config->labelY()).
                                            arg(node->pointValue().y().error()));
@@ -661,7 +661,7 @@ bool ProblemBase::applyParametersInternal()
         {
             if (!edge->angleValue().isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
+                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
                                            arg(m_scene->faces->items().indexOf(edge)).
                                            arg(edge->angleValue().error()));
 
@@ -681,7 +681,7 @@ bool ProblemBase::applyParametersInternal()
         {
             if (!label->pointValue().x().isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
+                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
                                            arg(m_scene->labels->items().indexOf(label)).
                                            arg(m_config->labelX()).
                                            arg(label->pointValue().x().error()));
@@ -690,7 +690,7 @@ bool ProblemBase::applyParametersInternal()
             }
             if (!label->pointValue().y().isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
+                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
                                            arg(m_scene->labels->items().indexOf(label)).
                                            arg(m_config->labelY()).
                                            arg(label->pointValue().y().error()));
@@ -707,7 +707,7 @@ bool ProblemBase::applyParametersInternal()
         {
             if (!material->value(key)->isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
+                Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
                                            arg(key).arg(material->value(key).data()->toString()));
                 successfulRun = false;
             }
@@ -721,7 +721,7 @@ bool ProblemBase::applyParametersInternal()
         {
             if (!boundary->value(key)->isEvaluated())
             {
-                Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
+                Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
                                            arg(key).arg(boundary->value(key).data()->toString()));
                 successfulRun = false;
             }
@@ -731,7 +731,7 @@ bool ProblemBase::applyParametersInternal()
     // check frequency
     if (!m_config->value(ProblemConfig::Frequency).value<Value>().isEvaluated())
     {
-        Agros2D::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
+        Agros::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
                                    arg(m_config->value(ProblemConfig::Frequency).value<Value>().error()));
         successfulRun = false;
     }
@@ -865,7 +865,7 @@ bool ProblemBase::mesh()
     // TODO: make global check geometry before mesh() and solve()
     if (m_fieldInfos.isEmpty())
     {
-        Agros2D::log()->printError(tr("Mesh"), tr("No fields defined"));
+        Agros::log()->printError(tr("Mesh"), tr("No fields defined"));
         return false;
     }
 
@@ -876,7 +876,7 @@ bool ProblemBase::mesh()
         m_initialMesh.clear();
         m_initialUnrefinedMesh.clear();
 
-        Agros2D::log()->printMessage(QObject::tr("Mesh Generator"), QObject::tr("Initial mesh generation"));
+        Agros::log()->printMessage(QObject::tr("Mesh Generator"), QObject::tr("Initial mesh generation"));
 
         // check geometry
         m_scene->checkGeometryResult();
@@ -904,13 +904,13 @@ bool ProblemBase::mesh()
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal(this));
             break;
         default:
-            Agros2D::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+            Agros::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
             assert(0);
             break;
         }
 
         // add icon to progress
-        // Agros2D::log()->addIcon(icon("scene-meshgen"), tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
+        // Agros::log()->addIcon(icon("scene-meshgen"), tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
 
         if (meshGenerator->mesh())
         {
@@ -919,7 +919,7 @@ bool ProblemBase::mesh()
             // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
             m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
-            Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
+            Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
 
             m_isMeshing = false;
             return true;
@@ -929,30 +929,30 @@ bool ProblemBase::mesh()
     {
         // this assumes that all the code in Hermes and Agros is exception-safe
         // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
-        Agros2D::log()->printError(tr("Geometry"), QString("%1").arg(e.what()));
+        Agros::log()->printError(tr("Geometry"), QString("%1").arg(e.what()));
     }
     catch (AgrosMeshException& e)
     {
         // this assumes that all the code in Hermes and Agros is exception-safe
         // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
-        Agros2D::log()->printError(tr("Mesh"), QString("%1").arg(e.what()));
+        Agros::log()->printError(tr("Mesh"), QString("%1").arg(e.what()));
     }
     catch (AgrosException& e)
     {
         // todo: dangerous
         // catching all other exceptions. This is not safe at all
-        Agros2D::log()->printWarning(tr("Mesh"), e.what());
+        Agros::log()->printWarning(tr("Mesh"), e.what());
     }
     catch (dealii::ExceptionBase &e)
     {
         qDebug() << e.what();
-        Agros2D::log()->printWarning(tr("Mesh (deal.II)"), e.what());
+        Agros::log()->printWarning(tr("Mesh (deal.II)"), e.what());
     }
     catch (...)
     {
         // todo: dangerous
         // catching all other exceptions. This is not safe at all
-        Agros2D::log()->printWarning(tr("Mesh"), tr("An unknown exception occurred and has been ignored"));
+        Agros::log()->printWarning(tr("Mesh"), tr("An unknown exception occurred and has been ignored"));
         qDebug() << "Mesh: An unknown exception occurred and has been ignored";
     }
 
@@ -971,7 +971,7 @@ void ProblemBase::readInitialMeshFromFile(const QString &problemDir, bool emitMe
     // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
     m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
-    Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
+    Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
 
     if (emitMeshed)
         emit meshed();
@@ -1952,22 +1952,22 @@ void Computation::readFromProblem()
     clearFields();
 
     // copy config from problem
-    m_config->copy(Agros2D::problem()->config());
+    m_config->copy(Agros::problem()->config());
 
     // copy scene from problem
     m_scene->clear();
-    m_scene->copy(Agros2D::problem()->scene());
+    m_scene->copy(Agros::problem()->scene());
 
-    foreach (QString fieldId, Agros2D::problem()->fieldInfos().keys())
+    foreach (QString fieldId, Agros::problem()->fieldInfos().keys())
     {
-        FieldInfo *originFieldInfo = Agros2D::problem()->fieldInfo(fieldId);
+        FieldInfo *originFieldInfo = Agros::problem()->fieldInfo(fieldId);
         FieldInfo *fieldInfo = new FieldInfo(fieldId);
         fieldInfo->copy(originFieldInfo);
 
         // label refinement
         foreach (SceneLabel *originLabel, originFieldInfo->labelsRefinement().keys())
         {
-            SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+            SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
 
             fieldInfo->setLabelRefinement(label, originFieldInfo->labelsRefinement()[originLabel]);
         }
@@ -1975,13 +1975,13 @@ void Computation::readFromProblem()
         // polynomial order
         foreach (SceneLabel *originLabel, originFieldInfo->labelsPolynomialOrder().keys())
         {
-            SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+            SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
 
             fieldInfo->setLabelPolynomialOrder(label, originFieldInfo->labelsPolynomialOrder()[originLabel]);
         }
 
         // boundaries
-        foreach (SceneBoundary *originBoundary, Agros2D::problem()->scene()->boundaries->items())
+        foreach (SceneBoundary *originBoundary, Agros::problem()->scene()->boundaries->items())
         {
             if (originBoundary->fieldInfo() != originFieldInfo)
                 continue;
@@ -2006,9 +2006,9 @@ void Computation::readFromProblem()
             }
 
             // add boundary to the edge marker
-            foreach (SceneFace *originFace, Agros2D::problem()->scene()->faces->items())
+            foreach (SceneFace *originFace, Agros::problem()->scene()->faces->items())
             {
-                SceneFace *face = m_scene->faces->items().at(Agros2D::problem()->scene()->faces->items().indexOf(originFace));
+                SceneFace *face = m_scene->faces->items().at(Agros::problem()->scene()->faces->items().indexOf(originFace));
 
                 if (originFace->hasMarker(originBoundary))
                     face->addMarker(bound);
@@ -2018,7 +2018,7 @@ void Computation::readFromProblem()
         }
 
         // materials
-        foreach (SceneMaterial *originMaterial, Agros2D::problem()->scene()->materials->items())
+        foreach (SceneMaterial *originMaterial, Agros::problem()->scene()->materials->items())
         {
             if (originMaterial->fieldInfo() != originFieldInfo)
                 continue;
@@ -2041,9 +2041,9 @@ void Computation::readFromProblem()
             }
 
             // add label to the label marker
-            foreach (SceneLabel *originLabel, Agros2D::problem()->scene()->labels->items())
+            foreach (SceneLabel *originLabel, Agros::problem()->scene()->labels->items())
             {
-                SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+                SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
 
                 if (originLabel->hasMarker(originMaterial))
                     label->addMarker(mat);
@@ -2060,7 +2060,7 @@ void Computation::readFromProblem()
     }
 
     // couplings
-    foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos())
+    foreach (CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
     {
         m_couplingInfos[QPair<FieldInfo *, FieldInfo *>(fieldInfo(couplingInfo->sourceField()->fieldId()),
                                                         fieldInfo(couplingInfo->targetField()->fieldId()))]->setCouplingType(couplingInfo->couplingType());
@@ -2112,7 +2112,7 @@ void Computation::solveInit()
 {
     if (fieldInfos().isEmpty())
     {
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("No fields defined"));
+        Agros::log()->printError(QObject::tr("Solver"), QObject::tr("No fields defined"));
         throw AgrosSolverException(tr("No field defined"));
     }
 
@@ -2167,7 +2167,7 @@ void Computation::solveInit()
 void Computation::doAbortSolve()
 {
     m_abort = true;
-    Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
+    Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
 void Computation::solveWithThread()
@@ -2183,18 +2183,18 @@ void Computation::solve()
 
     if ((m_fieldInfos.size() > 1) && isTransient() && (numAdaptiveFields() >= 1))
     {
-        Agros2D::log()->printError(tr("Solver"), tr("Space adaptivity for transient coupled problems not possible at the moment."));
+        Agros::log()->printError(tr("Solver"), tr("Space adaptivity for transient coupled problems not possible at the moment."));
         return;
     }
 
     if (m_fieldInfos.isEmpty())
     {
-        Agros2D::log()->printError(tr("Solver"), tr("No fields defined"));
+        Agros::log()->printError(tr("Solver"), tr("No fields defined"));
         return;
     }
 
-    if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
-        Agros2D::log()->printWarning(tr("Solver"), tr("Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings."));
+    if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
+        Agros::log()->printWarning(tr("Solver"), tr("Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings."));
 
     try
     {
@@ -2214,7 +2214,7 @@ void Computation::solve()
         m_lastTimeElapsed = milisecondsToTime(time.elapsed());
 
         // elapsed time
-        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
+        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
 
         m_abort = false;
         m_isSolving = false;
@@ -2222,30 +2222,30 @@ void Computation::solve()
         emit solved();
 
         // evaluate results recipes
-        Agros2D::problem()->recipes()->evaluate(this);
+        Agros::problem()->recipes()->evaluate(this);
     }
     catch (AgrosGeometryException& e)
     {
-        Agros2D::log()->printError(QObject::tr("Geometry"), e.what());
+        Agros::log()->printError(QObject::tr("Geometry"), e.what());
         m_isSolving = false;
         return;
     }
     catch (AgrosSolverException& e)
     {
         qDebug() << e.what();
-        Agros2D::log()->printError(QObject::tr("Solver"), e.what());
+        Agros::log()->printError(QObject::tr("Solver"), e.what());
         m_isSolving = false;
         return;
     }
     catch (AgrosException& e)
     {
-        Agros2D::log()->printError(QObject::tr("Solver"), e.what());
+        Agros::log()->printError(QObject::tr("Solver"), e.what());
         m_isSolving = false;
         return;
     }
     catch (std::exception& e)
     {
-        Agros2D::log()->printError(QObject::tr("Solver"), e.what());
+        Agros::log()->printError(QObject::tr("Solver"), e.what());
         m_isSolving = false;
         return;
     }
@@ -2254,7 +2254,7 @@ void Computation::solve()
         // TODO: dangerous
         // catching all other exceptions. This is not save at all
         m_isSolving = false;
-        Agros2D::log()->printError(tr("Solver"), tr("An unknown exception occurred in solver and has been ignored"));
+        Agros::log()->printError(tr("Solver"), tr("An unknown exception occurred in solver and has been ignored"));
         qDebug() << "Solver: An unknown exception occurred and has been ignored";
         return;
     }
@@ -2282,7 +2282,7 @@ void Computation::propagateBoundaryMarkers()
 
 bool Computation::isSolved() const
 {
-    // return (!Agros2D::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
+    // return (!Agros::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
     return (!m_solutionStore->isEmpty());
 }
 
@@ -2448,10 +2448,10 @@ void Problem::writeProblemToJsonInternal(QJsonObject &rootJson)
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation)
 {
-    if (newComputation || m_currentComputation.isNull() || Agros2D::computations().isEmpty())
+    if (newComputation || m_currentComputation.isNull() || Agros::computations().isEmpty())
     {
         m_currentComputation = QSharedPointer<Computation>(new Computation());
-        Agros2D::addComputation(m_currentComputation->problemDir(), m_currentComputation);
+        Agros::addComputation(m_currentComputation->problemDir(), m_currentComputation);
     }
     else
     {
@@ -2469,7 +2469,7 @@ void Problem::clearFieldsAndConfig()
 {
     // clear all computations
     m_currentComputation.clear();
-    Agros2D::clearComputations();
+    Agros::clearComputations();
 
     ProblemBase::clearFieldsAndConfig();
     clearFields();
@@ -2514,9 +2514,9 @@ void Problem::readProblemFromArchive(const QString &fileName)
         if (QFile::exists(problemFileName()))
         {
             QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation(problemDir));
-            Agros2D::addComputation(computation->problemDir(), computation);
+            Agros::addComputation(computation->problemDir(), computation);
 
-            Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
+            Agros::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
 
             computation->readProblemFromJson();
 
@@ -2532,7 +2532,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
                 catch (AgrosException& e)
                 {
                     computation->clearSolution();
-                    Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+                    Agros::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
                 }
             }
         }
@@ -2558,10 +2558,10 @@ void Problem::readProblemFromArchive(const QString &fileName)
     emit fileNameChanged(m_fileName);
 
     // set last computation
-    if (!Agros2D::computations().isEmpty())
+    if (!Agros::computations().isEmpty())
     {
-        if (m_currentComputation.isNull() && Agros2D::computations().last()->isSolved())
-            m_currentComputation = Agros2D::computations().last();
+        if (m_currentComputation.isNull() && Agros::computations().last()->isSolved())
+            m_currentComputation = Agros::computations().last();
     }
 
     // invalidate scene (parameter update)
@@ -2610,7 +2610,7 @@ void Problem::readProblemFromFile(const QString &fileName)
         // deprecated
         else if (fileInfo.suffix() == "a2d")
         {
-            Agros2D::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
+            Agros::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
 
             // copy file to cache
             QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
@@ -2628,16 +2628,16 @@ void Problem::readProblemFromFile(const QString &fileName)
     catch (AgrosModuleException& e)
     {
         clearFieldsAndConfig();
-        Agros2D::log()->printError(tr("Problem"), e.toString());
+        Agros::log()->printError(tr("Problem"), e.toString());
     }
     catch (AgrosPluginException& e)
     {
         clearFieldsAndConfig();
-        Agros2D::log()->printError(tr("Problem"), e.toString());
+        Agros::log()->printError(tr("Problem"), e.toString());
     }
     catch (AgrosException &e)
     {
         clearFieldsAndConfig();
-        Agros2D::log()->printError(tr("Problem"), e.toString());
+        Agros::log()->printError(tr("Problem"), e.toString());
     }
 }

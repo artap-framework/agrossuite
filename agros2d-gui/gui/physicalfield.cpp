@@ -35,7 +35,7 @@ void fillComboBoxComputation(QComboBox *cmbComputation, const QString &computati
     // clear combo
     cmbComputation->blockSignals(true);
     cmbComputation->clear();
-    foreach (QSharedPointer<Computation> computation, Agros2D::computations())
+    foreach (QSharedPointer<Computation> computation, Agros::computations())
     {
         if (computation->isSolved())
         {
@@ -179,7 +179,7 @@ QSharedPointer<Computation> PhysicalFieldWidget::selectedComputation()
 {
     if (cmbComputation->count() > 0)
     {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
         return computations[cmbComputation->itemData(cmbComputation->currentIndex()).toString()];
     }
 
@@ -241,7 +241,7 @@ void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
 
 void PhysicalFieldWidget::updateControls()
 {
-    if (Agros2D::computations().count() > 0)
+    if (Agros::computations().count() > 0)
     {
         fillComboBoxComputation(cmbComputation, m_lastComputation);
     }
@@ -261,7 +261,7 @@ void PhysicalFieldWidget::updateControls()
 
 void PhysicalFieldWidget::doComputation(int index)
 {
-    if (Agros2D::computations().count() > 0)
+    if (Agros::computations().count() > 0)
     {
         // invalidate last field
         if (m_lastComputation != cmbComputation->itemData(cmbComputation->currentIndex()).toString())

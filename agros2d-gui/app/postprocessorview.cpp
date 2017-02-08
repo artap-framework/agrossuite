@@ -162,7 +162,7 @@ void PostprocessorWidget::refresh()
 {
     // enable widget
     bool enabled = false;
-    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    foreach (QSharedPointer<Computation> computation, Agros::computations().values())
     {
         if (computation->isSolved())
         {

@@ -173,7 +173,7 @@ void SceneViewMesh::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     // grid
-    if (Agros2D::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
+    if (Agros::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
 
     // view
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
@@ -205,14 +205,14 @@ void SceneViewMesh::paintGL()
     }
 
     // rulers
-    if (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool())
+    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
     {
         paintRulers();
         paintRulersHints();
     }
 
     // axes
-    if (Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 
     paintZoomRegion();
 }
@@ -598,7 +598,7 @@ void SceneViewMesh::paintErrorColorBar()
     int textWidth = 11 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(20 + textWidth, (20 + maxError * (2 * textHeight) - textHeight / 2.0 + 2));
-    Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
+    Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (width() - (20 + textWidth));
 
     // blended rectangle
@@ -668,7 +668,7 @@ void SceneViewMesh::paintOrderColorBar()
     int textWidth = 6 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(20 + textWidth, (20 + maxDegree * (2 * textHeight) - textHeight / 2.0 + 2));
-    Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
+    Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (width() - (20 + textWidth));
 
     // blended rectangle

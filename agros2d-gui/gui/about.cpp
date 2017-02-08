@@ -20,8 +20,8 @@
 #include "about.h"
 
 #include "util/util.h"
-#include "util/checkversion.h"
 #include "util/system_utils.h"
+#include "gui/checkversion.h"
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
 {

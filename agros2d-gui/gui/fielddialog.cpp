@@ -690,7 +690,7 @@ void FieldWidget::doAnalysisTypeChanged(int index)
 
     // time steps skip
     bool otherFieldIsTransient = false;
-    foreach (FieldInfo* otherFieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo* otherFieldInfo, Agros::problem()->fieldInfos())
         if (otherFieldInfo->analysisType() == AnalysisType_Transient && otherFieldInfo->fieldId() != m_fieldInfo->fieldId())
             otherFieldIsTransient = true;
 
@@ -736,8 +736,8 @@ void FieldWidget::doAdaptivityChanged(int index)
     cmbAdaptivityStrategyHP->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() == AdaptivityMethod_HP);
 
     AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt();
-    txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    txtAdaptivityRedoneEach->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    txtAdaptivityBackSteps->setEnabled(Agros::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    txtAdaptivityRedoneEach->setEnabled(Agros::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
 
     doAdaptivityStrategyChanged(cmbAdaptivityStrategy->currentIndex());
 }
@@ -864,7 +864,7 @@ FieldDialog::FieldDialog(FieldInfo *fieldInfo, QWidget *parent) : QDialog(parent
     // dialog buttons
     QPushButton *btnDeleteField = new QPushButton(tr("Delete field"));
     btnDeleteField->setDefault(false);
-    btnDeleteField->setEnabled(Agros2D::problem()->hasField(fieldInfo->fieldId()));
+    btnDeleteField->setEnabled(Agros::problem()->hasField(fieldInfo->fieldId()));
     connect(btnDeleteField, SIGNAL(clicked()), this, SLOT(deleteField()));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -902,7 +902,7 @@ void FieldDialog::deleteField()
     if (QMessageBox::question(this, tr("Delete"), tr("Physical field '%1' will be pernamently deleted. Are you sure?").
                               arg(fieldWidget->fieldInfo()->name()), tr("&Yes"), tr("&No")) == 0)
     {
-        Agros2D::problem()->removeField(fieldWidget->fieldInfo());
+        Agros::problem()->removeField(fieldWidget->fieldInfo());
         accept();
     }
 }
@@ -913,8 +913,8 @@ FieldsToobar::FieldsToobar(QWidget *parent) : QWidget(parent)
 {
     createControls();
 
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
+    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     refresh();
 }
@@ -981,7 +981,7 @@ void FieldsToobar::refresh()
 
     // fields
     int row = 0;
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         QString hint = tr("<table>"
                           "<tr><td><b>Analysis:</b></td><td>%1</td></tr>"
@@ -1015,7 +1015,7 @@ void FieldsToobar::refresh()
 
 void FieldsToobar::fieldDialog(int index)
 {
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfos().values().at(index);
+    FieldInfo *fieldInfo = Agros::problem()->fieldInfos().values().at(index);
     if (fieldInfo)
     {
         FieldDialog fieldDialog(fieldInfo, this);
@@ -1030,7 +1030,7 @@ void FieldsToobar::fieldDialog(int index)
 void FieldsToobar::addField()
 {
     // select field dialog
-    FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
+    FieldSelectDialog dialog(Agros::problem()->fieldInfos().keys(), this);
     if (dialog.exec() == QDialog::Accepted)
     {
         // add field
@@ -1039,7 +1039,7 @@ void FieldsToobar::addField()
         FieldDialog fieldDialog(fieldInfo, this);
         if (fieldDialog.exec() == QDialog::Accepted)
         {
-            Agros2D::problem()->addField(fieldInfo);
+            Agros::problem()->addField(fieldInfo);
 
             refresh();
             emit changed();

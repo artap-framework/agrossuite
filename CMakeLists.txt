@@ -222,8 +222,8 @@ ENDIF(MSVC)
 
 # Create file with preprocessor definitions exposing the build settings to the source code.
 configure_file(
-  agros2d-library/util/checkversion_version.h.cmake
-  agros2d-library/util/checkversion_version.h)
+  agros2d-library/util/agros_version.h.cmake
+  agros2d-library/util/agros_version.h)
 configure_file(
   resources_source/resources.rc.cmake
   resources_source/resources.rc)

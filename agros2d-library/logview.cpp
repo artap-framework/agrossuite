@@ -63,7 +63,7 @@ void LogStdOut::printMessage(const QString &module, const QString &message)
 
 void LogStdOut::printError(const QString &module, const QString &message)
 {
-    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
+    std::cerr << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printWarning(const QString &module, const QString &message)

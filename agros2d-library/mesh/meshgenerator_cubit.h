@@ -25,18 +25,14 @@
 
 class MeshGeneratorCubitExternal : public MeshGenerator
 {
-    Q_OBJECT
-
-private slots:
-    void meshCubitError(QProcess::ProcessError error);
-    void meshCubitCreated(int exitCode);
-    bool writeToCubit();
-    bool readLSDynaMeshFormat();
-
 public:
     MeshGeneratorCubitExternal(ProblemBase *problem);
 
     virtual bool mesh();
+
+private:
+    bool writeToCubit();
+    bool readLSDynaMeshFormat();
 };
 
 #endif //MESHGENERATOR_CUBIT_H

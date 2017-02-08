@@ -117,12 +117,12 @@ PyStudyBayesOpt::PyStudyBayesOpt(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_BayesOpt);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -190,12 +190,12 @@ PyStudyLimbo::PyStudyLimbo(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_Limbo);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -249,12 +249,12 @@ PyStudyNLopt::PyStudyNLopt(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_NLopt);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -280,12 +280,12 @@ PyStudyCMAES::PyStudyCMAES(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_CMAES);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -325,12 +325,12 @@ PyStudyNSGA2::PyStudyNSGA2(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_NSGA2);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -342,12 +342,12 @@ PyStudyNSGA3::PyStudyNSGA3(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_NSGA3);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 }
 
@@ -359,12 +359,12 @@ PyStudySweep::PyStudySweep(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_Sweep);
-        Agros2D::problem()->studies()->addStudy(m_study);
+        Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
-        if (index < Agros2D::problem()->studies()->items().count())
-            m_study = Agros2D::problem()->studies()->items().at(index);
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
     }
 
 }
