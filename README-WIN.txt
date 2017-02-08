@@ -33,12 +33,15 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 
 3.0) Qt
 
-  - Qt 5.3 for the correct platform (x86 / x64), for VS 2013, with OpenGL
+  - Qt for the correct platform (x86 / x64), for VS 2015, with OpenGL
+  https://www.qt.io/download-open-source/
 
+---- NOT INSTALL - bundled now ----
 3.1) Xerces & XSD
 
   - http://www.codesynthesis.com/products/xsd/download.xhtml
   - XSD version 4.0+ necessary (for C++11 support)
+-----------------------------------
 
 3.4) ZLIB
 
@@ -77,8 +80,6 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
   - C:\Python34;C:\Python34\Scripts
   - c:\Qt\Qt5.3.0\5.3\msvc2013_opengl\bin\ (or appropriate)
   - <PATH TO AGROS REPOSITORY>\libs\
-  - C:\hpfem\dependencies\bin / C:\hpfem\dependencies-64\bin
-
 
 5) Build
 
