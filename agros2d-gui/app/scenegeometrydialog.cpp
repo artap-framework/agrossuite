@@ -260,21 +260,15 @@ void SceneNodeCommandMoveMulti::moveAll(QList<PointValue> moveFrom, QList<PointV
 
 void SceneNodeCommandMoveMulti::undo()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     moveAll(m_pointsNew, m_points);
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandMoveMulti::redo()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     moveAll(m_points, m_pointsNew);
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
@@ -285,7 +279,6 @@ SceneNodeCommandAddMulti::SceneNodeCommandAddMulti(QList<PointValue> points, QUn
 
 void SceneNodeCommandAddMulti::undo()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
     foreach(PointValue point, m_points)
     {
         SceneNode *node = Agros::problem()->scene()->getNode(point.point());
@@ -295,20 +288,16 @@ void SceneNodeCommandAddMulti::undo()
         }
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandAddMulti::redo()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     foreach(PointValue point, m_points)
     {
         Agros::problem()->scene()->addNode(new SceneNode(Agros::problem()->scene(), point));
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
@@ -319,8 +308,6 @@ SceneNodeCommandRemoveMulti::SceneNodeCommandRemoveMulti(QList<PointValue> point
 
 void SceneNodeCommandRemoveMulti::undo()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     // new nodes
     foreach(PointValue point, m_nodePoints)
     {
@@ -341,7 +328,6 @@ void SceneNodeCommandRemoveMulti::undo()
         Agros::problem()->scene()->addFace(edge);
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
@@ -351,8 +337,6 @@ void SceneNodeCommandRemoveMulti::redo()
     m_edgePointEnd.clear();
     m_edgeAngle.clear();
     m_edgeMarkers.clear();
-
-    Agros::problem()->scene()->stopInvalidating(true);
 
     foreach (PointValue point, m_nodePoints)
     {
@@ -374,7 +358,6 @@ void SceneNodeCommandRemoveMulti::redo()
         }
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
@@ -789,20 +772,16 @@ SceneEdgeCommandAddOrRemoveMulti::SceneEdgeCommandAddOrRemoveMulti(QList<PointVa
 
 void SceneEdgeCommandAddOrRemoveMulti::remove()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     for(int i = 0; i < m_pointStarts.size(); i++)
     {
         Agros::problem()->scene()->faces->remove(Agros::problem()->scene()->getFace(m_pointStarts[i].point(), m_pointEnds[i].point(), m_angles[i].number(), m_segments[i], m_isCurvilinear[i]));
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
 void SceneEdgeCommandAddOrRemoveMulti::add()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
     for(int i = 0; i < m_pointStarts.size(); i++)
     {
         SceneNode *nodeStart = Agros::problem()->scene()->getNode(m_pointStarts[i].point());
@@ -821,7 +800,7 @@ void SceneEdgeCommandAddOrRemoveMulti::add()
             Agros::problem()->scene()->addFace(edge);
         }
     }
-    Agros::problem()->scene()->stopInvalidating(false);
+
     Agros::problem()->scene()->invalidate();
 }
 
@@ -1382,7 +1361,6 @@ SceneLabelCommandAddOrRemoveMulti::SceneLabelCommandAddOrRemoveMulti(QList<Point
 
 void SceneLabelCommandAddOrRemoveMulti::remove()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
     foreach(PointValue point, m_points)
     {
         SceneLabel *label = Agros::problem()->scene()->getLabel(point.point());
@@ -1390,14 +1368,11 @@ void SceneLabelCommandAddOrRemoveMulti::remove()
             Agros::problem()->scene()->labels->remove(label);
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }
 
 void SceneLabelCommandAddOrRemoveMulti::add()
 {
-    Agros::problem()->scene()->stopInvalidating(true);
-
     for (int i = 0; i < m_points.size(); i++)
     {
         SceneLabel *label = new SceneLabel(Agros::problem()->scene(), m_points[i], m_areas[i]);
@@ -1411,6 +1386,5 @@ void SceneLabelCommandAddOrRemoveMulti::add()
         Agros::problem()->scene()->addLabel(label);
     }
 
-    Agros::problem()->scene()->stopInvalidating(false);
     Agros::problem()->scene()->invalidate();
 }

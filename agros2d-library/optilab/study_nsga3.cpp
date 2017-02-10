@@ -106,7 +106,7 @@ public:
         {
             Parameter parameter = m_study->parameters()[i];
             computation->config()->parameters()->set(parameter.name(), x[i]);
-            computation->scene()->cacheGeometryConstraints();
+            computation->scene()->invalidate();
 
             // training patterns
             // samples[i] = x[i];
@@ -324,8 +324,6 @@ void StudyNSGA3::solve()
     // sort computations
     // QString parameterName = m_functionals[0].name();
     // m_computationSets.last().sort(parameterName);
-
-    emit solved();
 }
 
 void StudyNSGA3::setDefaultValues()

@@ -229,6 +229,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
     }
 
     Agros::problem()->scene()->addBoundary(new SceneBoundary(Agros::problem()->scene(), m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::modifyBoundary(const std::string &name, const std::string &type,
@@ -236,7 +237,7 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
                              const map<std::string, std::string> &expressions)
 {
     SceneBoundary *sceneBoundary = Agros::problem()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
-    if (sceneBoundary == NULL)
+    if (!sceneBoundary)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
     // browse boundary types
@@ -272,6 +273,8 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
         if (!assigned)
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
+
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::removeBoundary(const std::string &name)
@@ -281,6 +284,7 @@ void PyField::removeBoundary(const std::string &name)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
     Agros::problem()->scene()->removeBoundary(sceneBoundary);
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::addMaterial(const std::string &name, const map<std::string, std::string> &parameters,
@@ -391,6 +395,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, std::s
     }
 
     Agros::problem()->scene()->addMaterial(new SceneMaterial(Agros::problem()->scene(), m_fieldInfo, QString::fromStdString(name), values));
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::modifyMaterial(const std::string &name, const map<string, std::string> &parameters,
@@ -401,7 +406,7 @@ void PyField::modifyMaterial(const std::string &name, const map<string, std::str
 {
     SceneMaterial *sceneMaterial = Agros::problem()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
 
-    if (sceneMaterial == NULL)
+    if (!sceneMaterial)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
     for (map<std::string, std::string>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
@@ -488,15 +493,18 @@ void PyField::modifyMaterial(const std::string &name, const map<string, std::str
         if (!assigned)
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
+
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::removeMaterial(const std::string &name)
 {
     SceneMaterial *sceneMaterial = Agros::problem()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
-    if (sceneMaterial == NULL)
+    if (!sceneMaterial)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
     Agros::problem()->scene()->removeMaterial(sceneMaterial);
+    Agros::problem()->scene()->invalidate();
 }
 
 void PyField::addRecipeVolumeIntegral(const std::string &name, const std::string &variable, const vector<int> labels, int timeStep, int adaptivityStep)

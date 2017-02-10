@@ -92,6 +92,8 @@ signals:
     void computationSelected(const QString &key);
 
 public slots:
+    void refresh();
+
     void doComputationSelected(const QString &key);
     void doChartRefreshed(const QString &key = "");
 
@@ -152,8 +154,6 @@ private:
     void resultsFindExtrem(bool minimum);
 
 private slots:
-    void refresh();
-
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
     void chartLogHorizontal(bool checked);

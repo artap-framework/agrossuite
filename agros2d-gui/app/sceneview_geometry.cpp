@@ -904,10 +904,6 @@ void SceneViewPreprocessor::contextMenuEvent(QContextMenuEvent *event)
     if (m_sceneMode == SceneGeometryMode_OperateOnLabels)
         actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
 
-    if (m_mnuScene)
-        delete m_mnuScene;
-    createMenuGeometry();
-
     m_mnuScene->exec(event->globalPos());
 }
 

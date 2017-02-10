@@ -52,12 +52,11 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     
     createControls();
     
-    connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     connect(m_study, SIGNAL(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)),
             this, SLOT(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)));
 
-    connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
+    connect(m_study, SIGNAL(closeLog()), this, SLOT(closeLog()));
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
@@ -82,16 +81,16 @@ void LogOptimizationDialog::closeEvent(QCloseEvent *e)
 void LogOptimizationDialog::reject()
 {
     if (m_study->isSolving())
-        m_study->doAbortSolve();
+        m_study->abortSolving();
     else
         close();
 }
 
-void LogOptimizationDialog::tryClose()
+void LogOptimizationDialog::closeLog()
 {
     if (m_study->isSolving())
     {
-        Agros::log()->printError(tr("Solver"), tr("Stydy is being aborted."));
+        Agros::log()->printError(tr("Solver"), tr("Study is being aborted."));
     }
     else
     {
@@ -101,8 +100,6 @@ void LogOptimizationDialog::tryClose()
 
 void LogOptimizationDialog::createControls()
 {
-    // m_logWidget = new LogWidget(this);
-    
 #ifdef Q_WS_WIN
     int fontSize = 7;
 #endif
@@ -346,26 +343,10 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     m_step++;
 }
 
-void LogOptimizationDialog::solved()
-{
-    btnAbort->setEnabled(false);
-    btnClose->setEnabled(true);
-    
-    // TODO: move from GUI
-    QDateTime currentTime(QDateTime::currentDateTime());
-    QString fn = QString("%1/log/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
-
-    const int width = 650;
-    const int height = 400;
-
-    totalChart->savePng(fn, width, height);
-    Agros::log()->appendImage(fn);
-
-    tryClose();
-}
-
 void LogOptimizationDialog::aborted()
 {
+    m_study->abortSolving();
+
     btnAbort->setEnabled(false);
     btnClose->setEnabled(true);
 }

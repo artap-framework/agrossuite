@@ -100,8 +100,7 @@ PostDeal::PostDeal(Computation *computation) :
     m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
     m_isProcessed(false)
 {
-    connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    // connect(m_problem, SIGNAL(fieldsChanged()), this, SLOT(clear()));
+    // connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
 }
 
 PostDeal::~PostDeal()
@@ -220,7 +219,6 @@ void PostDeal::refresh()
         processSolved();
 
     m_isProcessed = true;
-    emit processed();
     m_computation->setIsPostprocessingRunning(false);
 }
 
@@ -508,23 +506,6 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 
 // ************************************************************************************************************************
 
-void SolveThread::run()
-{
-    Agros::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
-
-    dealii::deal_II_exceptions::disable_abort_on_exception();
-
-    m_computation->solve();
-}
-
-void SolveThread::finished()
-{
-    emit m_computation->solvedWithThread();
-    deleteLater();
-}
-
-// ************************************************************************************************************************
-
 ProblemBase::ProblemBase() :
     m_isMeshing(false),
     m_config(new ProblemConfig(this)),
@@ -606,7 +587,7 @@ bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parame
     }
     else
     {
-        m_scene->cacheGeometryConstraints();
+        m_scene->invalidate();
         // control geometry
         m_scene->invalidate();
     }
@@ -783,8 +764,9 @@ void ProblemBase::addField(FieldInfo *field)
 
     // couplings
     synchronizeCouplings();
+    m_scene->fieldsChange();
 
-    emit fieldsChanged();
+    // emit fieldsChanged();
 }
 
 void ProblemBase::removeField(FieldInfo *field)
@@ -801,8 +783,9 @@ void ProblemBase::removeField(FieldInfo *field)
     m_fieldInfos.remove(field->fieldId());
 
     synchronizeCouplings();
+    m_scene->fieldsChange();
 
-    emit fieldsChanged();
+    // emit fieldsChanged();
 }
 
 void ProblemBase::synchronizeCouplings()
@@ -848,8 +831,8 @@ void ProblemBase::synchronizeCouplings()
         }
     }
 
-    if (changed)
-        emit couplingsChanged();
+    // if (changed)
+    //     emit couplingsChanged();
 }
 
 bool ProblemBase::isMeshed() const
@@ -972,9 +955,6 @@ void ProblemBase::readInitialMeshFromFile(const QString &problemDir, bool emitMe
     m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
     Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
-
-    if (emitMeshed)
-        emit meshed();
 }
 
 void ProblemBase::readProblemFromJson(const QString &fileName)
@@ -1012,9 +992,6 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
         // clear scene
         m_scene->clear();
-
-        m_scene->blockSignals(true);
-        m_scene->stopInvalidating(true);
 
         // problem config
         m_config->load(&doc->problem().problem_config());
@@ -1917,8 +1894,6 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     m_results(new ComputationResults()),
     m_postDeal(new PostDeal(this))
 {
-    connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
-
     if (problemDir.isEmpty())
     {
         // new dir
@@ -2067,7 +2042,7 @@ void Computation::readFromProblem()
     }
 
     // default values
-    emit m_scene->invalidated();
+    m_scene->invalidate();
 }
 
 QString Computation::problemFileName() const
@@ -2128,7 +2103,7 @@ void Computation::solveInit()
     }
 
     // invalidate scene (parameter update)
-    m_scene->cacheGeometryConstraints();
+    m_scene->invalidate();
     m_scene->invalidate();
 
     // control geometry
@@ -2164,16 +2139,10 @@ void Computation::solveInit()
     m_problemSolver->init();
 }
 
-void Computation::doAbortSolve()
+void Computation::abortSolving()
 {
     m_abort = true;
     Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
-}
-
-void Computation::solveWithThread()
-{
-    SolveThread *solveThread = new SolveThread(this);
-    solveThread->startCalculation();
 }
 
 void Computation::solve()
@@ -2219,7 +2188,7 @@ void Computation::solve()
         m_abort = false;
         m_isSolving = false;
 
-        emit solved();
+        // emit solved();
 
         // evaluate results recipes
         Agros::problem()->recipes()->evaluate(this);
@@ -2312,7 +2281,7 @@ void Computation::clearSolution()
     m_calculationMesh.clear();
     m_solutionStore->clear();
 
-    emit cleared();
+    // emit cleared();
 }
 
 void Computation::clearResults()
@@ -2403,7 +2372,6 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
         m_studies->addStudy(study);
         m_studies->blockSignals(false);
     }
-    m_studies->invalidated();
 
     // recipes
     m_recipes->clear();
@@ -2481,8 +2449,6 @@ void Problem::clearFieldsAndConfig()
     QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
 
     m_fileName = "";
-
-    emit fileNameChanged(tr("unnamed"));
 }
 
 void Problem::readProblemFromArchive(const QString &fileName)
@@ -2555,7 +2521,6 @@ void Problem::readProblemFromArchive(const QString &fileName)
         QFile::remove(problemA2D);
 
     m_fileName = QFileInfo(fileName).absoluteFilePath();
-    emit fileNameChanged(m_fileName);
 
     // set last computation
     if (!Agros::computations().isEmpty())
@@ -2583,8 +2548,7 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     if (onlyProblemFile)
     {
         // only problem file
-        if (JlCompress::compressFiles(fileName, QStringList() << problemFileName()))
-            emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
+        JlCompress::compressFiles(fileName, QStringList() << problemFileName());
     }
     else
     {
@@ -2621,8 +2585,6 @@ void Problem::readProblemFromFile(const QString &fileName)
 
             // set filename
             m_fileName = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-            emit fileNameChanged(m_fileName);
-            // writeProblemToArchive(fn); // only for automatic convert
         }
     }
     catch (AgrosModuleException& e)

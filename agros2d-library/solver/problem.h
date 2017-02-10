@@ -99,8 +99,6 @@ private:
 
 class PostDeal : public QObject
 {
-    Q_OBJECT
-
 public:
     PostDeal(Computation *computation);
     ~PostDeal();
@@ -132,13 +130,15 @@ public:
 
     inline bool isProcessed() const { return m_isProcessed; }
 
-signals:
-    void processed();
-
-public slots:
     void refresh();
     void clear();
     void clearView();
+
+    void processSolved();
+
+    void processRangeContour();
+    void processRangeScalar();
+    void processRangeVector();
 
 private:
     Computation *m_computation;
@@ -160,41 +160,10 @@ private:
 
     // stored shared pointers for keeping the instance around
     std::shared_ptr<dealii::DataPostprocessorScalar<2> > m_post;
-
-private slots:
-    void processSolved();
-
-    void processRangeContour();
-    void processRangeScalar();
-    void processRangeVector();
-};
-
-class SolveThread : public QThread
-{
-    Q_OBJECT
-
-public:
-    SolveThread(Computation *computation) : QThread(), m_computation(computation)
-    {
-        connect(this, SIGNAL(finished()), this, SLOT(finished()));
-    }
-
-    inline void startCalculation() { start(QThread::TimeCriticalPriority); }
-
-protected:
-    virtual void run();
-
-private slots:
-    void finished();
-
- private:
-     Computation *m_computation;
 };
 
 class AGROS_LIBRARY_API ProblemBase : public QObject
 {
-    Q_OBJECT
-
 public:
     ProblemBase();
     virtual ~ProblemBase();
@@ -244,18 +213,14 @@ public:
     void readProblemFromJson(const QString &fileName = "");
     void writeProblemToJson(const QString &fileName = "");
 
-signals:
-    /// emited when an field is added or removed. Menus need to adjusted
-    void fieldsChanged();
-
-    /// emited when an field is added or removed. Menus need to adjusted
-    void couplingsChanged();
-
-    void meshed();
-
-public slots:
     virtual void clearFields();
     virtual void clearFieldsAndConfig();
+
+    /// emited when an field is added or removed. Menus need to adjusted
+    // void fieldsChanged();
+
+    /// emited when an field is added or removed. Menus need to adjusted
+    // void couplingsChanged();
 
 protected:
     Scene *m_scene;
@@ -294,8 +259,6 @@ private:
 
 class AGROS_LIBRARY_API Problem : public ProblemBase
 {
-    Q_OBJECT
-
 public:
     Problem();
     ~Problem();
@@ -320,10 +283,6 @@ public:
     // studies
     inline Studies *studies() { return m_studies; }
 
-signals:
-    void fileNameChanged(const QString &archiveFileName);
-
-public slots:
     virtual void clearFieldsAndConfig();
 
 private:
@@ -345,8 +304,6 @@ protected:
 
 class AGROS_LIBRARY_API Computation : public ProblemBase
 {
-    Q_OBJECT
-
 public:
     Computation(const QString &problemDir = "");
     virtual ~Computation();
@@ -381,7 +338,6 @@ public:
     void setIsPostprocessingRunning(bool isPostprocessingRunning = true) { m_isPostprocessingRunning = isPostprocessingRunning; }
 
     void solve();
-    void solveWithThread();
 
     virtual QString problemFileName() const;
     void readFromProblem();
@@ -392,18 +348,17 @@ public:
 
     inline PostDeal *postDeal() { return m_postDeal; }
 
-signals:
-    void solved();
-    void cleared();
-    void solvedWithThread();
-
-public slots:    
     virtual void clearFields();
     void clearSolution();
     void clearResults();
     virtual void clearFieldsAndConfig();
 
-    void doAbortSolve();
+    void abortSolving();
+/*
+signals:
+    void solved();
+    void cleared();
+*/
 
 protected:
     bool m_isSolving;

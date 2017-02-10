@@ -30,6 +30,8 @@
 class Computation;
 class Study;
 
+Q_DECLARE_METATYPE(Study *)
+
 class Statistics
 {
 public:
@@ -186,8 +188,6 @@ protected:
 
 class Study : public QObject
 {
-    Q_OBJECT
-
 public:
     enum ResultType
     {
@@ -343,13 +343,8 @@ public:
 
     static Study *factory(StudyType type);
 
-public slots:
-    void doAbortSolve();
-
-signals:
-    void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
-
-    void solved();
+    void abortSolving();
+    // void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
 
 protected:
     QList<Parameter> m_parameters;
@@ -380,8 +375,6 @@ protected:
 
 class Studies : public QObject
 {
-    Q_OBJECT
-
 public:
     Studies(QObject *parent = 0);
     ~Studies() {}
@@ -396,9 +389,6 @@ public:
 
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }
-
-signals:
-    void invalidated();
 
 private:
     QList<Study *> m_studies;

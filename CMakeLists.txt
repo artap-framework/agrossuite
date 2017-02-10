@@ -189,6 +189,13 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Turn on Unicode
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
+# Configure CCache if available
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 # Enable debugging symbols for all files all the time:
 IF(AGROS_DEBUG)
   IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

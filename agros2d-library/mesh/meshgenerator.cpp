@@ -541,7 +541,7 @@ bool MeshGenerator::prepare()
 {
     try
     {
-        m_problem->scene()->cacheGeometryConstraints();
+        m_problem->scene()->invalidate();
         m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
     }
     catch (AgrosMeshException& ame)

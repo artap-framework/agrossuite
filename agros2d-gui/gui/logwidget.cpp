@@ -253,10 +253,6 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
 
     createControls();
 
-    connect(btnAbort, SIGNAL(clicked()), m_computation, SLOT(doAbortSolve()));
-    connect(Agros::problem(), SIGNAL(meshed()), this, SLOT(tryClose()));
-    connect(m_computation, SIGNAL(solved()), this, SLOT(tryClose()));
-
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
 
@@ -265,6 +261,11 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
 
     move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
          QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
+}
+
+void LogDialog::abortSolving()
+{
+    m_computation->abortSolving();
 }
 
 void LogDialog::closeEvent(QCloseEvent *e)
@@ -276,7 +277,7 @@ void LogDialog::closeEvent(QCloseEvent *e)
 void LogDialog::reject()
 {
     if (m_computation->isMeshing() || m_computation->isSolving())
-        m_computation->doAbortSolve();
+        m_computation->abortSolving();
     else
         close();
 }
@@ -322,7 +323,7 @@ void LogDialog::createControls()
                               arg(this->palette().color(QPalette::Background).name()));
 
     btnClose = new QPushButton(tr("Close"));
-    connect(btnClose, SIGNAL(clicked()), this, SLOT(tryClose()));
+    connect(btnClose, SIGNAL(clicked()), this, SLOT(closeLog()));
     btnClose->setEnabled(false);
 
     btnAbort = new QPushButton(tr("Abort"));
@@ -597,7 +598,7 @@ void LogDialog::addIcon(const QIcon &icn, const QString &label)
     previousLabel = label;
 }
 
-void LogDialog::tryClose()
+void LogDialog::closeLog()
 {
     if (m_computation->isSolving())
     {

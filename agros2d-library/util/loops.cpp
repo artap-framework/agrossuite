@@ -286,8 +286,6 @@ LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, Scene
 LoopsInfo::LoopsInfo(Scene *scene)
     : QObject(), m_scene(scene)
 {
-    // connect(m_scene, SIGNAL(invalidated()), this, SLOT(processPolygonTriangles()));
-    // connect(m_scene, SIGNAL(cleared()), this, SLOT(processPolygonTriangles()));
 }
 
 int LoopsInfo::intersectionsParity(Point point, QList<LoopsNodeEdgeData> loop)

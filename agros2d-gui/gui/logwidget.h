@@ -119,6 +119,8 @@ public:
     LogDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
     ~LogDialog();
 
+    void closeLog();
+    void abortSolving();
 
 protected:
     virtual void closeEvent(QCloseEvent *e);
@@ -160,8 +162,6 @@ private slots:
     void updateTransientChartInfo(double actualTime);
 
     void addIcon(const QIcon &icn, const QString &label);
-
-    void tryClose();
 };
 
 class AGROS_LIBRARY_API ConnectLog : public QObject

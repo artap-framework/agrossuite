@@ -231,8 +231,6 @@ void StudyNLopt::solve()
             // sort computations
             // QString parameterName = m_functionals[0].name();
             // m_computationSets.last().sort(parameterName);
-
-            emit solved();
         }
         else
         {

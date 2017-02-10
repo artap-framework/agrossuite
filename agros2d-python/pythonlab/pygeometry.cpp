@@ -345,8 +345,6 @@ void PyGeometry::removeNodes(const vector<int> &nodes)
 
     if (!tmp.empty())
     {
-        Agros::problem()->scene()->stopInvalidating(true);
-
         for (vector<int>::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
         {
             if ((*it >= 0) && (*it < Agros::problem()->scene()->nodes->length()))
@@ -362,7 +360,6 @@ void PyGeometry::removeNodes(const vector<int> &nodes)
                 throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros::problem()->scene()->nodes->length()-1).toStdString());
         }
 
-        Agros::problem()->scene()->stopInvalidating(false);
         Agros::problem()->scene()->invalidate();
     }
 }
@@ -390,7 +387,6 @@ void PyGeometry::removeEdges(const vector<int> &edges)
                 throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros::problem()->scene()->faces->length()-1).toStdString());
         }
 
-        Agros::problem()->scene()->stopInvalidating(false);
         Agros::problem()->scene()->invalidate();
     }
 }
@@ -407,8 +403,6 @@ void PyGeometry::removeLabels(const vector<int> &labels)
 
     if (!tmp.empty())
     {
-        Agros::problem()->scene()->stopInvalidating(true);
-
         for (vector<int>::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
         {
             if ((*it >= 0) && (*it < Agros::problem()->scene()->labels->length()))
@@ -420,7 +414,6 @@ void PyGeometry::removeLabels(const vector<int> &labels)
                 throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros::problem()->scene()->labels->length()-1).toStdString());
         }
 
-        Agros::problem()->scene()->stopInvalidating(false);
         Agros::problem()->scene()->invalidate();
     }
 }

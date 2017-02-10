@@ -58,8 +58,6 @@ public:
     inline void setStartupProblemFilename(const QString& fn) { m_startupProblemFilename = fn; }
 
 private slots:
-    inline void doSetWindowTitle(const QString &name) { setWindowTitle("Agros2D - " + name); }
-
     void doDocumentNew();
     void doDocumentOpen(const QString &fileName = "");
     void doDocumentOpenRecent(QAction *action);
@@ -80,6 +78,7 @@ private slots:
 
     void doSolve();
     void doSolveNewComputation();
+    void doSolveFinished();
 
     void doOptions();
     void doMaterialBrowser();
@@ -194,6 +193,7 @@ private:
     QSplitter *splitterMain;
 
     LogStdOut *logStdOut;
+    LogDialog *logDialog;
 
     QString m_startupProblemFilename;
     bool m_startupExecute;

@@ -110,7 +110,7 @@ void PostprocessorWidget::createControls()
     setLayout(layoutMain);
 }
 
-void PostprocessorWidget::solvedWithThread()
+void PostprocessorWidget::solveFinished()
 {
     // clear commputation
     m_currentComputation.clear();

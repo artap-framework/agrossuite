@@ -23,13 +23,13 @@ class LibInstance
 public:
     LibInstance()
     {
-        // qDebug() << __FILE__ << "has been initialized";
+        qInfo() << __FILE__ << "has been initialized";
         setlocale(LC_NUMERIC, "C");
 
         char *argv[] = {(char *) QString("%1/agros2d_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
         int argc = sizeof(argv) / sizeof(char*) - 1;
 
-        app = new QCoreApplication(argc, argv);
+        // app = new QCoreApplication(argc, argv);
         QCoreApplication::setApplicationVersion(versionString());
         QCoreApplication::setOrganizationName("agros");
         QCoreApplication::setOrganizationDomain("agros");
@@ -48,7 +48,7 @@ public:
     ~LibInstance()
     {
         delete app;
-        // qDebug() << __FILE__ << "has been unloaded";
+        qInfo() << __FILE__ << "has been unloaded";
     }
 };
 

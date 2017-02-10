@@ -181,7 +181,7 @@ struct StateEval
             try
             {
                 // invalidate scene (parameter update)
-                computation->scene()->cacheGeometryConstraints();
+                computation->scene()->invalidate();
                 computation->scene()->invalidate();
 
                 computation->scene()->checkGeometryResult();
@@ -361,7 +361,7 @@ void StudyLimbo::solve()
             || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")))
     {
         Agros::log()->printError(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
-        emit solved();
+
         return;
     }
 
@@ -414,7 +414,6 @@ void StudyLimbo::solve()
             else assert(0);
 
     m_isSolving = false;
-    emit solved();
 }
 
 QString StudyLimbo::meanString(const QString &meanType) const

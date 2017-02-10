@@ -46,6 +46,8 @@ public:
     LogOptimizationDialog(Study *study);
     ~LogOptimizationDialog();
 
+    void closeLog();
+
 protected:
     virtual void closeEvent(QCloseEvent *e);
     virtual void reject();
@@ -78,10 +80,7 @@ private:
 private slots:
     void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
 
-    void solved();
     void aborted();
-
-    void tryClose();
 };
 
 class StudySelectDialog : public QDialog

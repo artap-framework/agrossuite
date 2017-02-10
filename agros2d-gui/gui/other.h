@@ -29,6 +29,8 @@
 #include "util/util.h"
 #include "../3rdparty/QtAwesome/QtAwesome.h"
 
+class Computation;
+
 // undo framework
 AGROS_LIBRARY_API QUndoStack *undoStack();
 
@@ -52,9 +54,30 @@ enum AlphabetColor
 // get color icon with letter
 AGROS_LIBRARY_API QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
 
-
 // set gui style
 AGROS_LIBRARY_API QString defaultGUIStyle();
 AGROS_LIBRARY_API void setGUIStyle(const QString &styleName);
+
+class SolveThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    SolveThread(Computation *computation) : QThread(), m_computation(computation)
+    {
+        connect(this, SIGNAL(finished()), this, SLOT(finished()));
+    }
+
+    inline void startCalculation() { start(QThread::TimeCriticalPriority); }
+
+protected:
+    virtual void run();
+
+private slots:
+    void finished();
+
+ private:
+     Computation *m_computation;
+};
 
 #endif // OTHER_H

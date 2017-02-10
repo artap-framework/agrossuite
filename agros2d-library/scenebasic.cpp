@@ -141,7 +141,7 @@ void MarkedSceneBasic<MarkerType>::removeMarker(const FieldInfo *fieldInfo)
 }
 
 template <typename MarkerType>
-void MarkedSceneBasic<MarkerType>::doFieldsChanged()
+void MarkedSceneBasic<MarkerType>::fieldsChange()
 {
     foreach (MarkerType* marker, m_markers)
     {
@@ -307,11 +307,11 @@ void MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType>::removeMarkerFr
 }
 
 template <typename MarkerType, typename MarkedSceneBasicType>
-void MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType>::doFieldsChanged()
+void MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType>::fieldsChange()
 {
     foreach(MarkedSceneBasicType* item, this->m_data)
     {
-        item->doFieldsChanged();
+        item->fieldsChange();
     }
 }
 

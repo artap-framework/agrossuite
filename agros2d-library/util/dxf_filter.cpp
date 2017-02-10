@@ -320,14 +320,9 @@ void readFromDXF(Scene *scene, const QString &fileName)
     // char *plocale = setlocale (LC_NUMERIC, "");
     // setlocale (LC_NUMERIC, "C");
 
-    scene->blockSignals(true);
-    scene->stopInvalidating(true);
-
     DxfInterfaceDXFRW filter(scene, fileName);
     filter.read();
 
-    scene->stopInvalidating(false);
-    scene->blockSignals(false);
     scene->invalidate();
 
     // set system locale

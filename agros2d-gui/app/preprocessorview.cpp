@@ -75,14 +75,13 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
     mnuBoundariesAndMaterials = new QMenu(tr("&Add boundaries and materials"), this);
     sceneTransformDialog = new SceneTransformDialog(m_sceneViewPreprocessor, this);
     connect(actTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
+    connect(this, SIGNAL(refreshGUI()), m_sceneViewPreprocessor, SLOT(refresh()));
 
     // boundary conditions, materials and geometry information
     createControls();
 
-    connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
-    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
+    // connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    // connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -151,10 +150,12 @@ void PreprocessorWidget::createActions()
     actNewEdge = new QAction(icon("scene-edge"), tr("New &edge..."), this);
     actNewEdge->setShortcut(tr("Alt+E"));
     connect(actNewEdge, SIGNAL(triggered()), this, SLOT(doNewEdge()));
+    m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewEdge);
 
     actNewLabel = new QAction(icon("scene-label"), tr("New &label..."), this);
     actNewLabel->setShortcut(tr("Alt+L"));
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
+    m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewLabel);
 
     actNewBoundary = new QAction(tr("New &boundary condition..."), this);
     actNewBoundary->setShortcut(tr("Alt+B"));
@@ -565,14 +566,16 @@ void PreprocessorWidget::refresh()
 
     if (Agros::problem()->studies()->items().count() > 0)
     {
-        foreach (Study *study, Agros::problem()->studies()->items())
+        for (int k = 0; k < Agros::problem()->studies()->items().count(); k++)
         {
+            Study *study = Agros::problem()->studies()->items().at(k);
+
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
             studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
             studyNode->setIcon(0, iconAlphabet(studyTypeString(study->type()).at(0), AlphabetColor_Green));
             studyNode->setFont(0, fnt);
-            studyNode->setData(0, Qt::UserRole, study->variant());
+            studyNode->setData(0, Qt::UserRole, k);
             studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             // studyNode->setExpanded(true);
 
@@ -580,7 +583,7 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
             parametersNode->setText(0, tr("Parameters"));
             parametersNode->setFont(0, fnt);
-            parametersNode->setData(0, Qt::UserRole, study->variant());
+            parametersNode->setData(0, Qt::UserRole, k);
             parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             parametersNode->setExpanded(true);
 
@@ -592,7 +595,7 @@ void PreprocessorWidget::refresh()
                 item->setData(0, Qt::UserRole, parameter.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
                 item->setText(1, QString("%1 - %2").arg(parameter.lowerBound()).arg(parameter.upperBound()));
-                item->setData(2, Qt::UserRole, study->variant());
+                item->setData(2, Qt::UserRole, k);
             }
 
             // functionals
@@ -611,7 +614,7 @@ void PreprocessorWidget::refresh()
                 item->setData(0, Qt::UserRole, functional.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
                 item->setText(1, QString("%1").arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
-                item->setData(2, Qt::UserRole, study->variant());
+                item->setData(2, Qt::UserRole, k);
             }
         }
     }
@@ -861,6 +864,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+
+        emit refreshGUI();
     }
 }
 
@@ -972,7 +977,6 @@ void PreprocessorWidget::doProperties()
             if (fieldDialog.exec() == QDialog::Accepted)
             {
                 refresh();
-                // emit changed();
             }
         }
         else if (type == PreprocessorWidget::ProblemProperties)
@@ -982,14 +986,12 @@ void PreprocessorWidget::doProperties()
             if (problemDialog.exec() == QDialog::Accepted)
             {
                 refresh();
-                // emit changed();
             }
         }
         else if (type == PreprocessorWidget::OptilabStudy)
         {
             // study
-            Study *study = trvWidget->currentItem()->data(0, Qt::UserRole).value<Study *>();
-
+            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
@@ -999,7 +1001,7 @@ void PreprocessorWidget::doProperties()
         else if (type == PreprocessorWidget::OptilabParameter)
         {
             // study
-            Study *study = trvWidget->currentItem()->data(2, Qt::UserRole).value<Study *>();
+            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
             QString parameter = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
 
             StudyParameterDialog dialog(study, &study->parameter(parameter));
@@ -1011,7 +1013,7 @@ void PreprocessorWidget::doProperties()
         else if (type == PreprocessorWidget::OptilabFunctional)
         {
             // study
-            Study *study = trvWidget->currentItem()->data(2, Qt::UserRole).value<Study *>();
+            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
             QString functional = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
 
             StudyFunctionalDialog dialog(study, &study->functional(functional));
@@ -1045,6 +1047,8 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
+
+        emit refreshGUI();
     }
 }
 
@@ -1062,16 +1066,17 @@ void PreprocessorWidget::doDelete()
             if (SceneNode *node = dynamic_cast<SceneNode *>(objectBasic))
             {
                 Agros::problem()->scene()->nodes->remove(node);
+                Agros::problem()->scene()->invalidate();
             }
-
             else if (SceneFace *edge = dynamic_cast<SceneFace *>(objectBasic))
             {
                 Agros::problem()->scene()->faces->remove(edge);
+                Agros::problem()->scene()->invalidate();
             }
-
             else if (SceneLabel *label = dynamic_cast<SceneLabel *>(objectBasic))
             {
                 Agros::problem()->scene()->labels->remove(label);
+                Agros::problem()->scene()->invalidate();
             }
         }
         else if (type == PreprocessorWidget::Material)
@@ -1079,12 +1084,14 @@ void PreprocessorWidget::doDelete()
             // label marker
             SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
             Agros::problem()->scene()->removeMaterial(objectMaterial);
+            Agros::problem()->scene()->invalidate();
         }
         else if (type == PreprocessorWidget::Boundary)
         {
             // edge marker
             SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
             Agros::problem()->scene()->removeBoundary(objectBoundary);
+            Agros::problem()->scene()->invalidate();
         }
         else if (type == PreprocessorWidget::ModelParameter)
         {
@@ -1115,8 +1122,7 @@ void PreprocessorWidget::doDelete()
         else if (type == PreprocessorWidget::OptilabStudy)
         {
             // study
-            Study *study = trvWidget->currentItem()->data(0, Qt::UserRole).value<Study *>();
-
+            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
             if (QMessageBox::question(this, tr("Delete"), tr("Study '%1' will be pernamently deleted. Are you sure?").
                                       arg(studyTypeString(study->type())), tr("&Yes"), tr("&No")) == 0)
             {
@@ -1136,7 +1142,8 @@ void PreprocessorWidget::doDelete()
         }
 
         refresh();
-        m_sceneViewPreprocessor->refresh();
+
+        emit refreshGUI();
     }
 }
 
@@ -1145,8 +1152,8 @@ void PreprocessorWidget::doNewParameter()
     ParameterDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted)
     {
-        m_sceneViewPreprocessor->refresh();
         refresh();
+        emit refreshGUI();
     }
 }
 
@@ -1159,8 +1166,8 @@ void PreprocessorWidget::doNewFunctionAnalytic()
     {
         Agros::problem()->config()->functions()->add(function);
 
-        m_sceneViewPreprocessor->refresh();
         refresh();
+        emit refreshGUI();
     }
     else
     {
@@ -1195,7 +1202,7 @@ void PreprocessorWidget::doNewField()
             Agros::problem()->addField(fieldInfo);
 
             refresh();
-            // emit changed();
+            emit refreshGUI();
         }
         else
         {
@@ -1221,6 +1228,7 @@ void PreprocessorWidget::doNewStudy()
                 Agros::problem()->studies()->addStudy(study);
 
                 refresh();
+                emit refreshGUI();
             }
             else
             {
@@ -1271,7 +1279,9 @@ void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
         if (dialog->showDialog() == QDialog::Accepted)
         {
             Agros::problem()->recipes()->addRecipe(recipe);
+
             refresh();
+            emit refreshGUI();
         }
         else
         {
@@ -1291,7 +1301,6 @@ void PreprocessorWidget::doTransform()
     sceneTransformDialog->showDialog();
 }
 
-
 void PreprocessorWidget::doNewNode(const Point &point)
 {
     SceneNode *node = new SceneNode(Agros::problem()->scene(), PointValue(Agros::problem(), point));
@@ -1300,7 +1309,13 @@ void PreprocessorWidget::doNewNode(const Point &point)
     if (dialog->exec() == QDialog::Accepted)
     {
         SceneNode *nodeAdded = Agros::problem()->scene()->addNode(node);
-        if (nodeAdded == node) undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
+        Agros::problem()->scene()->invalidate();
+
+        if (nodeAdded == node)
+            undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
+
+        refresh();
+        emit refreshGUI();
     }
     else
         delete node;
@@ -1314,6 +1329,11 @@ void PreprocessorWidget::doNewEdge()
     if (dialog->exec() == QDialog::Accepted)
     {
         SceneFace *edgeAdded = Agros::problem()->scene()->addFace(edge);
+        Agros::problem()->scene()->invalidate();
+
+        refresh();
+        emit refreshGUI();
+
         if (edgeAdded == edge)
             undoStack()->push(getAddCommand(edge));
     }
@@ -1329,9 +1349,13 @@ void PreprocessorWidget::doNewLabel(const Point &point)
     if (dialog->exec() == QDialog::Accepted)
     {
         SceneLabel *labelAdded = Agros::problem()->scene()->addLabel(label);
+        Agros::problem()->scene()->invalidate();
 
         if (labelAdded == label)
             undoStack()->push(getAddCommand(label));
+
+        refresh();
+        emit refreshGUI();
     }
     else
         delete label;
@@ -1353,7 +1377,13 @@ void PreprocessorWidget::doNewBoundary(QString field)
     if (dialog)
     {
         if (dialog->exec() == QDialog::Accepted)
+        {
             Agros::problem()->scene()->addBoundary(boundary);
+            Agros::problem()->scene()->invalidate();
+
+            refresh();
+            emit refreshGUI();
+        }
         else
         {
             delete boundary;
@@ -1381,7 +1411,13 @@ void PreprocessorWidget::doNewMaterial(QString field)
     if (dialog)
     {
         if (dialog->exec() == QDialog::Accepted)
+        {
             Agros::problem()->scene()->addMaterial(material);
+            Agros::problem()->scene()->invalidate();
+
+            refresh();
+            emit refreshGUI();
+        }
         else
         {
             delete material;

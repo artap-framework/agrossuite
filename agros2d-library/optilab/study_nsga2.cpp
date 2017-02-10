@@ -179,8 +179,6 @@ void StudyNSGA2::solve()
         // sort computations
         // QString parameterName = m_functionals[0].name();
         // m_computationSets.last().sort(parameterName);
-
-        emit solved();
     }
     catch (nsga2::nsga2exception &e)
     {

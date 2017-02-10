@@ -158,8 +158,6 @@ void StudySweep::solve()
     sweepProblem.initializeOptimization();
 
     m_isSolving = false;
-
-    emit solved();
 }
 
 void StudySweep::setDefaultValues()

@@ -116,15 +116,10 @@ ostream& operator<<(ostream& output, FieldInfo& id)
 // ************************************************************************************************************************
 
 Scene::Scene(ProblemBase *problem) : m_problem(problem),
-    m_loopsInfo(new LoopsInfo(this)),    
-    m_stopInvalidating(false),
+    m_loopsInfo(new LoopsInfo(this)),        
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
-
-{
-    createActions();
-
-    connect(this, SIGNAL(invalidated()), this, SLOT(cacheGeometryConstraints()));
+{    
 }
 
 Scene::~Scene()
@@ -151,9 +146,6 @@ Scene::~Scene()
 void Scene::copy(const Scene *origin)
 {
     clear();
-
-    stopInvalidating(true);
-    blockSignals(true);
 
     // geometry
     // nodes
@@ -183,20 +175,8 @@ void Scene::copy(const Scene *origin)
                                 originLabel->area()));
     }
 
-    stopInvalidating(false);
-    blockSignals(false);
-
     // force recache constraint
-    cacheGeometryConstraints();
-
-    emit invalidated();
-}
-
-void Scene::createActions()
-{
-    /*
-
-    */
+    invalidate();
 }
 
 SceneNode *Scene::addNode(SceneNode *node)
@@ -208,10 +188,7 @@ SceneNode *Scene::addNode(SceneNode *node)
         return existing;
     }
 
-    nodes->add(node);
-    if (!m_stopInvalidating)
-        emit invalidated();
-
+    nodes->add(node);    
     checkNodeConnect(node);
 
     return node;
@@ -222,19 +199,17 @@ SceneNode *Scene::getNode(const Point &point)
     return nodes->get(point);
 }
 
-SceneFace *Scene::addFace(SceneFace *edge)
+SceneFace *Scene::addFace(SceneFace *face)
 {
     // check if edge doesn't exists
-    if (SceneFace* existing = faces->get(edge)){
-        delete edge;
+    if (SceneFace* existing = faces->get(face)){
+        delete face;
         return existing;
     }
 
-    faces->add(edge);
-    if (!m_stopInvalidating)
-        emit invalidated();
+    faces->add(face);
 
-    return edge;
+    return face;
 }
 
 SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear)
@@ -253,14 +228,12 @@ SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd)
 SceneLabel *Scene::addLabel(SceneLabel *label)
 {
     // check if label doesn't exists
-    if(SceneLabel* existing = labels->get(label)){
+    if (SceneLabel *existing = labels->get(label)){
         delete label;
         return existing;
     }
 
-    labels->add(label);
-    if (!m_stopInvalidating)
-        emit invalidated();
+    labels->add(label);    
 
     return label;
 }
@@ -272,20 +245,14 @@ SceneLabel *Scene::getLabel(const Point &point)
 
 void Scene::addBoundary(SceneBoundary *boundary)
 {
-    boundaries->add(boundary);
-    if (!m_stopInvalidating)
-        emit invalidated();
+    boundaries->add(boundary);    
 }
 
 void Scene::removeBoundary(SceneBoundary *boundary)
 {
-    //TODO instead of setting NoneBoundary we now remove... rething
     faces->removeMarkerFromAll(boundary);
     boundaries->remove(boundary);
     // delete boundary;
-
-    if (!m_stopInvalidating)
-        emit invalidated();
 }
 
 void Scene::setBoundary(SceneBoundary *boundary)
@@ -301,11 +268,8 @@ SceneBoundary *Scene::getBoundary(FieldInfo *field, const QString &name)
 
 void Scene::addMaterial(SceneMaterial *material)
 {
-    this->materials->add(material);
-    if (!m_stopInvalidating)
-        emit invalidated();
+    this->materials->add(material);    
 }
-
 
 SceneMaterial *Scene::getMaterial(FieldInfo *field, const QString &name)
 {
@@ -316,11 +280,6 @@ void Scene::removeMaterial(SceneMaterial *material)
 {
     labels->removeMarkerFromAll(material);
     materials->remove(material);
-
-    // delete material;
-
-    if (!m_stopInvalidating)
-        emit invalidated();
 }
 
 void Scene::setMaterial(SceneMaterial *material)
@@ -366,9 +325,6 @@ void Scene::checkGeometryAssignement()
 
 void Scene::clear()
 {
-    blockSignals(true);
-    stopInvalidating(true);
-
     // m_undoStack->clear();
 
     // loops
@@ -396,11 +352,7 @@ void Scene::clear()
 
     m_loopsInfo->processPolygonTriangles();
 
-    stopInvalidating(false);
-    blockSignals(false);
-
-    emit cleared();
-    emit invalidated();
+    invalidate();
 }
 
 RectPoint Scene::boundingBox() const
@@ -710,7 +662,7 @@ void Scene::transform(SceneTransformMode mode, const Point &point, double angle,
     if(!okNodes || !okEdges)
         nodes->setSelected(false);
 
-    emit invalidated();
+    invalidate();
 }
 
 void Scene::transformTranslate(const Point &point, bool copy, bool withMarkers)
@@ -728,11 +680,8 @@ void Scene::transformScale(const Point &point, double scaleFactor, bool copy, bo
     transform(SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
 }
 
-void Scene::cacheGeometryConstraints()
+void Scene::invalidate()
 {
-    // actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
-    // actNewLabel->setEnabled(materials->length() >= 1);
-
     m_loopsInfo->processPolygonTriangles();
 
     foreach (SceneFace *edge, faces->items())
@@ -743,13 +692,13 @@ void Scene::cacheGeometryConstraints()
     findCrossings();
 }
 
-void Scene::doFieldsChanged()
+void Scene::fieldsChange()
 {
     boundaries->doFieldsChanged(parentProblem());
     materials->doFieldsChanged(parentProblem());
 
-    faces->doFieldsChanged();
-    labels->doFieldsChanged();
+    faces->fieldsChange();
+    labels->fieldsChange();
 }
 
 void Scene::exportVTKGeometry(const QString &fileName)

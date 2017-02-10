@@ -58,7 +58,8 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
-MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent),
+    logDialog(nullptr), logStdOut(nullptr)
 {
     setWindowIcon(icon("agros2d"));
 
@@ -66,7 +67,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     m_startupExecute = false;
 
     // log stdout
-    logStdOut = NULL;
     if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
         logStdOut = new LogStdOut();
 
@@ -79,8 +79,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // preprocessor
     problemWidget = new PreprocessorWidget(sceneViewProblem, this);
-    connect(Agros::problem(), SIGNAL(fieldsChanged()), problemWidget, SLOT(refresh()));
-    connect(Agros::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
     // postprocessor
     postprocessorWidget = new PostprocessorWidget();
 
@@ -106,10 +104,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // info
     connect(tabViewLayout, SIGNAL(currentChanged(int)), this, SLOT(setControls()));
-    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros::problem(), SIGNAL(fileNameChanged(QString)), this, SLOT(doSetWindowTitle(QString)));
 
-    connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    // connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewProblem, SLOT(refresh()));
 
@@ -617,7 +613,7 @@ void MainWindow::doDocumentNew()
             Agros::problem()->addField(fieldInfo);
 
             sceneViewProblem->actSceneModeProblem->trigger();
-            sceneViewProblem->doZoomBestFit();
+            sceneViewProblem->doZoomBestFit();           
         }
         catch (AgrosPluginException& e)
         {
@@ -859,46 +855,41 @@ void MainWindow::doCreatePythonFromModel()
 
 void MainWindow::doSolve()
 {
-    // disconnect signals
-    foreach (QSharedPointer<Computation> computation, Agros::computations().values())
-    {
-        disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-        disconnect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
-    }
-
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(false);
 
-    // connect signals
-    connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-    connect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
-
-    LogDialog *logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
+    logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
     logDialog->show();
 
-    computation->solveWithThread();
+    // solve thread
+    SolveThread *solveThread = new SolveThread(computation.data());
+    connect(solveThread, SIGNAL(finished()), this, SLOT(doSolveFinished()));
+    solveThread->startCalculation();
 }
 
 void MainWindow::doSolveNewComputation()
 {
-    // disconnect signals
-    foreach (QSharedPointer<Computation> computation, Agros::computations().values())
-    {
-        disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-        disconnect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
-    }
-
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
-    // connect signals
-    if (computation.isNull())
-        qDebug() << "null";
+    logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
+    logDialog->show();
 
-    connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-    connect(computation.data(), SIGNAL(solvedWithThread()), postprocessorWidget, SLOT(solvedWithThread()));
+    // solve thread
+    SolveThread *solveThread = new SolveThread(computation.data());
+    connect(solveThread, SIGNAL(finished()), this, SLOT(doSolveFinished()));
+    solveThread->startCalculation();
+}
 
-    computation->solveWithThread();
+void MainWindow::doSolveFinished()
+{
+    // close log dialog
+    logDialog->closeLog();
+
+    // refresh postprocessor
+    postprocessorWidget->solveFinished();
+
+    setControls();
 }
 
 void MainWindow::doFullScreen()
@@ -1097,7 +1088,15 @@ void MainWindow::setControls()
     menuBar()->addMenu(mnuSettings);
     menuBar()->addMenu(mnuHelp);
 
-    // postprocessorWidget->updateControls();
+    // window title
+    setWindowTitle(QString("Agros2D - %1").arg(Agros::problem()->archiveFileName()));
+
+    // update preprocessor
+    problemWidget->refresh();
+    // update postprocessor
+    postprocessorWidget->refresh();
+    // update optilab
+    optiLab->refresh();
 
     setUpdatesEnabled(true);
 }

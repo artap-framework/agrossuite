@@ -78,7 +78,7 @@ signals:
 
 public slots:
     void refresh();
-    void solvedWithThread();
+    void solveFinished();
     void apply();
     void processed();
     void clearedComputation();

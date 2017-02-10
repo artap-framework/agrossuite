@@ -130,6 +130,13 @@ Study::~Study()
     clear();
 }
 
+QVariant Study::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}
+
 void Study::clear()
 {
     // set default values and types
@@ -275,7 +282,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
     computation->writeProblemToJson();
 
     // update GUI
-    updateParametersAndFunctionals(computation, solutionUncertainty);
+    // updateParametersAndFunctionals(computation, solutionUncertainty);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation) const
@@ -569,14 +576,7 @@ QList<QSharedPointer<Computation> > Study::nondominatedSort(QList<ComputationSet
     }
 }
 
-QVariant Study::variant()
-{
-    QVariant v;
-    v.setValue(this);
-    return v;
-}
-
-void Study::doAbortSolve()
+void Study::abortSolving()
 {
     m_abort = true;
     Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
@@ -674,21 +674,16 @@ QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &k
 
 Studies::Studies(QObject *parent) : QObject(parent)
 {
-    //connect(this, SIGNAL(invalidated()), this, SLOT(save())); TODO: only GUI
 }
 
 void Studies::addStudy(Study *study)
 {
     m_studies.append(study);
-
-    emit invalidated();
 }
 
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
-
-    emit invalidated();
 }
 
 void Studies::clear()
@@ -696,8 +691,6 @@ void Studies::clear()
     for (int i = 0; i < m_studies.size(); i++)
         delete m_studies[i];
     m_studies.clear();
-
-    emit invalidated();
 }
 
 void Studies::removeComputation(QSharedPointer<Computation> computation)

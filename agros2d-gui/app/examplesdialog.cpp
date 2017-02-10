@@ -94,7 +94,7 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
 
     setLayout(layout);
 
-    connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(readRecentFiles()));
+    // connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(readRecentFiles()));
 
     init("Examples");
 }

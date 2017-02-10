@@ -130,7 +130,7 @@ public:
     /// goes through own markers and if they are not yet in the list, adds them there
     void putMarkersToList(MarkerContainer<MarkerType>* list);
 
-    void doFieldsChanged();
+    void fieldsChange();
 
 private:
     QMap<const FieldInfo*, MarkerType*> m_markers;    
@@ -152,7 +152,7 @@ public:
     void addMissingFieldMarkers(const FieldInfo* field);
 
     /// adds none markers for new fields and removes markers from fields that have been deleted
-    void doFieldsChanged();
+    void fieldsChange();
 
     /// Filters for elements that has given marker
     MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType> haveMarker(MarkerType *marker);

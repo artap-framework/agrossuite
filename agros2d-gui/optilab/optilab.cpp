@@ -107,14 +107,10 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     actRunStudy = new QAction(icon("run"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence(tr("Alt+S")));
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
-
-    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
 {
-
 }
 
 void OptiLabWidget::createControls()
@@ -309,6 +305,21 @@ void OptiLabWidget::solveStudy()
     // solve
     study->solve();
 
+    // image
+    /*
+    QDateTime currentTime(QDateTime::currentDateTime());
+    QString fn = QString("%1/log/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+
+    const int width = 650;
+    const int height = 400;
+
+    totalChart->savePng(fn, width, height);
+    Agros::log()->appendImage(fn);
+    */
+
+    // close dialog
+    log->closeLog();
+
     refresh();
 }
 
@@ -367,7 +378,8 @@ void OptiLabWidget::doComputationSolve(bool)
         QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
         if (!key.isEmpty() && Agros::computations().contains(key))
         {
-            Agros::computations()[key]->solveWithThread();
+            SolveThread *solveThread = new SolveThread(Agros::computations()[key].data());
+            solveThread->startCalculation();
         }
     }
 }
@@ -390,7 +402,7 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 
     createControls();
 
-    connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    // connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
     connect(m_optiLabWidget, SIGNAL(chartRefreshed(QString)), this, SLOT(doChartRefreshed(QString)));
@@ -681,6 +693,8 @@ void OptiLab::createControls()
 void OptiLab::refresh()
 {
     actSceneModeOptiLab->setEnabled(!Agros::problem()->studies()->items().isEmpty());
+
+    optiLabWidget()->refresh();
 }
 
 void OptiLab::chartContextMenu(const QPoint &pos)

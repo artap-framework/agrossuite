@@ -57,30 +57,22 @@ QString generateSvgGeometry(QList<SceneFace *> edges);
 
 class AGROS_LIBRARY_API Scene : public QObject
 {
-    Q_OBJECT
-
-public slots:
-    void doFieldsChanged();
-
-    void cacheGeometryConstraints();
-
-signals:
-    void invalidated();
-    void cleared();
-
 public:
     Scene(ProblemBase *parentProblem);
     ~Scene();
 
     void copy(const Scene *origin);
 
+    void invalidate();
+    void fieldsChange();
+
     // parent problem
     ProblemBase *parentProblem() { return m_problem; }
 
     // geometry
-    SceneNodeContainer* nodes;
-    SceneFaceContainer* faces;
-    SceneLabelContainer* labels;
+    SceneNodeContainer *nodes;
+    SceneFaceContainer *faces;
+    SceneLabelContainer *labels;
 
     // boundaries and materials
     SceneBoundaryContainer *boundaries;
@@ -89,7 +81,7 @@ public:
     SceneNode *addNode(SceneNode *node);
     SceneNode *getNode(const Point &point);
 
-    SceneFace *addFace(SceneFace *edge);
+    SceneFace *addFace(SceneFace *face);
     SceneFace *getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear);
     SceneFace *getFace(const Point &pointStart, const Point &pointEnd);
 
@@ -135,9 +127,6 @@ public:
     void checkGeometryResult();
     void checkGeometryAssignement();
 
-    void stopInvalidating(bool sI) { m_stopInvalidating = sI;}
-    inline void invalidate() { emit invalidated(); }
-
 private:
     ProblemBase *m_problem;
 
@@ -145,8 +134,6 @@ private:
     QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;
     QMap<SceneNode *, int> m_numberOfConnectedNodeEdges;
     QList<SceneFace *> m_crossings;
-
-    void createActions();
 
     Point calculateNewPoint(SceneTransformMode mode, Point originalPoint, Point transformationPoint, double angle, double scaleFactor);
 
@@ -161,8 +148,6 @@ private:
     void findLyingEdgeNodes();
     void findNumberOfConnectedNodeEdges();
     void findCrossings();
-
-    bool m_stopInvalidating;
 };
 
 #endif /* SCENE_H */

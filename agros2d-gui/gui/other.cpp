@@ -18,6 +18,8 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "other.h"
+#include "util/global.h"
+#include "logview.h"
 
 static QUndoStack *m_undoStack = nullptr;
 static QtAwesome *m_awesome = nullptr;
@@ -157,4 +159,20 @@ void setGUIStyle(const QString &styleName)
     {
         QApplication::setPalette(QApplication::palette());
     }
+}
+
+// ************************************************************************************************************************
+
+void SolveThread::run()
+{
+    Agros::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
+
+    dealii::deal_II_exceptions::disable_abort_on_exception();
+
+    m_computation->solve();
+}
+
+void SolveThread::finished()
+{
+    deleteLater();
 }

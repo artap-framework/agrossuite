@@ -51,12 +51,16 @@ class PreprocessorWidget : public QWidget
 {
     Q_OBJECT
 
+signals:
+    void refreshGUI();
+
 public slots:    
     void refresh();
     void loadTooltip(SceneGeometryMode sceneMode);
 
     void doProperties();
     void doDelete();
+
     void doNewParameter();
     void doNewFunctionAnalytic();
     void doNewFunctionInterpolation();

@@ -330,7 +330,6 @@ void StudyCMAES::solve()
     if (cmasols.run_status() > 7)
     {
         // qInfo() << "optimization took " << cmasols.elapsed_time() / 1000.0 << " seconds, status: " << QString::fromStdString(cmasols.status_msg());
-        emit solved();
     }
     else
     {
