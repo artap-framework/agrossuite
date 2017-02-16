@@ -82,13 +82,7 @@ public:
     virtual typename dealii::DataOut<2>::cell_iterator next_cell(const typename dealii::DataOut<2>::cell_iterator &old_cell);
 #endif
 
-    inline double min() const { return m_min; }
-    inline double max() const { return m_max; }
-
 private:
-    double m_min;
-    double m_max;
-
     Computation *m_computation;
     const FieldInfo *m_fieldInfo;
 
@@ -113,8 +107,9 @@ public:
     inline QList<PostTriangle> &vectorXValues() { return m_vectorXValues; }
     inline QList<PostTriangle> &vectorYValues() { return m_vectorYValues; }
 
-    std::shared_ptr<PostDataOut> viewScalarFilter(Module::LocalVariable physicFieldVariable,
-                                                  PhysicFieldVariableComp physicFieldVariableComp);
+    void viewScalarFilter(Module::LocalVariable physicFieldVariable,
+                                                  PhysicFieldVariableComp physicFieldVariableComp,
+                                                  QList<PostTriangle> &list, bool deform);
 
     // view
     inline FieldInfo* activeViewField() const { return m_activeViewField; }

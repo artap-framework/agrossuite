@@ -119,19 +119,19 @@ void PostDeal::processRangeContour()
 
         m_contourValues.clear();
 
-        std::shared_ptr<PostDataOut> data_out;
-
         if (variable.isScalar())
-            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                         m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
-                                        PhysicFieldVariableComp_Scalar);
+            viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                              m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                             PhysicFieldVariableComp_Scalar,
+                             m_contourValues,
+                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
 
         else
-            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                         m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
-                                        PhysicFieldVariableComp_Magnitude);
-
-        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
+            viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                              m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                             PhysicFieldVariableComp_Magnitude,
+                             m_contourValues,
+                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
     }
 }
 
@@ -149,15 +149,29 @@ void PostDeal::processRangeScalar()
     {
         Agros::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()));
 
-        std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                  m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
-                                                                 (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
-        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool()));
+        viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                          m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
+                         (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt(),
+                         m_scalarValues,
+                         (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool()));
 
+        // min and max value
         if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
         {
-            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMin, data_out->min());
-            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMax, data_out->max());
+            double min =  numeric_limits<double>::max();
+            double max = -numeric_limits<double>::max();
+
+            foreach (PostTriangle triangle, m_scalarValues)
+            {
+                double valueMin = std::min(std::min(triangle.values[0], triangle.values[1]), triangle.values[2]);
+                double valueMax = std::max(std::max(triangle.values[0], triangle.values[1]), triangle.values[2]);
+
+                min = std::min(min, valueMin);
+                max = std::max(max, valueMax);
+            }
+
+            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMin, min);
+            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMax, max);
         }
     }
 }
@@ -178,16 +192,17 @@ void PostDeal::processRangeVector()
 
         Agros::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()));
 
-        std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                   m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
-                                                                  PhysicFieldVariableComp_X);
+        viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                          m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                         PhysicFieldVariableComp_X,
+                         m_vectorXValues,
+                         false);
 
-        std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                   m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
-                                                                  PhysicFieldVariableComp_Y);
-
-        data_outX->compute_nodes(m_vectorXValues);
-        data_outY->compute_nodes(m_vectorYValues);
+        viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                          m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                         PhysicFieldVariableComp_Y,
+                         m_vectorYValues,
+                         false);
     }
 }
 
@@ -236,8 +251,10 @@ void PostDeal::processSolved()
     }
 }
 
-std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
-                                                        PhysicFieldVariableComp physicFieldVariableComp)
+void PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
+                                PhysicFieldVariableComp physicFieldVariableComp,
+                                QList<PostTriangle> &list,
+                                bool deform)
 {
     // QTime time;
     // time.start();
@@ -249,12 +266,9 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
                                                                                    physicFieldVariable.id(),
                                                                                    physicFieldVariableComp);
 
-    // This effectively deallocates the previous pointer.
-    // this->m_post = post;
-
     MultiArray ma = activeMultiSolutionArray();
 
-    std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField(), m_computation));
+    PostDataOut *data_out = new PostDataOut(activeViewField(), m_computation);
     data_out->attach_dof_handler(ma.doFHandler());
     data_out->add_data_vector(ma.solution(), *post);
     // deform shape
@@ -268,12 +282,16 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     }
     data_out->build_patches(2);
 
+    // compute nodes
+    data_out->compute_nodes(list, deform);
+
+    // release data object
+    delete data_out;
+
     // release post object
     delete post;
 
     // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
-
-    return data_out;
 }
 
 void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
@@ -360,8 +378,8 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     values.clear();
 
     // min and max value
-    m_min =  numeric_limits<double>::max();
-    m_max = -numeric_limits<double>::max();
+    double min =  numeric_limits<double>::max();
+    double max = -numeric_limits<double>::max();
     double minDeform =  numeric_limits<double>::max();
     double maxDeform = -numeric_limits<double>::max();
 
@@ -371,15 +389,15 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
         {
             double value = patch->data(0, i);
 
-            m_min = std::min(m_min, value);
-            m_max = std::max(m_max, value);
+            min = std::min(min, value);
+            max = std::max(max, value);
 
             if (deform)
             {
                 double value = sqrt(patch->data(1, i)*patch->data(1, i) + patch->data(2, i)*patch->data(2, i));
 
-                minDeform = std::min(m_min, value);
-                maxDeform = std::max(m_max, value);
+                minDeform = std::min(min, value);
+                maxDeform = std::max(max, value);
             }
         }
     }

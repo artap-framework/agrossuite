@@ -1044,13 +1044,30 @@ void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable
                 QFile::remove(fn);
         }
 
-        std::shared_ptr<PostDataOut> data_out = m_postprocessorWidget->currentComputation()->postDeal()->viewScalarFilter(
-                    m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                                              variable), physicFieldVariableComp);
+        QSharedPointer<Computation> computation = m_postprocessorWidget->currentComputation();
+        dealii::DataPostprocessorScalar<2> *post = computation->postDeal()->activeViewField()->plugin()->filter(computation.data(),
+                                                                                                                computation->postDeal()->activeViewField(),
+                                                                                                                computation->postDeal()->activeTimeStep(),
+                                                                                                                computation->postDeal()->activeAdaptivityStep(),
+                                                                                                                computation->postDeal()->activeViewField()->localVariable(computation->config()->coordinateType(),
+                                                                                                                                                                          variable).id(),
+                                                                                                                physicFieldVariableComp);
+
+        MultiArray ma = computation->postDeal()->activeMultiSolutionArray();
+
+        PostDataOut *data_out = new PostDataOut(computation->postDeal()->activeViewField(), computation.data());
+        data_out->attach_dof_handler(ma.doFHandler());
+        data_out->add_data_vector(ma.solution(), *post);
+        data_out->build_patches(2);
 
         std::ofstream output (fn.toStdString());
         data_out->write_vtk(output);
 
+        // release data object
+        delete data_out;
+
+        // release post object
+        delete post;
 
         if (!fn.isEmpty())
         {
