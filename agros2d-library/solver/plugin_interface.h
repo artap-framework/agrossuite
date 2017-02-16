@@ -389,13 +389,13 @@ public:
 
     // postprocessor
     // filter
-    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(Computation *computation,
-                                                                        const FieldInfo *fieldInfo,
-                                                                        int timeStep,
-                                                                        int adaptivityStep,
-                                                                        // MultiArray *ma,
-                                                                        const QString &variable,
-                                                                        PhysicFieldVariableComp physicFieldVariableComp) = 0;
+    virtual dealii::DataPostprocessorScalar<2> *filter(Computation *computation,
+                                                       const FieldInfo *fieldInfo,
+                                                       int timeStep,
+                                                       int adaptivityStep,
+                                                       // MultiArray *ma,
+                                                       const QString &variable,
+                                                       PhysicFieldVariableComp physicFieldVariableComp) = 0;
 
     // local values
     virtual std::shared_ptr<LocalValue> localValue(Computation *computation,

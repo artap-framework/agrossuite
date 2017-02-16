@@ -242,15 +242,15 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     // QTime time;
     // time.start();
 
-    std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(m_computation,
-                                                                                                    activeViewField(),
-                                                                                                    activeTimeStep(),
-                                                                                                    activeAdaptivityStep(),
-                                                                                                    physicFieldVariable.id(),
-                                                                                                    physicFieldVariableComp);
+    dealii::DataPostprocessorScalar<2> *post = activeViewField()->plugin()->filter(m_computation,
+                                                                                   activeViewField(),
+                                                                                   activeTimeStep(),
+                                                                                   activeAdaptivityStep(),
+                                                                                   physicFieldVariable.id(),
+                                                                                   physicFieldVariableComp);
 
     // This effectively deallocates the previous pointer.
-    this->m_post = post;
+    // this->m_post = post;
 
     MultiArray ma = activeMultiSolutionArray();
 
@@ -267,6 +267,9 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
         data_out->add_data_vector(ma.solution(), solution_names);
     }
     data_out->build_patches(2);
+
+    // release post object
+    delete post;
 
     // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
 
@@ -522,7 +525,7 @@ ProblemBase::~ProblemBase()
     clearFieldsAndConfig();
 
     delete m_scene;
-    delete m_config;  
+    delete m_config;
 }
 
 int ProblemBase::numAdaptiveFields() const
@@ -613,18 +616,18 @@ bool ProblemBase::applyParametersInternal()
             if (!node->pointValue().x().isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
-                                           arg(m_scene->nodes->items().indexOf(node)).
-                                           arg(m_config->labelX()).
-                                           arg(node->pointValue().x().error()));
+                                         arg(m_scene->nodes->items().indexOf(node)).
+                                         arg(m_config->labelX()).
+                                         arg(node->pointValue().x().error()));
 
                 successfulRun = false;
             }
             if (!node->pointValue().y().isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
-                                           arg(m_scene->nodes->items().indexOf(node)).
-                                           arg(m_config->labelY()).
-                                           arg(node->pointValue().y().error()));
+                                         arg(m_scene->nodes->items().indexOf(node)).
+                                         arg(m_config->labelY()).
+                                         arg(node->pointValue().y().error()));
 
                 successfulRun = false;
             }
@@ -643,8 +646,8 @@ bool ProblemBase::applyParametersInternal()
             if (!edge->angleValue().isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
-                                           arg(m_scene->faces->items().indexOf(edge)).
-                                           arg(edge->angleValue().error()));
+                                         arg(m_scene->faces->items().indexOf(edge)).
+                                         arg(edge->angleValue().error()));
 
                 successfulRun = false;
             }
@@ -663,18 +666,18 @@ bool ProblemBase::applyParametersInternal()
             if (!label->pointValue().x().isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
-                                           arg(m_scene->labels->items().indexOf(label)).
-                                           arg(m_config->labelX()).
-                                           arg(label->pointValue().x().error()));
+                                         arg(m_scene->labels->items().indexOf(label)).
+                                         arg(m_config->labelX()).
+                                         arg(label->pointValue().x().error()));
 
                 successfulRun = false;
             }
             if (!label->pointValue().y().isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
-                                           arg(m_scene->labels->items().indexOf(label)).
-                                           arg(m_config->labelY()).
-                                           arg(label->pointValue().y().error()));
+                                         arg(m_scene->labels->items().indexOf(label)).
+                                         arg(m_config->labelY()).
+                                         arg(label->pointValue().y().error()));
 
                 successfulRun = false;
             }
@@ -689,7 +692,7 @@ bool ProblemBase::applyParametersInternal()
             if (!material->value(key)->isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
-                                           arg(key).arg(material->value(key).data()->toString()));
+                                         arg(key).arg(material->value(key).data()->toString()));
                 successfulRun = false;
             }
         }
@@ -703,7 +706,7 @@ bool ProblemBase::applyParametersInternal()
             if (!boundary->value(key)->isEvaluated())
             {
                 Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
-                                           arg(key).arg(boundary->value(key).data()->toString()));
+                                         arg(key).arg(boundary->value(key).data()->toString()));
                 successfulRun = false;
             }
         }
@@ -713,7 +716,7 @@ bool ProblemBase::applyParametersInternal()
     if (!m_config->value(ProblemConfig::Frequency).value<Value>().isEvaluated())
     {
         Agros::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
-                                   arg(m_config->value(ProblemConfig::Frequency).value<Value>().error()));
+                                 arg(m_config->value(ProblemConfig::Frequency).value<Value>().error()));
         successfulRun = false;
     }
 
@@ -1888,7 +1891,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     m_isSolving(false),
     m_abort(false),
     m_isPostprocessingRunning(false),
-    m_setting(new PostprocessorSetting(this)),    
+    m_setting(new PostprocessorSetting(this)),
     m_problemSolver(new ProblemSolver(this)),
     m_solutionStore(new SolutionStore(this)),
     m_results(new ComputationResults()),
@@ -1907,7 +1910,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     }
 
     // create dir
-    QDir(cacheProblemDir()).mkdir(m_problemDir);    
+    QDir(cacheProblemDir()).mkdir(m_problemDir);
 }
 
 Computation::~Computation()
@@ -2464,7 +2467,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
     // QTime time;
     // time.start();
-     // read solutions
+    // read solutions
     QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
     while (it.hasNext())
     {

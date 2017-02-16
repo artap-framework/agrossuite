@@ -32,7 +32,7 @@ class Boundary;
 class {{CLASS}}Interface : public QObject, public PluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(PluginInterface)    
+    Q_INTERFACES(PluginInterface)
     Q_PLUGIN_METADATA(IID PluginInterface_IID FILE "")
 
 public:
@@ -46,12 +46,12 @@ virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldI
 
 // postprocessor
 // filter
-virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(Computation *computation,
-                                                                    const FieldInfo *fieldInfo,
-                                                                    int timeStep,
-                                                                    int adaptivityStep,
-                                                                    const QString &variable,
-                                                                    PhysicFieldVariableComp physicFieldVariableComp);
+virtual dealii::DataPostprocessorScalar<2> *filter(Computation *computation,
+                                                   const FieldInfo *fieldInfo,
+                                                   int timeStep,
+                                                   int adaptivityStep,
+                                                   const QString &variable,
+                                                   PhysicFieldVariableComp physicFieldVariableComp);
 
 // error calculators
 // virtual ErrorCalculator<double> *errorCalculator(const FieldInfo *fieldInfo,

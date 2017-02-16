@@ -44,7 +44,7 @@ static XMLModule::module *module_module = NULL;
         try
         {
             std::unique_ptr<XMLModule::module> module_xsd = XMLModule::module_((datadir() + MODULEROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
-                                                                             xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
+                                                                               xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
             module_module = module_xsd.release();
         }
         catch (const xml_schema::expected_element& e)
@@ -100,14 +100,14 @@ SolverDeal *{{CLASS}}Interface::solverDeal(Computation *computation, const Field
     return new SolverDeal{{CLASS}}(computation, fieldInfo);
 }
 
-std::shared_ptr<dealii::DataPostprocessorScalar<2> > {{CLASS}}Interface::filter(Computation *computation,
-                                                                                const FieldInfo *fieldInfo,
-                                                                                int timeStep,
-                                                                                int adaptivityStep,
-                                                                                const QString &variable,
-                                                                                PhysicFieldVariableComp physicFieldVariableComp)
+dealii::DataPostprocessorScalar<2> *{{CLASS}}Interface::filter(Computation *computation,
+                                                               const FieldInfo *fieldInfo,
+                                                               int timeStep,
+                                                               int adaptivityStep,
+                                                               const QString &variable,
+                                                               PhysicFieldVariableComp physicFieldVariableComp)
 {
-    return std::shared_ptr<dealii::DataPostprocessorScalar<2> >(new {{CLASS}}ViewScalarFilter(computation, fieldInfo, timeStep, adaptivityStep, variable, physicFieldVariableComp));
+    return new {{CLASS}}ViewScalarFilter(computation, fieldInfo, timeStep, adaptivityStep, variable, physicFieldVariableComp);
 }
 
 std::shared_ptr<LocalValue>{{CLASS}}Interface::localValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)

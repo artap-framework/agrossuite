@@ -119,6 +119,7 @@ public:
     LogDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
     ~LogDialog();
 
+public slots:
     void closeLog();
     void abortSolving();
 

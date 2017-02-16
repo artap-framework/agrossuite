@@ -613,7 +613,7 @@ void PySolution::exportVTK(const std::string &fileName, int timeStep, int adapti
     {
         MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
 
-        std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = m_fieldInfo->plugin()->filter(m_computation.data(),
+        dealii::DataPostprocessorScalar<2> *post = m_fieldInfo->plugin()->filter(m_computation.data(),
                                                                                                   m_fieldInfo,
                                                                                                   timeStep,
                                                                                                   adaptivityStep,
@@ -624,6 +624,9 @@ void PySolution::exportVTK(const std::string &fileName, int timeStep, int adapti
         data_out->attach_dof_handler(ma.doFHandler());
         data_out->add_data_vector(ma.solution(), *post);
         data_out->build_patches(2);
+
+        // release post object
+        delete post;
 
         std::ofstream output(fileName);
         data_out->write_vtk(output);
