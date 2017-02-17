@@ -268,9 +268,9 @@ void PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
 
     MultiArray ma = activeMultiSolutionArray();
 
-    PostDataOut *data_out = new PostDataOut(activeViewField(), m_computation);
-    data_out->attach_dof_handler(ma.doFHandler());
-    data_out->add_data_vector(ma.solution(), *post);
+    PostDataOut data_out(activeViewField(), m_computation);
+    data_out.attach_dof_handler(ma.doFHandler());
+    data_out.add_data_vector(ma.solution(), *post);
     // deform shape
     if (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool())
     {
@@ -278,15 +278,12 @@ void PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
         solution_names.push_back ("x_displacement");
         solution_names.push_back ("y_displacement");
 
-        data_out->add_data_vector(ma.solution(), solution_names);
+        data_out.add_data_vector(ma.solution(), solution_names);
     }
-    data_out->build_patches(2);
+    data_out.build_patches(2);
 
     // compute nodes
-    data_out->compute_nodes(list, deform);
-
-    // release data object
-    delete data_out;
+    data_out.compute_nodes(list, deform);
 
     // release post object
     delete post;
