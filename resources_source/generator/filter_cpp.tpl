@@ -63,19 +63,14 @@
 }
 
 // only one component
-void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::vector<double> &uh,
-                                                                   const std::vector<dealii::Tensor<1,2> > &duh,
-                                                                   const std::vector<dealii::Tensor<2,2> > &dduh,
-                                                                   const std::vector<dealii::Point<2> > &normals,
-                                                                   const std::vector<dealii::Point<2> > &evaluation_points,
-                                                                   const dealii::types::material_id mat_id,
-                                                                   std::vector<dealii::Vector<double> > &computed_quantities) const
+void {{CLASS}}ViewScalarFilter::evaluate_scalar_field (const dealii::DataPostprocessorInputs::Scalar<2> &inputs,
+                                                       std::vector<dealii::Vector<double> > &computed_quantities) const
 {
     int numberOfSolutions = m_fieldInfo->numberOfSolutions();
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
-    SceneLabel *label = m_labels->at(mat_id - 1);
+    SceneLabel *label = m_labels->at(inputs.get_cell<dealii::hp::DoFHandler<2> >()->material_id() - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
     if(material == m_noneMarker)
         return;
@@ -84,16 +79,17 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
     {{/VARIABLE_MATERIAL}}
 
     std::vector<dealii::Vector<double> > solution_values(computed_quantities.size(), dealii::Vector<double>(numberOfSolutions));
-    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(computed_quantities.size(), std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
-    std::vector<std::vector<dealii::Tensor<2,2> > >  solution_hessian(computed_quantities.size(), std::vector<dealii::Tensor<2,2> >(numberOfSolutions));
+    std::vector<std::vector<dealii::Tensor<1,2> > > solution_gradients(computed_quantities.size(), std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+    std::vector<std::vector<dealii::Tensor<2,2> > > solution_hessians(computed_quantities.size(), std::vector<dealii::Tensor<2,2> >(numberOfSolutions));
+
 
     for (unsigned int k = 0; k < computed_quantities.size(); k++)
     {
-        dealii::Point<2> p = evaluation_points[k];
+        dealii::Point<2> p = inputs.evaluation_points[k];
 
-        solution_values[k][0] = uh[k];
-        solution_grads[k][0] = duh[k];
-        solution_hessian[k][0] = dduh[k];
+        solution_values[k][0] = inputs.solution_values[k];
+        solution_gradients[k][0] = inputs.solution_gradients[k];
+        solution_hessians[k][0] = inputs.solution_hessians[k];
 
         {{#VARIABLE_SOURCE}}
         if ((m_variableHash == {{VARIABLE_HASH}})
@@ -106,20 +102,14 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
 }
 
 // multiple components
-void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::vector<dealii::Vector<double> > &uh,
-                                                                   const std::vector<std::vector<dealii::Tensor<1,2> > > &duh,
-                                                                   const std::vector<std::vector<dealii::Tensor<2,2> > > &dduh,
-                                                                   const std::vector<dealii::Point<2> > &normals,
-                                                                   const std::vector<dealii::Point<2> > &evaluation_points,
-                                                                   const dealii::types::material_id mat_id,
-                                                                   std::vector<dealii::Vector<double> > &computed_quantities) const
+void {{CLASS}}ViewScalarFilter::evaluate_vector_field (const dealii::DataPostprocessorInputs::Vector<2> &inputs,
+                                                       std::vector<dealii::Vector<double> > &computed_quantities) const
 {
     int numberOfSolutions = m_fieldInfo->numberOfSolutions();
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
-    // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
-    SceneLabel *label = m_labels->at(mat_id - 1);
+    SceneLabel *label = m_labels->at(inputs.get_cell<dealii::hp::DoFHandler<2> >()->material_id() - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
     if(material == m_computation->scene()->materials->getNone(m_fieldInfo))
         return;
@@ -127,20 +117,13 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
     {{/VARIABLE_MATERIAL}}
 
-    std::vector<dealii::Vector<double> > solution_values(computed_quantities.size(), dealii::Vector<double>(numberOfSolutions));
-    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(computed_quantities.size(), std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
-    std::vector<std::vector<dealii::Tensor<2,2> > >  solution_hessian(computed_quantities.size(), std::vector<dealii::Tensor<2,2> >(numberOfSolutions));
+    std::vector<dealii::Vector<double> > solution_values = inputs.solution_values;
+    std::vector<std::vector<dealii::Tensor<1,2> > > solution_gradients = inputs.solution_gradients;
+    std::vector<std::vector<dealii::Tensor<2,2> > > solution_hessians = inputs.solution_hessians;
 
     for (unsigned int k = 0; k < computed_quantities.size(); k++)
     {
-        dealii::Point<2> p = evaluation_points[k];
-
-        for (int i = 0; i < numberOfSolutions; i++)
-        {
-            solution_values[k][i] = uh[k][i];
-            solution_grads[k][i] = duh[k][i];
-            solution_hessian[k][i] = dduh[k][i];
-        }
+        dealii::Point<2> p = inputs.evaluation_points[k];
 
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
         {{/VARIABLE_MATERIAL}}

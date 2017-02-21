@@ -25,6 +25,7 @@
 #include "solutiontypes.h"
 #include "scene.h"
 #include "linear_solver.h"
+#include "estimators.h"
 
 #include "tbb/tbb.h"
 
@@ -74,6 +75,9 @@ public:
         dealii::SparseMatrix<double> systemMatrix;
         dealii::Vector<double> systemRHS;
         dealii::Vector<double> solution;
+
+        // estimator
+        std::shared_ptr<ErrorEstimator> errorEstimator;
 
         // linear solver
         SolverLinearSolver linearSolver;
@@ -158,6 +162,7 @@ public:
 
     // steady state
     void solveSteadyState();
+
     // transient
     void solveTransient();
     inline void set_time(const double new_time) { m_time = new_time; }

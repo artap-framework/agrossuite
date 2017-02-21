@@ -440,7 +440,6 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintError()
 {    
-
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
     if (m_arrayOrderMesh.isEmpty())

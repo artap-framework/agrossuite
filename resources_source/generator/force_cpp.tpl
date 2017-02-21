@@ -108,7 +108,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 
         int k = 0; // only one point
         std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_gradients(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
         for (int i = 0; i < numberOfSolutions; i++)
         {
@@ -119,14 +119,14 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
                 {
                     // set variables
                     solution_values[k][i] = m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
-                    solution_grads[k][i][0] = 0;
-                    solution_grads[k][i][1] = 0;
+                    solution_gradients[k][i][0] = 0;
+                    solution_gradients[k][i][1] = 0;
                 }
                 else
                 {
                     // set variables
                     solution_values[k][i] = localvalues->value(p, i);
-                    solution_grads[k][i] = localvalues->gradient(p, i);
+                    solution_gradients[k][i] = localvalues->gradient(p, i);
                 }
             }
             catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)

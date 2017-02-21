@@ -22,7 +22,6 @@
 
 #include "util/util.h"
 #include "field.h"
-#include "solver.h"
 
 #undef signals
 #include <deal.II/grid/tria.h>
@@ -32,6 +31,8 @@
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>
+#include <deal.II/fe/fe_series.h>
+
 #include <deal.II/base/synchronous_iterator.h>
 #include <deal.II/base/function.h>
 
@@ -49,46 +50,28 @@
 #define std_tuple std::tuple
 #endif
 
-namespace ErrorEstimator
-{
-void estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
-                                  const dealii::Vector<double> &solution,
-                                  dealii::Vector<float> &smoothness_indicators);
-
-double relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
-                                      const dealii::hp::QCollection<2> &quadratureFormulas,
-                                      const dealii::Vector<double> &sln1,
-                                      const dealii::Vector<double> &sln2);
-};
-
-class GradientErrorEstimator
+class ErrorEstimator
 {
 public:
-    static void estimate(const dealii::hp::DoFHandler<2> &dof,
-                         const dealii::Vector<double> &solution,
-                         dealii::Vector<float> &error_per_cell);
-    DeclException2 (ExcInvalidVectorLength,
-                    int, int,
-                    << "Vector has length " << arg1 << ", but should have "
-                    << arg2);
-    DeclException0 (ExcInsufficientDirections);
+    ErrorEstimator(int maxDegree);
 
+    void estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
+                                      const dealii::hp::QCollection<2> &quadratureFormulas,
+                                      const dealii::Vector<double> &solution,
+                                      dealii::Vector<float> &smoothness_indicators);
+
+    static double relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
+                                                 const dealii::hp::QCollection<2> &quadratureFormulas,
+                                                 const dealii::Vector<double> &sln1,
+                                                 const dealii::Vector<double> &sln2);
 private:
-    struct EstimateScratchData
-    {
-        EstimateScratchData(const dealii::hp::FECollection<2> &fe,
-                            const dealii::Vector<double> &solution);
-        EstimateScratchData(const EstimateScratchData &data);
+    int m_maxDegree;
+    int m_N;
 
-        dealii::hp::FEValues<2> fe_midpoint_value;
-        dealii::Vector<double> solution;
-    };
-    struct EstimateCopyData {};
+    dealii::Table<2, std::complex<double> > fourier_coefficients;
+    std::vector<double> ln_k;
 
-    static void estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
-                              dealii::Vector<float>::iterator> > &cell,
-                              EstimateScratchData &scratch_data,
-                              const EstimateCopyData &copy_data);
+    std::pair<bool, unsigned int> predicate(const dealii::TableIndices<2> &ind);
 };
 
 // ***********************************************************************************************************************

@@ -60,10 +60,9 @@ enum AdaptivityEstimator
 {
     AdaptivityEstimator_Undefined = -1,
     AdaptivityEstimator_Kelly = 0,
-    AdaptivityEstimator_Gradient = 1,
-    AdaptivityEstimator_ReferenceSpatialAndOrder = 2,
-    AdaptivityEstimator_ReferenceSpatial = 3,
-    AdaptivityEstimator_ReferenceOrder = 4,
+    // AdaptivityEstimator_ReferenceSpatialAndOrder = 2,
+    // AdaptivityEstimator_ReferenceSpatial = 3,
+    // AdaptivityEstimator_ReferenceOrder = 4,
     AdaptivityEstimator_Uniform = 5
 };
 

@@ -234,11 +234,10 @@ void initLists()
 
     // AdaptivityEstimator
     adaptivityEstimatorList.insert(AdaptivityEstimator_Kelly, "kelly");
-    adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
     adaptivityEstimatorList.insert(AdaptivityEstimator_Uniform, "uniform");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatialAndOrder, "reference_spatial_and_order");
-    adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
-    adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
+    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
+    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
 
     // AdaptivityStrategy
     adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfCells, "fixed_fraction_of_cells");
@@ -450,16 +449,14 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
     {
     case AdaptivityEstimator_Kelly:
         return QObject::tr("Kelly error estimator");
-    case AdaptivityEstimator_Gradient:
-        return QObject::tr("Gradient error estimator");
     case AdaptivityEstimator_Uniform:
         return QObject::tr("Uniform refinement");
-    case AdaptivityEstimator_ReferenceSpatialAndOrder:
-        return QObject::tr("Reference solution - spatial and order");
-    case AdaptivityEstimator_ReferenceSpatial:
-        return QObject::tr("Reference solution - spatial");
-    case AdaptivityEstimator_ReferenceOrder:
-        return QObject::tr("Reference solution - order increase");
+    // case AdaptivityEstimator_ReferenceSpatialAndOrder:
+    //     return QObject::tr("Reference solution - spatial and order");
+    // case AdaptivityEstimator_ReferenceSpatial:
+    //     return QObject::tr("Reference solution - spatial");
+    // case AdaptivityEstimator_ReferenceOrder:
+    //     return QObject::tr("Reference solution - order increase");
     default:
         std::cerr << "Adaptivity estimator '" + QString::number(adaptivityEstimator).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)" << endl;
         throw;

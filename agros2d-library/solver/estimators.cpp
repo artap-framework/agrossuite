@@ -25,18 +25,138 @@
 #include <deal.II/fe/fe_tools.h>
 
 #include "estimators.h"
-#include "solver.h"
 
 #include "problem.h"
 
 #include <numeric>
 #include <functional>
 
+ErrorEstimator::ErrorEstimator(int maxDegree)
+    : m_N(5), m_maxDegree(maxDegree)
+{    
+    int dim = 2;
+
+    // We need to resize the matrix of fourier coefficients according to the number of modes N.
+    dealii::TableIndices<2> size;
+    for (unsigned int d = 0; d < dim; d++)
+        size[d] = m_N;
+    fourier_coefficients.reinit(size);
+}
+
 void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
+                                                  const dealii::hp::QCollection<2> &quadratureFormulas,
                                                   const dealii::Vector<double> &solution,
                                                   dealii::Vector<float> &smoothness_indicators)
 {
+    dealii::FESeries::Fourier<2> fourier(m_N, doFHandler.get_fe(), quadratureFormulas);
+
+    // local DoF values:
+    dealii::Vector<double> local_dof_values;
+
+    // Then here is the loop:
+    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    for (; cell != endc; ++cell)
+    {
+        local_dof_values.reinit(cell->get_fe().dofs_per_cell);
+        cell->get_dof_values(solution, local_dof_values);
+
+        fourier.calculate(local_dof_values, cell->active_fe_index(), fourier_coefficients);
+
+        // The next thing, as explained in the introduction, is that we wanted
+        // to only fit our exponential decay of Fourier coefficients to the
+        // largest coefficients for each possible value of $|{\bf k}|$. To
+        // this end, we use FESeries::process_coefficients() to rework coefficients
+        // into the desired format.
+        // We'll only take those Fourier coefficients with the largest magnitude for a given value of $|{\bf k}|$ and
+        // thereby need to use VectorTools::Linfty_norm:
+        std::pair<std::vector<unsigned int>, std::vector<double> > res =
+                dealii::FESeries::process_coefficients<2>(fourier_coefficients,
+                                                          dealii::std_cxx11::bind(&ErrorEstimator::predicate, this, dealii::std_cxx11::_1),
+                                                          dealii::VectorTools::Linfty_norm);
+
+        // The first vector in the <code>std::pair</code> will store values of the predicate,
+        // that is $i*i+j*j= const$ or $i*i+j*j+k*k = const$
+        // in 2D or 3D respectively. This
+        // vector will be the same for all the cells so we can calculate
+        // logarithms of the corresponding Fourier vectors $|{\bf k}|$ only once
+        // in the whole hp-refinement cycle:
+        if (ln_k.size() == 0)
+        {
+            ln_k.resize(res.first.size(),0);
+            for (unsigned int f = 0; f < ln_k.size(); f++)
+                ln_k[f] = std::log(2.0*M_PI*std::sqrt(1.*res.first[f]));
+        }
+
+        // We have to calculate the logarithms of absolute
+        // values of coefficients and use it in linear regression fit to
+        // obtain $\mu$.
+        for (unsigned int f = 0; f < res.second.size(); f++)
+            res.second[f] = std::log(res.second[f]);
+
+        std::pair<double,double> fit = dealii::FESeries::linear_regression(ln_k,res.second);
+
+        // The final step is to compute the Sobolev index $s=\mu-\frac d2$ and
+        // store it in the vector of estimated values for each cell:
+        int dim = 2;
+        smoothness_indicators(cell->active_cell_index()) = -fit.first - 1.*dim/2;
+    }
+}
+
+std::pair<bool, unsigned int> ErrorEstimator::predicate(const dealii::TableIndices<2> &ind)
+{
+    int dim = 2;
+    unsigned int v = 0;
+
+    for (unsigned int i = 0; i < dim; i++)
+        v += ind[i]*ind[i];
+
+    if (v > 0 && v < m_maxDegree*m_maxDegree)
+        return std::make_pair(true,v);
+    else
+        return std::make_pair(false,v);
+}
+
+
+/*
+void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::hp::DoFHandler<2> &doFHandler,
+                                                     const dealii::hp::QCollection<2> &quadratureFormulas,
+                                                     const dealii::Vector<double> &solution,
+                                                     dealii::Vector<float> &smoothness_indicators)
+{
     const dealii::hp::FECollection<2> &feCollection = doFHandler.get_fe();
+
+    //    const unsigned int N = 5;
+    //    dealii::FESeries::Fourier<2> fourier(N, feCollection, quadratureFormulas);
+    //    dealii::Table<2, std::complex<double> > fourier_coefficients;
+
+    //    dealii::Vector<double> local_dof_values;
+    //    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    //    for (; cell != endc; ++cell)
+    //    {
+    //        local_dof_values.reinit (cell->get_fe().dofs_per_cell);
+    //        cell->get_dof_values (solution, local_dof_values);
+    //        fourier.calculate(local_dof_values,
+    //                          cell->active_fe_index(),
+    //                          fourier_coefficients);
+    //        std::pair<std::vector<unsigned int>, std::vector<double> > res =
+    //                dealii::FESeries::process_coefficients<2>(fourier_coefficients,
+    //                                                          std_cxx11::bind(&LaplaceProblem<dim>::predicate,
+    //                                                                          this,
+    //                                                                          std_cxx11::_1),
+    //                                                          VectorTools::Linfty_norm);
+    //        Assert (res.first.size() == res.second.size(),
+    //                ExcInternalError());
+    //        if (ln_k.size() == 0)
+    //        {
+    //            ln_k.resize(res.first.size(),0);
+    //            for (unsigned int f = 0; f < ln_k.size(); f++)
+    //                ln_k[f] = std::log (2.0*numbers::PI*std::sqrt(1.*res.first[f]));
+    //        }
+    //        for (unsigned int f = 0; f < res.second.size(); f++)
+    //            res.second[f] = std::log(res.second[f]);
+    //        std::pair<double,double> fit = FESeries::linear_regression(ln_k,res.second);
+    //        smoothness_indicators(cell->active_cell_index()) = -fit.first - 1.*dim/2;
+    //    }
 
     const unsigned int N = 5;
     std::vector<dealii::Tensor<1,2> > k_vectors;
@@ -123,12 +243,15 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2
         smoothness_indicators(index) = mu - 1;
     }
 }
+*/
 
 double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
                                                       const dealii::hp::QCollection<2> &quadratureFormulas,
                                                       const dealii::Vector<double> &sln1,
                                                       const dealii::Vector<double> &sln2)
 {
+    qInfo() << "sln1 = " << sln1.norm_sqr() << "sln2 = " << sln2.norm_sqr();
+
     int numberOfSolutions = doFHandler.get_fe().n_components();
 
     double normCurrentL2 = 0.0;
@@ -148,10 +271,10 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
         const unsigned int n_q_points = fe_values.n_quadrature_points;
 
         std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(numberOfSolutions));
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_gradients(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
 
         fe_values.get_function_values(sln1, solution_values);
-        fe_values.get_function_gradients(sln1, solution_grads);
+        fe_values.get_function_gradients(sln1, solution_gradients);
 
         std::vector<dealii::Vector<double> > solution_previous_values(n_q_points, dealii::Vector<double>(numberOfSolutions));
         std::vector<std::vector<dealii::Tensor<1,2> > >  solution_previous_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
@@ -164,130 +287,28 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
             for (unsigned int k = 0; k < n_q_points; ++k)
             {
                 normCurrentL2 += fe_values.JxW(k) * (solution_values[k][j] * solution_values[k][j]);
-                normCurrentH1Semi += fe_values.JxW(k) * (solution_grads[k][j] * solution_grads[k][j]);
+                normCurrentH1Semi += fe_values.JxW(k) * (solution_gradients[k][j] * solution_gradients[k][j]);
 
                 normPrevious += fe_values.JxW(k) * (solution_previous_values[k][j] * solution_previous_values[k][j] + solution_previous_grads[k][j] * solution_previous_grads[k][j]);
                 normDifference += fe_values.JxW(k) * (((solution_values[k][j] - solution_previous_values[k][j]) * (solution_values[k][j] - solution_previous_values[k][j]))
-                                                      + ((solution_grads[k][j] - solution_previous_grads[k][j]) * (solution_grads[k][j] - solution_previous_grads[k][j])));
+                                                      + ((solution_gradients[k][j] - solution_previous_grads[k][j]) * (solution_gradients[k][j] - solution_previous_grads[k][j])));
             }
         }
     }
 
     double normCurrent = normCurrentL2 + normCurrentH1Semi;
 
-    //                std::cout << "normPrevious = " << normPrevious <<
-    //                             ", normCurrentL2 = " << normCurrentL2 <<
-    //                             ", normCurrentH1Semi = " << normCurrentH1Semi <<
-    //                             ", normCurrent = " << normCurrent <<
-    //                             ", normDifference = " << normDifference <<
-    //                             ", relChangeSol = " << fabs(normDifference / normCurrent) * 100.0 << std::endl;
-
+    // std::cout << "normPrevious = " << normPrevious <<
+    //              ", normCurrentL2 = " << normCurrentL2 <<
+    //              ", normCurrentH1Semi = " << normCurrentH1Semi <<
+    //              ", normCurrent = " << normCurrent <<
+    //              ", normDifference = " << normDifference <<
+    //              ", relChangeSol = " << fabs(normDifference / normCurrent) * 100.0 << std::endl;
 
     // compute difference between previous and current solution - H1 norm
     double relChangeSol = fabs(normDifference / normCurrent) * 100.0;
 
     return relChangeSol;
-}
-
-// ******************************************************************************************************************
-
-GradientErrorEstimator::EstimateScratchData::EstimateScratchData(const dealii::hp::FECollection<2> &fe,
-                                                                 const dealii::Vector<double> &solution)
-    :
-      fe_midpoint_value(fe,
-                        dealii::hp::QCollection<2>(dealii::QMidpoint<2>()),
-                        dealii::update_values | dealii::update_quadrature_points),
-      solution(solution)
-{
-}
-
-GradientErrorEstimator::EstimateScratchData::EstimateScratchData(const EstimateScratchData &scratch_data)
-    :
-      fe_midpoint_value(scratch_data.fe_midpoint_value.get_fe_collection(),
-                        scratch_data.fe_midpoint_value.get_quadrature_collection(),
-                        dealii::update_values | dealii::update_quadrature_points),
-      solution(scratch_data.solution)
-{
-}
-
-void GradientErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &dof_handler,
-                                      const dealii::Vector<double> &solution,
-                                      dealii::Vector<float> &error_per_cell)
-{
-    Assert (error_per_cell.size() == dof_handler.get_tria().n_active_cells(),
-            ExcInvalidVectorLength (error_per_cell.size(),
-                                    dof_handler.get_tria().n_active_cells()));
-    typedef std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
-
-    dealii::SynchronousIterators<IteratorTuple>
-            begin_sync_it (IteratorTuple (dof_handler.begin_active(), error_per_cell.begin())),
-            end_sync_it (IteratorTuple (dof_handler.end(), error_per_cell.end()));
-
-    dealii::WorkStream::run(begin_sync_it,
-                            end_sync_it,
-                            &GradientErrorEstimator::estimate_cell,
-                            std::function<void (const EstimateCopyData &)> (),
-                            EstimateScratchData(dof_handler.get_fe(), solution),
-                            EstimateCopyData());
-}
-
-void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
-                                           EstimateScratchData &scratch_data,
-                                           const EstimateCopyData &)
-{
-    dealii::Tensor<2,2> Y;
-    std::vector<typename dealii::hp::DoFHandler<2>::active_cell_iterator> active_neighbors;
-    active_neighbors.reserve(dealii::GeometryInfo<2>::faces_per_cell * dealii::GeometryInfo<2>::max_children_per_face);
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(cell.iterators));
-    scratch_data.fe_midpoint_value.reinit(cell_it);
-
-    dealii::Tensor<1,2> projected_gradient;
-    active_neighbors.clear ();
-    for (unsigned int face_no = 0; face_no<dealii::GeometryInfo<2>::faces_per_cell; ++face_no)
-    {
-        if (!std_get<0>(cell.iterators)->at_boundary(face_no))
-        {
-            const TYPENAME dealii::hp::DoFHandler<2>::face_iterator face = std_get<0>(cell.iterators)->face(face_no);
-            const TYPENAME dealii::hp::DoFHandler<2>::cell_iterator neighbor = std_get<0>(cell.iterators)->neighbor(face_no);
-            if (neighbor->active())
-            {
-                active_neighbors.push_back(neighbor);
-            }
-            else
-            {
-                for (unsigned int subface_no=0; subface_no<face->n_children(); ++subface_no)
-                    active_neighbors.push_back(std_get<0>(cell.iterators)->neighbor_child_on_subface(face_no,subface_no));
-            }
-        }
-    }
-
-    const dealii::Point<2> this_center = scratch_data.fe_midpoint_value.get_present_fe_values().quadrature_point(0);
-    std::vector<double> this_midpoint_value(1);
-    scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values(scratch_data.solution, this_midpoint_value);
-    std::vector<double> neighbor_midpoint_value(1);
-    TYPENAME std::vector<TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator>::const_iterator neighbor_ptr = active_neighbors.begin();
-    for (; neighbor_ptr != active_neighbors.end(); ++neighbor_ptr)
-    {
-        const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator neighbor = *neighbor_ptr;
-        scratch_data.fe_midpoint_value.reinit (neighbor);
-        const dealii::Point<2> neighbor_center = scratch_data.fe_midpoint_value.get_present_fe_values().quadrature_point(0);
-        scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values (scratch_data.solution, neighbor_midpoint_value);
-        dealii::Tensor<1,2> y = neighbor_center - this_center;
-        const double distance = y.norm();
-        y /= distance;
-
-        for (unsigned int i = 0; i < 2; ++i)
-            for (unsigned int j = 0; j < 2; ++j)
-                Y[i][j] += y[i] * y[j];
-
-        projected_gradient += (neighbor_midpoint_value[0] - this_midpoint_value[0]) / distance * y;
-    }
-
-    AssertThrow (determinant(Y) != 0, ExcInsufficientDirections());
-    const dealii::Tensor<2,2> Y_inverse = invert(Y);
-    dealii::Point<2> gradient;
-    contract (gradient, Y_inverse, projected_gradient);
-    *(std_get<1>(cell.iterators)) = (std::pow(std_get<0>(cell.iterators)->diameter(), 2) * std::sqrt(gradient.square()));
 }
 
 // ************************************************************************************************************************
@@ -368,7 +389,7 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
         {
             // h1-norm
             value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l])
-                                          + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+                                         + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
             // l2-norm
             // value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l]));
             // h1-seminorm

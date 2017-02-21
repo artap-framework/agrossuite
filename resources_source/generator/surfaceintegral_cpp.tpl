@@ -122,10 +122,10 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
                 const unsigned int n_face_q_points = fe_values.n_quadrature_points;
 
                 std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+                std::vector<std::vector<dealii::Tensor<1,2> > > solution_gradients(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
                 fe_values.get_function_values(ma.solution(), solution_values);
-                fe_values.get_function_gradients(ma.solution(), solution_grads);
+                fe_values.get_function_gradients(ma.solution(),solution_gradients);
 
                 {{#VARIABLE_SOURCE}}
                 if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))

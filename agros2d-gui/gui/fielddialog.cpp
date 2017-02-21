@@ -355,11 +355,11 @@ QWidget *FieldWidget::createAdaptivityWidget()
     connect(cmbAdaptivityStrategyHP, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyHPChanged(int)));
 
     txtAdaptivityFineFraction = new QSpinBox(this);
-    txtAdaptivityFineFraction->setMinimum(1);
+    txtAdaptivityFineFraction->setMinimum(0);
     txtAdaptivityFineFraction->setMaximum(100);
     txtAdaptivityFineFraction->setValue(m_fieldInfo->defaultValue(FieldInfo::AdaptivityFinePercentage).toInt());
     txtAdaptivityCoarseFraction = new QSpinBox(this);
-    txtAdaptivityCoarseFraction->setMinimum(1);
+    txtAdaptivityCoarseFraction->setMinimum(0);
     txtAdaptivityCoarseFraction->setMaximum(100);
     txtAdaptivityCoarseFraction->setValue(m_fieldInfo->defaultValue(FieldInfo::AdaptivityCoarsePercentage).toInt());
     txtAdaptivityBackSteps = new QSpinBox(this);

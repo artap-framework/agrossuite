@@ -34,14 +34,15 @@
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/fe_tools.h>
 #include <deal.II/fe/mapping_q.h>
+#include <deal.II/fe/fe_series.h>
 
 #include <deal.II/dofs/dof_tools.h>
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/dofs/dof_accessor.h>
 
 #include <deal.II/base/quadrature_lib.h>
-
 #include <deal.II/base/function.h>
+
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/numerics/matrix_tools.h>
 #include <deal.II/numerics/error_estimator.h>
@@ -52,7 +53,7 @@
 #include <deal.II/lac/vector.h>
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/sparse_matrix.h>
-#include <deal.II/lac/compressed_sparsity_pattern.h>
+#include <deal.II/lac/sparsity_pattern.h>
 #include <deal.II/lac/solver_cg.h>
 #include <deal.II/lac/solver_bicgstab.h>
 #include <deal.II/lac/solver_gmres.h>
@@ -68,7 +69,6 @@
 #include "solver.h"
 #include "solver_utils.h"
 #include "linear_solver.h"
-#include "estimators.h"
 
 #include "util/util.h"
 #include "util/global.h"
@@ -222,6 +222,8 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
             cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
         }
     }
+
+    errorEstimator = std::shared_ptr<ErrorEstimator>(new ErrorEstimator(solverDeal->m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()));
 }
 
 void SolverDeal::AssembleBase::recreateConstraints(bool zeroDirichletLift)
@@ -310,10 +312,10 @@ void SolverDeal::AssembleBase::setup(bool useDirichletLift)
     recreateConstraints(!useDirichletLift);
 
     // create sparsity pattern
-    dealii::DynamicSparsityPattern csp(doFHandler.n_dofs(), doFHandler.n_dofs());
-    dealii::DoFTools::make_sparsity_pattern(doFHandler, csp, constraintsAll);
-    constraintsAll.condense(csp);
-    sparsityPattern.copy_from(csp);
+    dealii::DynamicSparsityPattern dsp(doFHandler.n_dofs());
+    dealii::DoFTools::make_sparsity_pattern(doFHandler, dsp, constraintsAll, false);
+    constraintsAll.condense(dsp);
+    sparsityPattern.copy_from(dsp);
 
     // reinit system matrix
     systemMatrix.reinit(sparsityPattern);
@@ -393,7 +395,6 @@ SolverDeal::SolverDeal(Computation *computation, const FieldInfo *fieldInfo)
     }
 }
 
-
 SolverDeal::~SolverDeal()
 {
     m_assembleCache.clear();
@@ -421,18 +422,12 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                                                  dealii::ComponentMask());
     }
         break;
-    case AdaptivityEstimator_Gradient:
-    {
-        GradientErrorEstimator::estimate(primal->doFHandler,
-                                         primal->solution,
-                                         estimated_error_per_cell);
-    }
-        break;
     case AdaptivityEstimator_Uniform:
     {
         estimated_error_per_cell.add(1.0);
     }
         break;
+        /*
     case AdaptivityEstimator_ReferenceOrder:
     case AdaptivityEstimator_ReferenceSpatialAndOrder:
     case AdaptivityEstimator_ReferenceSpatial:
@@ -460,12 +455,11 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         cellHandler = dual->doFHandler.begin_active();
         endcHandler = dual->doFHandler.end();
 
-        /*
-        std::stringstream refineHistory(std::ios::out | std::ios::in | std::ios::binary);
-        std::stringstream coarsenHistory(std::ios::out | std::ios::in | std::ios::binary);
-        Agros::problem()->calculationMesh().save_refine_flags(refineHistory);
-        Agros::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
-        */
+        // std::stringstream refineHistory(std::ios::out | std::ios::in | std::ios::binary);
+        // std::stringstream coarsenHistory(std::ios::out | std::ios::in | std::ios::binary);
+        // Agros::problem()->calculationMesh().save_refine_flags(refineHistory);
+        // Agros::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
+
         std::cout << "Number of degrees of freedom: " << dual->doFHandler.n_dofs() << std::endl;
 
         for (unsigned int index = 0; cellHandler != endcHandler; ++cellHandler, ++index)
@@ -503,11 +497,10 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         //     qDebug() << estimated_error_per_cell[i];
     }
         break;
+    */
     default:
         assert(0);
     }
-
-    cout << estimated_error_per_cell.l2_norm() << endl;
 
     // strategy
     switch ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())
@@ -542,7 +535,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
     {
         dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
+        for (; cell != endc; ++cell)
         {
             if (cell->refine_flag_set())
             {
@@ -592,7 +585,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
             {
                 smoothnessIndicators.reinit(m_computation->calculationMesh().n_active_cells());
-                ErrorEstimator::estimateAdaptivitySmoothness(primal->doFHandler, primal->solution, smoothnessIndicators);
+                primal->errorEstimator->estimateAdaptivitySmoothness(primal->doFHandler, quadratureFormulas(), primal->solution, smoothnessIndicators);
 
                 min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
                 max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
@@ -610,20 +603,22 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
             dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
-            for (unsigned int index = 0; cell != endc; ++cell, ++index)
+            for (; cell != endc; ++cell)
             {
                 if ((maxPIncrease == -1) ||
                         (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
-                    if (cell->refine_flag_set() && (smoothnessIndicators(index) > threshold_smoothness)
+                    if (cell->refine_flag_set() && (smoothnessIndicators(cell->active_cell_index()) > threshold_smoothness)
                             && (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size()))
                     {
-                        // remove h adaptivity flag
-                        cell->clear_refine_flag();
-                        // increase order
                         if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                        {
+                            // remove h adaptivity flag
+                            cell->clear_refine_flag();
+                            // increase order
                             cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        }
                     }
                 }
 
@@ -643,7 +638,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         case AdaptivityStrategyHP_Alternate:
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
-            for (unsigned int index = 0; cell != endc; ++cell, ++index)
+            for (; cell != endc; ++cell)
             {
                 // odd - h-adaptivity
                 // do nothing
@@ -705,7 +700,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
 void SolverDeal::solveSteadyState()
 {
     shared_ptr<SolverDeal::AssembleBase> primal = createAssembleBase(m_computation->calculationMesh());
-    shared_ptr<SolverDeal::AssembleBase> dual = nullptr;
+    // shared_ptr<SolverDeal::AssembleBase> dual = nullptr;
 
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
     {
@@ -728,11 +723,11 @@ void SolverDeal::solveSteadyState()
         switch (estimator)
         {
         case AdaptivityEstimator_Kelly:
-        case AdaptivityEstimator_Gradient:
         case AdaptivityEstimator_Uniform:
         {
         }
             break;
+            /*
         case AdaptivityEstimator_ReferenceOrder:
         case AdaptivityEstimator_ReferenceSpatial:
         case AdaptivityEstimator_ReferenceSpatialAndOrder:
@@ -741,6 +736,7 @@ void SolverDeal::solveSteadyState()
             dual = createAssembleBase(m_computation->calculationMesh());
         }
             break;
+        */
         default:
             assert(0);
         }
@@ -760,14 +756,19 @@ void SolverDeal::solveSteadyState()
 
             if (adaptiveStep > 0)
             {
+                //
+
                 // prepare for transfer solution
                 solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(primal->doFHandler);
                 previousSolution = primal->solution;
 
+                qInfo() << "previousSolution.norm_sqr = " << previousSolution.norm_sqr();
+
                 m_computation->calculationMesh().prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
 
-                prepareGridRefinement(primal, dual, 2, 2);
+                // prepareGridRefinement(primal, dual, 2, 2);
+                prepareGridRefinement(primal, nullptr, 2, 2);
 
                 // execute transfer solution
                 m_computation->calculationMesh().execute_coarsening_and_refinement();
@@ -775,6 +776,8 @@ void SolverDeal::solveSteadyState()
 
             // solve problem
             primal->solve();
+
+            qInfo() << "primal->solution.norm_sqr = " << primal->solution.norm_sqr();
 
             // error
             double relChangeSol = 100.0;
@@ -787,6 +790,9 @@ void SolverDeal::solveSteadyState()
                 relChangeSol = ErrorEstimator::relativeChangeBetweenSolutions(primal->doFHandler, quadratureFormulas(),
                                                                               primal->solution,
                                                                               previousSolutionInterpolated);
+
+                qInfo() << "previousSolution.norm_sqr = " << previousSolution.norm_sqr() << "previousSolutionInterpolated.norm_sqr = " << previousSolutionInterpolated.norm_sqr()
+                        << "relChangeSol = " << relChangeSol;
             }
 
             FieldSolutionID solutionID(m_fieldInfo->fieldId(), m_computation->timeLastStep(), adaptiveStep);
@@ -801,9 +807,9 @@ void SolverDeal::solveSteadyState()
                 Agros::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, adaptiveStep);
 
             Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2 %, DOFs: %3)").
-                                         arg(adaptiveStep + 1).
-                                         arg(relChangeSol).
-                                         arg(primal->doFHandler.n_dofs()));
+                                       arg(adaptiveStep + 1).
+                                       arg(relChangeSol).
+                                       arg(primal->doFHandler.n_dofs()));
 
             // add info
             adaptiveSteps.append(adaptiveStep + 1);
@@ -970,10 +976,10 @@ void SolverDeal::solveTransient()
                 primal->transientBDF(actualTimeStep, primal->solution, solutions, bdf2Table);
 
                 Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                             QObject::tr("Constant step %1/%2, time %3 s").
-                                             arg(timeStep).
-                                             arg(m_computation->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
-                                             arg(m_time));
+                                           QObject::tr("Constant step %1/%2, time %3 s").
+                                           arg(timeStep).
+                                           arg(m_computation->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
+                                           arg(m_time));
             }
             else
             {
@@ -1026,13 +1032,13 @@ void SolverDeal::solveTransient()
                 nextTimeStepLength = max(nextTimeStepLength, actualTimeStep / maxTimeStepRatio);
 
                 Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                             QObject::tr("Adaptive step, time %1 s, rel. error %2, step size %4 -> %5 (%6 %), average err/len %7").
-                                             arg(m_time).
-                                             arg(error * 100.0).
-                                             arg(actualTimeStep).
-                                             arg(nextTimeStepLength).
-                                             arg(nextTimeStepLength / actualTimeStep * 100.0).
-                                             arg(averageErrorToLenghtRatio));
+                                           QObject::tr("Adaptive step, time %1 s, rel. error %2, step size %4 -> %5 (%6 %), average err/len %7").
+                                           arg(m_time).
+                                           arg(error * 100.0).
+                                           arg(actualTimeStep).
+                                           arg(nextTimeStepLength).
+                                           arg(nextTimeStepLength / actualTimeStep * 100.0).
+                                           arg(averageErrorToLenghtRatio));
             }
 
             if (refused)
@@ -1065,7 +1071,7 @@ void SolverDeal::solveTransient()
                 }
 
                 Agros::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                             QObject::tr("Transient step refused"));
+                                           QObject::tr("Transient step refused"));
             }
             else
             {
@@ -1081,24 +1087,6 @@ void SolverDeal::solveTransient()
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
                 // add solution to the store
                 m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
-
-                // Python callback
-                /*
-                QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
-                        arg(m_computation->problemDir()).
-                        arg(timeStep);
-
-                double cont = 1.0;
-                bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
-                if (!successfulRun)
-                {
-                    ErrorResult result = currentPythonEngine()->parseError();
-                    Agros::log()->printError(QObject::tr("Transient callback"), result.error());
-                }
-
-                if (!cont)
-                    break;
-                */
 
                 // adapt mesh
                 if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
@@ -1125,18 +1113,18 @@ void SolverDeal::solveTransient()
                         double relativeDifference = fabs(relChangeSol - currentRelChangeSol) / currentRelChangeSol * 100.0;
                         relChangeSol = currentRelChangeSol;
 
-                        qDebug() << timeStep << adaptiveStep << "relChangeSol" << relChangeSol << "doFHandler.n_dofs()" << primal->doFHandler.n_dofs()
-                                 << "differenceSolutionNorm" << differenceSolutionNorm << "currentSolutionNorm" << currentSolutionNorm
-                                 << "relativeDifference" << relativeDifference;
+                        qInfo() << timeStep << adaptiveStep << "relChangeSol" << relChangeSol << "doFHandler.n_dofs()" << primal->doFHandler.n_dofs()
+                                << "differenceSolutionNorm" << differenceSolutionNorm << "currentSolutionNorm" << currentSolutionNorm
+                                << "relativeDifference" << relativeDifference;
 
                         if (differenceSolutionNorm < EPS_ZERO)
                             break;
                     }
 
                     Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
-                                                 arg(1).
-                                                 arg(0.0).
-                                                 arg(primal->doFHandler.n_dofs()));
+                                               arg(1).
+                                               arg(0.0).
+                                               arg(primal->doFHandler.n_dofs()));
 
                     if (adaptiveStep > 0)
                         Agros::log()->updateAdaptivityChartInfo(m_fieldInfo, timeStep, adaptiveStep);
@@ -1170,6 +1158,7 @@ void SolverDeal::solveTransient()
 
                     // store current solution
                     primal->solution = solutions.back();
+
                     // remove interpolated solution
                     solutions.pop_back();
                 }
@@ -1186,7 +1175,8 @@ void SolverDeal::solveTransient()
     QList<double> timeStepLengths() const { return m_timeStepLengths; }
     // cumulative times
     QList<double> timeStepTimes() const;
-      */
+    */
+
     // save chart
     QVector<double> transientSteps;
     for (int i = 1; i < m_computation->timeStepLengths().size() + 1; i++)

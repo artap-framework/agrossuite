@@ -42,21 +42,12 @@ public:
 
     virtual ~{{CLASS}}ViewScalarFilter();    
 
-    virtual void compute_derived_quantities_scalar (const std::vector<double> &uh,
-                                                    const std::vector<dealii::Tensor<1,2> > &duh,
-                                                    const std::vector<dealii::Tensor<2,2> > &dduh,
-                                                    const std::vector<dealii::Point<2> > &normals,
-                                                    const std::vector<dealii::Point<2> > &evaluation_points,
-                                                    const dealii::types::material_id mat_id,
-                                                    std::vector<dealii::Vector<double> > &computed_quantities) const;
+    virtual void evaluate_scalar_field (const dealii::DataPostprocessorInputs::Scalar<2> &inputs,
+                                        std::vector<dealii::Vector<double> > &computed_quantities) const;
 
-    virtual void compute_derived_quantities_vector (const std::vector<dealii::Vector<double> > &uh,
-                                                    const std::vector<std::vector<dealii::Tensor<1,2> > > &duh,
-                                                    const std::vector<std::vector<dealii::Tensor<2,2> > > &dduh,
-                                                    const std::vector<dealii::Point<2> > &normals,
-                                                    const std::vector<dealii::Point<2> > &evaluation_points,
-                                                    const dealii::types::material_id mat_id,
-                                                    std::vector<dealii::Vector<double> > &computed_quantities) const;
+    virtual void evaluate_vector_field (const dealii::DataPostprocessorInputs::Vector<2> &inputs,
+                                        std::vector<dealii::Vector<double> > &computed_quantities) const;
+
 protected:
 
 private:
@@ -73,11 +64,6 @@ private:
     uint m_variableHash;
     PhysicFieldVariableComp m_physicFieldVariableComp;
     CoordinateType m_coordinateType;
-
-    /*
-    {{#SPECIAL_FUNCTION_SOURCE}}
-    QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};{{/SPECIAL_FUNCTION_SOURCE}}   
-    */
 };
 
 #endif // {{ID}}_FILTER_H
