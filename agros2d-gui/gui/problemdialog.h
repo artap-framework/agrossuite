@@ -31,7 +31,6 @@ class LineEditDouble;
 class ValueLineEdit;
 
 class ProblemWidget;
-class FieldsToobar;
 
 class CouplingsWidget : public QWidget
 {
@@ -72,7 +71,6 @@ public slots:
 private:
     QDialogButtonBox *buttonBox;
 
-    // FieldsToobar *fieldsToolbar;
     CouplingsWidget *couplingsWidget;
 
     QComboBox *cmbCoordinateType;

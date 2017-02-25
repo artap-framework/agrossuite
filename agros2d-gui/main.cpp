@@ -31,6 +31,7 @@
 
 #include "boost/archive/archive_exception.hpp"
 #include <deal.II/base/exceptions.h>
+#include <deal.II/base/multithread_info.h>
 
 #ifdef AGROS_BUILD_STATIC
 #include "../plugins/plugins_static.h"
@@ -120,6 +121,8 @@ int main(int argc, char *argv[])
 {
     try
     {
+        // dealii::MultithreadInfo::set_thread_limit(1);
+
         // command line info
         TCLAP::CmdLine cmd("Agros2D", ' ', versionString().toStdString());
 

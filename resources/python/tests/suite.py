@@ -68,13 +68,6 @@ __tests__["complete"] = __tests__["fields"] + __tests__["coupled"] + __tests__["
 
 # deal.II 
 __tests__["deal.II"] = [
-# optilab
-tests.optilab.studies.TestNSGA2Sphere,
-tests.optilab.studies.TestNSGA3Sphere,
-tests.optilab.studies.TestCMAESSphere,
-tests.optilab.studies.TestLimboSphere,
-tests.optilab.studies.TestBayesOptBooth,
-tests.optilab.studies.TestNLoptBooth,
 # electrostatic field
 tests.fields.electrostatic.TestElectrostaticPlanar, 
 tests.fields.electrostatic.TestElectrostaticAxisymmetric,
@@ -142,7 +135,14 @@ tests.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomai
 #tests.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardWeak,
 #tests.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardHard,
 # core
-tests.core.matrix_solvers.TestMatrixSolversInternal
+tests.core.matrix_solvers.TestMatrixSolversInternal,
+# optilab
+tests.optilab.studies.TestNSGA2Sphere,
+tests.optilab.studies.TestNSGA3Sphere,
+tests.optilab.studies.TestCMAESSphere,
+tests.optilab.studies.TestLimboSphere,
+tests.optilab.studies.TestBayesOptBooth,
+tests.optilab.studies.TestNLoptBooth
 ] + __tests__["script"]
 
 __tests__["optilab"] = __get_tests__(tests.optilab)

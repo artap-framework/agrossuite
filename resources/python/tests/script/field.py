@@ -383,7 +383,7 @@ class TestFieldAdaptivity(Agros2DTestCase):
 
     """ estimator """
     def test_estimator(self):
-        for method in ['kelly', 'gradient']:
+        for method in ['kelly']:
             self.field.adaptivity_parameters['estimator'] = method
             self.assertEqual(self.field.adaptivity_parameters['estimator'], method)
 

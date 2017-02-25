@@ -11,6 +11,8 @@
 #include "util/system_utils.h"
 #include "logview.h"
 
+#include <deal.II/base/multithread_info.h>
+
 #ifdef AGROS_BUILD_STATIC
 #include "../plugins/plugins_static.h"
 #endif
@@ -23,7 +25,9 @@ class LibInstance
 public:
     LibInstance()
     {
-        qInfo() << __FILE__ << "has been initialized";
+        dealii::MultithreadInfo::set_thread_limit(1);
+
+        // qInfo() << __FILE__ << "has been initialized";
         setlocale(LC_NUMERIC, "C");
 
         char *argv[] = {(char *) QString("%1/agros2d_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
@@ -48,7 +52,7 @@ public:
     ~LibInstance()
     {
         delete app;
-        qInfo() << __FILE__ << "has been unloaded";
+        // qInfo() << __FILE__ << "has been unloaded";
     }
 };
 

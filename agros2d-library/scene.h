@@ -42,9 +42,7 @@ class SceneLabelContainer;
 class SceneBoundaryContainer;
 class SceneMaterialContainer;
 
-class ProblemWidget;
 class SceneTransformDialog;
-class ProgressItemSolve;
 class CouplingInfo;
 
 class ProblemBase;

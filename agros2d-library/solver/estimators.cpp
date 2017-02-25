@@ -250,8 +250,6 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
                                                       const dealii::Vector<double> &sln1,
                                                       const dealii::Vector<double> &sln2)
 {
-    qInfo() << "sln1 = " << sln1.norm_sqr() << "sln2 = " << sln2.norm_sqr();
-
     int numberOfSolutions = doFHandler.get_fe().n_components();
 
     double normCurrentL2 = 0.0;

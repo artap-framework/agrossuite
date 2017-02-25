@@ -185,7 +185,7 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
             cache.n_q_points = n_q_points;
 
             m_assembleCache[thread_id] = cache;
-            // std::cout << "init " << thread_id << std::endl;
+            std::cout << "init " << thread_id << std::endl;
         }
     }
 
@@ -762,8 +762,6 @@ void SolverDeal::solveSteadyState()
                 solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(primal->doFHandler);
                 previousSolution = primal->solution;
 
-                qInfo() << "previousSolution.norm_sqr = " << previousSolution.norm_sqr();
-
                 m_computation->calculationMesh().prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
 
@@ -777,8 +775,6 @@ void SolverDeal::solveSteadyState()
             // solve problem
             primal->solve();
 
-            qInfo() << "primal->solution.norm_sqr = " << primal->solution.norm_sqr();
-
             // error
             double relChangeSol = 100.0;
             if (adaptiveStep > 0)
@@ -790,9 +786,6 @@ void SolverDeal::solveSteadyState()
                 relChangeSol = ErrorEstimator::relativeChangeBetweenSolutions(primal->doFHandler, quadratureFormulas(),
                                                                               primal->solution,
                                                                               previousSolutionInterpolated);
-
-                qInfo() << "previousSolution.norm_sqr = " << previousSolution.norm_sqr() << "previousSolutionInterpolated.norm_sqr = " << previousSolutionInterpolated.norm_sqr()
-                        << "relChangeSol = " << relChangeSol;
             }
 
             FieldSolutionID solutionID(m_fieldInfo->fieldId(), m_computation->timeLastStep(), adaptiveStep);

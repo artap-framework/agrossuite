@@ -167,28 +167,4 @@ private slots:
     void deleteField();
 };
 
-class FieldsToobar: public QWidget
-{
-    Q_OBJECT
-
-public:
-    FieldsToobar(QWidget *parent = 0);
-
-signals:
-    void changed();
-
-public slots:
-    void refresh();
-
-private:
-    QList<QToolButton *> m_buttons;
-    QList<QLabel *> m_labels;
-
-    void createControls();
-
-private slots:
-    void fieldDialog(int index);
-    void addField();
-};
-
 #endif // FIELDDIALOG_H
