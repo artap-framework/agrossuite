@@ -148,6 +148,9 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
 
 void SolverDeal::solveProblem()
 {
+    // clear cache
+    m_assembleCache.clear();
+
     m_computation->propagateBoundaryMarkers();
 
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
@@ -158,6 +161,8 @@ void SolverDeal::solveProblem()
 
 SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points)
 {
+    assert(0);
+
     // create or resize cache
     bool idExists = !(m_assembleCache.find(thread_id) == m_assembleCache.end());
 
@@ -185,7 +190,7 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
             cache.n_q_points = n_q_points;
 
             m_assembleCache[thread_id] = cache;
-            std::cout << "init " << thread_id << std::endl;
+            // std::cout << "init " << thread_id << std::endl;
         }
     }
 
@@ -372,6 +377,26 @@ void SolverDeal::AssembleBase::solveProblemLinear()
 
     solveLinearSystem(systemMatrix, systemRHS, solution);
     constraintsAll.distribute(solution);
+}
+
+void SolverDeal::AssembleCache::clear()
+{
+    // volume value and grad cache
+    shape_value.clear();
+    shape_grad.clear();
+
+    // surface cache
+    shape_face_point.clear();
+    shape_face_value.clear();
+    shape_face_JxW.clear();
+
+    // previous values and grads
+    solution_value_previous.clear();
+    solution_grad_previous.clear();
+
+    // previous values and grads
+    solution_value_previous_face.clear();
+    solution_grad_previous_face.clear();
 }
 
 // ***************************************************************************************************************************

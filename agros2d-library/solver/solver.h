@@ -131,6 +131,8 @@ public:
     public:
         AssembleCache() : dofs_per_cell(-1), n_q_points(-1) {}
 
+        void clear();
+
         // volume value and grad cache
         std::vector<std::vector<double> > shape_value;
         std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
@@ -157,9 +159,6 @@ public:
     // solve problem
     void solveProblem();
 
-    // adaptivity
-    void solveAdaptivity();
-
     // steady state
     void solveSteadyState();
 
@@ -180,6 +179,7 @@ public:
 
     // assemble cache
     AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
+    inline void clearCache() { m_assembleCache.clear(); }
 
 protected:   
     class AGROS_LIBRARY_API AssemblyScratchData

@@ -66,6 +66,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
     // dealii::SynchronousIterators<IteratorTuple> cell_and_source_end(IteratorTuple(doFHandler.end(),
     //                                                                               doFHandler.end()));
 
+    // m_solverDeal->clearCache();
+
     TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
     cell_begin = doFHandler.begin_active();
     cell_end = doFHandler.end();
@@ -177,7 +179,26 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        AssembleCache &cache = m_solverDeal->assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
+        // AssembleCache &cache = m_solverDeal->assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
+
+        // local cache
+        SolverDeal::AssembleCache cache;
+
+        // volume value and grad cache
+        cache.shape_value = std::vector<std::vector<double> >(dofs_per_cell, std::vector<double>(n_q_points));
+        cache.shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+
+        // surface cache
+        cache.shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
+        cache.shape_face_value = std::vector<std::vector<std::vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<std::vector<double> >(dofs_per_cell));
+        cache.shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
+
+        // previous values and grads
+        cache.solution_value_previous = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+        cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+        cache.dofs_per_cell = dofs_per_cell;
+        cache.n_q_points = n_q_points;
 
         if (scratch_data.solutionNonlinearPrevious.size() > 0)
         {

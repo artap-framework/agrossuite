@@ -25,7 +25,7 @@ class LibInstance
 public:
     LibInstance()
     {
-        dealii::MultithreadInfo::set_thread_limit(1);
+        // dealii::MultithreadInfo::set_thread_limit(1);
 
         // qInfo() << __FILE__ << "has been initialized";
         setlocale(LC_NUMERIC, "C");
