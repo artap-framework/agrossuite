@@ -152,7 +152,7 @@ MainWindow::~MainWindow()
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
-    removeDirectory(tempProblemDir());    
+    removeDirectory(tempProblemDir());
 }
 
 void MainWindow::createActions()
@@ -613,7 +613,7 @@ void MainWindow::doDocumentNew()
             Agros::problem()->addField(fieldInfo);
 
             sceneViewProblem->actSceneModeProblem->trigger();
-            sceneViewProblem->doZoomBestFit();           
+            sceneViewProblem->doZoomBestFit();
         }
         catch (AgrosPluginException& e)
         {
@@ -883,11 +883,14 @@ void MainWindow::doSolveNewComputation()
 
 void MainWindow::doSolveFinished()
 {
-    // close log dialog
-    logDialog->closeLog();
+    if (Agros::problem()->currentComputation()->isSolved())
+    {
+        // close log dialog
+        logDialog->closeLog();
 
-    // refresh postprocessor
-    postprocessorWidget->solveFinished();
+        // refresh postprocessor
+        postprocessorWidget->solveFinished();
+    }
 
     setControls();
 }
