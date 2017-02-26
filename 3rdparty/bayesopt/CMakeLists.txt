@@ -56,10 +56,8 @@ ELSE()
 ENDIF()
 
 #  experimental - testing Win compilation
-IF(WIN32)    
 set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.62.0)
 set (BOOST_INCLUDEDIR ..\\..\\dealii\\bundled\\boost-1.62.0\\include)
-ENDIF(WIN32)
 #  -------------------------------------  
 
 find_package( Boost REQUIRED )
