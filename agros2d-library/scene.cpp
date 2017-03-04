@@ -325,8 +325,6 @@ void Scene::checkGeometryAssignement()
 
 void Scene::clear()
 {
-    // m_undoStack->clear();
-
     // loops
     if (m_loopsInfo)
         m_loopsInfo->clear();

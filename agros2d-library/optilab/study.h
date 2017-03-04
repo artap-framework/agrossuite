@@ -186,6 +186,8 @@ protected:
     QList<QSharedPointer<Computation> > m_computations;
 };
 
+using StudyUpdate = std::function<void(QSharedPointer<Computation>, SolutionUncertainty)>;
+
 class Study : public QObject
 {
 public:
@@ -344,7 +346,7 @@ public:
     static Study *factory(StudyType type);
 
     void abortSolving();
-    // void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
+    StudyUpdate updateParametersAndFunctionals;
 
 protected:
     QList<Parameter> m_parameters;

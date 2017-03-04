@@ -122,7 +122,9 @@ Study *Study::factory(StudyType type)
 
 Study::Study(QList<ComputationSet> computations)
     : m_computationSets(computations), m_abort(false), m_isSolving(false)
-{    
+{
+    // empty callback
+    updateParametersAndFunctionals = [](QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty) {};
 }
 
 Study::~Study()
@@ -282,7 +284,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
     computation->writeProblemToJson();
 
     // update GUI
-    // updateParametersAndFunctionals(computation, solutionUncertainty);
+    updateParametersAndFunctionals(computation, solutionUncertainty);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation) const

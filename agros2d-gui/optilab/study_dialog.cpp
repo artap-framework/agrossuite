@@ -53,10 +53,7 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     createControls();
     
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
-    connect(m_study, SIGNAL(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)),
-            this, SLOT(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)));
-
-    connect(m_study, SIGNAL(closeLog()), this, SLOT(closeLog()));
+    m_study->updateParametersAndFunctionals = std::bind(&LogOptimizationDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
@@ -111,7 +108,7 @@ void LogOptimizationDialog::createControls()
     fontProgress.setPointSize(fontSize);
     
     btnClose = new QPushButton(tr("Close"));
-    connect(btnClose, SIGNAL(clicked()), this, SLOT(tryClose()));
+    connect(btnClose, SIGNAL(clicked()), this, SLOT(closeLog()));
     btnClose->setEnabled(false);
     
     btnAbort = new QPushButton(tr("Abort"));

@@ -1009,7 +1009,7 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
         XMLProblem::document *doc = document_xsd.get();
 
         // clear scene
-        m_scene->clear();
+        clearFieldsAndConfig();
 
         // problem config
         m_config->load(&doc->problem().problem_config());
@@ -1101,6 +1101,7 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
             }
         }
 
+        // fields
         for (unsigned int i = 0; i < doc->problem().fields().field().size(); i++)
         {
             XMLProblem::field field = doc->problem().fields().field().at(i);
@@ -1233,29 +1234,23 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
             }
         }
 
-        // restore signal
-        m_scene->blockSignals(false);
         // invalidate scene (parameter update)
         m_scene->invalidate();
     }
     catch (const xml_schema::expected_element& e)
     {
-        m_scene->blockSignals(false);
         throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
     }
     catch (const xml_schema::expected_attribute& e)
     {
-        m_scene->blockSignals(false);
         throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
     }
     catch (const xml_schema::exception& e)
     {
-        m_scene->blockSignals(false);
         throw AgrosException(QString::fromStdString(e.what()));
     }
     catch (AgrosException e)
     {
-        m_scene->blockSignals(false);
         throw e;
     }
 }
@@ -1484,11 +1479,6 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
 
 void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
 {
-    // block signal
-    bool blocked = m_scene->signalsBlocked();
-    if (!blocked)
-        m_scene->blockSignals(true);
-
     // config
     QJsonObject configJson = rootJson[CONFIG].toObject();
     m_config->load(configJson);
@@ -1686,8 +1676,6 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         }
     }
 
-    // restore signal
-    m_scene->blockSignals(blocked);
     // invalidate scene (parameter update)
     m_scene->invalidate();
 }
@@ -2386,9 +2374,7 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
         Study *study = Study::factory(type);
         study->load(studyJson);
 
-        m_studies->blockSignals(true);
         m_studies->addStudy(study);
-        m_studies->blockSignals(false);
     }
 
     // recipes
@@ -2578,9 +2564,6 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
 void Problem::readProblemFromFile(const QString &fileName)
 {
     QFileInfo fileInfo(fileName);
-
-    // set filename
-    QString fn = fileName;
 
     try
     {

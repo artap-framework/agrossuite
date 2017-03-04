@@ -46,6 +46,7 @@ public:
     LogOptimizationDialog(Study *study);
     ~LogOptimizationDialog();
 
+public slots:
     void closeLog();
 
 protected:
@@ -76,10 +77,9 @@ private:
     double m_totalValue;
 
     void createControls();
-
-private slots:
     void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
 
+private slots:
     void aborted();
 };
 
