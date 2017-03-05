@@ -11,16 +11,16 @@ echo "Run Agros Suite in " $APPDIR
 
 # run
 if [ $# -eq 0 ]; then
-    # run agros2d
-    ./agros2d
-elif [ $1 = "agros2d" ]; then
-    # shift args and run agros2d
+    # run agros
+    ./agros
+elif [ $1 = "agros" ]; then
+    # shift args and run agros
     shift
-    ./agros2d "$@"    
-elif [ $1 = "agros2d_solver" ]; then
+    ./agros "$@"    
+elif [ $1 = "agros_solver" ]; then
     # shift args and run solver
     shift
-    ./agros2d_solver "$@"
+    ./agros_solver "$@"
 elif [ $1 = "pythonlab" ]; then
     # shift args and run pythonlab
     shift
