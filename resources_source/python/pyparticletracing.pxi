@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-python/pythonlab/pyparticletracing.h":
+cdef extern from "../../agros-python/pythonlab/pyparticletracing.h":
     cdef cppclass PyParticleTracing:
         PyParticleTracing()
         void setComputation(PyComputation *computation)

@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestAcousticHarmonicPlanar(Agros2DTestCase):
+class TestAcousticHarmonicPlanar(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         problem.frequency = 2000
@@ -70,10 +70,10 @@ class TestAcousticHarmonicPlanar(Agros2DTestCase):
         self.value_test("Surface acoustic pressure - imag", surface["pi"], 4.437581e-5)      
         
 
-class TestAcousticHarmonicAxisymmetric(Agros2DTestCase):
+class TestAcousticHarmonicAxisymmetric(AgrosTestCase):
     def setUp(self):         
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 700
@@ -140,10 +140,10 @@ class TestAcousticHarmonicAxisymmetric(Agros2DTestCase):
         self.value_test("Acoustic pressure - real", surface["pr"], 0.196756)
         self.value_test("Acoustic pressure - imag", surface["pi"], -0.324708)   
                
-class TestAcousticTransientPlanar(Agros2DTestCase):
+class TestAcousticTransientPlanar(AgrosTestCase):
     def setUp(self):          
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         #problem.time_step_method = "fixed"
@@ -209,10 +209,10 @@ class TestAcousticTransientPlanar(Agros2DTestCase):
         surface = solution.surface_integrals([0])
         self.value_test("Acoustic pressure - real", surface["pr"], 0.068864)
                
-class TestAcousticTransientAxisymmetric(Agros2DTestCase):
+class TestAcousticTransientAxisymmetric(AgrosTestCase):
     def setUp(self):                 
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.time_step_method = "fixed"
@@ -285,7 +285,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicAxisymmetric))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientPlanar))

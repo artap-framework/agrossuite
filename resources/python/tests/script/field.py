@@ -1,10 +1,10 @@
-import agros2d as a2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros as a2d
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
 from math import pi, sqrt
 
-class TestField(Agros2DTestCase):
+class TestField(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -87,7 +87,7 @@ class TestField(Agros2DTestCase):
         self.field.transient_time_skip = 60
         self.assertEqual(self.field.transient_time_skip, 60)
 
-class TestFieldBoundaries(Agros2DTestCase):
+class TestFieldBoundaries(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -135,7 +135,7 @@ class TestFieldBoundaries(Agros2DTestCase):
         with self.assertRaises(ValueError):
             self.field.remove_boundary("Nonexistent boundary")
 
-class TestFieldMaterials(Agros2DTestCase):
+class TestFieldMaterials(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -230,7 +230,7 @@ class TestFieldMaterials(Agros2DTestCase):
         with self.assertRaises(ValueError):
             self.field.remove_material("Nonexistent material")
 
-class TestFieldNewtonSolver(Agros2DTestCase):
+class TestFieldNewtonSolver(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -315,7 +315,7 @@ class TestFieldNewtonSolver(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.field.solver_parameters['jacobian_reuse_steps'] = 101
 
-class TestFieldMatrixSolver(Agros2DTestCase):
+class TestFieldMatrixSolver(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -363,7 +363,7 @@ class TestFieldMatrixSolver(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.field.matrix_solver_parameters['dealii_iterations'] = 1.1e4
 
-class TestFieldAdaptivity(Agros2DTestCase):
+class TestFieldAdaptivity(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field('magnetic')
@@ -437,7 +437,7 @@ class TestFieldAdaptivity(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.field.adaptivity_parameters['transient_back_steps'] = 101
 
-class TestFieldLocalValues(Agros2DTestCase):
+class TestFieldLocalValues(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field("magnetic")
@@ -473,7 +473,7 @@ class TestFieldLocalValues(Agros2DTestCase):
         solution = computation.solution('magnetic')
         self.assertEqual(len(solution.local_values(-1, -1)), 0)
 
-class TestFieldIntegrals(Agros2DTestCase):
+class TestFieldIntegrals(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = self.problem.field("electrostatic")
@@ -535,7 +535,7 @@ class TestFieldIntegrals(Agros2DTestCase):
         solution = computation.solution('electrostatic')
         self.assertAlmostEqual(solution.volume_integrals([1])['V'], self.volume, 3)
 
-class TestFieldAdaptivityInfo(Agros2DTestCase):
+class TestFieldAdaptivityInfo(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
@@ -624,7 +624,7 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         self.assertTrue(solution.solution_mesh_info()['elements'])
         self.assertTrue(solution.solution_mesh_info()['nodes'])
 
-class TestFieldSolverInfo(Agros2DTestCase):
+class TestFieldSolverInfo(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.problem.coordinate_type = "planar"
@@ -736,7 +736,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))

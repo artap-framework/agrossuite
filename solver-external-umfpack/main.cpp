@@ -26,7 +26,7 @@
 #include <umfpack.h>
 
 #include "../3rdparty/tclap/CmdLine.h"
-#include "../agros2d-library/util/sparse_io.h"
+#include "../agros-library/util/sparse_io.h"
 
 int main(int argc, char *argv[])
 {

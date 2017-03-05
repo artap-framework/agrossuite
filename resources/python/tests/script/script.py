@@ -1,8 +1,8 @@
-import agros2d
+import agros
 import pythonlab
 
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
 def compare(first, second):
     for solution, file in zip(first, second):
@@ -22,10 +22,10 @@ def save_solution_test(problem, field):
 
     from os import path
     filename = '{0}/temp.a2d'.format(path.dirname(pythonlab.tempname()))
-    agros2d.save_file(filename, True)
-    agros2d.open_file(filename, True)
+    agros.save_file(filename, True)
+    agros.open_file(filename, True)
 
-    field = agros2d.field('magnetic')
+    field = agros.field('magnetic')
     values_from_file = [field.local_values(0.05, 0),
                         field.surface_integrals([0, 1, 2]),
                         field.volume_integrals()]
@@ -35,9 +35,9 @@ def save_solution_test(problem, field):
 
     return compare(values_from_solution, values_from_file)
 
-class TestSaveAdaptiveSolutionSteady(Agros2DTestCase):
+class TestSaveAdaptiveSolutionSteady(AgrosTestCase):
     def setUp(self):
-        self.problem = agros2d.problem(clear = True)
+        self.problem = agros.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
 
@@ -80,9 +80,9 @@ class TestSaveAdaptiveSolutionSteady(Agros2DTestCase):
     def test_steady_state(self):        
         self.assertTrue(save_solution_test(self.problem, self.magnetic))
     
-class TestSaveAdaptiveSolutionTransient(Agros2DTestCase):
+class TestSaveAdaptiveSolutionTransient(AgrosTestCase):
     def setUp(self):
-        self.problem = agros2d.problem(clear = True)
+        self.problem = agros.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
         self.problem.time_step_method = "fixed"
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestSaveAdaptiveSolutionSteady))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestSaveAdaptiveSolutionTransient))
     suite.run(result)

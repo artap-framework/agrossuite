@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
                                                                                                                                                                                                                                            
-class TestMagneticHarmonicPlanar(Agros2DTestCase):
+class TestMagneticHarmonicPlanar(AgrosTestCase):
     def setUp(self):                                                                                                                         
         # model
-        self.problem = agros2d.problem(clear = True)
+        self.problem = agros.problem(clear = True)
         self.problem.coordinate_type = "planar"
         self.problem.mesh_type = "triangle"        
         self.problem.frequency = 50
@@ -153,10 +153,10 @@ class TestMagneticHarmonicPlanar(Agros2DTestCase):
 #        self.general_zero_cond_test_values()
 #
                                                                               
-class TestMagneticHarmonicAxisymmetric(Agros2DTestCase):
+class TestMagneticHarmonicAxisymmetric(AgrosTestCase):
     def setUp(self):                                                                                                                         
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"        
         problem.frequency = 100
@@ -242,10 +242,10 @@ class TestMagneticHarmonicAxisymmetric(Agros2DTestCase):
         self.value_test("Lorentz force - r", volume["Flx"], -4.018686e-4)
         self.value_test("Lorentz force - z", volume["Fly"], -1.233904e-5)    
              
-class TestMagneticHarmonicNonlinPlanar(Agros2DTestCase):
+class TestMagneticHarmonicNonlinPlanar(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -307,10 +307,10 @@ class TestMagneticHarmonicNonlinPlanar(Agros2DTestCase):
         self.value_test("Current density - induced - imag", volume["Iiti"], -25.458979006398277)
         self.value_test("Energy", volume["Wm"], 0.012166845506925431)
             
-class TestMagneticHarmonicNonlinAxisymmetric(Agros2DTestCase):
+class TestMagneticHarmonicNonlinAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 50
@@ -387,10 +387,10 @@ class TestMagneticHarmonicNonlinAxisymmetric(Agros2DTestCase):
         self.value_test("Current density - induced - real", volume["Iitr"], -23.807)
         self.value_test("Current density - induced - imag", volume["Iiti"], -3.323)
                       
-class TestMagneticHarmonicPlanarTotalCurrent(Agros2DTestCase):
+class TestMagneticHarmonicPlanarTotalCurrent(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -547,10 +547,10 @@ class TestMagneticHarmonicPlanarTotalCurrent(Agros2DTestCase):
         self.value_test("Current - 3 - real", volume3["Ir"], 0, 100)
         self.value_test("Current - 3 - imag", volume3["Ii"], 0, 100)
                                                      
-class TestMagneticHarmonicAxisymmetricTotalCurrent(Agros2DTestCase):
+class TestMagneticHarmonicAxisymmetricTotalCurrent(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 100
@@ -651,7 +651,7 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticHarmonicAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticHarmonicNonlinPlanar))

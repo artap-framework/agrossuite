@@ -159,8 +159,8 @@ QString datadir()
         return QString::fromLatin1(getenv("PWD")) + "/../..";
 
     // system installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath() + "/../share/agros2d";
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath() + "/../share/agros";
 #endif
 
     qCritical() << "Datadir not found.";

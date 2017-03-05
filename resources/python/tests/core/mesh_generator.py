@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestMeshGenerator(Agros2DTestCase):
+class TestMeshGenerator(AgrosTestCase):
     def setUp(self):
         # model
-        self.problem = agros2d.problem(clear = True)
+        self.problem = agros.problem(clear = True)
         self.problem.coordinate_type = "planar"
         self.problem.mesh_type = "triangle"
 
@@ -79,6 +79,6 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMeshGenerator))
     suite.run(result)

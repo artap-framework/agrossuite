@@ -1,8 +1,8 @@
-import agros2d
+import agros
 import os
 
-from test_suite.scenario import Agros2DTestCase
-from test_suite.scenario import Agros2DTestResult
+from test_suite.scenario import AgrosTestCase
+from test_suite.scenario import AgrosTestResult
 
 def create_tests(case, dir):
     for (path, dirs, files) in os.walk(dir):
@@ -20,8 +20,8 @@ def create_tests(case, dir):
 
 def get_ags_test(example):
     def test(self):
-        agros2d.open_file(example)
-        agros2d.problem(clear=False).computation().solve()
+        agros.open_file(example)
+        agros.problem(clear=False).computation().solve()
     return test
         
 def get_py_test(example):
@@ -31,10 +31,10 @@ def get_py_test(example):
     return test
 
 tests = list()
-data_dirs = [agros2d.datadir('/resources/examples/Examples'),
-             agros2d.datadir('/resources/examples/Other'),
-             agros2d.datadir('/resources/examples/PythonLab'),
-             agros2d.datadir('/resources/examples/Tutorials')]
+data_dirs = [agros.datadir('/resources/examples/Examples'),
+             agros.datadir('/resources/examples/Other'),
+             agros.datadir('/resources/examples/PythonLab'),
+             agros.datadir('/resources/examples/Tutorials')]
 
 for dir in data_dirs:
     for (path, dirs, files) in os.walk(dir):
@@ -43,7 +43,7 @@ for dir in data_dirs:
             continue
 
         name = "TestExamples{0}".format(os.path.split(path)[-1].replace(" ", "")).replace("~1", "")
-        code = compile('class {0}(Agros2DTestCase): pass'.format(name), '<string>', 'exec')
+        code = compile('class {0}(AgrosTestCase): pass'.format(name), '<string>', 'exec')
         exec(code)
         create_tests(globals()[name], path)
         tests.append(globals()[name])
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     for test in tests:
         suite.addTest(ut.TestLoader().loadTestsFromTestCase(test))
     suite.run(result)

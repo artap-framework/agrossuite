@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestCoupledProblemsBasic1General(Agros2DTestCase):
+class TestCoupledProblemsBasic1General(AgrosTestCase):
     def setUpGeneral(self, curr_heat, heat_elast): 
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
  
@@ -124,10 +124,10 @@ class TestCoupledProblemsBasic1HardHard(TestCoupledProblemsBasic1General):
         self.setUpGeneral("hard", "hard")
 
 
-class TestCoupledProblemsBasic2General(Agros2DTestCase):
+class TestCoupledProblemsBasic2General(AgrosTestCase):
     def setUpGeneral(self, mag_heat): 
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 50      
@@ -221,10 +221,10 @@ class TestCoupledProblemsBasic2Hard(TestCoupledProblemsBasic2General):
         self.setUpGeneral("hard")
 
 
-class TestCoupledProblemsBasic3General(Agros2DTestCase):
+class TestCoupledProblemsBasic3General(AgrosTestCase):
     def setUpGeneral(self, curr_heat, heat_elast): 
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -348,10 +348,10 @@ class TestCoupledProblemsBasic3HardHard(TestCoupledProblemsBasic3General):
         self.setUpGeneral("hard", "hard")
 
 
-class TestCoupledProblemsBasic4General(Agros2DTestCase):
+class TestCoupledProblemsBasic4General(AgrosTestCase):
     def setUpGeneral(self, curr_heat): 
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -460,7 +460,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
 
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakWeak))
 #    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakHard))

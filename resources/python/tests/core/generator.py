@@ -1,9 +1,9 @@
-import agros2d
+import agros
 import pythonlab
 import os
 
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
 def create_tests(case, dir):
     for (path, dirs, files) in os.walk(dir):
@@ -18,20 +18,20 @@ def create_tests(case, dir):
 
 def get_test(example):
     def test(self):
-        agros2d.open_file(example)
-        script = agros2d.get_script_from_model()
+        agros.open_file(example)
+        script = agros.get_script_from_model()
         exec(script in globals(), locals())
-        agros2d.problem(clear=False).computation().solve()
+        agros.problem(clear=False).computation().solve()
 
     return test
 
-class TestGenerator(Agros2DTestCase): pass
+class TestGenerator(AgrosTestCase): pass
 create_tests(TestGenerator, pythonlab.datadir('/resources/examples/Examples'))
 
 if __name__ == '__main__':        
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestGenerator))
     suite.run(result)

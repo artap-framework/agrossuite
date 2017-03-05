@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
                                     
-class TestMagneticTransientPlanar(Agros2DTestCase):
+class TestMagneticTransientPlanar(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -86,10 +86,10 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
 #        self.value_test("Current - total2", volumeSource["Ir"], 421.23575)
 #        self.value_test("Current - external", volumeSource["Ier"], 421.23575)
                 
-class TestMagneticTransientAxisymmetric(Agros2DTestCase):
+class TestMagneticTransientAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientPlanar))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientAxisymmetric))
     suite.run(result)

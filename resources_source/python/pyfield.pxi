@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-python/pythonlab/pyfield.h":
+cdef extern from "../../agros-python/pythonlab/pyfield.h":
     cdef cppclass PyField:
         PyField(string &fieldId) except +
 

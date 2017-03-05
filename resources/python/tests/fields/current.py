@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestCurrentPlanar(Agros2DTestCase):
+class TestCurrentPlanar(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
                
@@ -70,10 +70,10 @@ class TestCurrentPlanar(Agros2DTestCase):
         surface = solution.surface_integrals([0])
         self.value_test("Current", surface["Ir"], 3629.425713)
         
-class TestCurrentAxisymmetric(Agros2DTestCase):
+class TestCurrentAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCurrentPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCurrentAxisymmetric))
     suite.run(result)

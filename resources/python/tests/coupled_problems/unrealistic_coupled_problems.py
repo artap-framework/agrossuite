@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
+class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
     def setUpGeneral(self, curr_heat, heat_elast):   
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"       
 
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakWeak))
 #    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakHard))
 #    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardWeak))

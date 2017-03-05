@@ -1,5 +1,5 @@
 # Set project's name
-PROJECT( agros2d )
+PROJECT( agros )
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
@@ -51,7 +51,7 @@ IF (AGROS_BUILD_STATIC)
     foreach(MODULEFILE ${module_files})
       GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
 
-      FIND_LIBRARY(plugin_${basefile} libagros2d_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
+      FIND_LIBRARY(plugin_${basefile} libagros_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
 
       SET(PLUGINS ${PLUGINS}  ${plugin_${basefile}})
     endforeach()
@@ -116,29 +116,29 @@ SET(VERSION_MONTH ${MONTH})
 SET(VERSION_DAY ${DAY})
 
 # Naming of projects built.
-SET(AGROS_LIBRARY agros2d_library)
-SET(AGROS_SOLVER agros2d_solver)
-SET(AGROS_GENERATOR agros2d_generator)
-SET(AGROS_GUI agros2d_gui)
-SET(AGROS_PYTHON agros2d_python)
+SET(AGROS_LIBRARY agros_library)
+SET(AGROS_SOLVER agros_solver)
+SET(AGROS_GENERATOR agros_generator)
+SET(AGROS_GUI agros_gui)
+SET(AGROS_PYTHON agros_python)
 SET(PYTHONLAB pythonlab)
-SET(CTEMPLATE_LIBRARY agros2d_3rdparty_ctemplate)
-SET(DXFLIB_LIBRARY agros2d_3rdparty_dxflib)
-SET(POLY2TRI_LIBRARY agros2d_3rdparty_poly2tri)
-SET(QCUSTOMPLOT_LIBRARY agros2d_3rdparty_qcustomplot)
-SET(QUAZIP_LIBRARY agros2d_3rdparty_quazip)
-SET(STB_TRUETYPE_LIBRARY agros2d_3rdparty_stb_truetype)
-SET(QTSINGLEAPPLICATION_LIBRARY agros2d_3rdparty_qtsingleapplication)
-SET(MATIO_LIBRARY agros2d_3rdparty_matio)
-SET(TRIANGLE_LIBRARY agros2d_3rdparty_triangle)
-SET(NLOPTLIB_LIBRARY agros2d_3rdparty_nlopt2)
-SET(BAYESOPTLIB_LIBRARY agros2d_3rdparty_bayesopt)
-SET(NSGA2_LIBRARY agros2d_3rdparty_nsga2)
-SET(NSGA3_LIBRARY agros2d_3rdparty_nsga3)
-SET(LIMBO_LIBRARY agros2d_3rdparty_limbo)
-SET(CMAES_LIBRARY agros2d_3rdparty_cmaes)
-SET(QTAWESOME_LIBRARY agros2d_3rdparty_qtawesome)
-SET(SPDLOG_LIBRARY agros2d_3rdparty_spdlog)
+SET(CTEMPLATE_LIBRARY agros_3rdparty_ctemplate)
+SET(DXFLIB_LIBRARY agros_3rdparty_dxflib)
+SET(POLY2TRI_LIBRARY agros_3rdparty_poly2tri)
+SET(QCUSTOMPLOT_LIBRARY agros_3rdparty_qcustomplot)
+SET(QUAZIP_LIBRARY agros_3rdparty_quazip)
+SET(STB_TRUETYPE_LIBRARY agros_3rdparty_stb_truetype)
+SET(QTSINGLEAPPLICATION_LIBRARY agros_3rdparty_qtsingleapplication)
+SET(MATIO_LIBRARY agros_3rdparty_matio)
+SET(TRIANGLE_LIBRARY agros_3rdparty_triangle)
+SET(NLOPTLIB_LIBRARY agros_3rdparty_nlopt2)
+SET(BAYESOPTLIB_LIBRARY agros_3rdparty_bayesopt)
+SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
+SET(NSGA3_LIBRARY agros_3rdparty_nsga3)
+SET(LIMBO_LIBRARY agros_3rdparty_limbo)
+SET(CMAES_LIBRARY agros_3rdparty_cmaes)
+SET(QTAWESOME_LIBRARY agros_3rdparty_qtawesome)
+SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
@@ -229,8 +229,8 @@ ENDIF(MSVC)
 
 # Create file with preprocessor definitions exposing the build settings to the source code.
 configure_file(
-  agros2d-library/util/agros_version.h.cmake
-  agros2d-library/util/agros_version.h)
+  agros-library/util/agros_version.h.cmake
+  agros-library/util/agros_version.h)
 configure_file(
   resources_source/resources.rc.cmake
   resources_source/resources.rc)
@@ -278,19 +278,19 @@ if(WITH_MPI)
   include_directories(${MPI_INCLUDE_PATH})
 endif(WITH_MPI)
 
-message("CMake: Start Agros2D")
+message("CMake: Start agros")
 message("=====================")
-ADD_SUBDIRECTORY(agros2d-library)
-ADD_SUBDIRECTORY(agros2d-generator)
+ADD_SUBDIRECTORY(agros-library)
+ADD_SUBDIRECTORY(agros-generator)
 # solver
-ADD_SUBDIRECTORY(agros2d-solver)
+ADD_SUBDIRECTORY(agros-solver)
 # Python interface
-ADD_SUBDIRECTORY(agros2d-python)
+ADD_SUBDIRECTORY(agros-python)
 # GUI
-ADD_SUBDIRECTORY(agros2d-gui)
+ADD_SUBDIRECTORY(agros-gui)
 ADD_SUBDIRECTORY(pythonlab-gui)
 
-message("\nAgros2D Configuration results")
+message("\nagros Configuration results")
 message("---------------------")
 message(" Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUB}")
 
@@ -303,17 +303,17 @@ message("---------------------")
 message("\n")
 
 # pixmap
-FILE(GLOB PIXMAP_FILES "resources/images/agros2d.xpm")
+FILE(GLOB PIXMAP_FILES "resources/images/agros.xpm")
 # desktop
-FILE(GLOB DESKTOP_FILES "agros2d.desktop")
+FILE(GLOB DESKTOP_FILES "agros.desktop")
 # resources
 SET(RESOURCES_FILES "resources")
 
 # share
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
-INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros2d)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.8.3.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros2d_deal_II.so)
+INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.8.3.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)

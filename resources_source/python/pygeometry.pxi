@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-python/pythonlab/pygeometry.h":
+cdef extern from "../../agros-python/pythonlab/pygeometry.h":
     cdef cppclass PyGeometry:
         PyGeometry()
 

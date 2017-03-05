@@ -133,7 +133,7 @@ def appimage_package():
     
     # rm files
     try: 
-        os.remove(dest + '/agros2d') 
+        os.remove(dest + '/agros') 
     except OSError: 
         pass
     try: 
@@ -141,11 +141,11 @@ def appimage_package():
     except OSError: 
         pass
     try: 
-        os.remove(dest + '/agros2d_solver') 
+        os.remove(dest + '/agros_solver') 
     except OSError: 
         pass
     try: 
-        os.remove(dest + '/agros2d.so')
+        os.remove(dest + '/agros.so')
     except OSError: 
         pass
     try: 
@@ -162,12 +162,12 @@ def appimage_package():
         pass        
     
     # copy binary files
-    shutil.copy('agros2d', dest + '/agros2d')
+    shutil.copy('agros', dest + '/agros')
     shutil.copy('pythonlab', dest + '/pythonlab')
-    shutil.copy('agros2d_solver', dest + '/agros2d_solver')
+    shutil.copy('agros_solver', dest + '/agros_solver')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
-    os.symlink('libs/libagros2d_python.so', dest + '/agros2d.so')    
+    os.symlink('libs/libagros_python.so', dest + '/agros.so')    
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
     shutil.copy('dealii/build/lib/libdeal_II.so.8.5.0-pre', dest + '/libs/libdeal_II.so.8.5.0-pre')
     
@@ -199,10 +199,10 @@ if __name__ == "__main__":
 
     # run
     run = subparsers.add_parser('run', help='run project')
-    run.add_argument('-p', '--project', nargs='?', default='agros2d', type=str, required=False,
-                     help='project (valid parameters are agros2d, agros2d_pythonalb, agros2d_generator, agros2d_solver)')
+    run.add_argument('-p', '--project', nargs='?', default='agros', type=str, required=False,
+                     help='project (valid parameters are agros, agros_pythonlab, agros_generator, agros_solver)')
     run.add_argument('-f', '--file', nargs='?', default=str(), type=str, required=False,
-                     help='open Agros2D data file or Python script')
+                     help='open Agros data file or Python script')
     run.add_argument('-r', '--run', action='store_true', required=False,
                      help='run Python script defined as file')
     run.add_argument('-s', '--server', action='store_true', required=False,

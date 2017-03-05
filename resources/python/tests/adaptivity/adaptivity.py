@@ -1,12 +1,12 @@
-import agros2d
+import agros
 
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestAdaptivityElectrostatic(Agros2DTestCase):
+class TestAdaptivityElectrostatic(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -59,10 +59,10 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         self.value_test("Electric field - z", local_values["Ez"], -3244.191)
         self.value_test("Energy density", local_values["we"], 6.279E-5)        
 			
-class TestAdaptivityAcoustic(Agros2DTestCase):
+class TestAdaptivityAcoustic(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 5000
@@ -114,10 +114,10 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         point2 = solution.local_values(6.994e-2, 1.894e-2)
         self.value_test("Acoustic pressure 2", point2["p"], 0.28242)
          	
-class TestAdaptivityElasticityBracket(Agros2DTestCase):
+class TestAdaptivityElasticityBracket(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -171,10 +171,10 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         point1 = solution.local_values(2.042e-1, -3e-2)
         self.value_test("Displacement", point1["d"], 1.161e-7)
         
-class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
+class TestAdaptivityMagneticProfileConductor(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         problem.frequency = 50000
@@ -228,11 +228,11 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.value_test("Magnetic potential - imag", point["Ai"], -1.0598108775564893E-8)        
         self.value_test("Flux density", point["B"], 1.3839318132148589E-5)
 
-class TestAdaptivityRF_TE(Agros2DTestCase):
+class TestAdaptivityRF_TE(AgrosTestCase):
     # TODO: add more adaptivity types
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         problem.frequency = 1.6e+10
@@ -288,11 +288,11 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         self.value_test("Electric field", point1["E"], 0.1769)
         self.value_test("Flux density", point1["B"], 2.604E-9)
            
-class TestAdaptivityHLenses(Agros2DTestCase):
+class TestAdaptivityHLenses(AgrosTestCase):
     # test for h-adaptivity
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
@@ -354,11 +354,11 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         self.value_test("Flux density - z", point1["Brz"], 0.0068235)
         self.value_test("Energy density", point1["wm"], 22.796)
 
-class TestAdaptivityPAndHCoupled(Agros2DTestCase):
+class TestAdaptivityPAndHCoupled(AgrosTestCase):
     # test for h-adaptivity
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 50
@@ -449,7 +449,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))

@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="generator" content="Agros2D" />
+	<meta name="generator" content="Agros Suite" />
 	<style type="text/css">
 		{{STYLESHEET}}	
 	</style>
 </head>
 <body>
 
-<img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS2D}}" /> 
+<img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS}}" /> 
 <h1>{{NAME}}</h1>
 <div>
 <table class="heading">

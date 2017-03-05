@@ -65,7 +65,7 @@
 #include "ml_MultiLevelPreconditioner.h"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
-#include "../agros2d-library/util/sparse_io.h"
+#include "../agros-library/util/sparse_io.h"
 
 int rank = 0; // MPI process rank
 

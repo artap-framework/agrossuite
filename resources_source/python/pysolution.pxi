@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-python/pythonlab/pyproblem.h":
+cdef extern from "../../agros-python/pythonlab/pyproblem.h":
     cdef cppclass PySolution:
         PySolution()
         void setComputation(PyComputation *computation, string &fieldId) except +

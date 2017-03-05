@@ -1,11 +1,11 @@
-import agros2d as a2d
-from test_suite.scenario import Agros2DTestCase
-from test_suite.scenario import Agros2DTestResult
+import agros as a2d
+from test_suite.scenario import AgrosTestCase
+from test_suite.scenario import AgrosTestResult
 
 from pairparticle_tracing import save_data
 import time
 
-class TestMultiParticleTracingPlanar(Agros2DTestCase):
+class TestMultiParticleTracingPlanar(AgrosTestCase):
     @classmethod
     def setUpClass(cls):
         problem = a2d.problem(clear = True)
@@ -92,6 +92,6 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMultiParticleTracingPlanar))
     suite.run(result)

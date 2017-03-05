@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestHeatPlanar(Agros2DTestCase):
+class TestHeatPlanar(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
@@ -66,10 +66,10 @@ class TestHeatPlanar(Agros2DTestCase):
         surface = solution.surface_integrals([0, 6, 7])
         self.value_test("Heat flux", surface["f"], -85.821798)
 
-class TestHeatAxisymmetric(Agros2DTestCase):
+class TestHeatAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
@@ -127,10 +127,10 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         surface = solution.surface_integrals([1])
         self.value_test("Heat flux", surface["f"], 199.0004)
         
-class TestHeatNonlinPlanarNewton(Agros2DTestCase):
+class TestHeatNonlinPlanarNewton(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
@@ -197,10 +197,10 @@ class TestHeatNonlinPlanarNewton(Agros2DTestCase):
         surface = solution.surface_integrals([8])
         self.value_test("Heat flux", surface["f"], 96464.56418)
         
-class TestHeatNonlinPlanarPicard(Agros2DTestCase):
+class TestHeatNonlinPlanarPicard(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
@@ -264,7 +264,7 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         surface = solution.surface_integrals([8])
         self.value_test("Heat flux", surface["f"], 96464.56418)
         
-class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
+class BenchmarkHeatTransientAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # benchmark 
         #
@@ -273,7 +273,7 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         # NAFEMS Ltd., Glasgow, 1986
 
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
@@ -316,10 +316,10 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         point = solution.local_values(0.1, 0.3)
         self.value_test("Temperature", point["T"], 186.5, 0.0004) # permissible error 0.02 %
         
-class TestHeatTransientAxisymmetric(Agros2DTestCase):
+class TestHeatTransientAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -411,7 +411,7 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))

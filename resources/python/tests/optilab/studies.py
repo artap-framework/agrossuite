@@ -1,12 +1,12 @@
-import agros2d
+import agros
 
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestBayesOptBooth(Agros2DTestCase):
+class TestBayesOptBooth(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -37,10 +37,10 @@ class TestBayesOptBooth(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 2e-5)
 
-class TestLimboSphere(Agros2DTestCase):
+class TestLimboSphere(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -67,10 +67,10 @@ class TestLimboSphere(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
 
-class TestCMAESSphere(Agros2DTestCase):
+class TestCMAESSphere(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -98,10 +98,10 @@ class TestCMAESSphere(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
         
-class TestNLoptBooth(Agros2DTestCase):
+class TestNLoptBooth(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -130,10 +130,10 @@ class TestNLoptBooth(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-10)
 
-class TestNSGA2Sphere(Agros2DTestCase):
+class TestNSGA2Sphere(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -163,10 +163,10 @@ class TestNSGA2Sphere(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
                                        
-class TestNSGA3Sphere(Agros2DTestCase):
+class TestNSGA3Sphere(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.parameters["px"] = 0
         problem.parameters["py"] = 0
         
@@ -198,7 +198,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestLimboSphere))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestBayesOptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNLoptBooth))

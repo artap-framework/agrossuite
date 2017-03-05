@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
         
-class TestRFTEHarmonicPlanar(Agros2DTestCase):
+class TestRFTEHarmonicPlanar(AgrosTestCase):
     def setUp(self):          
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -78,16 +78,16 @@ class TestRFTEHarmonicPlanar(Agros2DTestCase):
         
         # volume integral
         # volume_integrals = solution.volume_integrals([0, 1, 2])
-        # testEnergy = agros2d.test("Energy", volume["We"], 1.799349e-8)
+        # testEnergy = agros.test("Energy", volume["We"], 1.799349e-8)
         
         # surface integral
         # surface_integrals = solution.surface_integrals([1, 12])
-        # testQ = agros2d.test("Electric charge", surface["Q"], -1.291778e-9)
+        # testQ = agros.test("Electric charge", surface["Q"], -1.291778e-9)
         
-class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
+class TestRFTEHarmonicAxisymmetric(AgrosTestCase):
     def setUp(self):         
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicAxisymmetric))
     suite.run(result)        

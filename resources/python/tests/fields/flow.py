@@ -1,11 +1,11 @@
-import agros2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestFlowPlanar(Agros2DTestCase):
+class TestFlowPlanar(AgrosTestCase):
     def setUp(self):         
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         
         # flow
@@ -71,7 +71,7 @@ class TestFlowPlanar(Agros2DTestCase):
         
         # volume integral
         # volume = solution.volume_integrals([0])
-        # testPj = agros2d.test("Losses", volume["Pj"], 10070.23937)
+        # testPj = agros.test("Losses", volume["Pj"], 10070.23937)
         
         # surface integral
         surface = solution.surface_integrals([5])
@@ -82,10 +82,10 @@ class TestFlowPlanar(Agros2DTestCase):
         self.value_test("Total force x", surface["Fx"], -0.13155320861904402)
         self.value_test("Total force y", surface["Fy"], -0.002419169736737781)
 
-class TestFlowAxisymmetric(Agros2DTestCase):
+class TestFlowAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         
         # flow
@@ -145,7 +145,7 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         
         # volume integral
         # volume = solution.volume_integrals([0])
-        # testPj = agros2d.test("Losses", volume["Pj"], 10070.23937)
+        # testPj = agros.test("Losses", volume["Pj"], 10070.23937)
         
         # surface integral
         surface = solution.surface_integrals([6])
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     import unittest as ut
 
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
     suite.run(result)

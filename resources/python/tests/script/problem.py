@@ -1,8 +1,8 @@
-import agros2d as a2d
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+import agros as a2d
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestProblem(Agros2DTestCase):
+class TestProblem(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
 
@@ -35,7 +35,7 @@ class TestProblem(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.problem.frequency = -100
 
-class TestProblemTime(Agros2DTestCase):
+class TestProblemTime(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.problem.time_step_method = "fixed"
@@ -123,7 +123,7 @@ class TestProblemTime(Agros2DTestCase):
         with self.assertRaises(RuntimeError):
             computation.elapsed_time()
 
-class TestProblemSolution(Agros2DTestCase):
+class TestProblemSolution(AgrosTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         current = self.problem.field('current')
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestProblem))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestProblemTime))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestProblemSolution))

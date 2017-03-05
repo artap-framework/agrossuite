@@ -1,12 +1,12 @@
-import agros2d
+import agros
 
-from tests.scenario import Agros2DTestCase
-from tests.scenario import Agros2DTestResult
+from tests.scenario import AgrosTestCase
+from tests.scenario import AgrosTestResult
 
-class TestMathCoeffPlanar(Agros2DTestCase):
+class TestMathCoeffPlanar(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
@@ -74,10 +74,10 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         self.value_test("Gradient", surface["g"], 59.98499 / 2)
         self.value_test("Flux", surface["f"], 59.98499)
    
-class TestMathCoeffAxisymmetric(Agros2DTestCase):
+class TestMathCoeffAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
@@ -145,10 +145,10 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         self.value_test("Gradient", surface["g"], -281.55775	 / 3 - 437.52318 / 5)
         self.value_test("Flux", surface["f"], -719.08092)
 
-class TestMathCoeffTransientPlanar(Agros2DTestCase):
+class TestMathCoeffTransientPlanar(AgrosTestCase):
     def setUp(self):  
         # problem
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         problem.time_step_method = "fixed"
@@ -221,10 +221,10 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         self.value_test("Gradient", surface["g"], 1.33109 / 3, 10)
         self.value_test("Flux", surface["f"], 1.33109, 10)
         
-class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
+class TestMathCoeffTransientAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
-        problem = agros2d.problem(clear = True)
+        problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.time_step_method = "adaptive"
@@ -293,7 +293,7 @@ if __name__ == '__main__':
     import unittest as ut
     
     suite = ut.TestSuite()
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientPlanar))

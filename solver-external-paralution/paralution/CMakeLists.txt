@@ -54,7 +54,7 @@ set(PARALUTION_VERSION "${PARALUTION_MAJOR_VERSION}.${PARALUTION_MINOR_VERSION}.
 
 #######################################################################################################################
 
-set(PARALUTION_LIBRARY agros2d_paralution)
+set(PARALUTION_LIBRARY agros_paralution)
 
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(INC_BUILD_DIR ${CMAKE_BINARY_DIR}/inc)

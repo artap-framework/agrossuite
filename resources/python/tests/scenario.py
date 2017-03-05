@@ -1,6 +1,6 @@
 import unittest as ut
 
-class Agros2DTestCase(ut.TestCase):
+class AgrosTestCase(ut.TestCase):
     def __init__(self, methodName='runTest'):
         ut.TestCase.__init__(self, methodName)
 
@@ -9,26 +9,26 @@ class Agros2DTestCase(ut.TestCase):
             if(abs(normal) < 1e-30):
                 self.assertTrue(True)
             else:
-                str = "{0}: Agros2D = {1}, correct = {2}".format(text, value, normal)
+                str = "{0}: Agros = {1}, correct = {2}".format(text, value, normal)
                 self.assertTrue(False, str)
                 
             return
             
         test = abs((value - normal)/value) < error
-        str = "{0}: Agros2D = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
+        str = "{0}: Agros = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
         self.assertTrue(test, str)
         
     # def interval_test(self, text, value, min, max):
     #     test = abs((value - normal)/value) < error
-    #     str = "{0}: Agros2D = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
+    #     str = "{0}: Agros = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
     #     self.assertTrue(test, str)
         
     def lower_then_test(self, text, value, bound):
         test = (value < bound)
-        str = "{0}: Agros2D = {1}, correct = {2}".format(text, value, bound)
+        str = "{0}: Agros = {1}, correct = {2}".format(text, value, bound)
         self.assertTrue(test, str)
         
-class Agros2DTestResult(ut.TestResult):
+class AgrosTestResult(ut.TestResult):
     def __init__(self):
         ut.TestResult.__init__(self)
         self.output = []
@@ -139,12 +139,12 @@ def find_all_tests():
     return __tests__
 
 def run_test(test): 
-    agros2d_suite = ut.TestSuite(); 
-    agros2d_suite.addTest(ut.TestLoader().loadTestsFromTestCase(test)); 
-    agros2d_result = Agros2DTestResult(); 
-    agros2d_suite.run(agros2d_result); 
+    agros_suite = ut.TestSuite(); 
+    agros_suite.addTest(ut.TestLoader().loadTestsFromTestCase(test)); 
+    agros_result = AgrosTestResult(); 
+    agros_suite.run(agros_result); 
 
-    return agros2d_result.report()
+    return agros_result.report()
 
 def run_test_by_name(test_name): 
     cls = eval(test_name)
@@ -157,7 +157,7 @@ def run_suite(tests):
     for test in tests:
         suite.addTest(ut.TestLoader().loadTestsFromTestCase(test))
     
-    result = Agros2DTestResult()
+    result = AgrosTestResult()
     suite.run(result)
 
     if (not result.wasSuccessful()):

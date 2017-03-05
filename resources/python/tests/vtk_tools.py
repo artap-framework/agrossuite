@@ -58,7 +58,7 @@ def vtk_contours_actor(filename, count = 10, color = False):
      
 def vtk_scalar_actor(filename):
     import vtk
-    colobar_agros2d =  [[ 0.125500, 0.162200, 0.960000 ],
+    colobar_agros =  [[ 0.125500, 0.162200, 0.960000 ],
                         [ 0.132175, 0.167787, 0.954839 ],
                         [ 0.138849, 0.173373, 0.949678 ],
                         [ 0.145524, 0.178960, 0.944518 ],
@@ -325,8 +325,8 @@ def vtk_scalar_actor(filename):
     # create own palette
     lut = vtk.vtkLookupTable()
     lut.SetRange(scalar_range)
-    for i in range(len(colobar_agros2d)):
-        lut.SetTableValue(i, colobar_agros2d[i][0], colobar_agros2d[i][1], colobar_agros2d[i][2])
+    for i in range(len(colobar_agros)):
+        lut.SetTableValue(i, colobar_agros[i][0], colobar_agros[i][1], colobar_agros[i][2])
     lut.Build()
     
     # create the mapper that corresponds the objects of the vtk file into graphics elements
