@@ -13,15 +13,15 @@ build:
     # - export CXX=/usr/bin/clang++     
     - cmake . 
     - make -j12
-    - ./agros2d_generator
+    - ./agros_generator
     - cd plugins
     - cmake .
     - make -j12
     # appimage 
     - cd ..
     - strip libs/*.so
-    - strip agros2d
-    - strip agros2d_solver
+    - strip agros
+    - strip agros_solver
     - strip pythonlab
     - ./tools.py appimage
     - mkdir -p ~/appimage/$CI_BUILD_REF
