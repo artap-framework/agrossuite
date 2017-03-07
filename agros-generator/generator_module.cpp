@@ -137,8 +137,17 @@ void Agros2DGeneratorModule::prepareWeakFormsOutput()
     QString description = QString::fromStdString(m_module->general_field().description());
     description = description.replace("\n","");
     m_output->SetValue("DESCRIPTION", description.toStdString());
-    if (m_module->cpp().present())
-        m_output->SetValue("CPP", m_module->cpp().get());
+
+    // macros
+    if (m_module->macros().present())
+    {
+        foreach (XMLModule::macro macro, m_module->macros().get().macro())
+        {
+            ctemplate::TemplateDictionary *variable = m_output->AddSectionDictionary("MACRO");
+            variable->SetValue("MACRO_ID", macro.id());
+            variable->SetValue("MACRO_EXPRESSION", macro.expression());
+        }
+    }
 
     generateWeakForms(*m_output);
 

@@ -47,6 +47,9 @@
 #include <deal.II/base/work_stream.h>
 #include <deal.II/base/multithread_info.h>
 
+{{#MACRO}}#define {{MACRO_ID}} {{MACRO_EXPRESSION}}
+{{/MACRO}}
+
 void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
                                                             bool assembleMatrix,
                                                             bool assembleRHS)

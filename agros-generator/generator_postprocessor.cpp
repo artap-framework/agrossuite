@@ -30,6 +30,17 @@ void Agros2DGeneratorModule::generatePluginFilterFiles()
 
     std::string text;
 
+    // macros
+    if (m_module->macros().present())
+    {
+        foreach (XMLModule::macro macro, m_module->macros().get().macro())
+        {
+            ctemplate::TemplateDictionary *variable = output.AddSectionDictionary("MACRO");
+            variable->SetValue("MACRO_ID", macro.id());
+            variable->SetValue("MACRO_EXPRESSION", macro.expression());
+        }
+    }
+
     foreach (XMLModule::quantity quantity, m_module->volume().quantity())
     {
         if (quantity.shortname().present())
@@ -230,6 +241,17 @@ void Agros2DGeneratorModule::generatePluginLocalPointFiles()
     output.SetValue("ID", id.toStdString());
     output.SetValue("CLASS", (id.left(1).toUpper() + id.right(id.length() - 1)).toStdString());
 
+    // macros
+    if (m_module->macros().present())
+    {
+        foreach (XMLModule::macro macro, m_module->macros().get().macro())
+        {
+            ctemplate::TemplateDictionary *variable = output.AddSectionDictionary("MACRO");
+            variable->SetValue("MACRO_ID", macro.id());
+            variable->SetValue("MACRO_EXPRESSION", macro.expression());
+        }
+    }
+
     std::string text;
 
     // header - expand template
@@ -307,6 +329,17 @@ void Agros2DGeneratorModule::generatePluginSurfaceIntegralFiles()
 
     output.SetValue("ID", id.toStdString());
     output.SetValue("CLASS", (id.left(1).toUpper() + id.right(id.length() - 1)).toStdString());
+
+    // macros
+    if (m_module->macros().present())
+    {
+        foreach (XMLModule::macro macro, m_module->macros().get().macro())
+        {
+            ctemplate::TemplateDictionary *variable = output.AddSectionDictionary("MACRO");
+            variable->SetValue("MACRO_ID", macro.id());
+            variable->SetValue("MACRO_EXPRESSION", macro.expression());
+        }
+    }
 
     std::string text;
 
@@ -388,6 +421,17 @@ void Agros2DGeneratorModule::generatePluginVolumeIntegralFiles()
 
     output.SetValue("ID", id.toStdString());
     output.SetValue("CLASS", (id.left(1).toUpper() + id.right(id.length() - 1)).toStdString());
+
+    // macros
+    if (m_module->macros().present())
+    {
+        foreach (XMLModule::macro macro, m_module->macros().get().macro())
+        {
+            ctemplate::TemplateDictionary *variable = output.AddSectionDictionary("MACRO");
+            variable->SetValue("MACRO_ID", macro.id());
+            variable->SetValue("MACRO_EXPRESSION", macro.expression());
+        }
+    }
 
     std::string text;
 

@@ -39,7 +39,7 @@ AGROS_LIBRARY_API void showPage(const QString &str = "");
 
 // get icon with respect to actual theme
 AGROS_LIBRARY_API QIcon iconAwesome(int character);
-AGROS_LIBRARY_API QIcon icon(const QString &name);
+AGROS_LIBRARY_API QIcon icon(const QString &name, const QString &defaultName = "");
 enum AlphabetColor
 {
     AlphabetColor_Blue,

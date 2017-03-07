@@ -452,7 +452,7 @@ QList<QIcon> ExamplesWidget::problemIcons(const QString &fileName)
                 for (int i = 0; i < fieldsJson.size(); i++)
                 {
                     QJsonObject fieldJson = fieldsJson[i].toObject();
-                    icons.append(icon("fields/" + fieldJson["fieldid"].toString()));
+                    icons.append(icon("fields/" + fieldJson["fieldid"].toString(), "fields/empty"));
                 }
             }
         }

@@ -11,6 +11,7 @@ struct ParserModuleInfo
     ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType, bool isSurface);
 
     XMLModule::constants constants;
+    XMLModule::macros macros;
     XMLModule::volume volume;
     XMLModule::surface surface;
 

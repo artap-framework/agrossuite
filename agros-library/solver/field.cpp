@@ -81,6 +81,8 @@ void FieldInfo::convertJson()
         m_plugin->moduleJson()->constants.append(c);
     }
 
+    // TODO: macros
+
     // analyses
     for (unsigned int i = 0; i < m_plugin->module()->general_field().analyses().analysis().size(); i++)
     {
@@ -427,12 +429,15 @@ QMap<QString, double> FieldInfo::constants() const
 // macros
 QMap<QString, QString> FieldInfo::macros() const
 {
-    // QMap<QString, QString> macros;
-    // // constants
-    // foreach (XMLModule::macro mcro, m_plugin->module()->macros().macro())
-    //     macros[QString::fromStdString(mcro.id())] = mcro.value();
+    QMap<QString, QString> macros;
+    // macros
+    if (m_plugin->module()->macros().present())
+    {
+        foreach (XMLModule::macro mcro, m_plugin->module()->macros().get().macro())
+            macros[QString::fromStdString(mcro.id())] = QString::fromStdString(mcro.expression());
+    }
 
-    return QMap<QString, QString>();
+    return macros;
 }
 
 QMap<AnalysisType, QString> FieldInfo::analyses() const

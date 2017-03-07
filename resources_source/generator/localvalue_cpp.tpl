@@ -35,6 +35,8 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
+{{#MACRO}}#define {{MACRO_ID}} {{MACRO_EXPRESSION}}
+{{/MACRO}}
 
 {{CLASS}}LocalValue::{{CLASS}}LocalValue(Computation *computation,
                                          const FieldInfo *fieldInfo,

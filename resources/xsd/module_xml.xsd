@@ -21,13 +21,13 @@
             <sequence>
                 <element ref="module:general_field" maxOccurs="1" />
                 <element ref="module:constants" maxOccurs="1" />
+                <element ref="module:macros" minOccurs="0" maxOccurs="1" />
                 <element ref="module:spaces" maxOccurs="1" />
                 <element ref="module:volume" maxOccurs="1" />
                 <element ref="module:surface" maxOccurs="1" />
                 <element ref="module:error_calculator" maxOccurs="1" />
                 <element ref="module:preprocessor" maxOccurs="1" />
                 <element ref="module:postprocessor" maxOccurs="1" />
-                <element ref="module:cpp" minOccurs="0" maxOccurs="1" />
             </sequence>
         </complexType>
     </element>
@@ -149,14 +149,14 @@
         <element name="macros">
                 <complexType>
                         <sequence>
-                                <element ref="module:macro" />
+                                <element minOccurs="0" maxOccurs="unbounded" ref="module:macro" />
                         </sequence>
                 </complexType>
         </element>
 
         <element name="macro">
                 <complexType>
-                        <attribute name="expression" use="optional" type="string" />
+                        <attribute name="expression" use="required" type="string" />
                         <attribute name="id" use="required" type="string" />
                 </complexType>
         </element>
@@ -645,8 +645,5 @@
             <attribute name="planar_y" type="string" />
             <attribute name="planar_z" type="string" />
         </complexType>
-    </element>
-        
-    <element name="cpp" type="string">
-    </element>
+    </element>       
 </schema>

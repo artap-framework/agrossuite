@@ -809,8 +809,8 @@ void ProblemBase::removeField(FieldInfo *field)
 void ProblemBase::synchronizeCouplings()
 {
     // zero or one field
-    if (m_fieldInfos.count() <= 1)
-        return;
+    // if (m_fieldInfos.count() <= 1)
+    //     return;
 
     bool changed = false;
 
@@ -848,9 +848,6 @@ void ProblemBase::synchronizeCouplings()
             changed = true;
         }
     }
-
-    // if (changed)
-    //     emit couplingsChanged();
 }
 
 bool ProblemBase::isMeshed() const

@@ -33,6 +33,9 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
+{{#MACRO}}#define {{MACRO_ID}} {{MACRO_EXPRESSION}}
+{{/MACRO}}
+
 {{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(Computation *computation,
                                                      const FieldInfo *fieldInfo,
                                                      int timeStep,
@@ -47,12 +50,6 @@
     m_ma = m_computation->solutionStore()->multiArray(fsid);
 
     m_variableHash = qHash(m_variable);
-    /*
-    {{#SPECIAL_FUNCTION_SOURCE}}
-    if(m_fieldInfo->functionUsedInAnalysis("{{SPECIAL_FUNCTION_ID}}"))
-    {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));
-    {{/SPECIAL_FUNCTION_SOURCE}}
-    */
     m_coordinateType = m_computation->config()->coordinateType();
     m_labels = m_computation->scene()->labels;
     m_noneMarker = m_computation->scene()->materials->getNone(m_fieldInfo);

@@ -44,7 +44,7 @@ QIcon iconAwesome(int character)
     return m_awesome->icon(character);
 }
 
-QIcon icon(const QString &name)
+QIcon icon(const QString &name, const QString &defaultName)
 {
     if (!m_iconCache)
        m_iconCache = new QMap<QString, QIcon>();
@@ -57,6 +57,8 @@ QIcon icon(const QString &name)
     {
         if (QFile::exists(":/" + name + ".png"))
             m_iconCache->insert(name, QIcon(":/" + name + ".png"));
+        else if (QFile::exists(":/" + defaultName + ".png"))
+            m_iconCache->insert(name, QIcon(":/" + defaultName + ".png"));
         else
             m_iconCache->insert(name, QIcon());
 
