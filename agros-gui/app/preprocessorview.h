@@ -25,8 +25,6 @@
 #include "gui/other.h"
 #include "scenetransformdialog.h"
 
-#include <QWebView>
-
 class SceneViewPreprocessor;
 class FieldInfo;
 

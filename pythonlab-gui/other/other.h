@@ -23,7 +23,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
-#include <QtWebKit>
 #include <QtSvg/QtSvg>
 
 #include "util/util.h"

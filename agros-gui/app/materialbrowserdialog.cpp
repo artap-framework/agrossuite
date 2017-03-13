@@ -787,12 +787,16 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     setModal(true);
     
     // problem information
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+    webView = new QWebEngineView();
+    connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
+#else
     webView = new QWebView(this);
     webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    
     connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-    
+#endif
+
     // stylesheet
     std::string style;
     ctemplate::TemplateDictionary stylesheet("style");

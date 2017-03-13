@@ -24,9 +24,6 @@
 #include "app/scenemarkerselectdialog.h"
 #include "app/scenebasicselectdialog.h"
 
-#include <QtWebKit>
-#include <QtWebKitWidgets>
-
 class ValueLineEdit;
 class SceneMaterial;
 class Solution;

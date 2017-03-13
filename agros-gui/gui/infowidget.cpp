@@ -53,10 +53,15 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     : QWidget(parent)
 {
     // problem information
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+    webView = new QWebEngineView();
+    webView->setMinimumSize(200, 200);
+#else
     webView = new QWebView();
     webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     webView->setMinimumSize(200, 200);
+#endif
 
     // stylesheet
     std::string style;

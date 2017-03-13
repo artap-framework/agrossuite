@@ -23,7 +23,11 @@
 #include "util/util.h"
 #include "app/sceneview_common.h"
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
+#else
 #include <QWebView>
+#endif
 
 class SceneViewPreprocessor;
 
@@ -37,7 +41,12 @@ public:
 
 protected:
     QString m_cascadeStyleSheet;
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+    QWebEngineView *webView;
+#else
     QWebView *webView;
+#endif
 
 public slots:
     void clear();

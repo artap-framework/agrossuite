@@ -31,8 +31,13 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWidgets>
-#include <QtWebKit>
 #include <QtSvg/QtSvg>
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
+#else
+#include <QWebView>
+#endif
 
 #include <typeinfo>
 #include <iostream>

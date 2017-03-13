@@ -23,7 +23,11 @@
 #include "util/util.h"
 #include "gui/other.h"
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
+#else
 #include <QWebView>
+#endif
 
 class LineEditDouble;
 class QCustomPlot;
@@ -184,7 +188,11 @@ protected:
     void materialInfo(const QString &fileName);    
 
 private:
+#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
+    QWebEngineView *webView;
+#else
     QWebView *webView;
+#endif
     QTreeWidget *trvMaterial;
     QPushButton *btnNew;
     QPushButton *btnEdit;
