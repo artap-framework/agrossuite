@@ -232,8 +232,6 @@ cdef class __Problem__:
             return __StudyNSGA2__()
         elif (type == "nsga3"):
             return __StudyNSGA3__()
-        elif (type == "cmaes"):
-            return __StudyCMAES__()
         elif (type == "sweep"):
             return __StudySweep__()
 
@@ -260,8 +258,6 @@ cdef class __Problem__:
             return __StudyNSGA2__(index)
         elif (type == "nsga3"):
             return __StudyNSGA3__(index)
-        elif (type == "cmaes"):
-            return __StudyCMAES__(index)
         elif (type == "sweep"):
             return __StudySweep__(index)
 

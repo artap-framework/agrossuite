@@ -32,7 +32,6 @@
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
 #include "optilab/study_limbo.h"
-#include "optilab/study_cmaes.h"
 
 class AGROS_LIBRARY_API StudySweepDialog : public StudyDialog
 {
@@ -119,27 +118,6 @@ private:
     LineEditDouble *txtFRelTol;
     LineEditDouble *txtFAbsTol;
     QComboBox *cmbAlgorithm;
-};
-
-class AGROS_LIBRARY_API StudyCMAESDialog : public StudyDialog
-{
-public:
-    StudyCMAESDialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyCMAES *study() { return dynamic_cast<StudyCMAES *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtMaxIter;
-    QSpinBox *txtMaxEval;
-    LineEditDouble *txtFTarget;
-    QComboBox *cmbAlgorithm;
-    QComboBox *cmbSurrogate;
 };
 
 class AGROS_LIBRARY_API StudyBayesOptDialog : public StudyDialog

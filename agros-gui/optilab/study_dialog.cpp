@@ -438,8 +438,6 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
         return new StudySweepDialog(study, parent);
     else if (study->type() == StudyType_Limbo)
         return new StudyLimboDialog(study, parent);
-    else if (study->type() == StudyType_CMAES)
-        return new StudyCMAESDialog(study, parent);
     else
         assert(0);
     

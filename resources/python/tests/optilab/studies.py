@@ -66,37 +66,6 @@ class TestLimboSphere(AgrosTestCase):
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
-
-class TestCMAESSphere(AgrosTestCase):
-    def setUp(self):  
-        # problem
-        problem = agros.problem(clear = True)
-        problem.parameters["px"] = 0
-        problem.parameters["py"] = 0
-        
-        # studies
-        study_cmaes = problem.add_study("cmaes")
-        study_cmaes.add_parameter("px", -10, 10)
-        study_cmaes.add_parameter("py", -10, 10)
-        study_cmaes.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
-
-        study_cmaes.clear_solution = True
-        study_cmaes.solve_problem = False
-
-        study_cmaes.settings["maxiter"] = 1000
-        study_cmaes.settings["maxeval"] = 1000
-        study_cmaes.settings["ftarget"] = 0.000001
-        study_cmaes.settings["algorithm"] = "aCMAES"
-        study_cmaes.settings["surrogate"] = "rsvm"
-        
-        study_cmaes.solve()
-        
-        self.computation = study_cmaes.find_extreme("functional", "OF", True)
-        
-    def test_values(self):    
-        self.value_test("px", self.computation.parameters["px"], 1.0)
-        self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
         
 class TestNLoptBooth(AgrosTestCase):
     def setUp(self):  
@@ -204,5 +173,4 @@ if __name__ == '__main__':
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNLoptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNSGA2Sphere))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNSGA3Sphere))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCMAESSphere))    
     suite.run(result)

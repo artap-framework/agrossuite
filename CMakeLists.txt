@@ -136,7 +136,6 @@ SET(BAYESOPTLIB_LIBRARY agros_3rdparty_bayesopt)
 SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
 SET(NSGA3_LIBRARY agros_3rdparty_nsga3)
 SET(LIMBO_LIBRARY agros_3rdparty_limbo)
-SET(CMAES_LIBRARY agros_3rdparty_cmaes)
 SET(QTAWESOME_LIBRARY agros_3rdparty_qtawesome)
 SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 

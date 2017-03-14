@@ -139,7 +139,6 @@ tests.core.matrix_solvers.TestMatrixSolversInternal,
 # optilab
 tests.optilab.studies.TestNSGA2Sphere,
 tests.optilab.studies.TestNSGA3Sphere,
-tests.optilab.studies.TestCMAESSphere,
 tests.optilab.studies.TestLimboSphere,
 tests.optilab.studies.TestBayesOptBooth,
 tests.optilab.studies.TestNLoptBooth

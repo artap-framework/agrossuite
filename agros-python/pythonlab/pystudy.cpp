@@ -272,51 +272,6 @@ void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
     }
 }
 
-// CMAES **************************************************************
-
-PyStudyCMAES::PyStudyCMAES(int index) : PyStudy()
-{
-    // add study
-    if (index == -1)
-    {
-        m_study = Study::factory(StudyType_CMAES);
-        Agros::problem()->studies()->addStudy(m_study);
-    }
-    else
-    {
-        if (index < Agros::problem()->studies()->items().count())
-            m_study = Agros::problem()->studies()->items().at(index);
-    }
-}
-
-void PyStudyCMAES::setAlgorithm(const std::string &algorithm)
-{
-    if (study()->algorithmStringKeys().contains(QString::fromStdString(algorithm)))
-        m_study->setValue(Study::CMAES_algorithm, QString::fromStdString(algorithm));
-    else
-    {
-       QStringList list;
-        foreach (QString key, study()->algorithmStringKeys())
-            list.append(key);
-
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
-    }
-}
-
-void PyStudyCMAES::setSurrogate(const std::string &surrogate)
-{
-    if (study()->surrogateStringKeys().contains(QString::fromStdString(surrogate)))
-        m_study->setValue(Study::CMAES_surrogate, QString::fromStdString(surrogate));
-    else
-    {
-        QStringList list;
-        foreach (QString key, study()->surrogateStringKeys())
-            list.append(key);
-
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
-    }
-}
-
 // NSGA2 **************************************************************
 
 PyStudyNSGA2::PyStudyNSGA2(int index) : PyStudy()

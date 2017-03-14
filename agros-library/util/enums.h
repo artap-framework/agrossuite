@@ -308,8 +308,7 @@ enum StudyType
     StudyType_NSGA3,
     StudyType_BayesOpt,
     StudyType_NLopt,
-    StudyType_Limbo,
-    StudyType_CMAES
+    StudyType_Limbo
 };
 
 enum ResultRecipeType

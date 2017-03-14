@@ -10,12 +10,9 @@ configure-stamp
 *.anh
 *.log
 *.debhelper
-agros2d.substvars
-agros2d
-agros2d.pro.user
-agros2d-remote
-agros2d-remote.pro.user
-agros_pythonlab
+agros.substvars
+agros
+agros.pro.user
 debian/files
 resources_source/doc/build
 resources/help
@@ -115,4 +112,7 @@ solver-external-paralution/paralution/build/
 libs/solver_stat
 .ipynb_checkpoints
 *ninja*
-agros2d-library/util/checkversion_version.h
+agros-library/util/agros_version.h
+projects
+Agros.AppDir/resources/
+3rdparty/bayesopt/Doxyfile
