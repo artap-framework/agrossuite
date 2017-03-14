@@ -2,6 +2,8 @@
 #include <limits>
 #include "aux_math.h"
 #include <cmath>
+#include <algorithm>
+
 using namespace std;
 
 namespace MathAux
