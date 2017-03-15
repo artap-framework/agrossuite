@@ -146,7 +146,7 @@ bool BayesOptProblem::checkReachability(const vectord &x)
         // invalidate scene (parameter update)
         computation->clearSolution();
         computation->scene()->invalidate();
-        // computation->scene()->loopsInfo()->processPolygonTriangles(true);
+        computation->scene()->loopsInfo()->processPolygonTriangles(true);
         computation->scene()->invalidate();
 
         computation->scene()->checkGeometryResult();

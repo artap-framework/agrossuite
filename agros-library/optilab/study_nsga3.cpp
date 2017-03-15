@@ -106,11 +106,11 @@ public:
         {
             Parameter parameter = m_study->parameters()[i];
             computation->config()->parameters()->set(parameter.name(), x[i]);
-            computation->scene()->invalidate();
 
             // training patterns
             // samples[i] = x[i];
         }
+        computation->scene()->invalidate();
 
         // evaluate step
         try

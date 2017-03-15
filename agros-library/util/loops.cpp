@@ -135,9 +135,9 @@ void LoopsInfo::LoopsGraph::print()
 
 bool LoopsInfo::isInsideSeg(double angleSegStart, double angleSegEnd, double angle)
 {
-    if(angleSegEnd > angleSegStart)
+    if (angleSegEnd > angleSegStart)
     {
-        if((angle >= angleSegStart) && (angle <= angleSegEnd))
+        if ((angle >= angleSegStart) && (angle <= angleSegEnd))
             return true;
         else
             return false;

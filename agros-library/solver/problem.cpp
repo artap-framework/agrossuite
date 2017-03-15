@@ -605,7 +605,6 @@ bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parame
     }
     else
     {
-        m_scene->invalidate();
         // control geometry
         m_scene->invalidate();
     }
@@ -2106,7 +2105,6 @@ void Computation::solveInit()
     }
 
     // invalidate scene (parameter update)
-    m_scene->invalidate();
     m_scene->invalidate();
 
     // control geometry

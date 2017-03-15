@@ -63,6 +63,16 @@ public:
             computation->config()->parameters()->set(parameter.name(), x[i]);
         }
 
+        // check geometry
+        // invalidate scene (parameter update)
+        computation->clearSolution();
+        computation->scene()->invalidate();
+        computation->scene()->loopsInfo()->processPolygonTriangles(true);
+        computation->scene()->invalidate();
+
+        computation->scene()->checkGeometryResult();
+        computation->scene()->checkGeometryAssignement();
+
         // evaluate step
         try
         {
@@ -75,7 +85,7 @@ public:
                 // base point for DoE
                 QVector<double> init(m_study->parameters().count());
                 for (int i = 0; i < m_study->parameters().count(); i++)
-                    init[i] = x[i];
+                    init[i] = x[i];               
 
                 // DoE
                 m_study->doeCompute(computation, init, value);
