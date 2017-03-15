@@ -1,5 +1,8 @@
 PROJECT(${QUAZIP_LIBRARY})
 
+# Must be added to enable export macro
+ADD_DEFINITIONS(-DQUAZIP_BUILD)
+
 SET(SOURCES JlCompress.cpp 
     qioapi.cpp 
     quaadler32.cpp 
@@ -30,7 +33,7 @@ SET(HEADERS crypt.h
     quazip.h
     quazipnewinfo.h
   )
-  
+
 IF (AGROS_BUILD_STATIC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 ELSE()
