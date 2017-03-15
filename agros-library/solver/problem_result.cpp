@@ -34,7 +34,7 @@ const QString VARIABLE = "variable";
 const QString TIMESTEP = "timestep";
 const QString ADAPTIVITYSTEP = "adaptivitystep";
 
-const QString POINT = "point";
+const QString POINTXYZ = "point";
 const QString POINTX = "x";
 const QString POINTY = "y";
 const QString COMPONENT = "component";
@@ -117,7 +117,7 @@ LocalValueRecipe::LocalValueRecipe(const QString &name, const QString &fieldID, 
 
 void LocalValueRecipe::load(QJsonObject &object)
 {
-    QJsonObject pointJson = object[POINT].toObject();
+    QJsonObject pointJson = object[POINTXYZ].toObject();
     m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTY].toDouble());
     m_variableComponent = physicFieldVariableCompFromStringKey(object[COMPONENT].toString());
 
@@ -129,7 +129,7 @@ void LocalValueRecipe::save(QJsonObject &object)
     QJsonObject pointJson;
     pointJson[POINTX] = m_point.x;
     pointJson[POINTY] = m_point.y;
-    object[POINT] = pointJson;
+    object[POINTXYZ] = pointJson;
     object[COMPONENT] = physicFieldVariableCompToStringKey(m_variableComponent);
 
     ResultRecipe::save(object);
