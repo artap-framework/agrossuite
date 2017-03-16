@@ -42,7 +42,7 @@
            #define NLOPT_DLL
    when using NLopt from a DLL, in order to do the proper
    Windows importing nonsense. */
-#if defined(NLOPT_DLL) && (defined(_WIN32) || defined(__WIN32__)) && !defined(__LCC__)
+#if defined(NLOPT_DLL)
 /* annoying Windows syntax for calling functions in a DLL */
 #  if defined(NLOPT_DLL_EXPORT)
 #    define NLOPT_EXTERN(T) extern __declspec(dllexport) T NLOPT_STDCALL

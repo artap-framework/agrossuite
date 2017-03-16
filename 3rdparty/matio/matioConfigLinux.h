@@ -1,6 +1,6 @@
 /* src/matioConfig.h.  Generated from matioConfig.h.in by configure.  */
 /*
- * Copyright (C) 2012-2016   Christopher C. Hulbert
+ * Copyright (C) 2012-2017   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -196,7 +196,7 @@
 #define PACKAGE_NAME "MATIO"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "MATIO 1.5.6"
+#define PACKAGE_STRING "MATIO 1.5.10"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "matio"
@@ -205,7 +205,7 @@
 #define PACKAGE_URL "http://sourceforge.net/projects/matio"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.5.6"
+#define PACKAGE_VERSION "1.5.10"
 
 /* The size of `char', as computed by sizeof. */
 #define SIZEOF_CHAR 1
@@ -241,7 +241,7 @@
 /* #undef SUN */
 
 /* Version number of package */
-#define VERSION "1.5.6"
+#define VERSION "1.5.10"
 
 /* OS is CygWin */
 /* #undef WINNT */
