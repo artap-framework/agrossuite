@@ -50,6 +50,9 @@
 #include <ctime>
 #include <unistd.h>
 #include <string>
+#ifdef _WIN64
+#include <Winsock2.h>
+#endif
 
 namespace limbo {
     namespace tools {
