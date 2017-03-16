@@ -105,11 +105,13 @@ public:
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
+            qInfo() << parameter.name() << computation->config()->parameters()->items().values()[i].value() << x[i];
             computation->config()->parameters()->set(parameter.name(), x[i]);
 
             // training patterns
             // samples[i] = x[i];
         }
+        computation->clearSolution();
         computation->scene()->invalidate();
 
         // evaluate step

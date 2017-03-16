@@ -28,6 +28,8 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+#include "util/util_expr.h"
+
 ValueTimeDialog::ValueTimeDialog(QWidget *parent) : QDialog(parent)
 {
     setWindowTitle(tr("Time function"));

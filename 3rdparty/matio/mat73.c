@@ -3,7 +3,7 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2016   Christopher C. Hulbert
+ * Copyright (C) 2005-2017   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -518,9 +518,7 @@ Mat_H5ReadClassType(matvar_t *matvar,hid_t dset_id)
 static void
 Mat_H5ReadDatasetInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
 {
-    ssize_t  name_len;
-    /* FIXME */
-    hsize_t  dims[10];
+    ssize_t name_len;
     hid_t   attr_id,type_id,space_id;
 
 #if 0
@@ -549,11 +547,19 @@ Mat_H5ReadDatasetInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
     matvar->rank = H5Sget_simple_extent_ndims(space_id);
     matvar->dims = (size_t*)malloc(matvar->rank*sizeof(*matvar->dims));
     if ( NULL != matvar->dims ) {
-        int k;
-        H5Sget_simple_extent_dims(space_id,dims,NULL);
-        for ( k = 0; k < matvar->rank; k++ )
-            matvar->dims[k] = dims[matvar->rank - k - 1];
-        H5Sclose(space_id);
+        hsize_t* dims = (hsize_t*)malloc(matvar->rank*sizeof(hsize_t));
+        if ( NULL != dims ) {
+            int k;
+            (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
+            for ( k = 0; k < matvar->rank; k++ )
+                matvar->dims[k] = dims[matvar->rank - k - 1];
+            free(dims);
+            H5Sclose(space_id);
+        } else {
+            H5Sclose(space_id);
+            Mat_Critical("Error allocating memory for dims");
+            return;
+        }
     } else {
         H5Sclose(space_id);
         Mat_Critical("Error allocating memory for matvar->dims");
@@ -663,8 +669,7 @@ Mat_H5ReadGroupInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
 {
     ssize_t  name_len;
     int      k, fields_are_variables = 1;
-    /* FIXME */
-    hsize_t  dims[10],nfields=0,numel;
+    hsize_t  nfields=0,numel;
     hid_t   attr_id,type_id,space_id,field_id,field_type_id;
     matvar_t **fields;
     H5O_type_t obj_type;
@@ -721,12 +726,22 @@ Mat_H5ReadGroupInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
         matvar->dims[0] = nrows;
 
         if ( H5Lexists(dset_id,"jc",H5P_DEFAULT) ) {
+            hsize_t* dims;
             sparse_dset_id = H5Dopen(dset_id,"jc",H5P_DEFAULT);
             space_id = H5Dget_space(sparse_dset_id);
-            (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
-            matvar->dims[1] = dims[0] - 1;
-            H5Sclose(space_id);
-            H5Dclose(sparse_dset_id);
+            dims = (hsize_t*)malloc(matvar->rank*sizeof(hsize_t));
+            if ( NULL != dims ) {
+                (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
+                matvar->dims[1] = dims[0] - 1;
+                free(dims);
+                H5Sclose(space_id);
+                H5Dclose(sparse_dset_id);
+            } else {
+                H5Sclose(space_id);
+                H5Dclose(sparse_dset_id);
+                Mat_Critical("Error allocating memory for dims");
+                return;
+            }
         }
 
         /* Test if dataset type is compound and if so if it's complex */
@@ -768,7 +783,7 @@ Mat_H5ReadGroupInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
         H5Aclose(attr_id);
         free(fieldnames_vl);
     } else {
-        H5G_info_t group_info;
+        H5G_info_t group_info = {0};
         matvar->internal->num_fields = 0;
         H5Gget_info(dset_id, &group_info);
         if ( group_info.nlinks > 0 ) {
@@ -826,6 +841,7 @@ Mat_H5ReadGroupInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
                 matvar->dims[1] = 1;
                 numel = 1;
             } else {
+                hsize_t* dims;
                 space_id     = H5Dget_space(field_id);
                 matvar->rank = H5Sget_simple_extent_ndims(space_id);
                 matvar->dims = (size_t*)malloc(matvar->rank*sizeof(*matvar->dims));
@@ -836,14 +852,22 @@ Mat_H5ReadGroupInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
                     Mat_Critical("Error allocating memory for matvar->dims");
                     return;
                 }
-                (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
-                numel = 1;
-                for ( k = 0; k < matvar->rank; k++ ) {
-                    matvar->dims[k] = dims[matvar->rank - k - 1];
-                    numel *= matvar->dims[k];
+                dims = (hsize_t*)malloc(matvar->rank*sizeof(hsize_t));
+                if ( NULL != dims ) {
+                    (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
+                    numel = 1;
+                    for ( k = 0; k < matvar->rank; k++ ) {
+                        matvar->dims[k] = dims[matvar->rank - k - 1];
+                        numel *= matvar->dims[k];
+                    }
+                    free(dims);
+                    H5Sclose(space_id);
+                    fields_are_variables = 0;
+                } else {
+                    H5Sclose(space_id);
+                    Mat_Critical("Error allocating memory for dims");
+                    return;
                 }
-                H5Sclose(space_id);
-                fields_are_variables = 0;
             }
         } else {
             /* Structure should be a scalar */
@@ -985,9 +1009,7 @@ Mat_H5ReadNextReferenceInfo(hid_t ref_id,matvar_t *matvar,mat_t *mat)
     switch ( H5Iget_type(ref_id) ) {
         case H5I_DATASET:
         {
-            /* FIXME */
-            hsize_t  dims[10];
-            hid_t   attr_id,type_id,dset_id,space_id;
+            hid_t attr_id,type_id,dset_id,space_id;
 
             /* matvar->fp = mat; */
             dset_id = ref_id;
@@ -1008,12 +1030,20 @@ Mat_H5ReadNextReferenceInfo(hid_t ref_id,matvar_t *matvar,mat_t *mat)
                 H5Sclose(space_id);
                 break;
             } else {
-                int k;
-                H5Sget_simple_extent_dims(space_id,dims,NULL);
-                for ( k = 0; k < matvar->rank; k++ )
-                    matvar->dims[k] = dims[matvar->rank - k - 1];
+                hsize_t* dims = (hsize_t*)malloc(matvar->rank*sizeof(hsize_t));
+                if ( NULL != dims ) {
+                    int k;
+                    (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
+                    for ( k = 0; k < matvar->rank; k++ )
+                        matvar->dims[k] = dims[matvar->rank - k - 1];
+                    free(dims);
+                    H5Sclose(space_id);
+                } else {
+                    H5Sclose(space_id);
+                    Mat_Critical("Error allocating memory for dims");
+                    return;
+                }
             }
-            H5Sclose(space_id);
 
             Mat_H5ReadClassType(matvar,dset_id);
 
@@ -1324,7 +1354,7 @@ Mat_VarWriteCell73(hid_t id,matvar_t *matvar,const char *name,hid_t *refs_id)
                                 H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 
             for ( k = 0; k < nmemb; k++ ) {
-                H5G_info_t group_info;
+                H5G_info_t group_info = {0};
                 H5Gget_info(*refs_id, &group_info);
                 sprintf(obj_name,"%lld",group_info.nlinks);
                 if ( NULL != cells[k] )
@@ -2050,7 +2080,7 @@ Mat_VarWriteStruct73(hid_t id,matvar_t *matvar,const char *name,hid_t *refs_id)
 
                     for ( k = 0; k < nmemb; k++ ) {
                         for ( l = 0; l < nfields; l++ ) {
-                            H5G_info_t group_info;
+                            H5G_info_t group_info = {0};
                             H5Gget_info(*refs_id, &group_info);
                             sprintf(name,"%lld",group_info.nlinks);
                             if ( NULL != fields[k*nfields+l] )
@@ -2188,6 +2218,7 @@ Mat_Create73(const char *matname,const char *hdr_str)
     mat->next_index    = 0;
     mat->num_datasets  = 0;
     mat->refs_id       = -1;
+    mat->dir           = NULL;
 
     t = time(NULL);
     mat->filename = strdup_printf("%s",matname);
@@ -2389,7 +2420,7 @@ Mat_VarRead73(mat_t *mat,matvar_t *matvar)
             if ( H5Lexists(dset_id,"ir",H5P_DEFAULT) ) {
                 sparse_dset_id = H5Dopen(dset_id,"ir",H5P_DEFAULT);
                 space_id = H5Dget_space(sparse_dset_id);
-                H5Sget_simple_extent_dims(space_id,dims,NULL);
+                (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
                 sparse_data->nir = dims[0];
                 sparse_data->ir = (int*)malloc(sparse_data->nir*
                                          sizeof(*sparse_data->ir));
@@ -2402,7 +2433,7 @@ Mat_VarRead73(mat_t *mat,matvar_t *matvar)
             if ( H5Lexists(dset_id,"jc",H5P_DEFAULT) ) {
                 sparse_dset_id = H5Dopen(dset_id,"jc",H5P_DEFAULT);
                 space_id = H5Dget_space(sparse_dset_id);
-                H5Sget_simple_extent_dims(space_id,dims,NULL);
+                (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
                 sparse_data->njc = dims[0];
                 sparse_data->jc = (int*)malloc(sparse_data->njc*
                                          sizeof(*sparse_data->jc));
@@ -2416,7 +2447,7 @@ Mat_VarRead73(mat_t *mat,matvar_t *matvar)
                 size_t ndata_bytes;
                 sparse_dset_id = H5Dopen(dset_id,"data",H5P_DEFAULT);
                 space_id = H5Dget_space(sparse_dset_id);
-                H5Sget_simple_extent_dims(space_id,dims,NULL);
+                (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
                 sparse_data->nzmax = dims[0];
                 sparse_data->ndata = dims[0];
                 matvar->data_size  = sizeof(mat_sparse_t);
@@ -2707,7 +2738,7 @@ Mat_VarReadNextInfo73( mat_t *mat )
     mat_data.matvar = NULL;
     herr = H5Literate(fid, H5_INDEX_NAME, H5_ITER_NATIVE, &idx, Mat_VarReadNextInfoIterate, (void*)&mat_data);
     if ( herr > 0 )
-        mat->next_index = (long)idx;
+        mat->next_index = (size_t)idx;
     return mat_data.matvar;
 }
 
@@ -2750,8 +2781,6 @@ Mat_VarReadNextInfoIterate(hid_t fid, const char *name, const H5L_info_t *info, 
         case H5O_TYPE_DATASET:
         {
             ssize_t name_len;
-            /* FIXME */
-            hsize_t dims[10];
             hid_t   attr_id,type_id,dset_id,space_id;
 
             dset_id = H5Dopen(fid,matvar->name,H5P_DEFAULT);
@@ -2771,17 +2800,25 @@ Mat_VarReadNextInfoIterate(hid_t fid, const char *name, const H5L_info_t *info, 
             matvar->rank = H5Sget_simple_extent_ndims(space_id);
             matvar->dims = (size_t*)malloc(matvar->rank*sizeof(*matvar->dims));
             if ( NULL != matvar->dims ) {
-                int k;
-                H5Sget_simple_extent_dims(space_id,dims,NULL);
-                for ( k = 0; k < matvar->rank; k++ )
-                    matvar->dims[k] = dims[matvar->rank - k - 1];
+                hsize_t* dims = (hsize_t*)malloc(matvar->rank*sizeof(hsize_t));
+                if ( NULL != dims ) {
+                    int k;
+                    (void)H5Sget_simple_extent_dims(space_id,dims,NULL);
+                    for ( k = 0; k < matvar->rank; k++ )
+                        matvar->dims[k] = dims[matvar->rank - k - 1];
+                    free(dims);
+                    H5Sclose(space_id);
+                } else {
+                    H5Sclose(space_id);
+                    Mat_Critical("Error allocating memory for dims");
+                    return -1;
+                }
             } else {
                 H5Sclose(space_id);
                 Mat_VarFree(matvar);
                 Mat_Critical("Error allocating memory for matvar->dims");
                 return -1;
             }
-            H5Sclose(space_id);
 
             Mat_H5ReadClassType(matvar,dset_id);
 
@@ -2919,18 +2956,14 @@ int
 Mat_VarWrite73(mat_t *mat,matvar_t *matvar,int compress)
 {
     hid_t id;
-    int err = -1;
 
     if ( NULL == mat || NULL == matvar )
-        return err;
+        return -1;
 
     matvar->compression = (enum matio_compression)compress;
 
     id = *(hid_t*)mat->fp;
-    err = Mat_VarWriteNext73(id,matvar,matvar->name,&(mat->refs_id));
-    if ( err == 0 )
-        mat->num_datasets++;
-    return err;
+    return Mat_VarWriteNext73(id,matvar,matvar->name,&(mat->refs_id));
 }
 
 #endif

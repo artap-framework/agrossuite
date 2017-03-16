@@ -123,6 +123,7 @@ SET(SOURCES
     util/global.cpp
     util/loops.cpp
     util/util.cpp
+    util/util_expr.cpp
     util/point.cpp
     util/system_utils.cpp
     util/spline.cpp
@@ -250,6 +251,7 @@ SET(HEADERS
   util/global.h
   util/loops.h
   util/util.h
+  util/util_expr.h
   util/point.h
   util/system_utils.h
   util/spline.h

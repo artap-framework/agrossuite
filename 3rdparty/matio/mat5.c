@@ -3,7 +3,7 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2016   Christopher C. Hulbert
+ * Copyright (C) 2005-2017   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -513,6 +513,7 @@ Mat_Create5(const char *matname,const char *hdr_str)
     mat->next_index    = 0;
     mat->num_datasets  = 0;
     mat->refs_id       = -1;
+    mat->dir           = NULL;
 
     t = time(NULL);
     mat->fp       = fp;
@@ -901,12 +902,13 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
     if ( (mat == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
             double d = 0.0;
 
-            data_size = sizeof(double);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -918,7 +920,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             float f = 0.0;
 
-            data_size = sizeof(float);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -930,7 +931,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_int8_t i8 = 0;
 
-            data_size = sizeof(mat_int8_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -942,7 +942,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_uint8_t ui8 = 0;
 
-            data_size = sizeof(mat_uint8_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -954,7 +953,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_int16_t i16 = 0;
 
-            data_size = sizeof(mat_int16_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -966,7 +964,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_uint16_t ui16 = 0;
 
-            data_size = sizeof(mat_uint16_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -978,7 +975,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_int32_t i32 = 0;
 
-            data_size = sizeof(mat_int32_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -990,7 +986,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_uint32_t ui32 = 0;
 
-            data_size = sizeof(mat_uint32_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1003,7 +998,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_int64_t i64 = 0;
 
-            data_size = sizeof(mat_int64_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1017,7 +1011,6 @@ WriteEmptyData(mat_t *mat,int N,enum matio_types data_type)
         {
             mat_uint64_t ui64 = 0;
 
-            data_size = sizeof(mat_uint64_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1043,6 +1036,8 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
     if ( (mat == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
@@ -1050,7 +1045,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
             mat_uint32_t comp_buf[32] = {0,};
             double data_uncomp_buf[4] = {0.0,};
 
-            data_size = sizeof(double);
             nBytes = N*data_size;
             uncomp_buf[0] = data_type;
             uncomp_buf[1] = 0;
@@ -1078,7 +1072,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             float f = 0.0;
 
-            data_size = sizeof(float);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1090,7 +1083,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_int8_t i8 = 0;
 
-            data_size = sizeof(mat_int8_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1102,7 +1094,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_uint8_t ui8 = 0;
 
-            data_size = sizeof(mat_uint8_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1114,7 +1105,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_int16_t i16 = 0;
 
-            data_size = sizeof(mat_int16_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1126,7 +1116,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_uint16_t ui16 = 0;
 
-            data_size = sizeof(mat_uint16_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1138,7 +1127,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_int32_t i32 = 0;
 
-            data_size = sizeof(mat_int32_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1150,7 +1138,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_uint32_t ui32 = 0;
 
-            data_size = sizeof(mat_uint32_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1163,7 +1150,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_int64_t i64 = 0;
 
-            data_size = sizeof(mat_int64_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1177,7 +1163,6 @@ WriteCompressedEmptyData(mat_t *mat,z_streamp z,int N,
         {
             mat_uint64_t ui64 = 0;
 
-            data_size = sizeof(mat_uint64_t);
             nBytes = N*data_size;
             fwrite(&data_type,4,1,(FILE*)mat->fp);
             fwrite(&nBytes,4,1,(FILE*)mat->fp);
@@ -1220,12 +1205,13 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         return 0;
     }
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
             double *ptr;
 
-            data_size = sizeof(double);
             ptr = (double *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1256,7 +1242,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             float *ptr;
 
-            data_size = sizeof(float);
             ptr = (float *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1288,7 +1273,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_int64_t *ptr;
 
-            data_size = sizeof(mat_int64_t);
             ptr = (mat_int64_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1321,7 +1305,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_uint64_t *ptr;
 
-            data_size = sizeof(mat_uint64_t);
             ptr = (mat_uint64_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1353,7 +1336,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_int32_t *ptr;
 
-            data_size = sizeof(mat_int32_t);
             ptr = (mat_int32_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1384,7 +1366,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_uint32_t *ptr;
 
-            data_size = sizeof(mat_uint32_t);
             ptr = (mat_uint32_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1415,7 +1396,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_int16_t *ptr;
 
-            data_size = sizeof(mat_int16_t);
             ptr = (mat_int16_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1446,7 +1426,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_uint16_t *ptr;
 
-            data_size = sizeof(mat_uint16_t);
             ptr = (mat_uint16_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1477,7 +1456,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_int8_t *ptr;
 
-            data_size = sizeof(mat_int8_t);
             ptr = (mat_int8_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1508,7 +1486,6 @@ WriteDataSlab2(mat_t *mat,void *data,enum matio_types data_type,size_t *dims,
         {
             mat_uint8_t *ptr;
 
-            data_size = sizeof(mat_uint8_t);
             ptr = (mat_uint8_t *)data;
             row_stride = (stride[0]-1)*data_size;
             col_stride = stride[1]*dims[0]*data_size;
@@ -1716,8 +1693,7 @@ WriteCompressedData(mat_t *mat,z_streamp z,void *data,int N,
     if ((mat == NULL) || (mat->fp == NULL))
         return 0;
 
-    data_size = Mat_SizeOf(data_type);
-
+    data_size   = Mat_SizeOf(data_type);
     data_tag[0] = data_type;
     data_tag[1] = data_size*N;
     z->next_in  = ZLIB_BYTE_PTR(data_tag);
@@ -2578,7 +2554,7 @@ WriteCellArrayFieldInfo(mat_t *mat,matvar_t *matvar)
                     for ( i = nBytes % 8; i < 8; i++ )
                         fwrite(&pad1,1,1,(FILE*)mat->fp);
             }
-           break;
+            break;
         case MAT_C_CHAR:
         {
             WriteEmptyCharData(mat,nmemb,matvar->data_type);
@@ -5016,8 +4992,10 @@ Read5(mat_t *mat, matvar_t *matvar)
     do { \
         ptr_in += start[1]*dims[0] + start[0]; \
         for ( i = 0; i < edge[1]; i++ ) { \
-            for ( j = 0; j < edge[0]; j++ ) \
-                memcpy(ptr++, ptr_in+j*stride[0], data_size); \
+            for ( j = 0; j < edge[0]; j++ ) { \
+                *ptr = *(ptr_in+j*stride[0]); \
+                ptr++; \
+            } \
             ptr_in += stride[1]*dims[0]; \
         } \
     } while (0)
@@ -5041,11 +5019,14 @@ Read5(mat_t *mat, matvar_t *matvar)
         ptr_in += I; \
         if ( stride[0] == 1 ) { \
             for ( i = 0; i < N; i+=edge[0] ) { \
+                int k; \
                 if ( start[0] ) { \
                     ptr_in += start[0]; \
                     I += start[0]; \
                 } \
-                memcpy(ptr+i, ptr_in, edge[0]*data_size); \
+                for ( k = 0; k < edge[0]; k++ ) { \
+                    *(ptr+i+k) = *(ptr_in+k); \
+                } \
                 I += dims[0]-start[0]; \
                 ptr_in += dims[0]-start[0]; \
                 GET_DATA_SLABN_RANK_LOOP; \
@@ -5057,7 +5038,7 @@ Read5(mat_t *mat, matvar_t *matvar)
                     I += start[0]; \
                 } \
                 for ( j = 0; j < edge[0]; j++ ) { \
-                    memcpy(ptr+i+j, ptr_in, data_size); \
+                    *(ptr+i+j) = *ptr_in; \
                     ptr_in += stride[0]; \
                     I += stride[0]; \
                 } \
@@ -5075,14 +5056,26 @@ GetDataSlab(void *data_in, void *data_out, enum matio_classes class_type,
 {
     int err = 0;
     int data_size = Mat_SizeOf(data_type);
+    int same_type = 0;
+    if (( class_type == MAT_C_DOUBLE && data_type == MAT_T_DOUBLE ) ||
+        ( class_type == MAT_C_SINGLE && data_type == MAT_T_SINGLE ) ||
+        ( class_type == MAT_C_INT16 && data_type == MAT_T_INT16 ) ||
+        ( class_type == MAT_C_INT32 && data_type == MAT_T_INT32 ) ||
+        ( class_type == MAT_C_INT64 && data_type == MAT_T_INT64 ) ||
+        ( class_type == MAT_C_INT8 && data_type == MAT_T_INT8 ) ||
+        ( class_type == MAT_C_UINT16 && data_type == MAT_T_UINT16 ) ||
+        ( class_type == MAT_C_UINT32 && data_type == MAT_T_UINT32 ) ||
+        ( class_type == MAT_C_UINT64 && data_type == MAT_T_UINT64 ) ||
+        ( class_type == MAT_C_UINT8 && data_type == MAT_T_UINT8 ))
+        same_type = 1;
 
     if ( rank == 2 ) {
         if ( stride[0]*(edge[0]-1)+start[0]+1 > dims[0] )
             err = 1;
         else if ( stride[1]*(edge[1]-1)+start[1]+1 > dims[1] )
             err = 1;
-        else if ( (stride[0] == 1 && edge[0] == dims[0]) &&
-                  (stride[1] == 1) )
+        else if ( ( stride[0] == 1 && edge[0] == dims[0] ) &&
+                  ( stride[1] == 1 ) && ( same_type == 1 ) )
             memcpy(data_out, data_in, nbytes);
         else {
             int i, j;
@@ -5091,23 +5084,224 @@ GetDataSlab(void *data_in, void *data_out, enum matio_classes class_type,
                 case MAT_C_DOUBLE:
                 {
                     double *ptr = (double *)data_out;
-                    double *ptr_in = (double *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_SINGLE:
                 {
                     float *ptr = (float *)data_out;
-                    float *ptr_in = (float *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
 #ifdef HAVE_MAT_INT64_T
                 case MAT_C_INT64:
                 {
                     mat_int64_t *ptr = (mat_int64_t *)data_out;
-                    mat_int64_t *ptr_in = (mat_int64_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
 #endif /* HAVE_MAT_INT64_T */
@@ -5115,51 +5309,520 @@ GetDataSlab(void *data_in, void *data_out, enum matio_classes class_type,
                 case MAT_C_UINT64:
                 {
                     mat_uint64_t *ptr = (mat_uint64_t *)data_out;
-                    mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
 #endif /* HAVE_MAT_UINT64_T */
                 case MAT_C_INT32:
                 {
                     mat_int32_t *ptr = (mat_int32_t *)data_out;
-                    mat_int32_t *ptr_in = (mat_int32_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_UINT32:
                 {
                     mat_uint32_t *ptr = (mat_uint32_t *)data_out;
-                    mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_INT16:
                 {
                     mat_int16_t *ptr = (mat_int16_t *)data_out;
-                    mat_int16_t *ptr_in = (mat_int16_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_UINT16:
                 {
                     mat_uint16_t *ptr = (mat_uint16_t *)data_out;
-                    mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_INT8:
                 {
                     mat_int8_t *ptr = (mat_int8_t *)data_out;
-                    mat_int8_t *ptr_in = (mat_int8_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 case MAT_C_UINT8:
                 {
                     mat_uint8_t *ptr = (mat_uint8_t *)data_out;
-                    mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
-                    GET_DATA_SLAB2;
+                    switch ( data_type ) {
+                        case MAT_T_DOUBLE:
+                        {
+                            double *ptr_in = (double *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_SINGLE:
+                        {
+                            float *ptr_in = (float *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#ifdef HAVE_MAT_INT64_T
+                        case MAT_T_INT64:
+                        {
+                            mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                        case MAT_T_UINT64:
+                        {
+                            mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+#endif /* HAVE_MAT_UINT64_T */
+                        case MAT_T_INT32:
+                        {
+                            mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT32:
+                        {
+                            mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT16:
+                        {
+                            mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT16:
+                        {
+                            mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_INT8:
+                        {
+                            mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        case MAT_T_UINT8:
+                        {
+                            mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                            GET_DATA_SLAB2;
+                            break;
+                        }
+                        default:
+                            err = 1;
+                            break;
+                    }
                     break;
                 }
                 default:
@@ -5175,23 +5838,224 @@ GetDataSlab(void *data_in, void *data_out, enum matio_classes class_type,
             case MAT_C_DOUBLE:
             {
                 double *ptr = (double *)data_out;
-                double *ptr_in = (double *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_SINGLE:
             {
                 float *ptr = (float *)data_out;
-                float *ptr_in = (float *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
 #ifdef HAVE_MAT_INT64_T
             case MAT_C_INT64:
             {
                 mat_int64_t *ptr = (mat_int64_t *)data_out;
-                mat_int64_t *ptr_in = (mat_int64_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
 #endif /* HAVE_MAT_INT64_T */
@@ -5199,51 +6063,520 @@ GetDataSlab(void *data_in, void *data_out, enum matio_classes class_type,
             case MAT_C_UINT64:
             {
                 mat_uint64_t *ptr = (mat_uint64_t *)data_out;
-                mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
 #endif /* HAVE_MAT_UINT64_T */
             case MAT_C_INT32:
             {
                 mat_int32_t *ptr = (mat_int32_t *)data_out;
-                mat_int32_t *ptr_in = (mat_int32_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_UINT32:
             {
                 mat_uint32_t *ptr = (mat_uint32_t *)data_out;
-                mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_INT16:
             {
                 mat_int16_t *ptr = (mat_int16_t *)data_out;
-                mat_int16_t *ptr_in = (mat_int16_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_UINT16:
             {
                 mat_uint16_t *ptr = (mat_uint16_t *)data_out;
-                mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_INT8:
             {
                 mat_int8_t *ptr = (mat_int8_t *)data_out;
-                mat_int8_t *ptr_in = (mat_int8_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             case MAT_C_UINT8:
             {
                 mat_uint8_t *ptr = (mat_uint8_t *)data_out;
-                mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
-                GET_DATA_SLABN;
+                switch ( data_type ) {
+                    case MAT_T_DOUBLE:
+                    {
+                        double *ptr_in = (double *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_SINGLE:
+                    {
+                        float *ptr_in = (float *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#ifdef HAVE_MAT_INT64_T
+                    case MAT_T_INT64:
+                    {
+                        mat_int64_t *ptr_in = (mat_int64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_INT64_T */
+#ifdef HAVE_MAT_UINT64_T
+                    case MAT_T_UINT64:
+                    {
+                        mat_uint64_t *ptr_in = (mat_uint64_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+#endif /* HAVE_MAT_UINT64_T */
+                    case MAT_T_INT32:
+                    {
+                        mat_int32_t *ptr_in = (mat_int32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT32:
+                    {
+                        mat_uint32_t *ptr_in = (mat_uint32_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT16:
+                    {
+                        mat_int16_t *ptr_in = (mat_int16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT16:
+                    {
+                        mat_uint16_t *ptr_in = (mat_uint16_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_INT8:
+                    {
+                        mat_int8_t *ptr_in = (mat_int8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    case MAT_T_UINT8:
+                    {
+                        mat_uint8_t *ptr_in = (mat_uint8_t *)data_in;
+                        GET_DATA_SLABN;
+                        break;
+                    }
+                    default:
+                        err = 1;
+                        break;
+                }
                 break;
             }
             default:

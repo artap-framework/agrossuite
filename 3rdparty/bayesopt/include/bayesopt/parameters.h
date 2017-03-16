@@ -28,13 +28,13 @@
 #include <string.h>
 
 /* WINDOWS DLLs stuff */
-#if defined (BAYESOPT_DLL) && (defined(_WIN32) || defined(__WIN32__)) && !defined(__LCC__)
+#if defined (BAYESOPT_DLL)
   #if defined(bayesopt_EXPORTS)
     #define  BAYESOPT_API __declspec(dllexport)
   #else
     #define  BAYESOPT_API __declspec(dllimport)
   #endif /* MyLibrary_EXPORTS */
-#else /* defined (_WIN32) */
+#else /* defined (MSVC) */
  #define BAYESOPT_API
 #endif
 

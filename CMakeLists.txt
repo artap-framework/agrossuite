@@ -15,16 +15,13 @@ if(POLICY CMP0050)
   cmake_policy(SET CMP0050 OLD)
 endif()
 
-# For Win64
-IF(${CMAKE_CL_64})
+# This is necessary for Visual Studio - without this for some reason the linking hangs.
+IF(MSVC)
   SET (CMAKE_EXE_LINKER_FLAGS "/machine:X64")
   SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
   SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
   SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN64")
-endif(${CMAKE_CL_64})
 
-# This is necessary for Visual Studio - without this for some reason the linking hangs.
-IF(MSVC)
   SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG")
   SET(CMAKE_SHARED_LINKER_FLAGS	 "${CMAKE_SHARED_LINKER_FLAGS} /LTCG")
   ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
@@ -158,11 +155,6 @@ IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 ENDIF()
 
-
-IF(MSVC)
-  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libcmt")
-ENDIF(MSVC)
-
 # VTK
 #FIND_PACKAGE(VTK REQUIRED)
 #include(${VTK_USE_FILE})
@@ -205,11 +197,11 @@ IF(MSVC)
   # On MSVC, we will always use Debug, otherwise the plugins do not work.
   # SET(CMAKE_BUILD_TYPE Debug)
   # SET(MSVC_DEFINES "/D_WINDOWS /Dpopen=_popen /Dpclose=_pclose /D__value=_value /Dfinite=_finite /Dhypot=_hypot /Disatty=_isatty /Dfileno=_fileno /D_CRT_SECURE_NO_WARNINGS /MP")
-  SET(CMAKE_CXX_FLAGS_DEBUG_INIT          "/D_DEBUG /Od /Ob2 /MDd /Zi ${MSVC_DEFINES}")
-  SET(CMAKE_CXX_FLAGS_RELEASE_INIT        "/DNDEBUG /O2 /Ob2 /MD ${MSVC_DEFINES}")
+  SET(CMAKE_CXX_FLAGS_DEBUG_INIT          "/bigobj /D_DEBUG /Od /Ob2 /MDd /Zi ${MSVC_DEFINES}")
+  SET(CMAKE_CXX_FLAGS_RELEASE_INIT        "/bigobj /DNDEBUG /O2 /Ob2 /MD ${MSVC_DEFINES}")
   SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
   SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
-  SET (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SAFESEH:NO")
+  SET (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SAFESEH:NO /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libcmt")
 ENDIF(MSVC)
 
 # Create file with preprocessor definitions exposing the build settings to the source code.

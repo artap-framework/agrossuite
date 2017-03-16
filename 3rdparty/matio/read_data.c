@@ -3,7 +3,7 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2016   Christopher C. Hulbert
+ * Copyright (C) 2005-2017   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -41,6 +41,38 @@
 #   include <zlib.h>
 #endif
 
+#define READ_DATA(SwapFunc) \
+    do { \
+        if ( mat->byteswap ) { \
+            for ( i = 0; i < len; i++ ) { \
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp); \
+                data[i] = SwapFunc(&v); \
+            } \
+        } else { \
+            for ( i = 0; i < len; i++ ) { \
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp); \
+                data[i] = v; \
+            } \
+        } \
+    } while (0)
+
+#if defined(HAVE_ZLIB)
+#define READ_COMPRESSED_DATA(SwapFunc) \
+    do { \
+        if ( mat->byteswap ) { \
+            for ( i = 0; i < len; i++ ) { \
+                InflateData(mat,z,&v,data_size); \
+                data[i] = SwapFunc(&v); \
+            } \
+        } else { \
+            for ( i = 0; i < len; i++ ) { \
+                InflateData(mat,z,&v,data_size); \
+                data[i] = v; \
+            } \
+        } \
+    } while (0)
+#endif
+
 /*
  * --------------------------------------------------------------------------
  *    Routines to read data of any type into arrays of a specific type
@@ -64,15 +96,16 @@
 int
 ReadDoubleData(mat_t *mat,double *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            data_size = sizeof(double);
             if ( mat->byteswap ) {
                 bytesread += fread(data,data_size,len,(FILE*)mat->fp);
                 for ( i = 0; i < len; i++ ) {
@@ -85,113 +118,66 @@ ReadDoubleData(mat_t *mat,double *data,enum matio_types data_type,int len)
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -220,14 +206,15 @@ int
 ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
     union _buf {
-#if SIZEOF_DOUBLE == 8
-        double          d[128];
-#elif SIZEOF_DOUBLE == 16
-        double          d[64];
-#endif
         float           f[256];
+#ifdef HAVE_MAT_INT64_T
+        mat_int64_t   i64[128];
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        mat_uint64_t ui64[128];
+#endif
         mat_int32_t   i32[256];
         mat_uint32_t ui32[256];
         mat_int16_t   i16[512];
@@ -236,10 +223,11 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         mat_uint8_t   ui8[1024];
     } buf;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            data_size = sizeof(double);
             if ( mat->byteswap ) {
                 InflateData(mat,z,data,len*data_size);
                 for ( i = 0; i < len; i++ )
@@ -249,9 +237,135 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
             }
             break;
         }
+        case MAT_T_SINGLE:
+        {
+            if ( mat->byteswap ) {
+                if ( len <= 256 ){
+                    InflateData(mat,z,buf.f,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = Mat_floatSwap(buf.f+i);
+                } else {
+                    int j;
+                    len -= 256;
+                    for ( i = 0; i < len; i+=256 ) {
+                        InflateData(mat,z,buf.f,256*data_size);
+                        for ( j = 0; j < 256; j++ )
+                            data[i+j] = Mat_floatSwap(buf.f+j);
+                    }
+                    len = len-(i-256);
+                    InflateData(mat,z,buf.f,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = Mat_floatSwap(buf.f+j);
+                }
+            } else {
+                if ( len <= 256 ){
+                    InflateData(mat,z,buf.f,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = buf.f[i];
+                } else {
+                    int j;
+                    len -= 256;
+                    for ( i = 0; i < len; i+=256 ) {
+                        InflateData(mat,z,buf.f,256*data_size);
+                        for ( j = 0; j < 256; j++ )
+                            data[i+j] = buf.f[j];
+                    }
+                    len = len-(i-256);
+                    InflateData(mat,z,buf.f,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = buf.f[j];
+                }
+            }
+            break;
+        }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            if ( mat->byteswap ) {
+                if ( len <= 128 ){
+                    InflateData(mat,z,buf.i64,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = Mat_int64Swap(buf.i64+i);
+                } else {
+                    int j;
+                    len -= 128;
+                    for ( i = 0; i < len; i+=128 ) {
+                        InflateData(mat,z,buf.i64,128*data_size);
+                        for ( j = 0; j < 128; j++ )
+                            data[i+j] = Mat_int64Swap(buf.i64+j);
+                    }
+                    len = len-(i-128);
+                    InflateData(mat,z,buf.i64,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = Mat_int64Swap(buf.i64+j);
+                }
+            } else {
+                if ( len <= 128 ){
+                    InflateData(mat,z,buf.i64,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = buf.i64[i];
+                } else {
+                    int j;
+                    len -= 128;
+                    for ( i = 0; i < len; i+=128 ) {
+                        InflateData(mat,z,buf.i64,128*data_size);
+                        for ( j = 0; j < 128; j++ )
+                            data[i+j] = buf.i64[j];
+                    }
+                    len = len-(i-128);
+                    InflateData(mat,z,buf.i64,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = buf.i64[j];
+                }
+            }
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            if ( mat->byteswap ) {
+                if ( len <= 128 ){
+                    InflateData(mat,z,buf.ui64,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = Mat_uint64Swap(buf.ui64+i);
+                } else {
+                    int j;
+                    len -= 128;
+                    for ( i = 0; i < len; i+=128 ) {
+                        InflateData(mat,z,buf.ui64,128*data_size);
+                        for ( j = 0; j < 128; j++ )
+                            data[i+j] = Mat_uint64Swap(buf.ui64+j);
+                    }
+                    len = len-(i-128);
+                    InflateData(mat,z,buf.ui64,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = Mat_uint64Swap(buf.ui64+j);
+                }
+            } else {
+                if ( len <= 128 ){
+                    InflateData(mat,z,buf.ui64,len*data_size);
+                    for ( i = 0; i < len; i++ )
+                        data[i] = buf.ui64[i];
+                } else {
+                    int j;
+                    len -= 128;
+                    for ( i = 0; i < len; i+=128 ) {
+                        InflateData(mat,z,buf.ui64,128*data_size);
+                        for ( j = 0; j < 128; j++ )
+                            data[i+j] = buf.ui64[j];
+                    }
+                    len = len-(i-128);
+                    InflateData(mat,z,buf.ui64,len*data_size);
+                    for ( j = 0; j < len; j++ )
+                        data[i+j] = buf.ui64[j];
+                }
+            }
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            data_size = sizeof(mat_int32_t);
             if ( mat->byteswap ) {
                 if ( len <= 256 ){
                     InflateData(mat,z,buf.i32,len*data_size);
@@ -293,7 +407,6 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         }
         case MAT_T_UINT32:
         {
-            data_size = sizeof(mat_uint32_t);
             if ( mat->byteswap ) {
                 if ( len <= 256 ){
                     InflateData(mat,z,buf.ui32,len*data_size);
@@ -335,7 +448,6 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         }
         case MAT_T_INT16:
         {
-            data_size = sizeof(mat_int16_t);
             if ( mat->byteswap ) {
                 if ( len <= 512 ){
                     InflateData(mat,z,buf.i16,len*data_size);
@@ -377,7 +489,6 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         }
         case MAT_T_UINT16:
         {
-            data_size = sizeof(mat_uint16_t);
             if ( mat->byteswap ) {
                 if ( len <= 512 ){
                     InflateData(mat,z,buf.ui16,len*data_size);
@@ -419,7 +530,6 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         }
         case MAT_T_UINT8:
         {
-            data_size = sizeof(mat_uint8_t);
             if ( len <= 1024 ) {
                 InflateData(mat,z,buf.ui8,len*data_size);
                 for ( i = 0; i < len; i++ )
@@ -441,7 +551,6 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
         }
         case MAT_T_INT8:
         {
-            data_size = sizeof(mat_int8_t);
             if ( len <= 1024 ) {
                 InflateData(mat,z,buf.i8,len*data_size);
                 for ( i = 0; i < len; i++ )
@@ -484,139 +593,82 @@ ReadCompressedDoubleData(mat_t *mat,z_streamp z,double *data,
 int
 ReadSingleData(mat_t *mat,float *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -645,138 +697,81 @@ int
 ReadCompressedSingleData(mat_t *mat,z_streamp z,float *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,data+i,data_size);
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -805,177 +800,80 @@ ReadCompressedSingleData(mat_t *mat,z_streamp z,float *data,
 int
 ReadInt64Data(mat_t *mat,mat_int64_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
         case MAT_T_INT64:
         {
-            mat_int64_t i64;
-
-            data_size = sizeof(mat_int64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i64,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int64Swap(&i64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i64,data_size,1,(FILE*)mat->fp);
-                    data[i] = i64;
-                }
-            }
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
             break;
         }
 #ifdef HAVE_MAT_UINT64_T
         case MAT_T_UINT64:
         {
-            mat_uint64_t ui64;
-
-            data_size = sizeof(mat_uint64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui64,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint64Swap(&ui64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui64,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui64;
-                }
-            }
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
             break;
         }
 #endif /* HAVE_MAT_UINT64_T */
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -1005,175 +903,79 @@ int
 ReadCompressedInt64Data(mat_t *mat,z_streamp z,mat_int64_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
         case MAT_T_INT64:
         {
-            mat_int64_t i64;
-
-            data_size = sizeof(mat_int64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i64,data_size);
-                    data[i] = Mat_int64Swap(&i64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i64,data_size);
-                    data[i] = i64;
-                }
-            }
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
             break;
         }
+#ifdef HAVE_MAT_UINT64_T
         case MAT_T_UINT64:
         {
-            mat_uint64_t ui64;
-
-            data_size = sizeof(mat_uint64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui64,data_size);
-                    data[i] = Mat_uint64Swap(&ui64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui64,data_size);
-                    data[i] = ui64;
-                }
-            }
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
             break;
         }
+#endif /* HAVE_MAT_UINT64_T */
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -1203,177 +1005,80 @@ ReadCompressedInt64Data(mat_t *mat,z_streamp z,mat_int64_t *data,
 int
 ReadUInt64Data(mat_t *mat,mat_uint64_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
 #ifdef HAVE_MAT_INT64_T
         case MAT_T_INT64:
         {
-            mat_int64_t i64;
-
-            data_size = sizeof(mat_int64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i64,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int64Swap(&i64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i64,data_size,1,(FILE*)mat->fp);
-                    data[i] = i64;
-                }
-            }
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
             break;
         }
 #endif /* HAVE_MAT_INT64_T */
         case MAT_T_UINT64:
         {
-            mat_uint64_t ui64;
-
-            data_size = sizeof(mat_uint64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui64,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint64Swap(&ui64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui64,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui64;
-                }
-            }
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
             break;
         }
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -1403,175 +1108,79 @@ int
 ReadCompressedUInt64Data(mat_t *mat,z_streamp z,mat_uint64_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
         case MAT_T_INT64:
         {
-            mat_int64_t i64;
-
-            data_size = sizeof(mat_int64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i64,data_size);
-                    data[i] = Mat_int64Swap(&i64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i64,data_size);
-                    data[i] = i64;
-                }
-            }
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
             break;
         }
+#endif /* HAVE_MAT_INT64_T */
         case MAT_T_UINT64:
         {
-            mat_uint64_t ui64;
-
-            data_size = sizeof(mat_uint64_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui64,data_size);
-                    data[i] = Mat_uint64Swap(&ui64);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui64,data_size);
-                    data[i] = ui64;
-                }
-            }
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
             break;
         }
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -1600,139 +1209,82 @@ ReadCompressedUInt64Data(mat_t *mat,z_streamp z,mat_uint64_t *data,
 int
 ReadInt32Data(mat_t *mat,mat_int32_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -1762,139 +1314,81 @@ int
 ReadCompressedInt32Data(mat_t *mat,z_streamp z,mat_int32_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -1922,139 +1416,82 @@ ReadCompressedInt32Data(mat_t *mat,z_streamp z,mat_int32_t *data,
 int
 ReadUInt32Data(mat_t *mat,mat_uint32_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -2084,139 +1521,81 @@ int
 ReadCompressedUInt32Data(mat_t *mat,z_streamp z,mat_uint32_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -2244,139 +1623,82 @@ ReadCompressedUInt32Data(mat_t *mat,z_streamp z,mat_uint32_t *data,
 int
 ReadInt16Data(mat_t *mat,mat_int16_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -2406,139 +1728,81 @@ int
 ReadCompressedInt16Data(mat_t *mat,z_streamp z,mat_int16_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -2566,139 +1830,82 @@ ReadCompressedInt16Data(mat_t *mat,z_streamp z,mat_int16_t *data,
 int
 ReadUInt16Data(mat_t *mat,mat_uint16_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -2728,139 +1935,81 @@ int
 ReadCompressedUInt16Data(mat_t *mat,z_streamp z,mat_uint16_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -2888,139 +2037,82 @@ ReadCompressedUInt16Data(mat_t *mat,z_streamp z,mat_uint16_t *data,
 int
 ReadInt8Data(mat_t *mat,mat_int8_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -3050,139 +2142,81 @@ int
 ReadCompressedInt8Data(mat_t *mat,z_streamp z,mat_int8_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -3210,139 +2244,82 @@ ReadCompressedInt8Data(mat_t *mat,z_streamp z,mat_int8_t *data,
 int
 ReadUInt8Data(mat_t *mat,mat_uint8_t *data,enum matio_types data_type,int len)
 {
-    int bytesread = 0, data_size = 0, i;
+    int bytesread = 0, data_size, i;
 
     if ( (mat   == NULL) || (data   == NULL) || (mat->fp == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&d,data_size,1,(FILE*)mat->fp);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&f,data_size,1,(FILE*)mat->fp);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i32,data_size,1,(FILE*)mat->fp);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui32,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&i16,data_size,1,(FILE*)mat->fp);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    bytesread += fread(&ui16,data_size,1,(FILE*)mat->fp);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&i8,data_size,1,(FILE*)mat->fp);
-                data[i] = i8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
+            mat_uint8_t v;
 
-            data_size = sizeof(mat_uint8_t);
             for ( i = 0; i < len; i++ ) {
-                bytesread += fread(&ui8,data_size,1,(FILE*)mat->fp);
-                data[i] = ui8;
+                bytesread += fread(&v,data_size,1,(FILE*)mat->fp);
+                data[i] = v;
             }
             break;
         }
@@ -3372,139 +2349,81 @@ int
 ReadCompressedUInt8Data(mat_t *mat,z_streamp z,mat_uint8_t *data,
     enum matio_types data_type,int len)
 {
-    int nBytes = 0, data_size = 0, i;
+    int nBytes = 0, data_size, i;
 
     if ( (mat == NULL) || (data == NULL) || (z == NULL) )
         return 0;
 
+    data_size = Mat_SizeOf(data_type);
+
     switch ( data_type ) {
         case MAT_T_DOUBLE:
         {
-            double d;
-
-            data_size = sizeof(double);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = Mat_doubleSwap(&d);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&d,data_size);
-                    data[i] = d;
-                }
-            }
+            double v;
+            READ_COMPRESSED_DATA(Mat_doubleSwap);
             break;
         }
         case MAT_T_SINGLE:
         {
-            float f;
-
-            data_size = sizeof(float);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = Mat_floatSwap(&f);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&f,data_size);
-                    data[i] = f;
-                }
-            }
+            float v;
+            READ_COMPRESSED_DATA(Mat_floatSwap);
             break;
         }
+#ifdef HAVE_MAT_INT64_T
+        case MAT_T_INT64:
+        {
+            mat_int64_t v;
+            READ_COMPRESSED_DATA(Mat_int64Swap);
+            break;
+        }
+#endif
+#ifdef HAVE_MAT_UINT64_T
+        case MAT_T_UINT64:
+        {
+            mat_uint64_t v;
+            READ_COMPRESSED_DATA(Mat_uint64Swap);
+            break;
+        }
+#endif
         case MAT_T_INT32:
         {
-            mat_int32_t i32;
-
-            data_size = sizeof(mat_int32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = Mat_int32Swap(&i32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i32,data_size);
-                    data[i] = i32;
-                }
-            }
+            mat_int32_t v;
+            READ_COMPRESSED_DATA(Mat_int32Swap);
             break;
         }
         case MAT_T_UINT32:
         {
-            mat_uint32_t ui32;
-
-            data_size = sizeof(mat_uint32_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = Mat_uint32Swap(&ui32);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui32,data_size);
-                    data[i] = ui32;
-                }
-            }
+            mat_uint32_t v;
+            READ_COMPRESSED_DATA(Mat_uint32Swap);
             break;
         }
         case MAT_T_INT16:
         {
-            mat_int16_t i16;
-
-            data_size = sizeof(mat_int16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = Mat_int16Swap(&i16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&i16,data_size);
-                    data[i] = i16;
-                }
-            }
+            mat_int16_t v;
+            READ_COMPRESSED_DATA(Mat_int16Swap);
             break;
         }
         case MAT_T_UINT16:
         {
-            mat_uint16_t ui16;
-
-            data_size = sizeof(mat_uint16_t);
-            if ( mat->byteswap ) {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = Mat_uint16Swap(&ui16);
-                }
-            } else {
-                for ( i = 0; i < len; i++ ) {
-                    InflateData(mat,z,&ui16,data_size);
-                    data[i] = ui16;
-                }
-            }
+            mat_uint16_t v;
+            READ_COMPRESSED_DATA(Mat_uint16Swap);
             break;
         }
         case MAT_T_UINT8:
         {
-            mat_uint8_t ui8;
-
-            data_size = sizeof(mat_uint8_t);
+            mat_uint8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&ui8,data_size);
-                data[i] = ui8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
         case MAT_T_INT8:
         {
-            mat_int8_t i8;
-
-            data_size = sizeof(mat_int8_t);
+            mat_int8_t v;
             for ( i = 0; i < len; i++ ) {
-                InflateData(mat,z,&i8,data_size);
-                data[i] = i8;
+                InflateData(mat,z,&v,data_size);
+                data[i] = v;
             }
             break;
         }
@@ -3516,6 +2435,10 @@ ReadCompressedUInt8Data(mat_t *mat,z_streamp z,mat_uint8_t *data,
 }
 #endif
 
+#undef READ_DATA
+#if defined(HAVE_ZLIB)
+#undef READ_COMPRESSED_DATA
+#endif
 #if defined(HAVE_ZLIB)
 /** @brief Reads data of type @c data_type into a char type
  *
@@ -3726,6 +2649,7 @@ ReadDataSlabN(mat_t *mat,void *data,enum matio_classes class_type,
     }
 
     data_size = Mat_SizeOf(data_type);
+
     switch ( class_type ) {
         case MAT_C_DOUBLE:
         {
@@ -4015,8 +2939,8 @@ ReadDataSlab1(mat_t *mat,void *data,enum matio_classes class_type,
 
     data_size = Mat_SizeOf(data_type);
     (void)fseek((FILE*)mat->fp,start*data_size,SEEK_CUR);
-
     stride = data_size*(stride-1);
+
     switch ( class_type ) {
         case MAT_C_DOUBLE:
         {

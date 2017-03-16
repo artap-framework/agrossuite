@@ -31,6 +31,8 @@
 #include "study_bayesopt.h"
 #include "study_limbo.h"
 
+#include "util/util_expr.h"
+
 #include "doe.h"
 #include <limits>
 

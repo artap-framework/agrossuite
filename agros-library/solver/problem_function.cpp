@@ -23,6 +23,8 @@
 #include "util/constants.h"
 #include "util/enums.h"
 
+#include "util/util_expr.h"
+
 const QString NAME = "name";
 const QString TYPE = "type";
 const QString LOWER_BOUND = "lower_bound";

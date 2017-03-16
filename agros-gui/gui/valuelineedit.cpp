@@ -31,6 +31,8 @@
 #include "solver/problem_parameter.h"
 #include "solver/problem_function.h"
 
+#include "util/util_expr.h"
+
 ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, bool isBool, QString id, QString onlyIf, QString onlyIfNot, bool isSource)
     : QWidget(parent),
       m_number(0.0),

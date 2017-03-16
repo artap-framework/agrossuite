@@ -94,8 +94,6 @@
 
 using namespace std;
 
-AGROS_LIBRARY_API bool compileExpression(const QString &exprString, exprtk::expression<double> &expr, QString *error = nullptr);
-
 AGROS_LIBRARY_API bool almostEqualRelAndAbs(double A, double B, double maxDiff, double maxRelDiff);
 
 // approximation of atan2(y, x).

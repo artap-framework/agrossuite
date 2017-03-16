@@ -21,6 +21,8 @@
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 
+#include "util/util_expr.h"
+
 // consts
 const QString NAME = "name";
 const QString TYPE = "type";

@@ -4,7 +4,7 @@ find_package(ZLIB REQUIRED)
 
 add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
-IF(WIN32)
+IF(MSVC)
   ADD_CUSTOM_COMMAND(
         SOURCE    matioConfigWin.h
         COMMAND   copy ARGS matioConfigWin.h matioConfig.h OUTPUT matioConfig.h

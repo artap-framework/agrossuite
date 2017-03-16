@@ -24,6 +24,8 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
+#include "util/util_expr.h"
+
 static const int LOCAL_SYMBOL_TABLE = 0;
 static const int PARAMETERS_SYMBOL_TABLE = 1;
 
