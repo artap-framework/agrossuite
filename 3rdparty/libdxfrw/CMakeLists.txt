@@ -22,7 +22,7 @@ SET(SOURCES drw_classes.cpp
     intern/dxfreader.cpp
     intern/dxfwriter.cpp)
 
-IF (AGROS_BUILD_STATIC)
+IF (AGROS_BUILD_STATIC OR MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
 ELSE()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})

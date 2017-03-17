@@ -63,16 +63,6 @@ public:
             computation->config()->parameters()->set(parameter.name(), x[i]);
         }
 
-        // check geometry
-        // invalidate scene (parameter update)
-        computation->clearSolution();
-        computation->scene()->invalidate();
-        computation->scene()->loopsInfo()->processPolygonTriangles(true);
-        computation->scene()->invalidate();
-
-        computation->scene()->checkGeometryResult();
-        computation->scene()->checkGeometryAssignement();
-
         // evaluate step
         try
         {

@@ -179,12 +179,12 @@ double Value::number() const
                 {
                     m_isEvaluated = false;
                     qDebug() << "Value::number()" << m_error;
-                }
+                }                
             }
         }
     }
 
-    // qDebug() << "m_exprtkExpr->value() - problem" << m_exprtkExpr->value();
+    // qInfo() << "m_exprtkExpr->value() - problem" << m_exprtkExpr->value();
     return m_exprtkExpr->value();
 }
 

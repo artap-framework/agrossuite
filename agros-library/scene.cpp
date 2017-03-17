@@ -680,14 +680,14 @@ void Scene::transformScale(const Point &point, double scaleFactor, bool copy, bo
 
 void Scene::invalidate()
 {
-    m_loopsInfo->processPolygonTriangles();
-
     foreach (SceneFace *edge, faces->items())
         edge->computeCenterAndRadius();
 
     findLyingEdgeNodes();
     findNumberOfConnectedNodeEdges();
     findCrossings();
+
+    m_loopsInfo->processPolygonTriangles();
 }
 
 void Scene::fieldsChange()
