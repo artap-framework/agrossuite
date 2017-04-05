@@ -84,7 +84,6 @@ void Config::save()
 void Config::setStringKeys()
 {
     m_settingKey[Config_LogStdOut] = "Config_LogStdOut";
-    m_settingKey[Config_GUIStyle] = "Config_GUIStyle";
     m_settingKey[Config_ExternalPythonEditor] = "Config_ExternalPythonEditor";
     m_settingKey[Config_Locale] = "Config_Locale";
     m_settingKey[Config_ShowResults] = "Config_ShowResults";
@@ -105,7 +104,6 @@ void Config::setDefaultValues()
     m_settingDefault.clear();
 
     m_settingDefault[Config_LogStdOut] = false;
-    m_settingDefault[Config_GUIStyle] = ""; // defaultGUIStyle();
     m_settingDefault[Config_ExternalPythonEditor] = "pyzo";
     m_settingDefault[Config_Locale] = ""; // defaultLocale();
     m_settingDefault[Config_ShowResults] = false;

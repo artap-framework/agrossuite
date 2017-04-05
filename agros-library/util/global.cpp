@@ -182,11 +182,11 @@ QString createPythonFromModel()
     QString str;
 
     // import modules
-    str += "import agros2d as a2d\n\n";
+    str += "import agros\n\n";
 
     // model
     str += "# problem\n";
-    str += QString("problem = a2d.problem(clear = True)\n");
+    str += QString("problem = agros.problem(clear = True)\n");
     str += QString("problem.coordinate_type = \"%1\"\n").arg(coordinateTypeToStringKey(Agros::problem()->config()->coordinateType()));
     str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros::problem()->config()->meshType()));
 

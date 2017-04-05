@@ -41,7 +41,6 @@ private slots:
 
 private:
     // main
-    QComboBox *cmbGUIStyle;
     QComboBox *cmbLanguage;
     QLineEdit *txtExternalPythonEditor;
 

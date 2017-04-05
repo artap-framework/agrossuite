@@ -116,53 +116,6 @@ void showPage(const QString &str)
         QDesktopServices::openUrl(QUrl::fromLocalFile(datadir() + "/resources/help/" + str));
 }
 
-QString defaultGUIStyle()
-{
-    QString styleName = "";
-    QStringList styles = QStyleFactory::keys();
-
-#ifdef Q_WS_X11
-    // kde 4
-    if (getenv("KDE_SESSION_VERSION") != NULL)
-    {
-        if (styles.contains("Oxygen"))
-            styleName = "Oxygen";
-        else
-            styleName = "Plastique";
-    }
-    // gtk+
-    if (styleName.isEmpty())
-        styleName = "GTK+";
-#endif
-
-#ifdef Q_WS_WIN
-    if (styles.contains("WindowsVista"))
-        styleName = "WindowsVista";
-    else if (styles.contains("WindowsXP"))
-        styleName = "WindowsXP";
-    else
-        styleName = "Windows";
-#endif
-
-#ifdef Q_WS_MAC
-    styleName = "Aqua";
-#endif
-
-    return styleName;
-}
-
-void setGUIStyle(const QString &styleName)
-{
-    // standard style
-    QStyle *style = QStyleFactory::create(styleName);
-
-    QApplication::setStyle(style);
-    if (QApplication::desktopSettingsAware())
-    {
-        QApplication::setPalette(QApplication::palette());
-    }
-}
-
 // ************************************************************************************************************************
 
 void SolveThread::run()

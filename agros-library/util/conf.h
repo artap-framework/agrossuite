@@ -32,8 +32,7 @@ public:
     enum Type
     {
         Unknown,
-        Config_LogStdOut,
-        Config_GUIStyle,
+        Config_LogStdOut,        
         Config_ExternalPythonEditor,
         Config_Locale,
         Config_ShowResults,

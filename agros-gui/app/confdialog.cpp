@@ -46,10 +46,6 @@ ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 
 void ConfigComputerDialog::load()
 {
-    // gui style
-    cmbGUIStyle->setCurrentIndex(cmbGUIStyle->findText(Agros::configComputer()->value(Config::Config_GUIStyle).toString()));
-    if (cmbGUIStyle->currentIndex() == -1 && cmbGUIStyle->count() > 0) cmbGUIStyle->setCurrentIndex(0);
-
     // language
     cmbLanguage->setCurrentIndex(cmbLanguage->findText(Agros::configComputer()->value(Config::Config_Locale).toString()));
     if (cmbLanguage->currentIndex() == -1 && cmbLanguage->count() > 0)
@@ -84,10 +80,6 @@ void ConfigComputerDialog::load()
 
 void ConfigComputerDialog::save()
 {
-    // gui style
-    Agros::configComputer()->setValue(Config::Config_GUIStyle, cmbGUIStyle->currentText());
-    setGUIStyle(cmbGUIStyle->currentText());
-
     // language
     if (Agros::configComputer()->value(Config::Config_Locale).toString() != cmbLanguage->currentText())
         QMessageBox::warning(QApplication::activeWindow(),
@@ -146,22 +138,16 @@ QWidget *ConfigComputerDialog::createMainWidget()
 {
     QWidget *mainWidget = new QWidget(this);
 
-    // general
-    cmbGUIStyle = new QComboBox(mainWidget);
-    cmbGUIStyle->addItems(QStyleFactory::keys());
-
     cmbLanguage = new QComboBox(mainWidget);
     cmbLanguage->addItems(availableLanguages());
 
     txtExternalPythonEditor = new QLineEdit(mainWidget);
 
     QGridLayout *layoutGeneral = new QGridLayout();
-    layoutGeneral->addWidget(new QLabel(tr("UI:")), 0, 0);
-    layoutGeneral->addWidget(cmbGUIStyle, 0, 1);
-    layoutGeneral->addWidget(new QLabel(tr("Language:")), 1, 0);
-    layoutGeneral->addWidget(cmbLanguage, 1, 1);
-    layoutGeneral->addWidget(new QLabel(tr("External Python editor:")), 2, 0);
-    layoutGeneral->addWidget(txtExternalPythonEditor, 2, 1);
+    layoutGeneral->addWidget(new QLabel(tr("Language:")), 0, 0);
+    layoutGeneral->addWidget(cmbLanguage, 0, 1);
+    layoutGeneral->addWidget(new QLabel(tr("External Python editor:")), 1, 0);
+    layoutGeneral->addWidget(txtExternalPythonEditor, 1, 1);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);

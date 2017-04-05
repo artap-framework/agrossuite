@@ -53,10 +53,6 @@ enum AlphabetColor
 // get color icon with letter
 AGROS_LIBRARY_API QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
 
-// set gui style
-AGROS_LIBRARY_API QString defaultGUIStyle();
-AGROS_LIBRARY_API void setGUIStyle(const QString &styleName);
-
 class SolveThread : public QThread
 {
     Q_OBJECT

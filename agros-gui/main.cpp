@@ -136,8 +136,6 @@ int main(int argc, char *argv[])
         CleanExit cleanExit;
         AgrosApplication a(argc, argv);
 
-        // setting gui style
-        setGUIStyle(Agros::configComputer()->value(Config::Config_GUIStyle).toString());
         // language
         setLocale(Agros::configComputer()->value(Config::Config_Locale).toString());
         a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

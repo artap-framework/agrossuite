@@ -118,7 +118,13 @@ double BayesOptProblem::evaluateSample(const vectord &x)
     {
         qDebug() << e.toString();
 
-        return numeric_limits<double>::max();
+        for (int i = 0; i < m_study->parameters().count(); i++)
+        {
+            Parameter parameter = m_study->parameters()[i];
+            qInfo() << parameter.name() << " = " << x[i];
+        }
+
+        return 0; // numeric_limits<double>::max();
     }
 }
 

@@ -152,7 +152,10 @@ ENDIF(WIN32)
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${OPENGL_LIBRARIES} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
-IF(WIN32)
+FIND_PACKAGE(Qt5WebEngine)
+
+#IF(WIN32)
+IF (${Qt5WebEngine_FOUND})
     QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns UiTools OpenGL Svg WebEngine WebEngineWidgets)
 else()
     QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns UiTools OpenGL Svg WebKit WebKitWidgets)
