@@ -32,7 +32,6 @@
 #include "tbb/tbb.h"
 
 #undef signals
-#include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 
 #include <deal.II/hp/dof_handler.h>

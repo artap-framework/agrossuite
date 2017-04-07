@@ -39,8 +39,6 @@
 #include "solver/solutionstore.h"
 #include "solver/problem_config.h"
 
-#include <deal.II/grid/grid_tools.h>
-
 ParticleTracing::ParticleTracing(Computation *computation, QList<double> particleMassesList, QObject *parent)
     : QObject(parent), m_computation(computation), m_particleMassesList(particleMassesList)
 {

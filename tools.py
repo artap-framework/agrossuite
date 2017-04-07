@@ -169,7 +169,7 @@ def appimage_package():
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
     os.symlink('libs/libagros_python.so', dest + '/agros.so')    
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
-    shutil.copy('dealii/build/lib/libdeal_II.so.8.5.0-pre', dest + '/libs/libdeal_II.so.8.5.0-pre')
+    shutil.copy('dealii/build/lib/libdeal_II.so.8.5.0', dest + '/libs/libdeal_II.so.8.5.0')
     
     # create AppImage
     from subprocess import call

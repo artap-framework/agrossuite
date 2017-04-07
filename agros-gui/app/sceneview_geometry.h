@@ -31,6 +31,8 @@ class SceneLabelCommandAdd;
 class SceneLabelCommandRemove;
 class SceneNodeCommandRemove;
 
+#define signals public
+
 class SceneViewPreprocessor : public SceneViewCommon2D
 {
     Q_OBJECT

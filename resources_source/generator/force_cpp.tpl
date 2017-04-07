@@ -30,7 +30,6 @@
 #include "solver/plugin_interface.h"
 
 #include <deal.II/grid/tria.h>
-#include <deal.II/grid/grid_tools.h>
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
@@ -129,7 +128,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
                     solution_gradients[k][i] = localvalues->gradient(p, i);
                 }
             }
-            catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
+            catch (...) // (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
             {
                 throw AgrosException(QObject::tr("Point [%1, %2] does not lie in any element").arg(x).arg(y));
 

@@ -48,9 +48,7 @@
 #include "solver/solutionstore.h"
 
 #include <deal.II/numerics/fe_field_function.h>
-#include <deal.II/grid/grid_tools.h>
 #include <deal.II/hp/dof_handler.h>
-
 
 SceneViewPost2D::SceneViewPost2D(PostprocessorWidget *postprocessorWidget)
     : SceneViewCommon2D(postprocessorWidget), SceneViewPostInterface(postprocessorWidget), m_postprocessorWidget(postprocessorWidget),

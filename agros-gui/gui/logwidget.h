@@ -29,6 +29,7 @@ class QCPGraph;
 class LogWidget;
 class ConnectLog;
 
+#define signals public
 
 class LogConfigWidget : public QWidget
 {
