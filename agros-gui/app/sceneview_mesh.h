@@ -50,6 +50,8 @@ public slots:
     void exportVTKOrderView(const QString &fileName = QString());
 
 protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+
     virtual void paintGL();
 
     virtual ProblemBase *problem() const;

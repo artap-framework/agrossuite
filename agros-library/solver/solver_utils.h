@@ -55,6 +55,7 @@
 
 void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QString &varName);
 void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, const QString &varName);
+void writeMatioMatrix(std::vector<dealii::Vector<double> > vecs, const QString &name, const QString &varName);
 
 class DoubleCellIterator
 {

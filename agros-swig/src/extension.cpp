@@ -1,4 +1,6 @@
-#include "../resources_source/python/agros.cpp"
+/* File : example.c */
+
+#include <time.h>
 
 #include <QCoreApplication>
 
@@ -7,15 +9,12 @@
 #include <QDir>
 #include <QString>
 
-#include "util/system_utils.h"
-#include "logview.h"
+// #include "util/system_utils.h"
+// #include "logview.h"
 
 #include <deal.II/base/multithread_info.h>
 
-#ifdef AGROS_BUILD_STATIC
-#include "../plugins/plugins_static.h"
-#endif
-
+/*
 static QCoreApplication *app = nullptr;
 static LogStdOut *logStd = nullptr;
 
@@ -24,9 +23,7 @@ class LibInstance
 public:
     LibInstance()
     {
-        // dealii::MultithreadInfo::set_thread_limit(1);
-
-        // qInfo() << __FILE__ << "has been initialized";
+        qInfo() << __FILE__ << "has been initialized";
         setlocale(LC_NUMERIC, "C");
 
         char *argv[] = {(char *) QString("%1/agros_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
@@ -51,15 +48,18 @@ public:
     ~LibInstance()
     {
         delete app;
-        // qInfo() << __FILE__ << "has been unloaded";
     }
 };
 
-Q_GLOBAL_STATIC(LibInstance, libInstance)
+// Q_GLOBAL_STATIC(LibInstance, libInstance)
 
 class LibExecutor
 {
 public:
-    LibExecutor() { libInstance(); }
+    LibExecutor()
+    {
+        // libInstance();
+    }
 };
-static LibExecutor libExecutor;
+// static LibExecutor libExecutor;
+*/

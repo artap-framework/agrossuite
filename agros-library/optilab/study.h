@@ -367,6 +367,8 @@ protected:
 
     friend class PyStudy;
     friend class PyStudyBayesOpt;
+    friend class SwigStudy;
+    friend class SwigStudyBayesOpt;
 };
 
 class Studies : public QObject

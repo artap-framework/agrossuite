@@ -308,19 +308,14 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
                 solveLinearSystem(systemMatrix, systemRHS, solution, true);
-                //solution.print(std::cout);
-                //system_matrix.print(std::cout);
-                //system_rhs.print(std::cout);
 
-                // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
-
-                // Update
+                // update
                 solutionNonlinearPrevious.add(dampingFactor, solution);
 
                 time.start();
                 // calculate residual - we are not wasting time on matrix assembly.
                 assembleSystem(solutionNonlinearPrevious, false);
-                // Residual norm.
+                // residual norm.
                 residualNorm = systemRHS.l2_norm();
 
                 // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;

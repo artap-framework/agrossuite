@@ -343,6 +343,21 @@ void SolverDeal::AssembleBase::transientBDF(const double timeStep,
                                             const std::vector<dealii::Vector<double> > solutions,
                                             const BDF2Table &bdf2Table)
 {
+    // Euler method
+    //    // LHM = (M + dt * K)
+    //    transientTotalMatrix.copy_from(transientMassMatrix);
+    //    transientTotalMatrix.add(timeStep, systemMatrix);
+
+    //    dealii::Vector<double> m(solution.size());
+    //    dealii::Vector<double> sln(solution.size());
+    //    transientMassMatrix.vmult(sln, solutions[0]);
+    //    m.add(1, sln);
+
+    //    // m += dt * RHS
+    //    m.add(timeStep, systemRHS);
+
+    //    solveLinearSystem(transientTotalMatrix, m, solution);
+
     // LHM = (M + dt * K)
     transientTotalMatrix.copy_from(transientMassMatrix);
     transientTotalMatrix *= bdf2Table.matrixFormCoefficient();
@@ -362,6 +377,20 @@ void SolverDeal::AssembleBase::transientBDF(const double timeStep,
     m.add(timeStep, systemRHS);
 
     solveLinearSystem(transientTotalMatrix, m, solution);
+}
+
+void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Vector<double> > vecs)
+{
+    QString massMatrixName = QString("%1/%2/transient_solver-%3_matrix_mass.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString stiffnessMatrixName = QString("%1/%2/transient_solver-%3_matrix_stiffness.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString rhsName = QString("%1/%2/transient_solver-%3_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString slnsName = QString("%1/%2/transient_solver-%3_solutions.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+
+    writeMatioMatrix(transientMassMatrix, massMatrixName, "matrix_mass");
+    writeMatioMatrix(systemMatrix, stiffnessMatrixName, "matrix_stiffness");
+    writeMatioVector(systemRHS, rhsName, "rhs");
+    if (vecs.size() > 0)
+        writeMatioMatrix(vecs, slnsName, "slns");
 }
 
 void SolverDeal::AssembleBase::solve()
@@ -1186,6 +1215,27 @@ void SolverDeal::solveTransient()
         // increase step
         if (!refused)
             timeStep++;
+    }
+
+    if (true)
+    {
+        // all solutions
+        std::vector<dealii::Vector<double> > solutions;
+
+        QList<double> times = m_computation->timeStepTimes();
+        for (int step = 0; step < times.length(); step++)
+        {
+            FieldSolutionID fieldID(m_fieldInfo->fieldId(),
+                                    step,
+                                    m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo, step));
+
+            bool stepIsAvailable = m_computation->solutionStore()->contains(fieldID);
+            if (stepIsAvailable)
+                solutions.push_back(m_computation->solutionStore()->multiArray(fieldID).solution());
+        }
+
+        primal->assembleSystem();
+        primal->transientWriteSystemToDisk(solutions);
     }
 
     /*

@@ -122,11 +122,16 @@ SET(LIMBO_LIBRARY agros_3rdparty_limbo)
 SET(QTAWESOME_LIBRARY agros_3rdparty_qtawesome)
 SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 
-# xerces
+# XSD
 find_package(XSD 4.0 REQUIRED)
 INCLUDE_DIRECTORIES(${XSD_INCLUDE_DIR})
-find_package(XERCES REQUIRED)
-INCLUDE_DIRECTORIES(${XERCES_INCLUDE_DIR})
+# xerces
+SET(XercesC_LIBRARY ${CMAKE_HOME_DIRECTORY}/3rdparty/xerces-c/libxerces-c.a)
+find_package(XercesC REQUIRED)
+INCLUDE_DIRECTORIES(${XercesC_INCLUDE_DIRS})
+message(x ${XercesC_LIBRARIES} x)
+# curl
+find_package(CURL REQUIRED)
 
 # Output paths.
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY})
@@ -217,7 +222,6 @@ INCLUDE(IncludeSubdirs.cmake)
 
 # Subdirectories.
 ADD_SUBDIRECTORY(3rdparty)
-# Also looks for Xerces, etc.
 
 # deal.ii
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
@@ -263,6 +267,8 @@ ADD_SUBDIRECTORY(agros-generator)
 ADD_SUBDIRECTORY(agros-solver)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)
+# SWIG interface
+ADD_SUBDIRECTORY(agros-swig)
 # GUI
 ADD_SUBDIRECTORY(agros-gui)
 ADD_SUBDIRECTORY(pythonlab-gui)

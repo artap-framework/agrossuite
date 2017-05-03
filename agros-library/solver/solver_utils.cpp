@@ -89,7 +89,7 @@ void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QS
     dims[0] = vec.size();
     dims[1] = 1;
 
-    mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT5);
+    mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT4);
 
     double *data = new double[vec.size()];
     for (unsigned int i = 0; i < vec.size(); i++)
@@ -116,7 +116,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     dims[0] = mtx.m();
     dims[1] = mtx.n();
 
-    mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT5);
+    mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT4);
 
     double *csrA = new double[mtx.n_nonzero_elements()];
     int *csrRowPtr = new int[mtx.n() + 1];
@@ -204,6 +204,31 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     delete [] cscRowInd;
 }
 
+void writeMatioMatrix(std::vector<dealii::Vector<double> > vecs, const QString &name, const QString &varName)
+{
+    if (vecs.size() == 0)
+        return;
+
+    size_t dims[2];
+    dims[0] = vecs.front().size();
+    dims[1] = vecs.size();
+
+    mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT4);
+
+    double *data = new double[dims[0]*dims[1]];
+    for (int i = 0; i < dims[0]; ++i)
+        for (int j = 0; j < dims[1]; ++j)
+            data[j*dims[0] + i] = vecs[j][i];
+
+    matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, MAT_F_DONT_COPY_DATA);
+
+    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB);
+    Mat_VarFree(matvar);
+    Mat_Close(mat);
+
+    delete [] data;
+}
+
 ProblemSolver::ProblemSolver(Computation *parentProblem) : m_computation(parentProblem)
 {
 }
@@ -233,7 +258,7 @@ void ProblemSolver::clear()
     m_solverDeal.clear();
     m_fesCache.clear();
     m_feCollectionCache.clear();
-    m_mappingCollectionCache.clear();    
+    m_mappingCollectionCache.clear();
 }
 
 void ProblemSolver::init()
@@ -317,7 +342,7 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
         }
         feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
 
-        // fe collections        
+        // fe collections
         for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
         {
             std::vector<const dealii::FiniteElement<2> *> fes;
@@ -332,7 +357,7 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
                     fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
                 else if (spaces.value(key).type() == "l2")
                     fe = new dealii::FE_DGP<2>(degree + space.orderAdjust());
-                    // fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
+                // fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
 
                 fes.push_back(fe);
                 m_fesCache[fieldInfo->fieldId()].push_back(fe);

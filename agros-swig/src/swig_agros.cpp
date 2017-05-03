@@ -17,7 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "pyagros.h"
+#include "swig_agros.h"
 
 #include "logview.h"
 #include "solver/problem.h"
@@ -34,8 +34,6 @@
 #include <tbb/tbb.h>
 tbb::mutex runPythonHeaderMutex;
 #endif
-
-// ************************************************************************************
 
 void openFile(const std::string &file, bool openWithSolution)
 {
@@ -67,9 +65,9 @@ void saveFile(const std::string &file, bool saveWithSolution)
     }
 }
 
-std::string pyVersion()
+std::string swigVersion()
 {
-    return const_cast<char*>(QCoreApplication::applicationVersion().toStdString().c_str());
+    return QCoreApplication::applicationVersion().toStdString();
 }
 
 std::string pyDatadir(std::string str)
@@ -80,7 +78,7 @@ std::string pyDatadir(std::string str)
 
 // ************************************************************************************
 
-void PyOptions::setCacheSize(int size)
+void SwigOptions::setCacheSize(int size)
 {
     if (size < 2 || size > 50)
         throw out_of_range(QObject::tr("Cache size is out of range (2 - 50).").toStdString());
@@ -88,11 +86,10 @@ void PyOptions::setCacheSize(int size)
     Agros::configComputer()->setValue(Config::Config_CacheSize, size);
 }
 
-void PyOptions::setDumpFormat(std::string format)
+void SwigOptions::setDumpFormat(std::string format)
 {
     if (dumpFormatStringKeys().contains(QString::fromStdString(format)))
         Agros::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) dumpFormatFromStringKey(QString::fromStdString(format)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(dumpFormatStringKeys())).toStdString());
 }
-

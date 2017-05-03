@@ -126,14 +126,14 @@ namespace bayesopt
     eval_func fpointer = &(NLOPT_Optimization::evaluate_nlopt);
     void* objPointer = static_cast<void *>(rbobj);
     const size_t nIter = 20;
-    std::vector<double> vd(n);
-    std::vector<double> vu(n);
+    // std::vector<double> vd(n);
+    // std::vector<double> vu(n);
 
-    for (size_t i = 0; i < n; ++i) 
-      {
-	vd[i] = Xnext(i) - 0.01;
-	vu[i] = Xnext(i) + 0.01;
-      }
+    // for (size_t i = 0; i < n; ++i) 
+    //   {
+    // 	vd[i] = Xnext(i) - 0.01;
+    // 	vu[i] = Xnext(i) + 0.01;
+    //   }
 
     vectord start = Xnext;
 
@@ -218,11 +218,22 @@ namespace bayesopt
 	//If the point is exactly at the limit, we may have trouble.
     	for (size_t i = 0; i < n; ++i) 
 	  {
-	    if (Xnext(i)-mDown[i] < 0.0001) Xnext(i) += 0.0001;
-	    if (mUp[i] - Xnext(i) < 0.0001) Xnext(i) -= 0.0001;
+	    if (Xnext(i)-mDown[i] < 0.0001)
+	      {
+		Xnext(i) += 0.0001;
+		FILE_LOG(logDEBUG) << "Hacking point for BOBYQA. THIS SHOULD NOT HAPPEN";
+	      }
+	    if (mUp[i] - Xnext(i) < 0.0001)
+	      {
+		Xnext(i) -= 0.0001;
+		FILE_LOG(logDEBUG) << "Hacking point for BOBYQA. THIS SHOULD NOT HAPPEN";
+	      }
 	  }
 
-	fmin = run_nlopt(nlopt::LN_BOBYQA,fpointer,Xnext,maxf2,
+	// BOBYQA may fail in this point. Could it be that EI is not twice differentiable?
+	// fmin = run_nlopt(nlopt::LN_BOBYQA,fpointer,Xnext,maxf2,
+	// 		 mDown,mUp,objPointer);
+	fmin = run_nlopt(nlopt::LN_COBYLA,fpointer,Xnext,maxf2,
 			 mDown,mUp,objPointer);
 	FILE_LOG(logDEBUG) << "2nd opt " << maxf2 << "-> " << Xnext 
 			   << " f() ->" << fmin;

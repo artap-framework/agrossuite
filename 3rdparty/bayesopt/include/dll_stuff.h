@@ -27,7 +27,7 @@
 
 
 /* WINDOWS DLLs stuff */
-#if defined (BAYESOPT_DLL)
+#if defined (BAYESOPT_DLL) && (defined(_WIN32) || defined(__WIN32__)) && !defined(__LCC__)
   #if defined(bayesopt_EXPORTS)
     #define  BAYESOPT_API __declspec(dllexport)
   #else

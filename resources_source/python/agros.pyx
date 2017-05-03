@@ -127,7 +127,7 @@ cdef extern from "../../agros-python/pythonlab/pyagros.h":
     string pyDatadir(string &str)    
 
     # version()
-    char *pyVersion()
+    string pyVersion()
 
     # PyOptions
     cdef cppclass PyOptions:

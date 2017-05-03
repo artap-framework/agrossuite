@@ -38,11 +38,11 @@ inline std::string tempDir() { return tempProblemDir().toStdString(); }
 inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
 
 // functions
-std::string pyVersion();
+std::string swigVersion();
 
 std::string pyDatadir(std::string str = "");
 
-struct PyOptions
+struct SwigOptions
 {
     // cache size
     inline int getCacheSize() const { return Agros::configComputer()->value(Config::Config_CacheSize).toInt(); }

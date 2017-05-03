@@ -41,7 +41,7 @@ class CouplingInfo;
 class ProblemBase;
 class ProblemConfig;
 class PostprocessorSetting;
-class PyProblem;
+class SwigProblem;
 
 class Computation;
 class SolutionStore;
@@ -242,7 +242,7 @@ protected:
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 
-    friend class PyProblem;
+    friend class SwigProblem;
     friend class AgrosSolver;
     friend class Problem;
     friend class Computation;
@@ -285,7 +285,7 @@ private:
     QSharedPointer<Computation> m_currentComputation;
 
     friend class PyComputation;
-    friend class PyProblem;
+    friend class SwigProblem;
 
 protected:
     // recipes

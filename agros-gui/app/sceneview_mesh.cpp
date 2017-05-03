@@ -36,6 +36,7 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/module.h"
+#include "solver/solutionstore.h"
 
 // deal.ii
 #include <deal.II/grid/tria.h>
@@ -54,6 +55,28 @@ SceneViewMesh::SceneViewMesh(PostprocessorWidget *postprocessorWidget)
 
 SceneViewMesh::~SceneViewMesh()
 {
+}
+
+void SceneViewMesh::mousePressEvent(QMouseEvent *event)
+{
+    // left mouse
+    if (event->button() & Qt::LeftButton)
+    {
+        Point p = transform(Point(event->pos().x(), event->pos().y()));
+
+        int timeStep = m_postprocessorWidget->currentComputation()->postDeal()->activeTimeStep();
+        int adaptivityStep = m_postprocessorWidget->currentComputation()->postDeal()->activeAdaptivityStep();
+        QString fieldId = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->fieldId();
+
+        FieldSolutionID fsid(fieldId, timeStep, adaptivityStep);
+        // check existence
+        if (!m_postprocessorWidget->currentComputation()->solutionStore()->contains(fsid))
+            return;
+
+        MultiArray ma = m_postprocessorWidget->currentComputation()->solutionStore()->multiArray(fsid);
+    }
+
+    SceneViewCommon2D::mousePressEvent(event);
 }
 
 ProblemBase *SceneViewMesh::problem() const
