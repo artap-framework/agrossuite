@@ -71,7 +71,7 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2
         // thereby need to use VectorTools::Linfty_norm:
         std::pair<std::vector<unsigned int>, std::vector<double> > res =
                 dealii::FESeries::process_coefficients<2>(fourier_coefficients,
-                                                          dealii::std_cxx11::bind(&ErrorEstimator::predicate, this, dealii::std_cxx11::_1),
+                                                          std::bind(&ErrorEstimator::predicate, this, std::placeholders::_1),
                                                           dealii::VectorTools::Linfty_norm);
 
         // The first vector in the <code>std::pair</code> will store values of the predicate,
@@ -338,9 +338,9 @@ void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_
                                         const dealii::Vector<double> &dual_solution,
                                         dealii::Vector<float> &error_per_cell)
 {
-    Assert (error_per_cell.size() == primal_dof.get_tria().n_active_cells(),
+    Assert (error_per_cell.size() == primal_dof.get_triangulation().n_active_cells(),
             ExcInvalidVectorLength (error_per_cell.size(),
-                                    primal_dof.get_tria().n_active_cells()));
+                                    primal_dof.get_triangulation().n_active_cells()));
     typedef std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
 
     dealii::SynchronousIterators<IteratorTuple>
@@ -440,7 +440,7 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
     for (dealii::hp::DoFHandler<2>::active_cell_iterator cell = dual_solver->doFHandler.begin_active(); cell != dual_solver->doFHandler.end(); ++cell)
         for (unsigned int face_no=0; face_no<dealii::GeometryInfo<dim>::faces_per_cell; ++face_no)
             face_integrals[cell->face(face_no)] = -1e20;
-    error_indicators.reinit (dual_solver->doFHandler.get_tria().n_active_cells());
+    error_indicators.reinit (dual_solver->doFHandler.get_triangulation().n_active_cells());
 
     typedef std_tuple<dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
     dealii::SynchronousIterators<IteratorTuple> cell_and_error_begin(IteratorTuple (dual_solver->doFHandler.begin_active(), error_indicators.begin()));

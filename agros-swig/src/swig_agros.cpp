@@ -65,12 +65,18 @@ void saveFile(const std::string &file, bool saveWithSolution)
     }
 }
 
+void swigInitSingleton()
+{
+    initSingleton();
+}
+
+
 std::string swigVersion()
 {
     return QCoreApplication::applicationVersion().toStdString();
 }
 
-std::string pyDatadir(std::string str)
+std::string swigDatadir(std::string str)
 {
     QString path = QFileInfo(datadir() + "/" + QString::fromStdString(str)).absoluteFilePath();
     return compatibleFilename(path).toStdString();

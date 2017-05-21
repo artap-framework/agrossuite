@@ -214,15 +214,15 @@ QString datadir()
     // linux
 #ifdef Q_WS_X11 
     // local installation
-    // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-
     // python
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/../..";
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/";
+
+    // solver
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath();
 
     // system installation
     if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))

@@ -238,7 +238,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID,
             if (contains(previousSolutionID))
             {
                 MultiArray previousMA = m_multiSolutionDealCache[previousSolutionID];
-                if (doFHandler.get_tria().n_cells() == previousMA.doFHandler().get_tria().n_cells())
+                if (doFHandler.get_triangulation().n_cells() == previousMA.doFHandler().get_triangulation().n_cells())
                 {
                     // copy file
                     forceSave = false;
@@ -256,7 +256,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID,
             QString fnMesh = QString("%1.msh").arg(baseFN);
             std::ofstream ofsMesh(fnMesh.toStdString());
             boost::archive::binary_oarchive sbMesh(ofsMesh);
-            doFHandler.get_tria().save(sbMesh, 0);
+            doFHandler.get_triangulation().save(sbMesh, 0);
         }
     }
 
@@ -351,7 +351,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
 {
     // triangulation
     dealii::Triangulation<2> *newTriangulation = new dealii::Triangulation<2>();
-    newTriangulation->copy_triangulation(doFHandler.get_tria());
+    newTriangulation->copy_triangulation(doFHandler.get_triangulation());
 
     // dof handler
     std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);

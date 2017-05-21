@@ -5,8 +5,10 @@
 %module agros
 #endif
 %include "std_string.i"
+%include "std_vector.i"
+%include "std_map.i"
 %include "exception.i"
-/*
+
 %{
 #define SWIG_FILE_WITH_INIT
 #include "../../agros-swig/src/swig_agros.h"
@@ -15,8 +17,17 @@
 #include "../../agros-swig/src/swig_geometry.h"
 %}
 
+%template(map_string_double) std::map<string, double>;
+%template(map_string_int) std::map<string, int>;
+%template(map_string_string) std::map<string, string>;
+
 %rename(version) swigVersion;
 extern std::string swigVersion();
+
+#if defined(SWIGMATLAB) || defined(SWIGOCTAVE)
+%rename(initSingleton) swigInitSingleton;
+extern void swigInitSingleton();
+#endif
 
 class SwigProblemBase
 {
@@ -55,6 +66,18 @@ public:
     inline std::string getMatrixSolver() const;
     void setMatrixSolver(const std::string &matrixSolver);
 
+    // boundaries
+    #ifdef SWIGPYTHON
+    %rename(add_boundary) addBoundary;
+    #endif
+    void addBoundary(const std::string &name, const std::string &type, const std::map<string, double> &values);
+
+    // materials
+    #ifdef SWIGPYTHON
+    %rename(add_material) addMaterial;
+    #endif
+    void addMaterial(const std::string &name, const std::map<string, double> &values);
+
     #ifdef SWIGPYTHON
     %pythoncode
     %{
@@ -86,6 +109,25 @@ class SwigGeometry
 public:
     SwigGeometry();
     virtual ~SwigGeometry();
+
+    // nodes
+    #ifdef SWIGPYTHON
+    %rename(add_node) addNode;
+    #endif
+    int addNode(const double x, const double y);
+
+    // faces
+    #ifdef SWIGPYTHON
+    %rename(add_edge) addEdge;
+    #endif
+    int addEdge(double x1, double y1, double x2, double y2,
+                const map<string, string> &boundaries = map<string, string>(), double angle = 0.0, int segments = 3, int curvilinear = 0);
+
+    // label
+    #ifdef SWIGPYTHON
+    %rename(add_label) addLabel;
+    #endif
+    int addLabel(double x, double y, const map<std::string, std::string> &materials, double area);
 };
 
 %rename(Problem) SwigProblem;
@@ -132,15 +174,47 @@ public:
 }
 #endif
 
+#ifdef SWIGJAVA
+%exception solve {
+  try {
+     $action
+  } catch (std::logic_error &e) {
+    jclass c = jenv->FindClass("java/lang/Exception");
+    jenv->ThrowNew(c, const_cast<char*>(e.what()));
+    return $null;
+  }
+}
+#endif
+
+#ifdef SWIGCSHARP
+%exception solve() %{
+try {
+  $action
+} catch (std::logic_error e) {
+  SWIG_CSharpSetPendingException(SWIG_CSharpApplicationException, e.what());
+  return $null;
+}
+%}
+#endif
+
+#ifdef SWIGOCTAVE
+%exception solve() %{
+try {
+  $action
+} catch (std::logic_error e) {
+  error (e.what());
+}
+%}
+#endif
+
 %rename(Computation) SwigComputation;
 class SwigComputation : public SwigProblemBase
 {
 public:
     SwigComputation(bool newComputation = true);
-    SwigComputation(const std::string &computation);
+    // SwigComputation(const std::string &computation);
     virtual ~SwigComputation();
 
     void solve();
     void clear();
 };
-*/

@@ -347,12 +347,12 @@ void SwigComputation::setResult(const string &key, double value)
     results[QString::fromStdString(key)] = value;
 }
 
-PySolution::~PySolution()
+SwigSolution::~SwigSolution()
 {
-    // qDebug() << "PySolution::~PySolution() - m_computation " << m_computation.isNull();
+    // qDebug() << "SwigSolution::~SwigSolution() - m_computation " << m_computation.isNull();
 }
 
-void PySolution::setComputation(SwigComputation *computation, const std::string &fieldId)
+void SwigSolution::setComputation(SwigComputation *computation, const std::string &fieldId)
 {
     m_computation = computation->computation();
 
@@ -363,7 +363,7 @@ void PySolution::setComputation(SwigComputation *computation, const std::string 
         throw invalid_argument(QObject::tr("Invalid field id. Field %1 is not defined.").arg(id).toStdString());
 }
 
-int PySolution::getTimeStep(int timeStep) const
+int SwigSolution::getTimeStep(int timeStep) const
 {
     if (timeStep == -1)
         timeStep = m_computation->solutionStore()->lastTimeStep(m_fieldInfo);
@@ -374,7 +374,7 @@ int PySolution::getTimeStep(int timeStep) const
     return timeStep;
 }
 
-int PySolution::getAdaptivityStep(int adaptivityStep, int timeStep) const
+int SwigSolution::getAdaptivityStep(int adaptivityStep, int timeStep) const
 {
     if (adaptivityStep == -1)
         adaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep);
@@ -384,7 +384,7 @@ int PySolution::getAdaptivityStep(int adaptivityStep, int timeStep) const
     return adaptivityStep;
 }
 
-void PySolution::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const
+void SwigSolution::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -423,7 +423,7 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
     results = values;
 }
 
-void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
+void SwigSolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
                                   map<std::string, double> &results) const
 {
     map<std::string, double> values;
@@ -474,7 +474,7 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
     results = values;
 }
 
-void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
+void SwigSolution::volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
                                  map<std::string, double> &results) const
 {
     map<std::string, double> values;
@@ -527,7 +527,7 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
     results = values;
 }
 
-void PySolution::initialMeshInfo(map<std::string, int> &info) const
+void SwigSolution::initialMeshInfo(map<std::string, int> &info) const
 {
     if (!m_computation->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
@@ -537,7 +537,7 @@ void PySolution::initialMeshInfo(map<std::string, int> &info) const
     info["elements"] = m_computation->initialMesh().n_active_cells();
 }
 
-void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
+void SwigSolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
 {
     if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
@@ -549,12 +549,12 @@ void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::str
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
     MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
-    info["nodes"] = ma.doFHandler().get_tria().n_used_vertices();
-    info["elements"] = ma.doFHandler().get_tria().n_active_cells();
+    info["nodes"] = ma.doFHandler().get_triangulation().n_used_vertices();
+    info["elements"] = ma.doFHandler().get_triangulation().n_active_cells();
     info["dofs"] = ma.doFHandler().n_dofs();
 }
 
-void PySolution::solverInfo(int timeStep, int adaptivityStep,
+void SwigSolution::solverInfo(int timeStep, int adaptivityStep,
                             vector<double> &solutionsChange, vector<double> &residual,
                             vector<double> &dampingCoeff, int &jacobianCalculations) const
 {
@@ -580,7 +580,7 @@ void PySolution::solverInfo(int timeStep, int adaptivityStep,
      */
 }
 
-void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
+void SwigSolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
 {
     if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
@@ -602,7 +602,7 @@ void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int>
     }
 }
 
-void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln) const
+void SwigSolution::solution(int timeStep, int adaptivityStep, vector<double> &sln) const
 {
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
@@ -622,7 +622,7 @@ void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln)
     throw logic_error(QObject::tr("Solution does not exist.").toStdString());
 }
 
-void PySolution::exportVTK(const std::string &fileName, int timeStep, int adaptivityStep, const std::string &variable, std::string physicFieldVariableComp)
+void SwigSolution::exportVTK(const std::string &fileName, int timeStep, int adaptivityStep, const std::string &variable, std::string physicFieldVariableComp)
 {
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);

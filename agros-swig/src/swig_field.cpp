@@ -192,8 +192,46 @@ void SwigField::setTimeSkip(double timeSkip)
 }
 
 void SwigField::addBoundary(const std::string &name, const std::string &type,
-                          const map<std::string, std::string> &parameters,
-                          const map<std::string, std::string> &expressions)
+                            const map<std::string, double> &vals)
+{
+    // check boundaries with same name
+    foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
+    {
+        if (boundary->name() == QString::fromStdString(name))
+            throw invalid_argument(QObject::tr("Boundary condition '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
+    }
+
+    if (!m_fieldInfo->boundaryTypeContains(QString::fromStdString(type)))
+        throw invalid_argument(QObject::tr("Wrong boundary type '%1'.").arg(QString::fromStdString(type)).toStdString());
+
+    Module::BoundaryType boundaryType = m_fieldInfo->boundaryType(QString::fromStdString(type));
+
+    // browse boundary parameters
+    QMap<QString, Value> values;
+    for (map<std::string, double>::const_iterator i = vals.begin(); i != vals.end(); ++i)
+    {
+        bool assigned = false;
+        foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+        {
+            if (variable.id() == QString::fromStdString((*i).first))
+            {
+                qInfo() << variable.id() << (*i).second;
+                assigned = true;
+                values[variable.id()] = Value(Agros::problem(), (*i).second);
+            }
+        }
+
+        if (!assigned)
+            throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
+    }
+
+    Agros::problem()->scene()->addBoundary(new SceneBoundary(Agros::problem()->scene(), m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
+    Agros::problem()->scene()->invalidate();
+}
+
+void SwigField::addBoundary(const std::string &name, const std::string &type,
+                            const map<std::string, std::string> &parameters,
+                            const map<std::string, std::string> &expressions)
 {
     // check boundaries with same name
     foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
@@ -234,8 +272,8 @@ void SwigField::addBoundary(const std::string &name, const std::string &type,
 }
 
 void SwigField::modifyBoundary(const std::string &name, const std::string &type,
-                             const map<std::string, std::string> &parameters,
-                             const map<std::string, std::string> &expressions)
+                               const map<std::string, std::string> &parameters,
+                               const map<std::string, std::string> &expressions)
 {
     SceneBoundary *sceneBoundary = Agros::problem()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
     if (!sceneBoundary)
@@ -288,11 +326,53 @@ void SwigField::removeBoundary(const std::string &name)
     Agros::problem()->scene()->invalidate();
 }
 
+void SwigField::addMaterial(const std::string &name, const map<std::string, double> &vals)
+{
+    // check materials with same name
+    foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(m_fieldInfo->fieldId()).items())
+    {
+        if (material->name() == QString::fromStdString(name))
+            throw invalid_argument(QObject::tr("Material '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
+    }
+
+    // browse material parameters
+    QList<Module::MaterialTypeVariable> variables = m_fieldInfo->materialTypeVariables();
+    QMap<QString, Value> values;
+    for (map<std::string, double>::const_iterator i = vals.begin(); i != vals.end(); ++i)
+    {
+        bool assigned = false;
+        foreach (Module::MaterialTypeVariable variable, variables)
+        {
+            if (variable.id() == QString::fromStdString((*i).first))
+            {
+                assigned = true;
+
+                try
+                {
+                    values[variable.id()] = Value(Agros::problem(), (*i).second);
+                }
+                catch (AgrosException e)
+                {
+                    throw invalid_argument(e.toString().toStdString());
+                }
+
+                break;
+            }
+        }
+
+        if (!assigned)
+            throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
+    }
+
+    Agros::problem()->scene()->addMaterial(new SceneMaterial(Agros::problem()->scene(), m_fieldInfo, QString::fromStdString(name), values));
+    Agros::problem()->scene()->invalidate();
+}
+
 void SwigField::addMaterial(const std::string &name, const map<std::string, std::string> &parameters,
-                          const map<std::string, std::string> &expressions,
-                          const map<std::string, vector<double> > &nonlin_x,
-                          const map<std::string, vector<double> > &nonlin_y,
-                          const map<string, map<string, string> > &settings_map)
+                            const map<std::string, std::string> &expressions,
+                            const map<std::string, vector<double> > &nonlin_x,
+                            const map<std::string, vector<double> > &nonlin_y,
+                            const map<string, map<string, string> > &settings_map)
 {
     // check materials with same name
     foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(m_fieldInfo->fieldId()).items())
@@ -400,10 +480,10 @@ void SwigField::addMaterial(const std::string &name, const map<std::string, std:
 }
 
 void SwigField::modifyMaterial(const std::string &name, const map<string, std::string> &parameters,
-                             const map<std::string, std::string> &expressions,
-                             const map<std::string, vector<double> > &nonlin_x,
-                             const map<std::string, vector<double> > &nonlin_y,
-                             const map<string, map<string, string> > &settings_map)
+                               const map<std::string, std::string> &expressions,
+                               const map<std::string, vector<double> > &nonlin_x,
+                               const map<std::string, vector<double> > &nonlin_y,
+                               const map<string, map<string, string> > &settings_map)
 {
     SceneMaterial *sceneMaterial = Agros::problem()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
 

@@ -31,6 +31,8 @@ SET(HEADERS ../src/swig_field.h
     ../src/swig_study.h
     ../src/swig_agros.h)
 
+#SET(CMAKE_SWIG_FLAGS "-keyword")
+#SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-py3")
 SET_SOURCE_FILES_PROPERTIES(../agros.i PROPERTIES CPLUSPLUS ON)
 SET_SOURCE_FILES_PROPERTIES(../agros.i PROPERTIES SWIG_FLAGS "-includeall")
 SWIG_ADD_MODULE(${PROJECT_NAME} python ../agros.i ${SOURCES} ${HEADERS})

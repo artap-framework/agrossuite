@@ -30,6 +30,9 @@ class SolutionStore;
 class Log;
 class PluginInterface;
 
+
+AGROS_LIBRARY_API void initSingleton();
+
 class AGROS_LIBRARY_API Agros
 {
 public:

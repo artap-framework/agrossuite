@@ -11,11 +11,11 @@ public class main {
          electrostatic.setAnalysisType("steadystate");
 
          Geometry geometry = problem.geometry();
-         
-         Computation computation = problem.computation();
-         // computation.solve();
-         
+                  
          Console.WriteLine(problem.getCoordinateType());
          Console.WriteLine(electrostatic.getAnalysisType());
+         
+         Computation computation = problem.computation();
+         // computation.solve();         
      }
  }

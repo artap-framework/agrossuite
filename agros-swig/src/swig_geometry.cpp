@@ -38,11 +38,20 @@ int SwigGeometry::labelsCount() const
     return Agros::problem()->scene()->labels->count();
 }
 
+int SwigGeometry::addNode(const double x, const double y)
+{
+    return addNode(PointValue(Value(Agros::problem(), x),
+                              Value(Agros::problem(), y)));
+}
+
 int SwigGeometry::addNode(std::string x, std::string y)
 {
-    PointValue point = PointValue(Value(Agros::problem(), QString::fromStdString(x)),
-                                  Value(Agros::problem(), QString::fromStdString(y)));
+    return addNode(PointValue(Value(Agros::problem(), QString::fromStdString(x)),
+                              Value(Agros::problem(), QString::fromStdString(y))));
+}
 
+int SwigGeometry::addNode(PointValue point)
+{
     if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
@@ -56,8 +65,25 @@ int SwigGeometry::addNode(std::string x, std::string y)
     return Agros::problem()->scene()->nodes->items().indexOf(node);
 }
 
+int SwigGeometry::addEdge(double x1, double y1, double x2, double y2,
+                          const map<string, string> &boundaries,
+                          double angle, int segments, int curvilinear)
+{
+    qInfo() << "addEdge" << boundaries.size();
+
+    PointValue pointStart = PointValue(Value(Agros::problem(), x1),
+                                       Value(Agros::problem(), y1));
+    PointValue pointEnd = PointValue(Value(Agros::problem(), x2),
+                                     Value(Agros::problem(), y2));
+    Value valueAngle = Value(Agros::problem(), angle);
+
+    qInfo() << "addEdge" << boundaries.size() << " ok";
+
+    return addEdge(pointStart, pointEnd, valueAngle, segments, curvilinear, map<std::string, int>(), map<string, string>());
+}
+
 int SwigGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
-                        const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+                          const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     PointValue pointStart = PointValue(Value(Agros::problem(), QString::fromStdString(x1)),
                                        Value(Agros::problem(), QString::fromStdString(y1)));
@@ -65,6 +91,12 @@ int SwigGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::s
                                      Value(Agros::problem(), QString::fromStdString(y2)));
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
+    return addEdge(pointStart, pointEnd, valueAngle, segments, curvilinear, refinements, boundaries);
+}
+
+int SwigGeometry::addEdge(PointValue pointStart, PointValue pointEnd, Value valueAngle, int segments, int curvilinear,
+                          const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+{    
     if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric &&
             (pointStart.numberX() < 0.0 || pointEnd.numberX() < 0.0))
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
@@ -103,7 +135,7 @@ int SwigGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::s
 }
 
 int SwigGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
-                               const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+                                 const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
@@ -210,12 +242,18 @@ void SwigGeometry::setBoundaries(SceneFace *edge, const map<std::string, std::st
     }
 }
 
-int SwigGeometry::addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
-                         const map<std::string, int> &orders, const map<std::string, std::string> &materials)
+int SwigGeometry::addLabel(double x, double y, const map<std::string, std::string> &materials, double area)
 {
-    PointValue point = PointValue(Value(Agros::problem(), QString::fromStdString(x)),
-                                  Value(Agros::problem(), QString::fromStdString(y)));
+    PointValue point = PointValue(Value(Agros::problem(), x),
+                                  Value(Agros::problem(), y));
 
+    return -1;
+    return addLabel(point, map<std::string, int>(), area, map<std::string, int>(), materials);
+}
+
+int SwigGeometry::addLabel(PointValue point, const map<std::string, int> &refinements, double area,
+                           const map<std::string, int> &orders, const map<std::string, std::string> &materials)
+{
     if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
@@ -248,7 +286,7 @@ int SwigGeometry::addLabel(std::string x, std::string y, double area, const map<
 }
 
 void SwigGeometry::modifyLabel(int index, double area, const map<std::string, int> &refinements,
-                             const map<std::string, int> &orders, const map<std::string, std::string> &materials)
+                               const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
     if (Agros::problem()->scene()->labels->isEmpty())
         throw out_of_range(QObject::tr("No labels are defined.").toStdString());

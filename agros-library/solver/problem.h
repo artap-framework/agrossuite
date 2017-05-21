@@ -211,12 +211,6 @@ public:
     virtual void clearFields();
     virtual void clearFieldsAndConfig();
 
-    /// emited when an field is added or removed. Menus need to adjusted
-    // void fieldsChanged();
-
-    /// emited when an field is added or removed. Menus need to adjusted
-    // void couplingsChanged();
-
 protected:
     Scene *m_scene;
 

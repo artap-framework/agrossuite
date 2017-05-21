@@ -538,6 +538,7 @@ ProblemBase::~ProblemBase()
     m_config->clear();
 
     clearFieldsAndConfig();
+    clearFields();
 
     delete m_scene;
     delete m_config;

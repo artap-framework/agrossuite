@@ -144,11 +144,11 @@ public:
     void setResult(const std::string &key, double value);
 };
 
-class PySolution
+class SwigSolution
 {
 public:
-    PySolution() {}
-    ~PySolution();
+    SwigSolution() {}
+    ~SwigSolution();
     void setComputation(SwigComputation *computation, const std::string &fieldId);
 
     // local values, integrals

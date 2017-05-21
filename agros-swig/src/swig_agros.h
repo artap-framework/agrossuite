@@ -38,9 +38,9 @@ inline std::string tempDir() { return tempProblemDir().toStdString(); }
 inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
 
 // functions
+void swigInitSingleton();
 std::string swigVersion();
-
-std::string pyDatadir(std::string str = "");
+std::string swigDatadir(std::string str = "");
 
 struct SwigOptions
 {

@@ -100,7 +100,8 @@ class AgrosTestResult(ut.TestResult):
 
 
 class TestElectrostaticPlanar(AgrosTestCase):
-    def setUp(self):  
+    def setUp(self):      
+        print(agros.version())
         # model
         problem = agros.Problem(clear = True)
         problem.coordinate_type = "planar"
@@ -112,7 +113,7 @@ class TestElectrostaticPlanar(AgrosTestCase):
         self.electrostatic.number_of_refinements = 1
         self.electrostatic.polynomial_order = 2
         self.electrostatic.solver = "linear"
-        """
+
         self.electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
         self.electrostatic.add_boundary("U = 0 V", "electrostatic_potential", {"electrostatic_potential" : 0})
         self.electrostatic.add_boundary("U = 1000 V", "electrostatic_potential", {"electrostatic_potential" : 1000})
@@ -121,38 +122,39 @@ class TestElectrostaticPlanar(AgrosTestCase):
         self.electrostatic.add_material("Source", {"electrostatic_charge_density" : 4e-10, "electrostatic_permittivity" : 10})
         self.electrostatic.add_material("Dieletric 1", {"electrostatic_permittivity" : 3, "electrostatic_charge_density" : 0})
         self.electrostatic.add_material("Dieletric 2", {"electrostatic_permittivity" : 10, "electrostatic_charge_density" : 0})
-        """
+
         # geometry
         geometry = problem.geometry()
 
         # edges
+        # geometry.add_edge(1, 2, 1, 1, boundaries = {"electrostatic" : "U = 1000 V"})
         """
-        geometry.add_edge(1, 2, 1, 1, boundaries = {"electrostatic" : "U = 1000 V"})
+        geometry.add_edge(1.0, 2.0, 1.0, 1.0, {"electrostatic" : "U = 1000 V"})        
         geometry.add_edge(4, 1, 1, 1, boundaries = {"electrostatic" : "U = 1000 V"})
         geometry.add_edge(1, 2, 4, 2, boundaries = {"electrostatic" : "U = 1000 V"})
         geometry.add_edge(4, 2, 4, 1, boundaries = {"electrostatic" : "U = 1000 V"})
         geometry.add_edge(20, 24, 20, 1, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(20, 1, 20, 0, boundaries = {"electrostatic" : "Neumann"})
-        geometry.add_edge(4, 1, 20, 1, boundaries = {})
+        geometry.add_edge(4, 1, 20, 1)
         geometry.add_edge(0, 24, 0, 1, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0, 0, 0, 1, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0, 0, 20, 0, boundaries = {"electrostatic" : "U = 0 V"})
         geometry.add_edge(0, 24, 20, 24, boundaries = {"electrostatic" : "Neumann"})
-        geometry.add_edge(0, 1, 1, 1, boundaries = {})
-        geometry.add_edge(7, 13, 14, 13, boundaries = {})
-        geometry.add_edge(14, 13, 14, 18, boundaries = {})
-        geometry.add_edge(14, 18, 7, 18, boundaries = {})
-        geometry.add_edge(7, 18, 7, 13, boundaries = {})
+        """
+        geometry.add_edge(0, 1, 1, 1)
+        geometry.add_edge(7, 13, 14, 13)
+        geometry.add_edge(14, 13, 14, 18)
+        geometry.add_edge(14, 18, 7, 18)
+        geometry.add_edge(7, 18, 7, 13)
         geometry.add_edge(9.5, 8, 7, 5.5)
         geometry.add_edge(7, 5.5, 14, 4)
         geometry.add_edge(13.5, 7, 14, 4)
         geometry.add_edge(13.5, 7, 9.5, 8)
-        """        
-
         # labels
+        # geometry.add_label(2.78257, 1.37346, {"electrostatic" : "none"}, 0.0)
         """
         geometry.add_label(2.78257, 1.37346, materials = {"electrostatic" : "none"})
-        geometry.add_label(10.3839, 15.7187, area = 0.2, materials = {"electrostatic" : "Source"})
+        geometry.add_label(10.3839, 15.7187, materials = {"electrostatic" : "Source"}, area = 0.2)
         geometry.add_label(3.37832, 15.8626, materials = {"electrostatic" : "Air"})
         geometry.add_label(12.3992, 0.556005, materials = {"electrostatic" : "Dieletric 1"})
         geometry.add_label(10.7019, 5.86396, materials = {"electrostatic" : "Dieletric 2"})
