@@ -162,7 +162,7 @@ void LibraryMaterial::read(const QString &fileName)
                     QJsonObject tableJson = valuesJson[TABLE].toObject();
 
                     QString keysTrimmed = tableJson[KEYS].toString().endsWith(";") ? tableJson[KEYS].toString().left(tableJson[KEYS].toString().count() - 1) : tableJson[KEYS].toString();
-                    QString valuesTrimmed = tableJson[KEYS].toString().endsWith(";") ? tableJson[KEYS].toString().left(tableJson[KEYS].toString().count() - 1) : tableJson[KEYS].toString();
+                    QString valuesTrimmed = tableJson[VALUES].toString().endsWith(";") ? tableJson[VALUES].toString().left(tableJson[VALUES].toString().count() - 1) : tableJson[VALUES].toString();
 
                     QStringList keysString = keysTrimmed.split(";");
                     QStringList valuesString = valuesTrimmed.split(";");

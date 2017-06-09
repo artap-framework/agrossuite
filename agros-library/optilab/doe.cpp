@@ -61,6 +61,7 @@ SweepDoE::Sweep::Sweep(SweepDoE *doe, bayesopt::Parameters par)
     {
         Parameter parameter = doe->study()->parameters()[i];
         double diff = doe->devFrac() / 100.0 * (parameter.upperBound() - parameter.lowerBound());
+        // qInfo() << parameter.name() << ", diff = " << diff;
 
         double lb = (doe->init()[i] - diff) > parameter.lowerBound() ? doe->init()[i] - diff : parameter.lowerBound();
         double ub = (doe->init()[i] + diff) < parameter.upperBound() ? doe->init()[i] + diff : parameter.upperBound();

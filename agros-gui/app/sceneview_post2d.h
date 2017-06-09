@@ -56,6 +56,7 @@ public:
     QAction *actPostprocessorModeSurfaceIntegral;
     QAction *actPostprocessorModeVolumeIntegral;
 
+    QAction *actExportJSONScalar;
     QAction *actExportVTKScalar;
     QAction *actExportVTKContours;
 

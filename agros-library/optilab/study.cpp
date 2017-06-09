@@ -322,10 +322,13 @@ double Study::doeEvaluatePoint(const QVector<double> &x)
     computation->readFromProblem();
 
     // set parameters
+    // qInfo() << "step";
     for (int i = 0; i < m_parameters.count(); i++)
     {
         Parameter parameter = m_parameters[i];
         computation->config()->parameters()->set(parameter.name(), x[i]);
+
+        // qInfo() << parameter.name() << ", key = " << x[i];
     }
 
     if (m_setting.value(Study::General_SolveProblem).toBool())
@@ -356,16 +359,18 @@ double Study::doeEvaluatePoint(const QVector<double> &x)
     computation->clearFieldsAndConfig();
     computation.clear();
 
+    // qInfo() << "value " << value;
+
     return value;
 }
 
-void Study::doeCompute(QSharedPointer<Computation> computation, QVector<double> init, double optinalValue)
+void Study::doeCompute(QSharedPointer<Computation> computation, QVector<double> init, double optionalValue)
 {
     SweepDoE doe(this, init, value(Study::General_DoE_Deviation).toDouble());
     doe.setNSamples(value(Study::General_DoE_SweepSamples).toInt());
     doe.setMethod(value(Study::General_DoE_SweepMethod).toInt());
-    if (!isnan(optinalValue))
-        doe.addValue(optinalValue);
+    if (!isnan(optionalValue))
+        doe.addValue(optionalValue);
 
     // solve problem and compute statistics
     doe.compute(computation);

@@ -491,7 +491,6 @@ void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase
     }
 }
 
-
 dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 {
     DataOut<2>::cell_iterator cell = this->dofs->begin_active();

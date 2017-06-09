@@ -97,7 +97,7 @@ public:
             }
 
             m_steps++;
-            qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+            // qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
             return value + totalPenalty;
         }

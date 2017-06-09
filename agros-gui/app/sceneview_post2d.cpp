@@ -1020,7 +1020,7 @@ void SceneViewPost2D::exportVTKContourView(const QString &fileName)
 
 void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable, PhysicFieldVariableComp physicFieldVariableComp)
 {
-    if (m_postprocessorWidget->currentComputation()->isSolved())
+    if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
     {
         QString fn = fileName;
 

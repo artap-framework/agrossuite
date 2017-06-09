@@ -80,7 +80,7 @@ public:
 #else
     virtual typename dealii::DataOut<2>::cell_iterator first_cell();
     virtual typename dealii::DataOut<2>::cell_iterator next_cell(const typename dealii::DataOut<2>::cell_iterator &old_cell);
-#endif
+#endif   
 
 private:
     Computation *m_computation;
