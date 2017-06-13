@@ -126,7 +126,7 @@ SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 find_package(XSD 4.0 REQUIRED)
 INCLUDE_DIRECTORIES(${XSD_INCLUDE_DIR})
 # xerces
-SET(XercesC_LIBRARY ${CMAKE_HOME_DIRECTORY}/3rdparty/xerces-c/libxerces-c.a)
+# SET(XercesC_LIBRARY ${CMAKE_HOME_DIRECTORY}/3rdparty/xerces-c/libxerces-c.a)
 find_package(XercesC REQUIRED)
 INCLUDE_DIRECTORIES(${XercesC_INCLUDE_DIRS})
 message(x ${XercesC_LIBRARIES} x)
