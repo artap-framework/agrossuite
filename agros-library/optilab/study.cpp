@@ -355,6 +355,16 @@ double Study::doeEvaluatePoint(const QVector<double> &x)
     // evaluation
     evaluateFunctionals(computation);
     double value = evaluateSingleGoal(computation);
+    /*
+    COMPUMAG 2017 - DOE - koutak
+    double value = 0.0;
+    foreach (Functional functional, m_functionals)
+    {
+        QString name = functional.name();
+        if (name == "OF_ratio")
+            value = computation->results()->value(name);
+    }
+    */
     computation->clearSolution();
     computation->clearFieldsAndConfig();
     computation.clear();

@@ -402,8 +402,8 @@ void SceneViewChart::doExportData()
     {
         Point point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
-        QList<double> times = m_postprocessorWidget->currentComputation()->timeStepTimes();
-        foreach (int timeStep, m_postprocessorWidget->currentComputation()->timeStepLengths())
+        // QList<double> times = m_postprocessorWidget->currentComputation()->timeStepTimes();
+        for(int timeStep = 0; timeStep < m_postprocessorWidget->currentComputation()->timeStepLengths().size(); timeStep++)
         {
             QMap<QString, double> data = getData(point,
                                                  timeStep,
@@ -468,7 +468,7 @@ QMap<QString, double> SceneViewChart::getData(Point point, int timeStep, int ada
     QMap<QString, double> table;
     table.insert(m_postprocessorWidget->currentComputation()->config()->labelX(), point.x);
     table.insert(m_postprocessorWidget->currentComputation()->config()->labelY(), point.y);
-    table.insert("t", m_postprocessorWidget->currentComputation()->timeStepToTotalTime(m_postprocessorWidget->currentComputation()->postDeal()->activeTimeStep()));
+    table.insert("t", m_postprocessorWidget->currentComputation()->timeStepToTotalTime(timeStep));
 
     foreach (Module::LocalVariable variable, m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localPointVariables(m_postprocessorWidget->currentComputation()->config()->coordinateType()))
     {
