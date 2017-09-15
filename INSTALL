@@ -35,6 +35,13 @@ Compilation
 ===========
 
 Notice:
+We prefer to use compiler clang instead of gcc. You can switch compiler by running
+
+export CC=/usr/bin/clang       
+export CXX=/usr/bin/clang++
+
+before calling cmake.
+
 If you have more than one CPU/core use command:
 
 make -jN
