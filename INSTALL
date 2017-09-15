@@ -15,8 +15,13 @@ First install the following free packages:
 
 If you are using a Debian-like system, install the required libraries by following commands:
 
-sudo apt-get install cmake libsuitesparse-dev cython3 xsdcxx libxerces-c-dev python3-dev python3-matplotlib python3-scipy python3-numpy libbz2-dev triangle-bin libtbb-dev zlib1g-dev libmetis-dev libboost-serialization-dev
-sudo apt-get install qt5-default qmlscene libqt5opengl5-dev qttools5-dev-tools qt5-qmake libqt5webkit5-dev qtxmlpatterns5-dev-tools libqt5svg5-dev qtlocation5-dev qttools5-dev qtquick1-5-dev libqt5xmlpatterns5-dev qtdeclarative5-dev 
+sudo apt-get install cmake clang libcurl4-openssl-dev libsuitesparse-dev cython3 xsdcxx libxerces-c-dev python3-dev python3-matplotlib python3-scipy python3-numpy libbz2-dev triangle-bin libtbb-dev zlib1g-dev libmetis-dev libboost-serialization-dev
+
+sudo apt-get install qt5-default qmlscene libqt5opengl5-dev qttools5-dev-tools qt5-qmake libqt5webkit5-dev qtxmlpatterns5-dev-tools libqt5svg5-dev qtlocation5-dev qttools5-dev qtquick1-5-dev libqt5xmlpatterns5-dev qtdeclarative5-dev
+
+Swig, up to ubuntu 17.04 is not in repositories
+wget http://ftp.cz.debian.org/debian/pool/main/s/swig/swig3.0_3.0.12-1_amd64.deb
+dpkg -i swig3.0_3.0.12-1_amd64.deb
 
 To initialise dealii submodule of the Agros2D repository, go to the main agros2d folder and issue following commands:
 git submodule init
