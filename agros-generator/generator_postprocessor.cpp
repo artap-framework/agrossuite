@@ -357,6 +357,16 @@ void Agros2DGeneratorModule::generatePluginSurfaceIntegralFiles()
         }
     }
 
+    foreach (XMLModule::quantity quantity, m_module->surface().quantity())
+    {
+        if (quantity.shortname().present())
+        {
+            ctemplate::TemplateDictionary *variable = output.AddSectionDictionary("VARIABLE_BOUNDARY");
+
+            variable->SetValue("BOUNDARY_VARIABLE", quantity.id());
+        }
+    }
+
     int counter = 0;
     foreach (XMLModule::surfaceintegral surf, m_module->postprocessor().surfaceintegrals().surfaceintegral())
     {

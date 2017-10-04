@@ -518,17 +518,17 @@ void PyGeometry::selectNone()
 
 void PyGeometry::moveSelection(double dx, double dy, bool copy, bool withMarkers)
 {
-    Agros::problem()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
+    assert(0); // Agros::problem()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
 }
 
 void PyGeometry::rotateSelection(double x, double y, double angle, bool copy, bool withMarkers)
 {
-    Agros::problem()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
+    assert(0); // Agros::problem()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
 }
 
 void PyGeometry::scaleSelection(double x, double y, double scale, bool copy, bool withMarkers)
 {
-    Agros::problem()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
+    assert(0); // Agros::problem()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
 }
 
 void PyGeometry::removeSelection()

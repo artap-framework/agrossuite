@@ -511,7 +511,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                     len.x = 0;
 
                     undoStack()->beginMacro(tr("Translation"));
-                    Agros::problem()->scene()->transformTranslate(dp, false, true);
+                    transformTranslate(dp, false, true);
                     undoStack()->endMacro();
                 }
 
@@ -522,14 +522,14 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                     len.y = 0;
 
                     undoStack()->beginMacro(tr("Translation"));
-                    Agros::problem()->scene()->transformTranslate(dp, false, true);
+                    transformTranslate(dp, false, true);
                     undoStack()->endMacro();
                 }
             }
             else
             {
                 undoStack()->beginMacro(tr("Translation"));
-                Agros::problem()->scene()->transformTranslate(dp, false, true);
+                transformTranslate(dp, false, true);
                 undoStack()->endMacro();
             }
         }
@@ -547,7 +547,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                     len.x = 0;
 
                     undoStack()->beginMacro(tr("Translation"));
-                    Agros::problem()->scene()->transformTranslate(dp, false, true);
+                    transformTranslate(dp, false, true);
                     undoStack()->endMacro();
                 }
 
@@ -558,21 +558,21 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                     len.y = 0;
 
                     undoStack()->beginMacro(tr("Translation"));
-                    Agros::problem()->scene()->transformTranslate(dp, false, true);
+                    transformTranslate(dp, false, true);
                     undoStack()->endMacro();
                 }
             }
             else
             {
                 undoStack()->beginMacro(tr("Translation"));
-                Agros::problem()->scene()->transformTranslate(dp, false, true);
+                transformTranslate(dp, false, true);
                 undoStack()->endMacro();
             }
         }
         else if (m_sceneMode == SceneGeometryMode_OperateOnLabels)
         {
             undoStack()->beginMacro(tr("Translation"));
-            Agros::problem()->scene()->transformTranslate(dp, false, true);
+            transformTranslate(dp, false, true);
             undoStack()->endMacro();
         }
 
@@ -1346,4 +1346,263 @@ void SceneViewPreprocessor::saveGeometryToSvg(const QString &fileName)
 {
     QString geometry = generateSvgGeometry(Agros::problem()->scene()->faces->items());
     writeStringContent(fileName, geometry);
+}
+
+
+
+bool SceneViewPreprocessor::moveSelectedNodes(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy)
+{
+    // select endpoints
+    foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
+    {
+        if (edge->isSelected())
+        {
+            edge->nodeStart()->setSelected(true);
+            edge->nodeEnd()->setSelected(true);
+        }
+    }
+
+    QList<PointValue> points;
+    QList<PointValue> newPoints;
+    QList<PointValue> pointsToSelect;
+
+    foreach (SceneNode *node, Agros::problem()->scene()->nodes->selected().items())
+    {
+        PointValue newPoint = PointValue(Agros::problem(), calculateNewPoint(mode, node->point(), point, angle, scaleFactor));
+
+        SceneNode *obstructNode = Agros::problem()->scene()->getNode(newPoint.point());
+        if (obstructNode && !obstructNode->isSelected())
+        {
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing point would be overwritten"));
+            return false;
+        }
+
+        points.push_back(node->pointValue());
+
+        // when copying, add only those points, that did not exist
+        // when moving, add all, because if poit on place where adding exist, it will be moved away (otherwise it would be obstruct node and function would not reach this point)
+        if(copy)
+        {
+            if (obstructNode)
+                pointsToSelect.push_back(newPoint);
+            else
+                newPoints.push_back(newPoint);
+        }
+        else
+        {
+            newPoints.push_back(newPoint);
+        }
+    }
+
+    if (copy)
+    {
+        undoStack()->push(new SceneNodeCommandAddMulti(newPoints));
+
+        Agros::problem()->scene()->nodes->setSelected(false);
+
+        // select new
+        foreach(PointValue point, newPoints)
+            Agros::problem()->scene()->getNode(point.point())->setSelected(true);
+
+        foreach(PointValue point, pointsToSelect)
+            Agros::problem()->scene()->getNode(point.point())->setSelected(true);
+    }
+    else
+    {
+        undoStack()->push(new SceneNodeCommandMoveMulti(points, newPoints));
+    }
+
+    return true;
+}
+
+bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
+{
+    QList<SceneFace *> selectedEdges;
+
+    foreach (SceneFace *edge, Agros::problem()->scene()->faces->selected().items())
+    {
+        selectedEdges.append(edge);
+    }
+
+    if(selectedEdges.isEmpty())
+        return true;
+
+    Agros::problem()->scene()->nodes->setSelected(false);
+
+    if(!copy)
+        return true;
+
+    QList<QPair<Point, Point> > newEdgeEndPoints;
+    QList<PointValue> edgeStartPointsToAdd;
+    QList<PointValue> edgeEndPointsToAdd;
+    QList<Value> edgeAnglesToAdd;
+    QList<int> edgeSegmentsToAdd;
+    QList<bool> edgeIsCurvilinearToAdd;
+    QList<QMap<QString, QString> > edgeMarkersToAdd;
+
+    foreach (SceneFace *edge, selectedEdges)
+    {
+        PointValue newPointStart = PointValue(Agros::problem(), calculateNewPoint(mode, edge->nodeStart()->point(), point, angle, scaleFactor));
+        PointValue newPointEnd = PointValue(Agros::problem(), calculateNewPoint(mode, edge->nodeEnd()->point(), point, angle, scaleFactor));
+
+        // add new edge
+        SceneNode *newNodeStart = Agros::problem()->scene()->getNode(newPointStart.point());
+        SceneNode *newNodeEnd = Agros::problem()->scene()->getNode(newPointEnd.point());
+
+        assert(newNodeStart && newNodeEnd);
+
+        SceneFace *obstructEdge = Agros::problem()->scene()->getFace(newPointStart.point(), newPointEnd.point());
+        if (obstructEdge && !obstructEdge->isSelected())
+        {
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing edge would be overwritten"));
+            return false;
+        }
+
+        if(! obstructEdge)
+        {
+            edgeStartPointsToAdd.push_back(newPointStart);
+            edgeEndPointsToAdd.push_back(newPointEnd);
+            edgeAnglesToAdd.push_back(edge->angleValue());
+            edgeSegmentsToAdd.push_back(edge->segments());
+            edgeIsCurvilinearToAdd.push_back(edge->isCurvilinear());
+
+            if(withMarkers)
+                edgeMarkersToAdd.append(edge->markersKeys());
+        }
+
+        newEdgeEndPoints.push_back(QPair<Point, Point>(newPointStart.point(), newPointEnd.point()));
+    }
+
+    Agros::problem()->scene()->faces->setSelected(false);
+
+    undoStack()->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
+                                                   edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd));
+
+    for(int i = 0; i < newEdgeEndPoints.size(); i++)
+    {
+        SceneFace* sceneEdge = Agros::problem()->scene()->getFace(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
+        if (sceneEdge)
+            sceneEdge->setSelected(true);
+    }
+
+    return true;
+}
+
+bool SceneViewPreprocessor::moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
+{
+    QList<PointValue> points;
+    QList<PointValue> newPoints;
+    QList<PointValue> pointsToSelect;
+
+    QList<double> newAreas;
+    QList<QMap<QString, QString> > newMarkers;
+
+    foreach (SceneLabel *label, Agros::problem()->scene()->labels->selected().items())
+    {
+        PointValue newPoint = PointValue(Agros::problem(), calculateNewPoint(mode, label->point(), point, angle, scaleFactor));
+
+        SceneLabel *obstructLabel = Agros::problem()->scene()->getLabel(newPoint.point());
+        if (obstructLabel && !obstructLabel->isSelected())
+        {
+            Agros::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing label would be overwritten"));
+            return false;
+        }
+
+        points.push_back(label->pointValue());
+
+        // when copying, add only those points, that did not exist
+        // when moving, add all, because if poit on place where adding exist, it will be moved away (otherwise it would be obstruct node and function would not reach this point)
+        if (copy)
+        {
+            if(obstructLabel)
+            {
+                pointsToSelect.push_back(newPoint);
+            }
+            else
+            {
+                newPoints.push_back(newPoint);
+                newAreas.push_back(label->area());
+                if(withMarkers)
+                    newMarkers.append(label->markersKeys());
+
+            }
+        }
+        else
+        {
+            newPoints.push_back(newPoint);
+            newAreas.push_back(label->area());
+        }
+    }
+
+    if (copy)
+    {
+        undoStack()->push(new SceneLabelCommandAddMulti(newPoints, newMarkers, newAreas));
+
+        Agros::problem()->scene()->labels->setSelected(false);
+
+        // select new
+        foreach(PointValue point, newPoints)
+            Agros::problem()->scene()->getLabel(point.point())->setSelected(true);
+
+        foreach(PointValue point, pointsToSelect)
+            Agros::problem()->scene()->getLabel(point.point())->setSelected(true);
+    }
+    else
+    {
+        undoStack()->push(new SceneLabelCommandMoveMulti(points, newPoints));
+    }
+
+    return true;
+}
+
+void SceneViewPreprocessor::transformPosition(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
+{
+    bool okNodes, okEdges = true;
+    okNodes = moveSelectedNodes(mode, point, angle, scaleFactor, copy);
+    if(okNodes)
+        okEdges = moveSelectedEdges(mode, point, angle, scaleFactor, copy, withMarkers);
+    moveSelectedLabels(mode, point, angle, scaleFactor, copy, withMarkers);
+
+    if(!okNodes || !okEdges)
+        Agros::problem()->scene()->nodes->setSelected(false);
+
+    Agros::problem()->scene()->invalidate();
+}
+
+void SceneViewPreprocessor::transformTranslate(const Point &point, bool copy, bool withMarkers)
+{
+    transformPosition(SceneTransformMode_Translate, point, 0.0, 0.0, copy, withMarkers);
+}
+
+void SceneViewPreprocessor::transformRotate(const Point &point, double angle, bool copy, bool withMarkers)
+{
+    transformPosition(SceneTransformMode_Rotate, point, angle, 0.0, copy, withMarkers);
+}
+
+void SceneViewPreprocessor::transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers)
+{
+    transformPosition(SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
+}
+
+Point SceneViewPreprocessor::calculateNewPoint(SceneTransformMode mode, Point originalPoint, Point transformationPoint, double angle, double scaleFactor)
+{
+    Point newPoint;
+
+    if (mode == SceneTransformMode_Translate)
+    {
+        newPoint = originalPoint + transformationPoint;
+    }
+    else if (mode == SceneTransformMode_Rotate)
+    {
+        double distanceNode = (originalPoint - transformationPoint).magnitude();
+        double angleNode = (originalPoint - transformationPoint).angle()/M_PI*180;
+
+        newPoint = transformationPoint + Point(distanceNode * cos((angleNode + angle)/180.0*M_PI), distanceNode * sin((angleNode + angle)/180.0*M_PI));
+    }
+    else if (mode == SceneTransformMode_Scale)
+    {
+        newPoint = transformationPoint + (originalPoint - transformationPoint) * scaleFactor;
+    }
+
+    return newPoint;
 }

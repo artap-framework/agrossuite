@@ -1429,4 +1429,3 @@ void PreprocessorWidget::doNewMaterial(QString field)
         delete material;
     }
 }
-

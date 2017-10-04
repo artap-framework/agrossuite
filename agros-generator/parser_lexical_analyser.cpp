@@ -422,6 +422,14 @@ void ParserInstance::addPostprocessorVariables()
         }
     }
 
+    foreach (XMLModule::quantity quantity, m_parserModuleInfo.surface.quantity())
+    {
+        if (quantity.shortname().present())
+        {
+            m_dict[QString::fromStdString(quantity.shortname().get())] = QString("boundary_%1->number()").arg(QString::fromStdString(quantity.id()));
+        }
+    }
+
     foreach (XMLModule::function function, m_parserModuleInfo.volume.function())
     {
         QString parameter("0");

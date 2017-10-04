@@ -106,6 +106,18 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
         if (!edge->isSelected())
             continue;
 
+        {{#VARIABLE_BOUNDARY}}QSharedPointer<Value> boundary_{{BOUNDARY_VARIABLE}}(new Value());
+        {{/VARIABLE_BOUNDARY}}
+
+        if (edge->hasMarker(m_fieldInfo))
+        {
+            SceneBoundary *boundary = edge->marker(m_fieldInfo);
+
+            {{#VARIABLE_BOUNDARY}}if (boundary->contains(QLatin1String("{{BOUNDARY_VARIABLE}}")))
+                boundary_{{BOUNDARY_VARIABLE}} = boundary->value(QLatin1String("{{BOUNDARY_VARIABLE}}"));
+            {{/VARIABLE_BOUNDARY}}
+        }
+
         // surface integration
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {

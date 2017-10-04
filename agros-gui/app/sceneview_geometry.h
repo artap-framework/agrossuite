@@ -72,6 +72,19 @@ public:
 
     inline QMenu *menuScene() { return m_mnuScene; }
 
+    Point calculateNewPoint(SceneTransformMode mode, Point originalPoint, Point transformationPoint, double angle, double scaleFactor);
+
+    void transformPosition(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool    withMarkers);
+
+    void transformTranslate(const Point &point, bool copy, bool withMarkers);
+    void transformRotate(const Point &point, double angle, bool copy, bool withMarkers);
+    void transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers);
+
+    // false if cannot (obstruct nodes)
+    bool moveSelectedNodes(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy);
+    bool moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers);
+    bool moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers);
+
 protected:
     SceneGeometryMode m_sceneMode;
 
