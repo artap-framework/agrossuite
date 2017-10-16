@@ -33,7 +33,7 @@ class {{CLASS}}Interface : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID PluginInterface_IID FILE "")
+    Q_PLUGIN_METADATA(IID PluginInterface_IID)
 
 public:
 {{CLASS}}Interface();
