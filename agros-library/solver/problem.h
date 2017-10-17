@@ -241,6 +241,7 @@ protected:
     friend class Problem;
     friend class Computation;
     friend class Scene;
+    friend class SolverDek;
 
 private:
     bool applyParametersInternal();
@@ -327,6 +328,7 @@ public:
     void setIsPostprocessingRunning(bool isPostprocessingRunning = true) { m_isPostprocessingRunning = isPostprocessingRunning; }
 
     void solve();
+    void solve_dek();
 
     virtual QString problemFileName() const;
     void readFromProblem();
@@ -380,6 +382,8 @@ protected:
 
     // post deal
     PostDeal *m_postDeal;
+
+    friend class SolverDek;
 };
 
 #endif // PROBLEM_H

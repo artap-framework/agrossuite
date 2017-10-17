@@ -201,6 +201,8 @@ private:
     QMap<QString, dealii::hp::FECollection<2> *> m_feCollectionCache;
     QMap<QString, std::vector<dealii::FiniteElement<2> *> > m_fesCache;
     QMap<QString, dealii::hp::MappingCollection<2> *> m_mappingCollectionCache;
+
+    friend class SolverDek;
 };
 
 #endif // SOLVER_UTILS_H
