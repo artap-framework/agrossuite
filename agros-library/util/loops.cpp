@@ -919,5 +919,5 @@ void LoopsInfo::clear()
     m_labelLoops.clear();
     m_outsideLoops.clear();
 
-    m_polygonTriangles.clear();
+    // m_polygonTriangles.clear();
 }
