@@ -31,11 +31,9 @@ ChartImage::ChartImage(QWidget *parent) : QCustomPlot(parent)
 
     xAxis->setTickLabelFont(fontChart);
     xAxis->setLabelFont(fontChart);
-    xAxis->setAutoTickStep(true);
 
     yAxis->setTickLabelFont(fontChart);
     yAxis->setLabelFont(fontChart);
-    yAxis->setAutoTickStep(true);
 
     m_line = addGraph(xAxis, yAxis);
     m_line->setLineStyle(QCPGraph::lsLine);
@@ -57,7 +55,7 @@ void ChartImage::setData(const QVector<double> &x, const QVector<double> &y)
 QString ChartImage::save(const QString &fileName)
 {
     rescaleAxes();
-    replot(QCustomPlot::rpImmediate);
+    replot(QCustomPlot::rpImmediateRefresh);
 
     QString fn = fileName;
     if (fn.isEmpty())

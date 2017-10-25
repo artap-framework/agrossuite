@@ -102,9 +102,9 @@ void SceneViewChart::refresh()
     {
         double min =   numeric_limits<double>::max();
         double max = - numeric_limits<double>::max();
-        for (int i = 0; i < m_chart->graph(0)->data()->values().count(); i++)
+        for (int i = 0; i < m_chart->graph(0)->data()->size(); i++)
         {
-            double value = m_chart->graph(0)->data()->values().at(i).value;
+            double value = m_chart->graph(0)->data()->at(i)->value;
             if (value < min) min = value;
             if (value > max) max = value;
         }
@@ -112,15 +112,15 @@ void SceneViewChart::refresh()
         if ((max - min) < EPS_ZERO)
         {
             m_chart->graph(0)->valueAxis()->setRange(min - 1, min + 1);
-            m_chart->graph(0)->keyAxis()->setRange(m_chart->graph(0)->data()->keys().first(),
-                                                   m_chart->graph(0)->data()->keys().last());
+            m_chart->graph(0)->keyAxis()->setRange(m_chart->graph(0)->data()->begin()->key,
+                                                   m_chart->graph(0)->data()->end()->key);
         }
         else
         {
             m_chart->rescaleAxes();
         }
 
-        m_chart->replot(QCustomPlot::rpQueued);
+        m_chart->replot(QCustomPlot::rpQueuedRefresh);
     }
 }
 

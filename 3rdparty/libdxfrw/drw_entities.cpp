@@ -16,10 +16,9 @@
 #include "intern/dwgbuffer.h"
 #include "intern/drw_dbg.h"
 
-
-//! Calculate arbitary axis
+//! Calculate arbitrary axis
 /*!
-*   Calculate arbitary axis for apply extrusions
+*   Calculate arbitrary axis for apply extrusions
 *  @author Rallaz
 */
 void DRW_Entity::calculateAxis(DRW_Coord extPoint){
@@ -50,9 +49,9 @@ void DRW_Entity::calculateAxis(DRW_Coord extPoint){
     extAxisY.unitize();
 }
 
-//! Extrude a point using arbitary axis
+//! Extrude a point using arbitrary axis
 /*!
-*   apply extrusion in a point using arbitary axis (previous calculated)
+*   apply extrusion in a point using arbitrary axis (previous calculated)
 *  @author Rallaz
 */
 void DRW_Entity::extrudePoint(DRW_Coord extPoint, DRW_Coord *point){
@@ -110,16 +109,13 @@ bool DRW_Entity::parseCode(int code, dxfReader *reader){
     case 1003:
     case 1004:
     case 1005:
-        extData.push_back(new DRW_Variant(code, reader->getString()));
+		extData.push_back(std::make_shared<DRW_Variant>(code, reader->getString()));
         break;
     case 1010:
     case 1011:
     case 1012:
     case 1013:
-        curr = new DRW_Variant();
-        curr->addCoord();
-        curr->setCoordX(reader->getDouble());
-        curr->code = code;
+		curr =std::make_shared<DRW_Variant>(code, DRW_Coord(reader->getDouble(), 0.0, 0.0));
         extData.push_back(curr);
         break;
     case 1020:
@@ -135,16 +131,17 @@ bool DRW_Entity::parseCode(int code, dxfReader *reader){
     case 1033:
         if (curr)
             curr->setCoordZ(reader->getDouble());
-        curr=NULL;
+		//FIXME, why do we discard curr right after setting the its Z
+//        curr=NULL;
         break;
     case 1040:
     case 1041:
     case 1042:
-        extData.push_back(new DRW_Variant(code, reader->getDouble() ));
+		extData.push_back(std::make_shared<DRW_Variant>(code, reader->getDouble() ));
         break;
     case 1070:
     case 1071:
-        extData.push_back(new DRW_Variant(code, reader->getInt32() ));
+		extData.push_back(std::make_shared<DRW_Variant>(code, reader->getInt32() ));
         break;
     default:
         break;
@@ -159,28 +156,28 @@ bool DRW_Entity::parseDxfGroups(int code, dxfReader *reader){
     int nc;
     std::string appName= reader->getString();
     if (!appName.empty() && appName.at(0)== '{'){
-        curr.addString(appName.substr(1, (int) appName.size()-1));
-        curr.code = code;
+        curr.addString(code, appName.substr(1, (int) appName.size()-1));
         ls.push_back(curr);
         while (code !=102 && appName.at(0)== '}'){
-            reader->readRec(&nc);
-            curr.code = code;
+            reader->readRec(&nc);//RLZ curr.code = code or nc?
+//            curr.code = code;
+            //RLZ code == 330 || code == 360 OR nc == 330 || nc == 360 ?
             if (code == 330 || code == 360)
-                curr.addInt(reader->getHandleString());
+                curr.addInt(code, reader->getHandleString());//RLZ code or nc
             else {
                 switch (reader->type) {
                 case dxfReader::STRING:
-                    curr.addString(reader->getString());
+                    curr.addString(code, reader->getString());//RLZ code or nc
                     break;
                 case dxfReader::INT32:
                 case dxfReader::INT64:
-                    curr.addInt(reader->getInt32());
+                    curr.addInt(code, reader->getInt32());//RLZ code or nc
                     break;
                 case dxfReader::DOUBLE:
-                    curr.addDouble(reader->getDouble());
+                    curr.addDouble(code, reader->getDouble());//RLZ code or nc
                     break;
                 case dxfReader::BOOL:
-                    curr.addInt(reader->getInt32());
+                    curr.addInt(code, reader->getInt32());//RLZ code or nc
                     break;
                 default:
                     break;
@@ -783,7 +780,7 @@ bool DRW_Ellipse::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
 void DRW_Ellipse::toPolyline(DRW_Polyline *pol, int parts){
     double radMajor, radMinor, cosRot, sinRot, incAngle, curAngle;
     double cosCurr, sinCurr;
-    radMajor = sqrt(secPoint.x*secPoint.x + secPoint.y*secPoint.y);
+	radMajor = hypot(secPoint.x, secPoint.y);
     radMinor = radMajor*ratio;
     //calculate sin & cos of included angle
     incAngle = atan2(secPoint.y, secPoint.x);
@@ -1122,7 +1119,7 @@ void DRW_LWPolyline::applyExtrusion(){
     if (haveExtrusion) {
         calculateAxis(extPoint);
         for (unsigned int i=0; i<vertlist.size(); i++) {
-            DRW_Vertex2D *vert = vertlist.at(i);
+			auto& vert = vertlist.at(i);
             DRW_Coord v(vert->x, vert->y, elevation);
             extrudePoint(extPoint, &v);
             vert->x = v.x;
@@ -1134,24 +1131,24 @@ void DRW_LWPolyline::applyExtrusion(){
 void DRW_LWPolyline::parseCode(int code, dxfReader *reader){
     switch (code) {
     case 10: {
-        vertex = new DRW_Vertex2D();
+		vertex = std::make_shared<DRW_Vertex2D>();
         vertlist.push_back(vertex);
         vertex->x = reader->getDouble();
         break; }
     case 20:
-        if(vertex != NULL)
+		if(vertex)
             vertex->y = reader->getDouble();
         break;
     case 40:
-        if(vertex != NULL)
+		if(vertex)
             vertex->stawidth = reader->getDouble();
         break;
     case 41:
-        if(vertex != NULL)
+		if(vertex)
             vertex->endwidth = reader->getDouble();
         break;
     case 42:
-        if(vertex != NULL)
+		if(vertex)
             vertex->bulge = reader->getDouble();
         break;
     case 38:
@@ -1226,14 +1223,14 @@ bool DRW_LWPolyline::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
 
     if (vertexnum > 0) { //verify if is lwpol without vertex (empty)
         // add vertexs
-        vertex = new DRW_Vertex2D();
+		vertex = std::make_shared<DRW_Vertex2D>();
         vertex->x = buf->getRawDouble();
         vertex->y = buf->getRawDouble();
         vertlist.push_back(vertex);
-        DRW_Vertex2D* pv = vertex;
+		auto pv = vertex;
         for (int i = 1; i< vertexnum; i++){
-            vertex = new DRW_Vertex2D();
-            if (version < DRW::AC1015) {//14-
+			vertex = std::make_shared<DRW_Vertex2D>();
+			if (version < DRW::AC1015) {//14-
                 vertex->x = buf->getRawDouble();
                 vertex->y = buf->getRawDouble();
             } else {
@@ -1272,8 +1269,7 @@ bool DRW_LWPolyline::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
     }
     if (DRW_DBGGL == DRW_dbg::DEBUG){
         DRW_DBG("\nVertex list: ");
-        for (std::vector<DRW_Vertex2D *>::iterator it = vertlist.begin() ; it != vertlist.end(); ++it){
-            DRW_Vertex2D* pv = *it;
+		for (auto& pv: vertlist) {
             DRW_DBG("\n   x: "); DRW_DBG(pv->x); DRW_DBG(" y: "); DRW_DBG(pv->y); DRW_DBG(" bulge: "); DRW_DBG(pv->bulge);
             DRW_DBG(" stawidth: "); DRW_DBG(pv->stawidth); DRW_DBG(" endwidth: "); DRW_DBG(pv->endwidth);
         }
@@ -1792,12 +1788,12 @@ void DRW_Hatch::parseCode(int code, dxfReader *reader){
         looplist.reserve(loopsnum);
         break;
     case 92:
-        loop = new DRW_HatchLoop(reader->getInt32());
+		loop = std::make_shared<DRW_HatchLoop>(reader->getInt32());
         looplist.push_back(loop);
         if (reader->getInt32() & 2) {
             ispol = true;
             clearEntities();
-            pline = new DRW_LWPolyline;
+			pline = std::make_shared<DRW_LWPolyline>();
             loop->objlist.push_back(pline);
         } else ispol = false;
         break;
@@ -1869,7 +1865,7 @@ bool DRW_Hatch::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
 
     //read loops
     for (dint32 i = 0 ; i < loopsnum; ++i){
-        loop = new DRW_HatchLoop(buf->getBitLong());
+		loop = std::make_shared<DRW_HatchLoop>(buf->getBitLong());
         havePixelSize |= loop->type & 4;
         if (!(loop->type & 2)){ //Not polyline
             dint32 numPathSeg = buf->getBitLong();
@@ -1908,7 +1904,7 @@ bool DRW_Hatch::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
                     spline->ncontrol = buf->getBitLong();
                     spline->controllist.reserve(spline->ncontrol);
                     for (dint32 j = 0; j < spline->ncontrol;++j){
-                        DRW_Coord* crd = new DRW_Coord(buf->get3BitDouble());
+						std::shared_ptr<DRW_Coord> crd = std::make_shared<DRW_Coord>(buf->get3BitDouble());
                         spline->controllist.push_back(crd);
                         if(isRational)
                             crd->z =  buf->getBitDouble(); //RLZ: investigate how store weight
@@ -1918,8 +1914,8 @@ bool DRW_Hatch::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
                         spline->nfit = buf->getBitLong();
                         spline->fitlist.reserve(spline->nfit);
                         for (dint32 j = 0; j < spline->nfit;++j){
-                            DRW_Coord* crd = new DRW_Coord(buf->get3BitDouble());
-                            spline->fitlist.push_back (crd);
+							std::shared_ptr<DRW_Coord> crd = std::make_shared<DRW_Coord>(buf->get3BitDouble());
+							spline->fitlist.push_back(crd);
                         }
                         spline->tgStart = buf->get2RawDouble();
                         spline->tgEnd = buf->get2RawDouble();
@@ -1927,7 +1923,7 @@ bool DRW_Hatch::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
                 }
             }
         } else { //end not pline, start polyline
-            pline = new DRW_LWPolyline;
+			pline = std::make_shared<DRW_LWPolyline>();
             bool asBulge = buf->getBit();
             pline->flags = buf->getBit();//closed bit
             dint32 numVert = buf->getBitLong();
@@ -2055,29 +2051,29 @@ void DRW_Spline::parseCode(int code, dxfReader *reader){
         tolfit = reader->getDouble();
         break;
     case 10: {
-        controlpoint = new DRW_Coord();
+		controlpoint = std::make_shared<DRW_Coord>();
         controllist.push_back(controlpoint);
         controlpoint->x = reader->getDouble();
         break; }
     case 20:
-        if(controlpoint != NULL)
+		if(controlpoint)
             controlpoint->y = reader->getDouble();
         break;
     case 30:
-        if(controlpoint != NULL)
+		if(controlpoint)
             controlpoint->z = reader->getDouble();
         break;
     case 11: {
-        fitpoint = new DRW_Coord();
+		fitpoint = std::make_shared<DRW_Coord>();
         fitlist.push_back(fitpoint);
         fitpoint->x = reader->getDouble();
         break; }
     case 21:
-        if(fitpoint != NULL)
+		if(fitpoint)
             fitpoint->y = reader->getDouble();
         break;
     case 31:
-        if(fitpoint != NULL)
+		if(fitpoint)
             fitpoint->z = reader->getDouble();
         break;
     case 40:
@@ -2145,31 +2141,29 @@ bool DRW_Spline::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
         knotslist.push_back (buf->getBitDouble());
     }
     controllist.reserve(ncontrol);
-    for (dint32 i= 0; i<ncontrol; ++i){
-        DRW_Coord* crd = new DRW_Coord(buf->get3BitDouble());
-        controllist.push_back(crd);
-        if (weight){
+	for (dint32 i= 0; i<ncontrol; ++i){
+		controllist.push_back(std::make_shared<DRW_Coord>(buf->get3BitDouble()));
+		if (weight)
             DRW_DBG("\n w: "); DRW_DBG(buf->getBitDouble()); //RLZ Warning: D (BD or RD)
-        }
     }
     fitlist.reserve(nfit);
-    for (dint32 i= 0; i<nfit; ++i){
-        DRW_Coord* crd = new DRW_Coord(buf->get3BitDouble());
-        fitlist.push_back (crd);
-    }
+	for (dint32 i= 0; i<nfit; ++i)
+		fitlist.push_back(std::make_shared<DRW_Coord>(buf->get3BitDouble()));
+
     if (DRW_DBGGL == DRW_dbg::DEBUG){
-        DRW_DBG("\nknots list: ");
-        for (std::vector<double>::iterator it = knotslist.begin() ; it != knotslist.end(); ++it){
-            DRW_DBG("\n"); DRW_DBG(*it);
-        }
+		DRW_DBG("\nknots list: ");
+		for (auto const& v: knotslist) {
+			DRW_DBG("\n"); DRW_DBG(v);
+		}
         DRW_DBG("\ncontrol point list: ");
-        for (std::vector<DRW_Coord *>::iterator it = controllist.begin() ; it != controllist.end(); ++it){
-            DRW_DBG("\n"); DRW_DBGPT((*it)->x,(*it)->y,(*it)->z);
-        }
+		for (auto const& v: controllist) {
+			DRW_DBG("\n"); DRW_DBGPT(v->x, v->y, v->z);
+		}
         DRW_DBG("\nfit point list: ");
-        for (std::vector<DRW_Coord *>::iterator it = fitlist.begin() ; it != fitlist.end(); ++it){
-            DRW_DBG("\n"); DRW_DBGPT((*it)->x,(*it)->y,(*it)->z);
-        }
+		for (auto const& v: fitlist) {
+			DRW_DBG("\n"); DRW_DBGPT(v->x, v->y, v->z);
+		}
+
     }
 
     /* Common Entity Handle Data */
@@ -2241,12 +2235,14 @@ bool DRW_Image::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
     sizev = buf->getRawDouble();
     DRW_DBG("\nsize U: "); DRW_DBG(sizeu); DRW_DBG("\nsize V: "); DRW_DBG(sizev);
     duint16 displayProps = buf->getBitShort();
+    DRW_UNUSED(displayProps);//RLZ: temporary, complete API
     clip = buf->getBit();
     brightness = buf->getRawChar8();
     contrast = buf->getRawChar8();
     fade = buf->getRawChar8();
     if (version > DRW::AC1021){ //2010+
         bool clipMode = buf->getBit();
+        DRW_UNUSED(clipMode);//RLZ: temporary, complete API
     }
     duint16 clipType = buf->getBitShort();
     if (clipType == 1){
@@ -2717,17 +2713,17 @@ void DRW_Leader::parseCode(int code, dxfReader *reader){
     case 41:
         textwidth = reader->getDouble();
         break;
-    case 10: {
-        vertexpoint = new DRW_Coord();
+	case 10:
+		vertexpoint= std::make_shared<DRW_Coord>();
         vertexlist.push_back(vertexpoint);
         vertexpoint->x = reader->getDouble();
-        break; }
+		break;
     case 20:
-        if(vertexpoint != NULL)
+		if(vertexpoint)
             vertexpoint->y = reader->getDouble();
         break;
     case 30:
-        if(vertexpoint != NULL)
+		if(vertexpoint)
             vertexpoint->z = reader->getDouble();
         break;
     case 340:
@@ -2793,9 +2789,9 @@ bool DRW_Leader::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
 
     // add vertexs
     for (int i = 0; i< nPt; i++){
-        DRW_Coord* vertex = new DRW_Coord(buf->get3BitDouble());
-        vertexlist.push_back(vertex);
-        DRW_DBG("\nvertex "); DRW_DBGPT(vertex->x, vertex->y, vertex->z);
+		DRW_Coord vertex = buf->get3BitDouble();
+		vertexlist.push_back(std::make_shared<DRW_Coord>(vertex));
+		DRW_DBG("\nvertex "); DRW_DBGPT(vertex.x, vertex.y, vertex.z);
     }
     DRW_Coord Endptproj = buf->get3BitDouble();
     DRW_DBG("\nEndptproj "); DRW_DBGPT(Endptproj.x, Endptproj.y, Endptproj.z);

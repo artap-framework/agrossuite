@@ -184,7 +184,7 @@ bool ProblemFunctionDialog::checkRange()
 void ProblemFunctionDialog::doPlot()
 {
     chart->rescaleAxes();
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void ProblemFunctionDialog::functionNameTextChanged(const QString &str)

@@ -353,7 +353,7 @@ void LogDialog::createControls()
     if (m_computation->isTransient())
     {
         m_timeChart = new QCustomPlot(this);
-        QCPPlotTitle *timeTitle = new QCPPlotTitle(m_timeChart, tr("Transient problem"));
+        QCPTextElement *timeTitle = new QCPTextElement(m_timeChart, tr("Transient problem"));
         timeTitle->setFont(fontTitle);
         m_timeChart->plotLayout()->insertRow(0);
         m_timeChart->plotLayout()->addElement(0, 0, timeTitle);
@@ -363,7 +363,6 @@ void LogDialog::createControls()
         m_timeChart->xAxis->setTickLabelFont(fontChart);
         m_timeChart->xAxis->setLabelFont(fontChart);
         // m_timeChart->xAxis->setTickStep(1.0);
-        m_timeChart->xAxis->setAutoTickStep(true);
         m_timeChart->xAxis->setLabel(tr("number of steps"));
 
         m_timeChart->yAxis->setTickLabelFont(fontChart);
@@ -400,7 +399,7 @@ void LogDialog::createControls()
     if (m_computation->determineIsNonlinear())
     {
         m_nonlinearChart = new QCustomPlot(this);
-        QCPPlotTitle *nonlinearTitle = new QCPPlotTitle(m_nonlinearChart, tr("Nonlinear solver"));
+        QCPTextElement *nonlinearTitle = new QCPTextElement(m_nonlinearChart, tr("Nonlinear solver"));
         nonlinearTitle->setFont(fontTitle);
         m_nonlinearChart->plotLayout()->insertRow(0);
         m_nonlinearChart->plotLayout()->addElement(0, 0, nonlinearTitle);
@@ -409,7 +408,6 @@ void LogDialog::createControls()
         m_nonlinearChart->xAxis->setTickLabelFont(fontChart);
         m_nonlinearChart->xAxis->setLabelFont(fontChart);
         // m_nonlinearChart->xAxis->setTickStep(1.0);
-        m_nonlinearChart->xAxis->setAutoTickStep(true);
         m_nonlinearChart->xAxis->setLabel(tr("number of iterations"));
 
         m_nonlinearChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
@@ -436,7 +434,7 @@ void LogDialog::createControls()
     if (m_computation->numAdaptiveFields() > 0)
     {
         m_adaptivityChart = new QCustomPlot(this);
-        QCPPlotTitle *adaptivityTitle = new QCPPlotTitle(m_adaptivityChart, tr("Adaptivity"));
+        QCPTextElement *adaptivityTitle = new QCPTextElement(m_adaptivityChart, tr("Adaptivity"));
         adaptivityTitle->setFont(fontTitle);
         m_adaptivityChart->plotLayout()->insertRow(0);
         m_adaptivityChart->plotLayout()->addElement(0, 0, adaptivityTitle);
@@ -446,7 +444,6 @@ void LogDialog::createControls()
         m_adaptivityChart->xAxis->setTickLabelFont(fontChart);
         m_adaptivityChart->xAxis->setLabelFont(fontChart);
         // m_adaptivityChart->xAxis->setTickStep(1.0);
-        m_adaptivityChart->xAxis->setAutoTickStep(true);
         m_adaptivityChart->xAxis->setLabel(tr("number of iterations"));
 
         m_adaptivityChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
@@ -507,7 +504,7 @@ void LogDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector
 
     m_nonlinearErrorGraph->setData(steps, relativeChangeOfSolutions);
     m_nonlinearChart->rescaleAxes();
-    m_nonlinearChart->replot(QCustomPlot::rpImmediate);
+    m_nonlinearChart->replot(QCustomPlot::rpImmediateRefresh);
 
     // progress bar
     if (phase == SolverAgros::Phase_Finished)
@@ -542,7 +539,7 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
     m_adaptivityErrorGraph->setData(adaptiveSteps, adaptiveError);
     m_adaptivityDOFsGraph->setData(adaptiveSteps, adaptiveDOFs);
     m_adaptivityChart->rescaleAxes();
-    m_adaptivityChart->replot(QCustomPlot::rpImmediate);
+    m_adaptivityChart->replot(QCustomPlot::rpImmediateRefresh);
 
     // progress bar
     double valueSteps = 10000.0 * (adaptivityStep / fieldInfo->value(FieldInfo::AdaptivitySteps).toInt());
@@ -575,7 +572,7 @@ void LogDialog::updateTransientChartInfo(double actualTime)
     m_timeChart->yAxis2->setRangeLower(0.0);
     m_timeChart->yAxis2->setRangeUpper(timeTotal.last());
     m_timeTimeStepGraph->rescaleKeyAxis();
-    m_timeChart->replot(QCustomPlot::rpImmediate);
+    m_timeChart->replot(QCustomPlot::rpImmediateRefresh);
 
     // progress bar
     m_timeProgress->setValue((10000.0 * actualTime / m_computation->config()->value(ProblemConfig::TimeTotal).toDouble()));

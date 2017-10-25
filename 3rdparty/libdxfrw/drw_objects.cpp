@@ -50,10 +50,7 @@ void DRW_TableEntry::parseCode(int code, dxfReader *reader){
     case 1011:
     case 1012:
     case 1013:
-        curr = new DRW_Variant();
-        curr->addCoord();
-        curr->setCoordX(reader->getDouble());
-        curr->code = code;
+        curr = new DRW_Variant(code, DRW_Coord(reader->getDouble(), 0.0, 0.0));
         extData.push_back(curr);
         break;
     case 1020:
@@ -693,7 +690,7 @@ bool DRW_Block_Record::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs
         DRW_DBG(" xrefindex: "); DRW_DBG(xrefindex); DRW_DBG("\n");
     }
     flags |= buf->getBit() << 4;//is refx dependent, block code 70, bit 5 (16)
-    flags |= buf->getBit(); //if is anonimous block (*U) block code 70, bit 1 (1)
+    flags |= buf->getBit(); //if is anonymous block (*U) block code 70, bit 1 (1)
     flags |= buf->getBit() << 1; //if block contains attdefs, block code 70, bit 2 (2)
     bool blockIsXref = buf->getBit(); //if is a Xref, block code 70, bit 3 (4)
     bool xrefOverlaid = buf->getBit(); //if is a overlaid Xref, block code 70, bit 4 (8)
@@ -1170,6 +1167,7 @@ bool DRW_ImageDef::parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs){
     dint32 imgVersion = buf->getBitLong();
     DRW_DBG("class Version: "); DRW_DBG(imgVersion);
     DRW_Coord size = buf->get2RawDouble();
+    DRW_UNUSED(size);//RLZ: temporary, complete API
     name = sBuf->getVariableText(version, false);
     DRW_DBG("appId name: "); DRW_DBG(name.c_str()); DRW_DBG("\n");
     loaded = buf->getBit();

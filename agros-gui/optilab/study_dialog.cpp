@@ -200,7 +200,7 @@ void LogOptimizationDialog::createControls()
     // total objective function
     totalChart = new QCustomPlot(this);
 
-    QCPPlotTitle *title = new QCPPlotTitle(totalChart, tr("Total objective function"));
+    QCPTextElement *title = new QCPTextElement(totalChart, tr("Total objective function"));
     title->setFont(fontTitle);
     totalChart->plotLayout()->insertRow(0);
     totalChart->plotLayout()->addElement(0, 0, title);
@@ -208,7 +208,6 @@ void LogOptimizationDialog::createControls()
     totalChart->xAxis->setTickLabelFont(fontChart);
     totalChart->xAxis->setLabelFont(fontChart);
     // chart->xAxis->setTickStep(1.0);
-    totalChart->xAxis->setAutoTickStep(true);
     totalChart->xAxis->setLabel(tr("number of steps"));
     // m_totalChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
     totalChart->yAxis->setTickLabelFont(fontChart);
@@ -321,7 +320,6 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     if (m_computationSetsCount < computationSetsCount)
     {
         QCPItemStraightLine *line = new QCPItemStraightLine(totalChart);
-        totalChart->addItem(line);
 
         line->point1->setCoords(QPointF(m_step - 0.5, 0));
         line->point2->setCoords(QPointF(m_step - 0.5, 1));
@@ -329,7 +327,7 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     }
 
     totalChart->rescaleAxes();
-    totalChart->replot(QCustomPlot::rpImmediate);
+    totalChart->replot(QCustomPlot::rpImmediateRefresh);
     
     m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     
@@ -992,7 +990,6 @@ void StudyParameterDialog::createControls()
     m_chart = new QCustomPlot(this);
     m_chart->setMinimumWidth(300);
     m_chart->setMinimumHeight(200);
-    m_chart->xAxis->setAutoTickStep(true);
     m_chart->xAxis->setTickLabelRotation(60);
     m_chart->xAxis->setLabel(tr("x"));
     m_chart->yAxis->setLabel(tr("penalty"));
@@ -1089,7 +1086,7 @@ bool StudyParameterDialog::checkRange()
     m_penaltyChart->setData(normalSteps, normalPDF);
     m_chart->rescaleAxes();
     m_chart->yAxis->setRangeLower(0.0);
-    m_chart->replot(QCustomPlot::rpImmediate);
+    m_chart->replot(QCustomPlot::rpImmediateRefresh);
     
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     lblError->setVisible(false);

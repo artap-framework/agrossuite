@@ -709,7 +709,7 @@ void MaterialEditDialog::drawChart()
 
     chartNonlinear->graph(0)->setData(keys, values);
     chartNonlinear->rescaleAxes();
-    chartNonlinear->replot(QCustomPlot::rpQueued);
+    chartNonlinear->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 LibraryMaterial::Property MaterialEditDialog::writeProperty()

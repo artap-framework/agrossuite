@@ -392,20 +392,15 @@ void ValueDataTableDialog::doPlot()
 
     if (chkMarkers->isChecked())
     {
-        QCPDataMap *dataMarkers = new QCPDataMap();
+        QVector<QCPGraphData> dataMarkers;
         for (int i = 0; i < m_table.size(); ++i)
-        {
-            QCPData newData;
-            newData.key = pointsVector[i];
-            newData.value = valuesVector[i];
-            dataMarkers->insertMulti(newData.key, newData);
-        }
+            dataMarkers.append(QCPGraphData(pointsVector[i], valuesVector[i]));
 
-        chartValue->graph(1)->setData(dataMarkers);
+        chartValue->graph(1)->data()->set(dataMarkers);
     }
     else
     {
-        chartValue->graph(1)->clearData();
+        chartValue->graph(1)->data()->clear();
     }
 
     // interpolation
@@ -422,28 +417,21 @@ void ValueDataTableDialog::doPlot()
     double dx = keyLength / (countSpline - 1);
 
     // spline
-    QCPDataMap *dataSpline = new QCPDataMap();
-    QCPDataMap *dataSplineDerivative = new QCPDataMap();
+    QVector<QCPGraphData> dataSpline;
+    QVector<QCPGraphData> dataSplineDerivative;
     for (int i = 0; i < countSpline; i++)
     {
-        QCPData newDataValue;
-        newDataValue.key = keyStart + (i * dx);
-        newDataValue.value = m_table.value(newDataValue.key);
-        dataSpline->insertMulti(newDataValue.key, newDataValue);
-
-        QCPData newDataDerivative;
-        newDataDerivative.key = keyStart + (i * dx);
-        newDataDerivative.value = m_table.derivative(newDataDerivative.key);
-        dataSplineDerivative->insertMulti(newDataDerivative.key, newDataDerivative);
+        dataSpline.append(QCPGraphData(keyStart + (i * dx), m_table.value(keyStart + (i * dx))));
+        dataSplineDerivative.append(QCPGraphData(keyStart + (i * dx), m_table.derivative(keyStart + (i * dx))));
     }
 
-    chartValue->graph(0)->setData(dataSpline);
+    chartValue->graph(0)->data()->set(dataSpline);
     chartValue->rescaleAxes();
-    chartValue->replot(QCustomPlot::rpQueued);
+    chartValue->replot(QCustomPlot::rpQueuedRefresh);
 
-    chartDerivative->graph(0)->setData(dataSplineDerivative);
+    chartDerivative->graph(0)->data()->set(dataSplineDerivative);
     chartDerivative->rescaleAxes();
-    chartDerivative->replot(QCustomPlot::rpQueued);
+    chartDerivative->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void ValueDataTableDialog::doShowDerivativeClicked()

@@ -423,6 +423,8 @@ bool dxfRW::writeDimstyle(DRW_Dimstyle *ent){
     writer->writeDouble(46, ent->dimdle);
     writer->writeDouble(47, ent->dimtp);
     writer->writeDouble(48, ent->dimtm);
+    if ( version > DRW::AC1018 || ent->dimfxl !=0 )
+        writer->writeDouble(49, ent->dimfxl);
     writer->writeDouble(140, ent->dimtxt);
     writer->writeDouble(141, ent->dimcen);
     writer->writeDouble(142, ent->dimtsz);
@@ -487,6 +489,8 @@ bool dxfRW::writeDimstyle(DRW_Dimstyle *ent){
     if (version > DRW::AC1014) {
         writer->writeInt16(289, ent->dimatfit);
     }
+    if ( version > DRW::AC1018 && ent->dimfxlon !=0 )
+        writer->writeInt16(290, ent->dimfxlon);
     if (version > DRW::AC1009) {
         writer->writeUtf8String(340, ent->dimtxsty);
     }
@@ -740,7 +744,7 @@ bool dxfRW::writeLWPolyline(DRW_LWPolyline *ent){
         if (ent->thickness != 0)
             writer->writeDouble(39, ent->thickness);
         for (int i = 0;  i< ent->vertexnum; i++){
-            DRW_Vertex2D *v = ent->vertlist.at(i);
+			auto& v = ent->vertlist.at(i);
             writer->writeDouble(10, v->x);
             writer->writeDouble(20, v->y);
             if (v->stawidth != 0)
@@ -801,7 +805,7 @@ bool dxfRW::writePolyline(DRW_Polyline *ent) {
 
     int vertexnum = ent->vertlist.size();
     for (int i = 0;  i< vertexnum; i++){
-        DRW_Vertex *v = ent->vertlist.at(i);
+		auto& v = ent->vertlist.at(i);
         writer->writeString(0, "VERTEX");
         writeEntity(ent);
         if (version > DRW::AC1009)
@@ -871,8 +875,7 @@ bool dxfRW::writeSpline(DRW_Spline *ent){
         for (int i = 0;  i< ent->nknots; i++){
             writer->writeDouble(40, ent->knotslist.at(i));
         }
-        for (int i = 0;  i< ent->ncontrol; i++){
-            DRW_Coord *crd = ent->controllist.at(i);
+		for (auto const& crd: ent->controllist) {
             writer->writeDouble(10, crd->x);
             writer->writeDouble(20, crd->y);
             writer->writeDouble(30, crd->z);
@@ -901,7 +904,7 @@ bool dxfRW::writeHatch(DRW_Hatch *ent){
         writer->writeInt16(91, ent->loopsnum);
         //write paths data
         for (int i = 0;  i< ent->loopsnum; i++){
-            DRW_HatchLoop *loop = ent->looplist.at(i);
+			auto const& loop = ent->looplist.at(i);
             writer->writeInt16(92, loop->type);
             if ( (loop->type & 2) == 2){
                 //RLZ: polyline boundary writeme
@@ -913,7 +916,7 @@ bool dxfRW::writeHatch(DRW_Hatch *ent){
                     switch ( (loop->objlist.at(j))->eType) {
                     case DRW::LINE: {
                         writer->writeInt16(72, 1);
-                        DRW_Line* l = (DRW_Line*)loop->objlist.at(j);
+						DRW_Line* l = (DRW_Line*)loop->objlist.at(j).get();
                         writer->writeDouble(10, l->basePoint.x);
                         writer->writeDouble(20, l->basePoint.y);
                         writer->writeDouble(11, l->secPoint.x);
@@ -921,7 +924,7 @@ bool dxfRW::writeHatch(DRW_Hatch *ent){
                         break; }
                     case DRW::ARC: {
                         writer->writeInt16(72, 2);
-                        DRW_Arc* a = (DRW_Arc*)loop->objlist.at(j);
+						DRW_Arc* a = (DRW_Arc*)loop->objlist.at(j).get();
                         writer->writeDouble(10, a->basePoint.x);
                         writer->writeDouble(20, a->basePoint.y);
                         writer->writeDouble(40, a->radious);
@@ -931,7 +934,7 @@ bool dxfRW::writeHatch(DRW_Hatch *ent){
                         break; }
                     case DRW::ELLIPSE: {
                         writer->writeInt16(72, 3);
-                        DRW_Ellipse* a = (DRW_Ellipse*)loop->objlist.at(j);
+						DRW_Ellipse* a = (DRW_Ellipse*)loop->objlist.at(j).get();
                         a->correctAxis();
                         writer->writeDouble(10, a->basePoint.x);
                         writer->writeDouble(20, a->basePoint.y);
@@ -986,8 +989,7 @@ bool dxfRW::writeLeader(DRW_Leader *ent){
         writer->writeDouble(41, ent->textwidth);
         writer->writeDouble(76, ent->vertnum);
         writer->writeDouble(76, ent->vertexlist.size());
-        for (unsigned int i=0; i<ent->vertexlist.size(); i++) {
-            DRW_Coord *vert = ent->vertexlist.at(i);
+		for (auto const& vert: ent->vertexlist) {
             writer->writeDouble(10, vert->x);
             writer->writeDouble(20, vert->y);
             writer->writeDouble(30, vert->z);
@@ -1761,15 +1763,15 @@ bool dxfRW::writeObjects() {
 
 bool dxfRW::writeExtData(const std::vector<DRW_Variant*> &ed){
     for (std::vector<DRW_Variant*>::const_iterator it=ed.begin(); it!=ed.end(); ++it){
-        switch ((*it)->code) {
+        switch ((*it)->code()) {
         case 1000:
         case 1001:
         case 1002:
         case 1003:
         case 1004:
         case 1005:
-        {int cc = (*it)->code;
-            if ((*it)->type == DRW_Variant::STRING)
+        {int cc = (*it)->code();
+            if ((*it)->type() == DRW_Variant::STRING)
                 writer->writeUtf8String(cc, *(*it)->content.s);
 //            writer->writeUtf8String((*it)->code, (*it)->content.s);
             break;}
@@ -1777,25 +1779,25 @@ bool dxfRW::writeExtData(const std::vector<DRW_Variant*> &ed){
         case 1011:
         case 1012:
         case 1013:
-            if ((*it)->type == DRW_Variant::COORD) {
-                writer->writeDouble((*it)->code, (*it)->content.v->x);
-                writer->writeDouble((*it)->code+10 , (*it)->content.v->y);
-                writer->writeDouble((*it)->code+20 , (*it)->content.v->z);
+            if ((*it)->type() == DRW_Variant::COORD) {
+                writer->writeDouble((*it)->code(), (*it)->content.v->x);
+                writer->writeDouble((*it)->code()+10 , (*it)->content.v->y);
+                writer->writeDouble((*it)->code()+20 , (*it)->content.v->z);
             }
             break;
         case 1040:
         case 1041:
         case 1042:
-            if ((*it)->type == DRW_Variant::DOUBLE)
-                writer->writeDouble((*it)->code, (*it)->content.d);
+            if ((*it)->type() == DRW_Variant::DOUBLE)
+                writer->writeDouble((*it)->code(), (*it)->content.d);
             break;
         case 1070:
-            if ((*it)->type == DRW_Variant::INTEGER)
-                writer->writeInt16((*it)->code, (*it)->content.i);
+            if ((*it)->type() == DRW_Variant::INTEGER)
+                writer->writeInt16((*it)->code(), (*it)->content.i);
             break;
         case 1071:
-            if ((*it)->type == DRW_Variant::INTEGER)
-                writer->writeInt32((*it)->code, (*it)->content.i);
+            if ((*it)->type() == DRW_Variant::INTEGER)
+                writer->writeInt32((*it)->code(), (*it)->content.i);
             break;
         default:
             break;
@@ -1812,11 +1814,16 @@ bool dxfRW::processDxf() {
     bool more = true;
     std::string sectionstr;
 //    section = secUnknown;
+    reader->setIgnoreComments( false);
     while (reader->readRec(&code)) {
         DRW_DBG(code); DRW_DBG(" processDxf\n");
         if (code == 999) {
+            // when DXF was created by libdxfrw, first record is a comment with dxfrw version info
             header.addComment(reader->getString());
         } else if (code == 0) {
+            // ignore further comments, as libdxfrw doesn't support comments in sections
+            reader->setIgnoreComments( true);
+
             sectionstr = reader->getString();
             DRW_DBG(sectionstr); DRW_DBG(" processDxf\n");
             if (sectionstr == "EOF") {
@@ -1830,7 +1837,7 @@ bool dxfRW::processDxf() {
                 if (code == 2) {
                     sectionstr = reader->getString();
                     DRW_DBG(sectionstr); DRW_DBG("  processDxf\n");
-                //found section, process it
+                    //found section, process it
                     if (sectionstr == "HEADER") {
                         processHeader();
                     } else if (sectionstr == "CLASSES") {
@@ -2508,22 +2515,21 @@ bool dxfRW::processPolyline() {
 bool dxfRW::processVertex(DRW_Polyline *pl) {
     DRW_DBG("dxfRW::processVertex");
     int code;
-    DRW_Vertex *v = new DRW_Vertex();
+	std::shared_ptr<DRW_Vertex> v = std::make_shared<DRW_Vertex>();
     while (reader->readRec(&code)) {
-        DRW_DBG(code); DRW_DBG("\n");
+		DRW_DBG(code); DRW_DBG("\n");
         switch (code) {
-        case 0: {
-            pl->appendVertex(v);
-            nextentity = reader->getString();
-            DRW_DBG(nextentity); DRW_DBG("\n");
-            if (nextentity == "SEQEND") {
-            return true;  //found SEQEND no more vertex, terminate
-            } else if (nextentity == "VERTEX"){
-                v = new DRW_Vertex(); //another vertex
-            }
-        }
+		case 0:
+			pl->appendVertex(v);
+			nextentity = reader->getString();
+			DRW_DBG(nextentity); DRW_DBG("\n");
+			if (nextentity == "SEQEND")
+				return true;  //found SEQEND no more vertex, terminate
+			else if (nextentity == "VERTEX")
+                v.reset(new DRW_Vertex); //another vertex
+
         default:
-            v->parseCode(code, reader);
+			v->parseCode(code, reader);
             break;
         }
     }

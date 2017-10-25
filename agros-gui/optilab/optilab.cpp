@@ -440,11 +440,9 @@ QWidget *OptiLab::createControlsDistChart()
     pdfDataBars->setBrush(QColor(255, 131, 0, 50));
     pdfDataBars->setName(tr("Data"));
     pdfDataBars->addToLegend();
-    pdfChart->addPlottable(pdfDataBars);
 
     QCPItemStraightLine *pdfDataMeanLine = new QCPItemStraightLine(pdfChart);
     pdfDataMeanLine->setPen(QPen(QBrush(QColor(40, 40, 140, 100)), 1, Qt::DashLine));
-    pdfChart->addItem(pdfDataMeanLine);
 
     QCPGraph *pdfNormalGraph = pdfChart->addGraph(pdfChart->xAxis, pdfChart->yAxis2);
     pdfNormalGraph->setName(tr("Normal"));
@@ -566,12 +564,11 @@ QWidget *OptiLab::createControlsChart()
     chart->setContextMenuPolicy(Qt::CustomContextMenu);
     chart->legend->setVisible(true);
     connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
-    connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, QMouseEvent*)));
+    connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, int, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, int, QMouseEvent*)));
     connect(chart, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(graphMouseDoubleClick(QMouseEvent*)));
 
     // chart trend line
     chartTrendLine = new QCPItemLine(chart);
-    chart->addItem(chartTrendLine);
     chartTrendLine->setVisible(false);
 
     // mean value
@@ -705,7 +702,7 @@ void OptiLab::chartContextMenu(const QPoint &pos)
 void OptiLab::chartRescale(bool checked)
 {
     chart->rescaleAxes();
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::chartLogHorizontal(bool checked)
@@ -746,7 +743,7 @@ void OptiLab::chartShowTrend(bool checked)
     actChartShowTrend->setChecked(checked);
 
     chartTrendLine->setVisible(checked);
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::chartShowAverageValue(bool checked)
@@ -758,7 +755,7 @@ void OptiLab::chartShowAverageValue(bool checked)
     chartGraphAverageValueChannelLower->setVisible(checked);
     chartGraphAverageValueChannelUpper->setVisible(checked);
 
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::chartShowParetoFront(bool checked)
@@ -767,7 +764,7 @@ void OptiLab::chartShowParetoFront(bool checked)
     actChartParetoFront->setChecked(checked);
 
     chartGraphParetoFront->setVisible(checked);
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::resultsDependenceOnSteps(bool checked)
@@ -938,7 +935,7 @@ void OptiLab::doChartRefreshed(const QString &key)
     QList<ComputationSet> computationSets = m_study->computationSets(m_study->value(Study::View_Filter).toString());
 
     m_computationMap.clear();
-    chartGraphSelectedComputation->clearData();
+    chartGraphSelectedComputation->data()->clear();
 
     foreach (QCPGraph *graph, chartGraphCharts)
         chart->removeGraph(graph);
@@ -1147,7 +1144,7 @@ void OptiLab::doChartRefreshed(const QString &key)
     chart->yAxis->setLabel(labelY);
 
     // replot chart
-    chart->replot(QCustomPlot::rpQueued);
+    chart->replot(QCustomPlot::rpQueuedRefresh);
 
     // set actions
     chartLogHorizontal(m_study->value(Study::View_ChartLogHorizontal).toBool());
@@ -1157,7 +1154,7 @@ void OptiLab::doChartRefreshed(const QString &key)
     chartShowParetoFront(m_study->value(Study::View_ChartShowParetoFront).toBool());
 }
 
-QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
+QPair<double, double> OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
 {    
     // find min and max
     RectPoint bound;
@@ -1166,41 +1163,42 @@ QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
     bound.start.y = numeric_limits<double>::max();
     bound.end.y = -numeric_limits<double>::max();
 
-    foreach (const QCPData data, graph->data()->values())
+    for (QCPGraphDataContainer::const_iterator it = graph->data()->begin(); it != graph->data()->end(); ++it)
     {
-        if (data.key < bound.start.x) bound.start.x = data.key;
-        if (data.key > bound.end.x) bound.end.x = data.key;
-        if (data.value < bound.start.y) bound.start.y = data.value;
-        if (data.value > bound.end.y) bound.end.y = data.value;
+        if (it->key < bound.start.x) bound.start.x = it->key;
+        if (it->key > bound.end.x) bound.end.x = it->key;
+        if (it->value < bound.start.y) bound.start.y = it->value;
+        if (it->value > bound.end.y) bound.end.y = it->value;
     }
 
     // find closest point
-    QCPData selectedData(0, 0);
+    QPair<double, double> selectedData;
     double dist = numeric_limits<double>::max();
-    foreach (const QCPData data, graph->data()->values())
+    for (QCPGraphDataContainer::const_iterator it = graph->data()->begin(); it != graph->data()->end(); ++it)
     {
-        double mag = Point((data.key - pos.x) / bound.width(),
-                           (data.value - pos.y) / bound.height()).magnitudeSquared();
+        double mag = Point((it->key - pos.x) / bound.width(),
+                           (it->value - pos.y) / bound.height()).magnitudeSquared();
 
         if (mag <= dist)
         {
             dist = mag;
-            selectedData = data;
+            selectedData.first = it->key;
+            selectedData.second = it->value;
         }
     }
 
     return selectedData;
 }
 
-void OptiLab::graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event)
+void OptiLab::graphClicked(QCPAbstractPlottable *plottable, int code, QMouseEvent *event)
 {
     if (QCPGraph *graph = dynamic_cast<QCPGraph *>(plottable))
     {
         // find closest point
-        QCPData selectedData = findClosestData(graph, Point(chart->xAxis->pixelToCoord(event->pos().x()),
-                                                            chart->yAxis->pixelToCoord(event->pos().y())));
+        QPair<double, double> selectedData = findClosestData(graph, Point(chart->xAxis->pixelToCoord(event->pos().x()),
+                                                                          chart->yAxis->pixelToCoord(event->pos().y())));
 
-        QSharedPointer<Computation> selectedComputation = m_computationMap[graph->property("computationset_index").toInt()][QPair<double, double>(selectedData.key, selectedData.value)];
+        QSharedPointer<Computation> selectedComputation = m_computationMap[graph->property("computationset_index").toInt()][selectedData];
         if (!selectedComputation.isNull())
         {
             QToolTip::hideText();
@@ -1210,7 +1208,7 @@ void OptiLab::graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event)
                                   "<tr><td>X:</td>" "<td>%L2</td></tr>"
                                   "<tr><td>Y:</td>" "<td>%L3</td></tr>"
                                   "</table>").
-                               arg(graph->name().isEmpty() ? "..." : graph->name()).arg(selectedData.key).arg(selectedData.value), chart, chart->rect());
+                               arg(graph->name().isEmpty() ? "..." : graph->name()).arg(selectedData.first).arg(selectedData.second), chart, chart->rect());
 
             emit computationSelected(selectedComputation->problemDir());
         }
@@ -1358,8 +1356,8 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
         }
     }
 
-    pdfChart->replot(QCustomPlot::rpQueued);
-    cdfChart->replot(QCustomPlot::rpQueued);
+    pdfChart->replot(QCustomPlot::rpQueuedRefresh);
+    cdfChart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::resultsFindMinimum(bool checked)

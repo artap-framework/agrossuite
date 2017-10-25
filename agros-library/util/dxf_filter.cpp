@@ -130,8 +130,8 @@ void DxfInterfaceDXFRW::addPolyline(const DRW_Polyline& data)
 {
     for (int i = 0; i < data.vertlist.size() - 1; i++)
     {
-        DRW_Vertex *vertStart = data.vertlist.at(i);
-        DRW_Vertex *vertEnd = data.vertlist.at(i+1);
+        const std::shared_ptr<DRW_Vertex> vertStart = data.vertlist.at(i);
+        const std::shared_ptr<DRW_Vertex> vertEnd = data.vertlist.at(i+1);
 
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(m_scene, Point(vertStart->basePoint.x, vertStart->basePoint.y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(m_scene, Point(vertEnd->basePoint.x, vertEnd->basePoint.y)));
@@ -144,8 +144,8 @@ void DxfInterfaceDXFRW::addLWPolyline(const DRW_LWPolyline& data)
 {
     for (int i = 0; i < data.vertlist.size() - 1; i++)
     {
-        DRW_Vertex2D *vertStart = data.vertlist.at(i);
-        DRW_Vertex2D *vertEnd = data.vertlist.at(i+1);
+        const std::shared_ptr<DRW_Vertex2D> vertStart = data.vertlist.at(i);
+        const std::shared_ptr<DRW_Vertex2D> vertEnd = data.vertlist.at(i+1);
 
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(m_scene, Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(m_scene, Point(vertEnd->x, vertEnd->y)));
@@ -160,8 +160,8 @@ void DxfInterfaceDXFRW::addSpline(const DRW_Spline *data)
     if (data->degree == 1)
     {
         // first and last point
-        DRW_Coord *vertStart = data->controllist.at(0);
-        DRW_Coord *vertEnd = data->controllist.at(data->controllist.size() - 1);
+        const std::shared_ptr<DRW_Coord> vertStart = data->controllist.at(0);
+        const std::shared_ptr<DRW_Coord> vertEnd = data->controllist.at(data->controllist.size() - 1);
 
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(m_scene, Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(m_scene, Point(vertEnd->x, vertEnd->y)));
@@ -173,8 +173,8 @@ void DxfInterfaceDXFRW::addSpline(const DRW_Spline *data)
         qDebug() << "spline > 1nd order - not implemented";
 
         // first and last point
-        DRW_Coord *vertStart = data->controllist.at(0);
-        DRW_Coord *vertEnd = data->controllist.at(data->controllist.size() - 1);
+        const std::shared_ptr<DRW_Coord> vertStart = data->controllist.at(0);
+        const std::shared_ptr<DRW_Coord> vertEnd = data->controllist.at(data->controllist.size() - 1);
 
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(m_scene, Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(m_scene, Point(vertEnd->x, vertEnd->y)));
@@ -243,15 +243,8 @@ void DxfInterfaceDXFRW::writeHeader(DRW_Header& data)
     // bounding box
     RectPoint box = m_scene->boundingBox();
 
-    DRW_Variant *curr = NULL;
-
-    curr = new DRW_Variant();
-    curr->addCoord(DRW_Coord(box.start.x, box.start.y, 0.0));
-    data.vars["$EXTMIN"] = curr;
-
-    curr = new DRW_Variant();
-    curr->addCoord(DRW_Coord(box.end.x, box.end.y, 0.0));
-    data.vars["$EXTMAX"] = curr;
+    data.addCoord("$EXTMIN", DRW_Coord(box.start.x, box.start.y, 0.0), 0);
+    data.addCoord("$EXTMAX", DRW_Coord(box.end.x, box.end.y, 0.0), 0);
 }
 
 void DxfInterfaceDXFRW::writeEntities()

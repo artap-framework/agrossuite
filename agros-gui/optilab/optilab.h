@@ -149,7 +149,7 @@ private:
     QWidget *createControlsDistChart();
     QWidget *createControlsChart();
     QWidget *createControlsResults();
-    QCPData findClosestData(QCPGraph *graph, const Point &pos);
+    QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
 
     void resultsFindExtrem(bool minimum);
 
@@ -167,7 +167,7 @@ private slots:
     void resultsSetHorizontal(bool checked);
     void resultsSetVertical(bool checked);
 
-    void graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event);
+    void graphClicked(QCPAbstractPlottable *plottable, int code, QMouseEvent *event);
     void graphMouseDoubleClick(QMouseEvent *event);
 
     void doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
