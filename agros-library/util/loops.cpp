@@ -504,7 +504,7 @@ void LoopsInfo::addEdgePoints(QList<Point> *polyline, const SceneFace &edge, boo
 
 void LoopsInfo::processLoops()
 {
-    if(!m_scene->crossings().empty())
+    if (!m_scene->crossings().empty())
         throw AgrosGeometryException(tr("There are some edges crossed."));
 
     m_scene->checkTwoNodesSameCoordinates();

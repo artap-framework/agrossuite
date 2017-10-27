@@ -124,11 +124,11 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem),
 
 Scene::~Scene()
 {
+    clear();
+
     // delete loop info
     m_loopsInfo->clear();
     delete m_loopsInfo;
-
-    clear();
 
     // markers (delete None markers)
     boundaries->clear();
