@@ -1167,7 +1167,7 @@ void SceneViewPreprocessor::paintGeometry()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_TRIANGLES);
-            QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(Agros::problem()->scene()->loopsInfo()->polygonTriangles());
+            QMapIterator<SceneLabel *, QList<LoopsInfo::Triangle> > i(Agros::problem()->scene()->loopsInfo()->polygonTriangles());
             while (i.hasNext())
             {
                 i.next();

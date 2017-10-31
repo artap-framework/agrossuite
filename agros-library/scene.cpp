@@ -116,7 +116,7 @@ ostream& operator<<(ostream& output, FieldInfo& id)
 // ************************************************************************************************************************
 
 Scene::Scene(ProblemBase *problem) : m_problem(problem),
-    m_loopsInfo(new LoopsInfo(this)),        
+    m_loopsInfo(QSharedPointer<LoopsInfo>(new LoopsInfo(this))),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 {    
@@ -124,11 +124,10 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem),
 
 Scene::~Scene()
 {
-    clear();
-
-    // delete loop info
     m_loopsInfo->clear();
-    delete m_loopsInfo;
+
+    // clear
+    clear();
 
     // markers (delete None markers)
     boundaries->clear();
@@ -142,6 +141,7 @@ Scene::~Scene()
     delete faces;
     delete labels;
 }
+
 
 void Scene::copy(const Scene *origin)
 {

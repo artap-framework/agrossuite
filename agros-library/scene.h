@@ -107,7 +107,7 @@ public:
     void highlightNone();
     int highlightedCount();
 
-    LoopsInfo *loopsInfo() const { return m_loopsInfo; }
+    LoopsInfo *loopsInfo() const { return m_loopsInfo.data(); }
     QMultiMap<SceneFace *, SceneNode *> lyingEdgeNodes() const { return m_lyingEdgeNodes; }
     QMap<SceneNode *, int> numberOfConnectedNodeEdges() const { return m_numberOfConnectedNodeEdges; }
     QList<SceneFace *> crossings() const { return m_crossings; }
@@ -124,7 +124,7 @@ public:
 private:
     ProblemBase *m_problem;
 
-    LoopsInfo *m_loopsInfo;
+    QSharedPointer<LoopsInfo> m_loopsInfo;
     QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;
     QMap<SceneNode *, int> m_numberOfConnectedNodeEdges;
     QList<SceneFace *> m_crossings;
