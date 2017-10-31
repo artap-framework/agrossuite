@@ -826,7 +826,7 @@ Q_OBJECT
 
 public:
 
-    QtAwesome(QObject *parent = 0);
+    explicit QtAwesome(QObject *parent = 0);
     virtual ~QtAwesome();
 
     void init( const QString& fontname );
@@ -871,6 +871,6 @@ public:
     virtual void paint( QtAwesome* awesome, QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state, const QVariantMap& options ) = 0;
 };
 
-
+Q_DECLARE_METATYPE(QtAwesomeAnimation*)
 
 #endif // QTAWESOME_H
