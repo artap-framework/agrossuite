@@ -189,19 +189,10 @@ public:
                     // add computation
                     m_study->addComputation(computation);
 
-                    // penalty
-                    double totalPenalty = 0.0;
-                    for (int i = 0; i < m_study->parameters().count(); i++)
-                    {
-                        Parameter parameter = m_study->parameters()[i];
-                        if (parameter.penaltyEnabled())
-                            totalPenalty += parameter.penalty(x[i]);
-                    }
-
                     // set objective functions
                     countComputation++;
                     for (int i = 0; i < values.count(); i++)
-                        f[i] = values[i] + totalPenalty;
+                        f[i] = values[i];
 
                     /*
                     if (m_study->value(Study::NSGA3_use_surrogate).toBool())

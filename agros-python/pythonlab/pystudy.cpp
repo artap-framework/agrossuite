@@ -26,12 +26,10 @@ PyStudy::PyStudy() : m_study(nullptr)
 {
 }
 
-void PyStudy::addParameter(string name, double lowerBound, double upperBound,
-                           bool penaltyEnabled, double scale, double mu, double sigma)
+void PyStudy::addParameter(string name, double lowerBound, double upperBound)
 {
     // TODO: check
-    m_study->addParameter(Parameter(QString::fromStdString(name), lowerBound, upperBound,
-                                    penaltyEnabled, scale, mu, sigma));
+    m_study->addParameter(Parameter(QString::fromStdString(name), lowerBound, upperBound));
 }
 
 void PyStudy::addFunctional(string name, string expression, int weight)

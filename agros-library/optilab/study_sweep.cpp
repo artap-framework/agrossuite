@@ -89,19 +89,10 @@ double SweepProblem::evaluateSample(const vectord& x)
         // add computation
         m_study->addComputation(computation);
 
-        // penalty
-        double totalPenalty = 0.0;
-        for (int i = 0; i < m_study->parameters().count(); i++)
-        {
-            Parameter parameter = m_study->parameters()[i];
-            if (parameter.penaltyEnabled())
-                totalPenalty += parameter.penalty(x[i]);
-        }
-
         m_steps++;
         qInfo() << "Sweep: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
-        return value + totalPenalty;
+        return value;
     }
     catch (AgrosSolverException &e)
     {

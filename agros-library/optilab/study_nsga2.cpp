@@ -80,17 +80,8 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
         // add computation
         localStudy->addComputation(computation);
 
-        // penalty
-        double totalPenalty = 0.0;
-        for (int i = 0; i < localStudy->parameters().count(); i++)
-        {
-            Parameter parameter = localStudy->parameters()[i];
-            if (parameter.penaltyEnabled())
-                totalPenalty += parameter.penalty(xreal[i]);
-        }
-
         for (int i = 0; i < values.count(); i++)
-            obj[i] = values[i] + totalPenalty;
+            obj[i] = values[i];
 
         localSteps++;
         qInfo() << "NSGA-II: step " << localSteps << "/" << localStudy->estimatedNumberOfSteps();

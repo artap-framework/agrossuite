@@ -753,21 +753,11 @@ QString createPythonFromModel()
             // parameters
             foreach (Parameter parameter, study->parameters())
             {
-                if (parameter.penaltyEnabled())
-                    str += QString("study_%1.add_parameter(\"%2\", %3, %4, True, %5, %6, %7)\n").
-                            arg(studyTypeToStringKey(study->type())).
-                            arg(parameter.name()).
-                            arg(parameter.lowerBound()).
-                            arg(parameter.upperBound()).
-                            arg(parameter.scale()).
-                            arg(parameter.mu()).
-                            arg(parameter.sigma());
-                else
-                    str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
-                            arg(studyTypeToStringKey(study->type())).
-                            arg(parameter.name()).
-                            arg(parameter.lowerBound()).
-                            arg(parameter.upperBound());
+                str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
+                        arg(studyTypeToStringKey(study->type())).
+                        arg(parameter.name()).
+                        arg(parameter.lowerBound()).
+                        arg(parameter.upperBound());
             }
 
             // functionals

@@ -25,8 +25,7 @@
 class Parameter
 {
 public:
-    Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0,
-              bool penaltyEnabled = false, double scale = 0.0, double mu = NAN, double sigma = NAN);
+    Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
     ~Parameter();
 
     void load(QJsonObject &object);
@@ -39,28 +38,10 @@ public:
     inline double upperBound() const { return m_upperBound; }
     inline void setUpperBound(double upperBound) { m_upperBound = upperBound; }
 
-    // penalty
-    inline bool penaltyEnabled() const { return m_penaltyEnabled; }
-    inline void setPenaltyEnabled(bool enable) { m_penaltyEnabled = enable; }
-    inline double scale() const { return m_scale; }
-    inline void setScale(double scale) { m_scale = scale; }
-    inline double mu() const { return m_mu; }
-    inline void setMu(double mu) { m_mu = mu; }
-    inline double sigma() const { return m_sigma; }
-    inline void setSigma(double sigma) { m_sigma = sigma; }
-
-    double penalty(double value);
-
 protected:
     QString m_name;
     double m_lowerBound;
     double m_upperBound;
-
-    // penalty
-    bool m_penaltyEnabled;
-    double m_scale;
-    double m_mu;
-    double m_sigma;
 };
 
 class ParameterSpace

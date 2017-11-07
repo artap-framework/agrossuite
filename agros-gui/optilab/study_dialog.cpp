@@ -560,8 +560,8 @@ QWidget *StudyDialog::createParameters()
     trvParameterWidget = new QTreeWidget(this);
     trvParameterWidget->setExpandsOnDoubleClick(false);
     trvParameterWidget->setHeaderHidden(false);
-    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound") << tr("Penalty"));
-    trvParameterWidget->setColumnCount(4);
+    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
+    trvParameterWidget->setColumnCount(3);
     trvParameterWidget->setIndentation(2);
     trvParameterWidget->setColumnWidth(0, 200);
     trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
@@ -606,7 +606,6 @@ void StudyDialog::readParameters()
         item->setData(0, Qt::UserRole, parameter.name());
         item->setText(1, QString("%1").arg(parameter.lowerBound()));
         item->setText(2, QString("%1").arg(parameter.upperBound()));
-        item->setText(3, QString("%1").arg(parameter.penaltyEnabled() ? tr("enabled") : tr("disabled")));
         item->setTextAlignment(1, Qt::AlignRight);
         item->setTextAlignment(2, Qt::AlignRight);
     }
@@ -824,8 +823,7 @@ void StudyDialog::doDuplicate()
             
             // copy parameters
             foreach (Parameter parameter, m_study->parameters())
-                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound(),
-                                              parameter.penaltyEnabled(), parameter.scale(), parameter.mu(), parameter.sigma()));
+                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
             
             // copy functionals
             foreach (Functional functional, m_study->functionals())
@@ -975,42 +973,6 @@ void StudyParameterDialog::createControls()
     txtUpperBound = new LineEditDouble(m_parameter->upperBound(), this);
     connect(txtUpperBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
 
-    chkPenaltyEnabled = new QCheckBox(tr("Enable penalty function"));
-    chkPenaltyEnabled->setChecked(m_parameter->penaltyEnabled());
-    connect(chkPenaltyEnabled, SIGNAL(clicked(bool)), this, SLOT(checkRange()));
-    txtScale = new LineEditDouble(m_parameter->scale(), this);
-    txtScale->setBottom(0.0);
-    connect(txtScale, SIGNAL(editingFinished()), this, SLOT(checkRange()));
-    txtMu = new LineEditDouble(m_parameter->mu(), this);
-    connect(txtMu, SIGNAL(editingFinished()), this, SLOT(checkRange()));
-    txtSigma = new LineEditDouble(m_parameter->sigma(), this);
-    txtSigma->setBottom(0.0);
-    connect(txtSigma, SIGNAL(editingFinished()), this, SLOT(checkRange()));
-
-    m_chart = new QCustomPlot(this);
-    m_chart->setMinimumWidth(300);
-    m_chart->setMinimumHeight(200);
-    m_chart->xAxis->setTickLabelRotation(60);
-    m_chart->xAxis->setLabel(tr("x"));
-    m_chart->yAxis->setLabel(tr("penalty"));
-
-    m_penaltyChart = m_chart->addGraph(m_chart->xAxis, m_chart->yAxis);
-    m_penaltyChart->setLineStyle(QCPGraph::lsLine);
-    // m_penaltyChart->setPen(pen);
-    m_penaltyChart->setBrush(QBrush(QColor(0, 0, 255, 20)));
-
-    QGridLayout *layoutPenalty = new QGridLayout();
-    layoutPenalty->addWidget(new QLabel(tr("Scale")), 0, 0);
-    layoutPenalty->addWidget(txtScale, 0, 1);
-    layoutPenalty->addWidget(new QLabel(tr("<i>&mu;</i>")), 1, 0);
-    layoutPenalty->addWidget(txtMu, 1, 1);
-    layoutPenalty->addWidget(new QLabel(tr("<i>&sigma;</i>")), 2, 0);
-    layoutPenalty->addWidget(txtSigma, 2, 1);
-    layoutPenalty->addWidget(m_chart, 3, 0, 1, 2);
-
-    QGroupBox *grpPenalty = new QGroupBox(tr("Penalty function"));
-    grpPenalty->setLayout(layoutPenalty);
-
     QGridLayout *layoutEdit = new QGridLayout();
     layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
     layoutEdit->addWidget(lblName, 0, 1);
@@ -1018,7 +980,6 @@ void StudyParameterDialog::createControls()
     layoutEdit->addWidget(txtLowerBound, 1, 1);
     layoutEdit->addWidget(new QLabel(tr("Upper bound")), 2, 0);
     layoutEdit->addWidget(txtUpperBound, 2, 1);
-    layoutEdit->addWidget(chkPenaltyEnabled, 3, 1);
     
     QPalette palette = lblError->palette();
     palette.setColor(QPalette::WindowText, QColor(Qt::red));
@@ -1033,7 +994,6 @@ void StudyParameterDialog::createControls()
     QVBoxLayout *layoutWidget = new QVBoxLayout();
     layoutWidget->addLayout(layoutEdit);
     layoutWidget->addWidget(lblError);
-    layoutWidget->addWidget(grpPenalty, 1);
     layoutWidget->addWidget(buttonBox);
     
     setLayout(layoutWidget);
@@ -1050,44 +1010,6 @@ bool StudyParameterDialog::checkRange()
         return false;
     }
 
-    txtScale->setEnabled(chkPenaltyEnabled->isChecked());
-    txtMu->setEnabled(chkPenaltyEnabled->isChecked());
-    txtSigma->setEnabled(chkPenaltyEnabled->isChecked());
-    m_chart->setEnabled(chkPenaltyEnabled->isChecked());
-
-    // penalty
-    QVector<double> normalPDF(2);
-    QVector<double> normalSteps(2);
-    if (txtScale->value() > 0.0 && txtSigma->value() > 0.0)
-    {
-        int normalCount = 100;
-        double normalStep = (txtUpperBound->value() - txtLowerBound->value()) / (normalCount - 1);
-        normalPDF.resize(normalCount);
-        normalSteps.resize(normalCount);
-
-        boost::math::normal_distribution<double> normalDistribution(txtMu->value(), txtSigma->value());
-        double normalScale = boost::math::pdf(normalDistribution, txtMu->value());
-
-        for (int i = 0; i < normalCount; i++)
-        {
-            normalSteps[i] = txtLowerBound->value() + i * normalStep;
-            normalPDF[i] = txtScale->value() * (1.0 - 1.0 / normalScale * boost::math::pdf(normalDistribution, normalSteps[i]));
-        }
-
-        m_penaltyChart->setData(normalSteps, normalPDF);
-    }
-    else
-    {
-        normalSteps[0] = txtLowerBound->value();
-        normalSteps[1] = txtUpperBound->value();
-        normalPDF[0] = 0.0;
-        normalPDF[1] = 0.0;
-    }
-    m_penaltyChart->setData(normalSteps, normalPDF);
-    m_chart->rescaleAxes();
-    m_chart->yAxis->setRangeLower(0.0);
-    m_chart->replot(QCustomPlot::rpImmediateRefresh);
-    
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     lblError->setVisible(false);
     
@@ -1100,10 +1022,6 @@ void StudyParameterDialog::doAccept()
     {
         m_parameter->setLowerBound(txtLowerBound->value());
         m_parameter->setUpperBound(txtUpperBound->value());
-        m_parameter->setPenaltyEnabled(chkPenaltyEnabled->isChecked());
-        m_parameter->setScale(txtScale->value());
-        m_parameter->setMu(txtMu->value());
-        m_parameter->setSigma(txtSigma->value());
         
         accept();
     }

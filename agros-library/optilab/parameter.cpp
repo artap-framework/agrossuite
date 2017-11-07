@@ -28,20 +28,11 @@
 const QString NAME = "name";
 const QString LOWER_BOUND = "lower_bound";
 const QString UPPER_BOUND = "upper_bound";
-const QString PENALTY_ENABLED = "penalty_enabled";
-const QString SCALE = "scale";
-const QString MU = "mu";
-const QString SIGMA = "sigma";
 
-Parameter::Parameter(const QString &name, double lowerBound, double upperBound,
-                     bool penaltyEnabled, double scale, double mu, double sigma) :
-    m_name(name), m_lowerBound(lowerBound), m_upperBound(upperBound),
-    m_penaltyEnabled(penaltyEnabled), m_scale(scale),
-    m_mu(std::isnan(mu) ? (lowerBound + upperBound) / 2.0 : mu),
-    m_sigma(std::isnan(sigma) ? fmax(fabs(lowerBound), fabs(upperBound)) / 2.0 : sigma)
+Parameter::Parameter(const QString &name, double lowerBound, double upperBound) :
+    m_name(name), m_lowerBound(lowerBound), m_upperBound(upperBound)
 {
     assert(m_lowerBound <= m_upperBound);
-    if (fabs(m_sigma) < EPS_ZERO) m_sigma = 1.0;
 }
 
 Parameter::~Parameter()
@@ -53,30 +44,11 @@ void Parameter::clear()
 {    
 }
 
-double Parameter::penalty(double value)
-{
-    if (m_penaltyEnabled && m_scale > 0.0 && m_sigma > 0.0)
-    {
-        boost::math::normal_distribution<double> normalDistribution(m_mu, m_sigma);
-        double normalScale = boost::math::pdf(normalDistribution, m_mu);
-
-        return m_scale * (1.0 - 1.0 / normalScale * boost::math::pdf(normalDistribution, value));
-    }
-    else
-    {
-        return 0.0;
-    }
-}
-
 void Parameter::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
     m_lowerBound = object[LOWER_BOUND].toDouble();
     m_upperBound = object[UPPER_BOUND].toDouble();
-    m_penaltyEnabled = object[PENALTY_ENABLED].toBool();
-    m_scale = object[SCALE].toDouble();
-    m_mu = object[MU].toDouble();
-    m_sigma = object[SIGMA].toDouble();
 }
 
 void Parameter::save(QJsonObject &object)
@@ -84,10 +56,6 @@ void Parameter::save(QJsonObject &object)
     object[NAME] = m_name;
     object[LOWER_BOUND] = m_lowerBound;
     object[UPPER_BOUND] = m_upperBound;
-    object[PENALTY_ENABLED] = m_penaltyEnabled;
-    object[SCALE] = m_scale;
-    object[MU] = m_mu;
-    object[SIGMA] = m_sigma;
 }
 
 /*

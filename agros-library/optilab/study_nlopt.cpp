@@ -35,7 +35,6 @@ class NLoptProblem
 public:
     NLoptProblem(StudyNLopt *study) :  m_study(study), m_steps(0),
         opt((nlopt::algorithm) study->algorithmFromStringKey(study->value(Study::NLopt_algorithm).toString()), study->parameters().count())
-      // m_penaltyLambda(1.0)
     {
 
     }
@@ -87,19 +86,10 @@ public:
             // add computation
             m_study->addComputation(computation);
 
-            // penalty
-            double totalPenalty = 0.0;
-            for (int i = 0; i < m_study->parameters().count(); i++)
-            {
-                Parameter parameter = m_study->parameters()[i];
-                if (parameter.penaltyEnabled())
-                    totalPenalty += parameter.penalty(x[i]);
-            }
-
             m_steps++;
             // qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
-            return value + totalPenalty;
+            return value;
         }
         catch (AgrosSolverException &e)
         {
@@ -114,7 +104,7 @@ public:
 
 private:
     StudyNLopt *m_study;
-    // double m_penaltyLambda;
+
     int m_steps;
 };
 
