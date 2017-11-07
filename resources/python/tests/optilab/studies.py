@@ -35,7 +35,7 @@ class TestBayesOptBooth(AgrosTestCase):
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], 3.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 2e-5)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-3)
 
 class TestLimboSphere(AgrosTestCase):
     def setUp(self):  
@@ -130,7 +130,7 @@ class TestNSGA2Sphere(AgrosTestCase):
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
+        self.lower_then_test("OF", self.computation.results["OF"], 5e-2)
                                        
 class TestNSGA3Sphere(AgrosTestCase):
     def setUp(self):  
