@@ -1,37 +1,3 @@
-build:
-  tags:
-    - linux
-  script: 
-    - git submodule update --init 
-    - cd dealii 
-    - mkdir -p build 
-    - cd build 
-    - cmake ..
-    - make -j12 
-    - cd ../../
-    # - export CC=/usr/bin/clang
-    # - export CXX=/usr/bin/clang++     
-    - cmake . 
-    - make -j12
-    - ./agros_generator
-    - cd plugins
-    - cmake .
-    - make -j12
-    # appimage 
-    - cd ..
-    - strip libs/*.so
-    - strip agros
-    - strip agros_solver
-    - strip pythonlab
-    - ./tools.py appimage
-    - mkdir -p ~/appimage/$CI_BUILD_REF
-    - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
-    - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:H7sda0@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
-    # test
-    - cd resources/python
-    - cmake .
-    - ctest 
-    
 build_mumps:
   tags:
     - linux
@@ -88,3 +54,37 @@ build_petsc:
     - cmake .
     - make 
     - ctest --output-on-failure 
+
+build:
+  tags:
+    - linux
+  script: 
+    - git submodule update --init 
+    - cd dealii 
+    - mkdir -p build 
+    - cd build 
+    - cmake ..
+    - make -j12 
+    - cd ../../
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++     
+    - cmake . 
+    - make -j12
+    - ./agros_generator
+    - cd plugins
+    - cmake .
+    - make -j12
+    # appimage 
+    - cd ..
+    - strip libs/*.so
+    - strip agros
+    - strip agros_solver
+    - strip pythonlab
+    - ./tools.py appimage
+    - mkdir -p ~/appimage/$CI_BUILD_REF
+    - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
+    - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:H7sda0@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
+    # test
+    - cd resources/python
+    - cmake .
+    - ctest 
