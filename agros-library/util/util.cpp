@@ -220,6 +220,10 @@ QString datadir()
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/";
 
+    // solver DEK
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../agros2d/resources/templates/empty.tpl"))
+        return QString::fromLatin1(getenv("PWD")) + "/../agros2d";
+
     // solver
     if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
