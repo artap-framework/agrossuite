@@ -65,6 +65,9 @@ FieldInfo::~FieldInfo()
 
 void FieldInfo::convertJson()
 {
+    // clear current module
+    m_plugin->moduleJson()->clear();
+
     // save to Json
     m_plugin->moduleJson()->id = QString::fromStdString(m_plugin->module()->general_field().id());
     m_plugin->moduleJson()->name = QString::fromStdString(m_plugin->module()->general_field().name());
@@ -79,7 +82,18 @@ void FieldInfo::convertJson()
         m_plugin->moduleJson()->constants.append(c);
     }
 
-    // TODO: macros
+    // macros
+    if (m_plugin->module()->macros().present())
+    {
+        foreach (XMLModule::macro mcro, m_plugin->module()->macros().get().macro())
+        {
+            PluginMacro m;
+            m.id = QString::fromStdString(mcro.id());
+            m.expression = QString::fromStdString(mcro.expression());
+
+            m_plugin->moduleJson()->macros.append(m);
+        }
+    }
 
     // analyses
     for (unsigned int i = 0; i < m_plugin->module()->general_field().analyses().analysis().size(); i++)
@@ -122,6 +136,49 @@ void FieldInfo::convertJson()
         v.shortName = (quantity.shortname().present()) ? QString::fromStdString(quantity.shortname().get()) : "";
 
         m_plugin->moduleJson()->weakFormRecipeVolume.variables.append(v);
+    }
+
+    // volume
+    foreach(XMLModule::weakform_volume weakform, volume.weakforms_volume().weakform_volume())
+    {
+        AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()));
+
+        foreach (CoordinateType coordinateType, PluginFunctions::coordinateTypeList())
+        {
+            foreach(XMLModule::linearity_option option, weakform.linearity_option())
+            {
+                LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(option.type().c_str()));
+
+                // ctemplate::TemplateDictionary *fieldVolume = generateVolumeVariables(linearityType, coordinateType, output, weakform, "VOLUME");
+
+                QList<FormInfo> matrixForms = Module::wfMatrixVolumeSeparated(m_plugin->module(), analysisType, linearityType);
+                foreach(FormInfo formInfo, matrixForms)
+                {
+                    PluginWeakFormRecipe::MatrixForm form;
+
+                    form.id = formInfo.id;
+                    form.i = formInfo.i;
+                    form.j = formInfo.j;
+                    form.condition = formInfo.condition;
+                    form.planar = formInfo.expr_planar;
+                    form.axi = formInfo.expr_axi;
+                    form.cart = formInfo.expr_planar;
+
+                }
+
+                QList<FormInfo> matrixTransientForms = Module::wfMatrixTransientVolumeSeparated(m_plugin->module(), analysisType, linearityType);
+                foreach(FormInfo formInfo, matrixTransientForms)
+                {
+                    // generateFormExpression(formInfo, linearityType, coordinateType, *fieldVolume, "TRANSIENT", weakform, false);
+                }
+
+                QList<FormInfo> vectorForms = Module::wfVectorVolumeSeparated(m_plugin->module(), analysisType, linearityType);
+                foreach(FormInfo formInfo, vectorForms)
+                {
+                    // generateFormExpression(formInfo, linearityType, coordinateType, *fieldVolume, "VECTOR", weakform, false);
+                }
+            }
+        }
     }
 
     XMLModule::surface surface = m_plugin->module()->surface();
@@ -193,7 +250,6 @@ void FieldInfo::convertJson()
     {
         XMLModule::localvariable lv = m_plugin->module()->postprocessor().localvariables().localvariable().at(i);
 
-
         PluginPostVariable variable;
         variable.name = QString::fromStdString(lv.name());
         variable.type = QString::fromStdString(lv.type());
@@ -214,7 +270,7 @@ void FieldInfo::convertJson()
             e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
             e.axi_r = (expr.axi_r().present()) ? QString::fromStdString(expr.axi_r().get()) : "";
             e.axi_z = (expr.axi_z().present()) ? QString::fromStdString(expr.axi_z().get()) : "";
-            e.cart = "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.cart_x = (expr.planar_x().present()) ? QString::fromStdString(expr.planar_x().get()) : "";
             e.cart_y = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()) : "";
             e.cart_z = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()).replace("dy1", "dz1").replace("dy2", "dz2") : "";
@@ -223,7 +279,6 @@ void FieldInfo::convertJson()
         }
         m_plugin->moduleJson()->postLocalVariables.append(variable);
     }
-
 
     // volume integrals
     for (unsigned int i = 0; i < m_plugin->module()->postprocessor().volumeintegrals().volumeintegral().size(); i++)
@@ -246,7 +301,7 @@ void FieldInfo::convertJson()
             e.analysis = QString::fromStdString(expr.analysistype());
             e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
-            e.cart = "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
 
             variable.expresions.append(e);
         }
@@ -275,7 +330,7 @@ void FieldInfo::convertJson()
             e.analysis = QString::fromStdString(expr.analysistype());
             e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
-            e.cart = "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
 
             variable.expresions.append(e);
         }

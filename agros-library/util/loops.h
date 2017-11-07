@@ -124,7 +124,7 @@ private:
     int intersectionsParity(Point point, QList<LoopsNodeEdgeData> loop);
     bool isInsideSeg(double angleSegStart, double angleSegEnd, double angle);
 
-    QList<Triangle> triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes);
+    QList<Triangle> triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes, const Point& steiner);
     int windingNumber(Point point, QList<LoopsNodeEdgeData> loop);
     bool areSameLoops(QList<LoopsNodeEdgeData> loop1, QList<LoopsNodeEdgeData> loop2);
     bool areEdgeDuplicities(QList<LoopsNodeEdgeData> loop);

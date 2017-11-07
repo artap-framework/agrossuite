@@ -194,6 +194,33 @@ protected:
 </module:volume>
 */
 
+// functions
+
+class PluginFunctions
+{
+public:
+    // static methods
+    static QList<WeakFormKind> weakFormTypeList();
+    static QString weakFormTypeStringEnum(WeakFormKind weakformType);
+
+    static QList<CouplingType> couplingFormTypeList();
+    static QString couplingTypeStringEnum(CouplingType couplingType);
+    static QString couplingTypeToString(QString couplingType);
+    static CouplingType couplingTypeFromString(QString couplingType);
+
+    static QList<LinearityType> linearityTypeList();
+    static QString linearityTypeStringEnum(LinearityType linearityType);
+
+    static QString physicFieldVariableCompStringEnum(PhysicFieldVariableComp physicFieldVariableComp);
+
+    static QList<CoordinateType> coordinateTypeList();
+    static QString coordinateTypeStringEnum(CoordinateType coordinateType);
+
+    static QString analysisTypeStringEnum(AnalysisType analysisType);
+
+    static QString boundaryTypeString(const QString boundaryName);
+};
+
 class AGROS_LIBRARY_API PluginWeakFormRecipe
 {
 public:
@@ -302,9 +329,9 @@ public:
                    const QString &axi = "", const QString &axi_r = "", const QString &axi_z = "",
                    const QString &cart = "", const QString &cart_x = "", const QString &cart_y = "", const QString &cart_z = "")
             : analysis(analysis),
-              planar_x(planar_x), planar_y(planar_y),
-              axi_r(axi_r), axi_z(axi_z),
-              cart_x(cart_x), cart_y(cart_y), cart_z(cart_z) {}
+              planar(planar), planar_x(planar_x), planar_y(planar_y),
+              axi(axi), axi_r(axi_r), axi_z(axi_z),
+              cart(cart), cart_x(cart_x), cart_y(cart_y), cart_z(cart_z) {}
 
         QString analysis;
         QString planar, planar_x, planar_y;
@@ -327,6 +354,13 @@ class AGROS_LIBRARY_API PluginConstant
 public:
     QString id;
     double value;
+};
+
+class AGROS_LIBRARY_API PluginMacro
+{
+public:
+    QString id;
+    QString expression;
 };
 
 class AGROS_LIBRARY_API PluginModuleAnalysis
@@ -354,6 +388,7 @@ public:
 
     QList<PluginModuleAnalysis> analyses;
     QList<PluginConstant> constants;
+    QList<PluginMacro> macros;
 
     // preprocessor
     QList<PluginPreGroup> preVolumeGroups;
@@ -370,6 +405,7 @@ public:
 
     void load(const QString &fileName);
     void save(const QString &fileName);
+    void clear();
 };
 
 // plugin interface

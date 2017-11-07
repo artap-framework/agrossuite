@@ -27,6 +27,7 @@
 #include "solver/weak_form.h"
 #include "solver/module.h"
 #include "solver/coupling.h"
+#include "solver/plugin_interface.h"
 
 #include "parser/lex.h"
 
@@ -184,7 +185,7 @@ void Agros2DGeneratorCoupling::generatePluginWeakFormSourceFiles()
 template <typename WeakForm>
 void Agros2DGeneratorCoupling::generateForm(FormInfo formInfo, LinearityType linearityType, ctemplate::TemplateDictionary &output, WeakForm weakform, QString weakFormType)
 {
-    foreach (CoordinateType coordinateType, Agros2DGenerator::coordinateTypeList())
+    foreach (CoordinateType coordinateType, PluginFunctions::coordinateTypeList())
     {
         QString expression = (coordinateType == CoordinateType_Planar ? formInfo.expr_planar : formInfo.expr_axi);
         if(expression != "")
@@ -207,18 +208,18 @@ void Agros2DGeneratorCoupling::generateForm(FormInfo formInfo, LinearityType lin
                     arg(QString::number(formInfo.i)).
                     arg(QString::number(formInfo.j));
 
-            CouplingType couplingType = Agros2DGenerator::couplingTypeFromString(QString::fromStdString(weakform.couplingtype().get()));
+            CouplingType couplingType = PluginFunctions::couplingTypeFromString(QString::fromStdString(weakform.couplingtype().get()));
 
             field->SetValue("COLUMN_INDEX", QString::number(formInfo.j).toStdString());
             field->SetValue("FUNCTION_NAME", functionName.toStdString());
-            field->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
-            field->SetValue("LINEARITY_TYPE", Agros2DGenerator::linearityTypeStringEnum(linearityType).toStdString());
-            field->SetValue("SOURCE_ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.sourceanalysis().get()))).toStdString());
-            field->SetValue("TARGET_ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
+            field->SetValue("COORDINATE_TYPE", PluginFunctions::coordinateTypeStringEnum(coordinateType).toStdString());
+            field->SetValue("LINEARITY_TYPE", PluginFunctions::linearityTypeStringEnum(linearityType).toStdString());
+            field->SetValue("SOURCE_ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.sourceanalysis().get()))).toStdString());
+            field->SetValue("TARGET_ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
             field->SetValue("ROW_INDEX", QString::number(formInfo.i).toStdString());
             field->SetValue("MODULE_ID", id.toStdString());
             field->SetValue("WEAKFORM_ID", formInfo.id.toStdString());
-            field->SetValue("COUPLING_TYPE", Agros2DGenerator::couplingTypeToString(weakform.couplingtype().get().c_str()).toStdString());
+            field->SetValue("COUPLING_TYPE", PluginFunctions::couplingTypeToString(weakform.couplingtype().get().c_str()).toStdString());
 
             ParserModuleInfo pmiSource(*m_sourceModule,
                                        analysisTypeFromStringKey(QString::fromStdString(weakform.sourceanalysis().get())),

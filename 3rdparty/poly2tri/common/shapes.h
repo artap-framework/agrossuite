@@ -201,7 +201,7 @@ void ClearDelunayEdges();
 inline bool IsInterior();
 inline void IsInterior(bool b);
 
-Triangle& NeighborAcross(Point& opoint);
+Triangle *NeighborAcross(Point& opoint);
 
 void DebugPrint();
 

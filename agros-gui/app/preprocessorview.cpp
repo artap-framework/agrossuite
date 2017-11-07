@@ -775,7 +775,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         {
             // geometry
             SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>();
-            m_sceneViewPreprocessor->actSceneModeProblem->trigger();
+            // m_sceneViewPreprocessor->actSceneModeProblem->trigger();
 
             if (dynamic_cast<SceneNode *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnNodes->trigger();

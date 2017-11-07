@@ -13,14 +13,16 @@
         "constants": [
             {
                 "id": "EPS0",
-                "value": 8.8539999999999992e-12
+                "value": 8.854e-12
             },
             {
                 "id": "SMALL",
-                "value": 1.0000000000000001e-05
+                "value": 1e-05
             }
         ],
         "id": "electrostatic",
+        "macros": [
+        ],
         "name": "Electrostatic field",
         "version": 1
     },
@@ -87,7 +89,7 @@
                     {
                         "analysis": "steadystate",
                         "axi": "0.5 * el_epsr * EPS0 * (dr1 * dr1 + dz1 * dz1)",
-                        "cart": "0.5 * el_epsr * EPS0 * (dr1 * dr1 + dz1 * dz1)",
+                        "cart": "0.5 * el_epsr * EPS0 * (dx1 * dx1 + dy1 * dy1)",
                         "planar": "0.5 * el_epsr * EPS0 * (dx1 * dx1 + dy1 * dy1)"
                     }
                 ],
@@ -404,11 +406,91 @@
                 {
                     "id": "electrostatic_surface_charge_density",
                     "shortname": "el_sigma"
+                },
+                {
+                    "id": "electrostatic_potential",
+                    "shortname": "el_u"
+                },
+                {
+                    "id": "electrostatic_surface_charge_density",
+                    "shortname": "el_sigma"
+                },
+                {
+                    "id": "electrostatic_potential",
+                    "shortname": "el_u"
+                },
+                {
+                    "id": "electrostatic_surface_charge_density",
+                    "shortname": "el_sigma"
+                },
+                {
+                    "id": "electrostatic_potential",
+                    "shortname": "el_u"
+                },
+                {
+                    "id": "electrostatic_surface_charge_density",
+                    "shortname": "el_sigma"
+                },
+                {
+                    "id": "electrostatic_potential",
+                    "shortname": "el_u"
+                },
+                {
+                    "id": "electrostatic_surface_charge_density",
+                    "shortname": "el_sigma"
+                },
+                {
+                    "id": "electrostatic_potential",
+                    "shortname": "el_u"
+                },
+                {
+                    "id": "electrostatic_surface_charge_density",
+                    "shortname": "el_sigma"
                 }
             ]
         },
         "volumegroups": {
             "variables": [
+                {
+                    "id": "electrostatic_permittivity",
+                    "shortname": "el_epsr"
+                },
+                {
+                    "id": "electrostatic_charge_density",
+                    "shortname": "el_rho"
+                },
+                {
+                    "id": "electrostatic_permittivity",
+                    "shortname": "el_epsr"
+                },
+                {
+                    "id": "electrostatic_charge_density",
+                    "shortname": "el_rho"
+                },
+                {
+                    "id": "electrostatic_permittivity",
+                    "shortname": "el_epsr"
+                },
+                {
+                    "id": "electrostatic_charge_density",
+                    "shortname": "el_rho"
+                },
+                {
+                    "id": "electrostatic_permittivity",
+                    "shortname": "el_epsr"
+                },
+                {
+                    "id": "electrostatic_charge_density",
+                    "shortname": "el_rho"
+                },
+                {
+                    "id": "electrostatic_permittivity",
+                    "shortname": "el_epsr"
+                },
+                {
+                    "id": "electrostatic_charge_density",
+                    "shortname": "el_rho"
+                },
                 {
                     "id": "electrostatic_permittivity",
                     "shortname": "el_epsr"

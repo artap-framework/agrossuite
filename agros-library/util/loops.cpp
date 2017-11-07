@@ -777,7 +777,7 @@ void LoopsInfo::processLoops()
     }
 }
 
-QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes)
+QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes, const Point &steiner)
 {
     // create p2t structure
     vector<p2t::Point*> polylineP2T;
@@ -799,6 +799,9 @@ QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyl
         holesP2T.push_back(holeP2T);
         cdt.AddHole(holeP2T);
     }
+
+    // add Steiner point
+    cdt.AddPoint(new p2t::Point(steiner.x, steiner.y));
 
     // triangulate
     cdt.Triangulate();
@@ -874,7 +877,7 @@ void LoopsInfo::processPolygonTriangles(bool force)
                 polylines.append(polyline);
             }
 
-            foreach (SceneLabel* label, m_scene->labels->items())
+            foreach (SceneLabel *label, m_scene->labels->items())
             {
                 // if (!label->isHole() && loopsInfo.labelToLoops[label].count() > 0)
                 if (m_labelLoops[label].count() > 0)
@@ -892,7 +895,7 @@ void LoopsInfo::processPolygonTriangles(bool force)
 
                     if (!polyline.isEmpty())
                     {
-                        QList<Triangle> triangles = triangulateLabel(polyline, holes);
+                        QList<Triangle> triangles = triangulateLabel(polyline, holes, label->point());
                         m_polygonTriangles.insert(label, triangles);
                     }
                 }

@@ -2,6 +2,7 @@
 #include "generator_module.h"
 #include "parser.h"
 #include "util/constants.h"
+#include "solver/plugin_interface.h"
 
 #include "solver/weak_form.h"
 #include "solver/module.h"
@@ -97,7 +98,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             foreach(XMLModule::weakform_volume weakform, source_module.volume().weakforms_volume().weakform_volume())
             {
                 ctemplate::TemplateDictionary *sectionAnalysisType = coupling->AddSectionDictionary("COUPLING_VARIABLES_ANALYSIS_TYPE");
-                sectionAnalysisType->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()))).toStdString());
+                sectionAnalysisType->SetValue("ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()))).toStdString());
                 foreach(XMLModule::quantity quantity, weakform.quantity())
                 {
                     ctemplate::TemplateDictionary *variables = sectionAnalysisType->AddSectionDictionary("COUPLING_VARIABLES");
@@ -117,7 +118,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
     {
         AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()));
 
-        foreach (CoordinateType coordinateType, Agros2DGenerator::coordinateTypeList())
+        foreach (CoordinateType coordinateType, PluginFunctions::coordinateTypeList())
         {
             foreach(XMLModule::linearity_option option, weakform.linearity_option())
             {
@@ -150,7 +151,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                     foreach(AnalysisType sourceAnalysisType, allAnalysisTypes)
                     {
                         ctemplate::TemplateDictionary *sectionAnalysisType = coupling->AddSectionDictionary("COUPLING_FORMS_ANALYSIS_TYPE");
-                        sectionAnalysisType->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(sourceAnalysisType).toStdString());
+                        sectionAnalysisType->SetValue("ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(sourceAnalysisType).toStdString());
 
                         QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), sourceAnalysisType, analysisType, CouplingType_Weak, linearityType);
                         if (!vectorForms.isEmpty())
@@ -178,7 +179,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
         AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()));
         foreach(XMLModule::boundary boundary, weakform.boundary())
         {
-            foreach (CoordinateType coordinateType, Agros2DGenerator::coordinateTypeList())
+            foreach (CoordinateType coordinateType, PluginFunctions::coordinateTypeList())
             {
                 foreach(XMLModule::linearity_option option, boundary.linearity_option())
                 {
@@ -335,9 +336,9 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
 {
     ctemplate::TemplateDictionary *field = output.AddSectionDictionary(weakFormType.toStdString() + "_SOURCE");
 
-    field->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
-    field->SetValue("LINEARITY_TYPE", Agros2DGenerator::linearityTypeStringEnum(linearityType).toStdString());
-    field->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
+    field->SetValue("COORDINATE_TYPE", PluginFunctions::coordinateTypeStringEnum(coordinateType).toStdString());
+    field->SetValue("LINEARITY_TYPE", PluginFunctions::linearityTypeStringEnum(linearityType).toStdString());
+    field->SetValue("ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
 
     ParserModuleInfo pmi(*m_module, analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())), coordinateType, linearityType, false);
 
@@ -489,9 +490,9 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateSurfaceVariables(
 {
     ctemplate::TemplateDictionary *field = output.AddSectionDictionary(weakFormType.toStdString() + "_SOURCE");
 
-    field->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
-    field->SetValue("LINEARITY_TYPE", Agros2DGenerator::linearityTypeStringEnum(linearityType).toStdString());
-    field->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
+    field->SetValue("COORDINATE_TYPE", PluginFunctions::coordinateTypeStringEnum(coordinateType).toStdString());
+    field->SetValue("LINEARITY_TYPE", PluginFunctions::linearityTypeStringEnum(linearityType).toStdString());
+    field->SetValue("ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype()))).toStdString());
 
     field->SetValue("BOUNDARY_ID", boundary->id().c_str());
 

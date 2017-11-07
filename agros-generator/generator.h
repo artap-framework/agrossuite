@@ -41,26 +41,6 @@ public:
 
     inline void setModuleName(const QString &module = "") { m_module = module; }
 
-    // static methods
-    static QList<WeakFormKind> weakFormTypeList();
-    static QString weakFormTypeStringEnum(WeakFormKind weakformType);
-
-    static QList<CouplingType> couplingFormTypeList();
-    static QString couplingTypeStringEnum(CouplingType couplingType);
-    static QString couplingTypeToString(QString couplingType);
-    static CouplingType couplingTypeFromString(QString couplingType);
-
-    static QList<LinearityType> linearityTypeList();
-    static QString linearityTypeStringEnum(LinearityType linearityType);
-
-    static QString physicFieldVariableCompStringEnum(PhysicFieldVariableComp physicFieldVariableComp);
-
-    static QList<CoordinateType> coordinateTypeList();
-    static QString coordinateTypeStringEnum(CoordinateType coordinateType);
-
-    static QString analysisTypeStringEnum(AnalysisType analysisType);
-
-    static QString boundaryTypeString(const QString boundaryName);
     static int numberOfSolutions(XMLModule::analyses analyses, AnalysisType analysisType);
 
 public slots:
