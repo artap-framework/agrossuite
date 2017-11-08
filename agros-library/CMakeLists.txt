@@ -76,9 +76,7 @@ SET(SOURCES
     logview.cpp
     mesh/agros_manifold.cpp
     mesh/meshgenerator.cpp
-    mesh/meshgenerator_cubit.cpp
     mesh/meshgenerator_triangle.cpp
-    mesh/meshgenerator_gmsh.cpp
     parser/lex.cpp
     optilab/doe.cpp
     optilab/study.cpp
@@ -130,13 +128,7 @@ SET(SOURCES
     util/spline.cpp
     util/table.cpp
     value.cpp
-  )
-    
-SOURCE_GROUP(
-  "Source Files\\_Commented Out" FILES 
-  mesh/meshgenerator_gmsh.cpp
-  # sceneview_vtk2d.cpp
-)
+  )   
 
 SOURCE_GROUP(
   "Source Files\\Generated Classes" FILES 
@@ -148,7 +140,6 @@ SOURCE_GROUP(
   "Source Files\\Mesh" FILES 
   mesh/agros_manifold.cpp
   mesh/meshgenerator.cpp
-  mesh/meshgenerator_cubit.cpp
   mesh/meshgenerator_triangle.cpp
 )
 
@@ -197,14 +188,12 @@ SOURCE_GROUP(
 )
 
 SET(HEADERS
-  mesh/meshgenerator_gmsh.h
   # sceneview.h
   # sceneview_vtk2d.h  
   datatable.h
   logview.h
   mesh/agros_manifold.h
   mesh/meshgenerator.h
-  mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
   parser/lex.h
   optilab/doe.h
@@ -262,7 +251,6 @@ SET(HEADERS
   
 SOURCE_GROUP(
   "Header Files\\_Commented Out" FILES 
-  mesh/meshgenerator_gmsh.h
   # sceneview.h
   # sceneview_vtk2d.h
 )
@@ -271,7 +259,6 @@ SOURCE_GROUP(
   "Header Files\\Mesh" FILES 
   mesh/agros_manifold.h
   mesh/meshgenerator.h
-  mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
 )
 

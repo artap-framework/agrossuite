@@ -151,7 +151,6 @@ QWidget *AboutDialog::createLibraries()
 {
     QLabel *labelContent = new QLabel(tr("<h3>Libraries</h3>"
                                          "<b>Digia Qt:</b> Digia Qt (<a href=\"http://qt.digia.com/\">Qt - Cross-platform application and UI development framework</a>)<br/>"
-                                         "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
                                          "<b>Python:</b> Python Programming Language (<a href=\"http://www.python.org\">Python</a>)<br/>"
                                          "<b>libdxfrw:</b> LibreCAD DXF library (<a href=\"http://sourceforge.net/projects/libdxfrw/\">libdxfrw</a>)<br/>"
                                          "<b>ctemplate:</b> Simple but powerful template language for C++ (<a href=\"http://code.google.com/p/ctemplate/\">ctemplate</a>)<br/>"
@@ -159,11 +158,14 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>poly2tri:</b> A 2D constrained Delaunay triangulation library (<a href=\"http://code.google.com/p/poly2tri/\">poly2tri</a>)<br/>"
                                          "<b>stb_truetype.h:</b> TrueType processing library - Sean Barrett / RAD Game Tools (<a href=\"http://nothings.org/\">stb</a>)<br/>"
                                          "<b>Triangle:</b> Jonathan Richard Shewchuk (<a href=\"http://www.cs.cmu.edu/~quake/triangle.html\">Triangle</a>)<br/>"
-                                         "<b>Gmsh:</b> A three-dimensional finite element mesh generator (<a href=\"http://geuz.org/gmsh\">Gmsh</a>)<br/>"
                                          "<b>UMFPACK:</b> unsymmetric multifrontal sparse LU factorization package (<a href=\"http://www.cise.ufl.edu/research/sparse/umfpack/\">UMFPACK</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
+                                         "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
                                          "<b>PARALUTION:</b> Sparse iterative solvers on multi-core CPU and GPU devices (<a href=\"http://www.paralution.com/\">PARALUTION</a>)<br/>"
-                                         "<b>ViennaCL:</b> Linear algebra library for computations on many-core architectures (GPUs, MIC) and multi-core CPUs (<a href=\"http://viennacl.sourceforge.net/\">ViennaCL</a>)<br/>"
+                                         "<b>BayesOpt:</b> Bayesian optimization library (<a href=\"https://github.com/rmcantin/bayesopt/\">BayesOpt</a>)<br/>"
+                                         "<b>NLopt:</b> Free/open-source library for nonlinear optimization (<a href=\"https://nlopt.readthedocs.io/en/latest/\">NLopt</a>)<br/>"
+                                         "<b>Limbo:</b> Lightweight framework for Bayesian Optimization, a powerful approach for global optimization of expensive, non-convex functions (<a href=\"http://www.resibots.eu/limbo/\">Limbo</a>)<br/>"
+                                         "<b>exprtk:</b> Mathematical Expression Toolkit Library (<a href=\"https://github.com/ArashPartow/exprtk/\">exprtk</a>)<br/>"
                                          ));
     labelContent->setWordWrap(true);
     labelContent->setOpenExternalLinks(true);
