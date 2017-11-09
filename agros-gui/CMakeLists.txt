@@ -56,7 +56,7 @@ SET(SOURCES main.cpp
     app/postprocessorview_chart.cpp
     app/postprocessorview.cpp
     app/postprocessorview_mesh.cpp
-    app/postprocessorview_particletracing.cpp
+    #app/postprocessorview_particletracing.cpp
     app/postprocessorview_post2d.cpp
     app/postprocessorview_post3d.cpp
     app/preprocessorview.cpp
@@ -71,7 +71,7 @@ SET(SOURCES main.cpp
     app/sceneview_geometry.cpp
     app/sceneview_geometry_simple.cpp
     app/sceneview_mesh.cpp
-    app/sceneview_particle.cpp
+    #app/sceneview_particle.cpp
     app/sceneview_post2d.cpp
     app/sceneview_post3d.cpp
     app/sceneview_post.cpp
@@ -113,7 +113,7 @@ SET(HEADERS gui/about.h
     app/postprocessorview_chart.h
     app/postprocessorview.h
     app/postprocessorview_mesh.h
-    app/postprocessorview_particletracing.h
+    #app/postprocessorview_particletracing.h
     app/postprocessorview_post2d.h
     app/postprocessorview_post3d.h
     app/preprocessorview.h
@@ -129,7 +129,7 @@ SET(HEADERS gui/about.h
     app/sceneview_geometry.h
     app/sceneview_geometry_simple.h
     app/sceneview_mesh.h
-    app/sceneview_particle.h
+    #app/sceneview_particle.h
     app/sceneview_post2d.h
     app/sceneview_post3d.h
     app/sceneview_post.h

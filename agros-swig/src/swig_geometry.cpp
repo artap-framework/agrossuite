@@ -554,21 +554,6 @@ void SwigGeometry::selectNone()
     Agros::problem()->scene()->selectNone();
 }
 
-void SwigGeometry::moveSelection(double dx, double dy, bool copy, bool withMarkers)
-{
-    Agros::problem()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
-}
-
-void SwigGeometry::rotateSelection(double x, double y, double angle, bool copy, bool withMarkers)
-{
-    Agros::problem()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
-}
-
-void SwigGeometry::scaleSelection(double x, double y, double scale, bool copy, bool withMarkers)
-{
-    Agros::problem()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
-}
-
 void SwigGeometry::removeSelection()
 {
     // Agros::problem()->scene()->deleteSelected();

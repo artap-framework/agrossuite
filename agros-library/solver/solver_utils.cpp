@@ -324,10 +324,13 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
 {
     if (!m_feCollectionCache.contains(fieldInfo->fieldId()))
     {
-        dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
+        QMap<int, PluginModuleAnalysis::Equation> spaces;
+        foreach (PluginModuleAnalysis analysis, fieldInfo->plugin()->moduleJson()->analyses)
+            if (analysis.type == fieldInfo->analysisType())
+                spaces = analysis.configs;
+        assert(spaces.size() > 0);
 
-        // qDebug() << fieldInfo->name();
-        QMap<int, Module::Space> spaces = fieldInfo->spaces();
+        dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
 
         // first position of feCollection, quadratureFormulas and quadratureFormulasFace belongs to NONE space
         // this will be used for implementation of different meshes
@@ -351,13 +354,12 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
             foreach (int key, spaces.keys())
             {
                 dealii::FiniteElement<2> *fe = nullptr;
-                Module::Space space = spaces[key];
+                PluginModuleAnalysis::Equation equation = spaces[key];
 
-                if (space.type() == "h1")
-                    fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
-                else if (spaces.value(key).type() == "l2")
-                    fe = new dealii::FE_DGP<2>(degree + space.orderAdjust());
-                // fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
+                if (equation.type == "h1")
+                    fe = new dealii::FE_Q<2>(degree + equation.orderIncrease);
+                else if (equation.type == "l2")
+                    fe = new dealii::FE_DGP<2>(degree + equation.orderIncrease);
 
                 fes.push_back(fe);
                 m_fesCache[fieldInfo->fieldId()].push_back(fe);

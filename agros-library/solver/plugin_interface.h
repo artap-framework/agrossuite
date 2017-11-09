@@ -268,7 +268,7 @@ public:
     QList<Variable> variables;
     QList<MatrixForm> matrixForms;
     QList<VectorForm> vectorForms;
-    QList<EssentialForm> essentialForms;
+    QList<EssentialForm> essentialForms; // only for surface forms
 };
 
 class AGROS_LIBRARY_API PluginWeakFormVolume
@@ -324,7 +324,7 @@ public:
     class AGROS_LIBRARY_API Expression
     {
     public:
-        Expression(const QString &analysis = "",
+        Expression(AnalysisType analysis = AnalysisType_SteadyState,
                    const QString &planar = "", const QString &planar_x = "", const QString &planar_y = "",
                    const QString &axi = "", const QString &axi_r = "", const QString &axi_z = "",
                    const QString &cart = "", const QString &cart_x = "", const QString &cart_y = "", const QString &cart_z = "")
@@ -333,12 +333,13 @@ public:
               axi(axi), axi_r(axi_r), axi_z(axi_z),
               cart(cart), cart_x(cart_x), cart_y(cart_y), cart_z(cart_z) {}
 
-        QString analysis;
+        AnalysisType analysis;
         QString planar, planar_x, planar_y;
         QString axi, axi_r, axi_z;
         QString cart, cart_x, cart_y, cart_z;
     };
 
+    QString id;
     QString name;
     QString type;
     QString shortname;
@@ -374,6 +375,7 @@ public:
     };
 
     QString id;
+    AnalysisType type;
     QString name;
     int solutions;
 
@@ -385,6 +387,7 @@ class AGROS_LIBRARY_API PluginModule
 public:
     QString id;
     QString name;
+    bool deformedShape;
 
     QList<PluginModuleAnalysis> analyses;
     QList<PluginConstant> constants;

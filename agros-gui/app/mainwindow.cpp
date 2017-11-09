@@ -395,7 +395,7 @@ void MainWindow::createMain()
     sceneViewMeshWidget = new SceneViewWidget(postprocessorWidget->sceneViewMesh(), this);
     sceneViewPost2DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost2D(), this);
     sceneViewPost3DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost3D(), this);
-    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
+    // sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
     sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
     sceneViewOptilabWidget = new SceneViewWidget(optiLab, this);
     sceneViewLogWidget = new SceneViewWidget(logView, this);
@@ -407,7 +407,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewMeshWidget);
     tabViewLayout->addWidget(sceneViewPost2DWidget);
     tabViewLayout->addWidget(sceneViewPost3DWidget);
-    tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
+    // tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewOptilabWidget);
     tabViewLayout->addWidget(sceneViewLogWidget);
@@ -1056,6 +1056,7 @@ void MainWindow::setControls()
         case PostprocessorWidgetMode_Chart:
             tabViewLayout->setCurrentWidget(sceneViewChartWidget);
             break;
+        /*
         case PostprocessorWidgetMode_ParticleTracing:
         {
             tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
@@ -1066,6 +1067,7 @@ void MainWindow::setControls()
             // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
         }
             break;
+        */
         default:
             break;
         }

@@ -171,7 +171,7 @@ private:
     SceneViewWidget *sceneViewMeshWidget;
     SceneViewWidget *sceneViewPost2DWidget;
     SceneViewWidget *sceneViewPost3DWidget;
-    SceneViewWidget *sceneViewPostParticleTracingWidget;
+    // SceneViewWidget *sceneViewPostParticleTracingWidget;
     SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewOptilabWidget;
     SceneViewWidget *sceneViewLogWidget;

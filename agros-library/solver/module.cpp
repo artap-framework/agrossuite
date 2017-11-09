@@ -363,37 +363,6 @@ QList<FormInfo> Module::essential(XMLModule::surface *surface, XMLModule::bounda
 
 // ***********************************************************************************************
 
-Module::LocalVariable::LocalVariable(const FieldInfo *fieldInfo, XMLModule::localvariable lv,
-                                     CoordinateType coordinateType, AnalysisType analysisType)
-{
-    m_id = QString::fromStdString(lv.id());
-    m_name = fieldInfo->plugin()->localeName(QString::fromStdString(lv.name()));
-    m_shortname = QString::fromStdString(lv.shortname());
-    m_shortnameHtml = (lv.shortname_html().present()) ? QString::fromStdString(lv.shortname_html().get()) : m_shortname;
-    m_unit = QString::fromStdString(lv.unit());
-    m_unitHtml = (lv.unit_html().present()) ? QString::fromStdString(lv.unit_html().get()) : m_unit;
-
-    m_isScalar = (lv.type() == "scalar");
-
-    for (unsigned int i = 0; i < lv.expression().size(); i++)
-    {
-        XMLModule::expression exp = lv.expression().at(i);
-        if (exp.analysistype() == analysisTypeToStringKey(analysisType).toStdString())
-        {
-            if (coordinateType == CoordinateType_Planar)
-                m_expression = Expression(m_isScalar ? QString::fromStdString(exp.planar().get()) : "",
-                                          m_isScalar ? "" : QString::fromStdString(exp.planar_x().get()),
-                                          m_isScalar ? "" : QString::fromStdString(exp.planar_y().get()));
-            else
-                m_expression = Expression(m_isScalar ? QString::fromStdString(exp.axi().get()) : "",
-                                          m_isScalar ? "" : QString::fromStdString(exp.axi_r().get()),
-                                          m_isScalar ? "" : QString::fromStdString(exp.axi_z().get()));
-        }
-    }
-}
-
-// ***********************************************************************************************
-
 Module::MaterialTypeVariable::MaterialTypeVariable(XMLModule::quantity quant)
     : m_defaultValue(0), m_expressionNonlinear(""), m_isTimeDep(false)
 {
@@ -492,47 +461,7 @@ Module::BoundaryType::~BoundaryType()
 
 // ***********************************************************************************************
 
-// dialog row UI
-Module::DialogRow::DialogRow(const FieldInfo *fieldInfo, XMLModule::quantity qty)
-{
-    m_id = QString::fromStdString(qty.id());
-    m_name = (qty.name().present()) ? fieldInfo->plugin()->localeName(QString::fromStdString(qty.name().get())) : "";
-
-    m_shortname = (qty.shortname().present()) ? QString::fromStdString(qty.shortname().get()) : "";
-    m_shortnameHtml = (qty.shortname_html().present()) ? QString::fromStdString(qty.shortname_html().get()) : "";
-    m_shortnameDependence = (qty.shortname_dependence().present()) ? QString::fromStdString(qty.shortname_dependence().get()) : "";
-    m_shortnameDependenceHtml = (qty.shortname_dependence_html().present()) ? QString::fromStdString(qty.shortname_dependence_html().get()) : "";
-
-    m_unit = (qty.unit().present()) ? QString::fromStdString(qty.unit().get()) : "";
-    m_unitHtml = (qty.unit_html().present()) ? QString::fromStdString(qty.unit_html().get()) : "";
-
-    m_defaultValue = (qty.default_().present()) ? qty.default_().get() : 0.0;
-    m_condition = (qty.condition().present()) ? QString::fromStdString(qty.condition().get()) : "";
-}
-
 // dialog UI
-Module::DialogUI::DialogUI(const FieldInfo *fieldInfo, XMLModule::gui ui)
-{
-    for (unsigned int i = 0; i < ui.group().size(); i++)
-    {
-        XMLModule::group grp = ui.group().at(i);
-
-        // group name
-        QString name = (grp.name().present()) ? fieldInfo->plugin()->localeName(QString::fromStdString(grp.name().get())) : "";
-
-        QList<Module::DialogRow> materials;
-        for (unsigned int i = 0; i < grp.quantity().size(); i++)
-        {
-            XMLModule::quantity quant = grp.quantity().at(i);
-
-            // append material
-            materials.append(Module::DialogRow(fieldInfo, quant));
-        }
-
-        m_groups[name] = materials;
-    }
-}
-
 Module::DialogRow Module::DialogUI::dialogRow(const QString &id)
 {
     foreach (QList<Module::DialogRow> rows, m_groups)

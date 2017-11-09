@@ -38,7 +38,7 @@ class PostprocessorSceneMeshWidget;
 class PostprocessorScenePost2DWidget;
 class PostprocessorScenePost3DWidget;
 class PostprocessorSceneChartWidget;
-class PostprocessorSceneParticleTracingWidget;
+// class PostprocessorSceneParticleTracingWidget;
 
 class PostprocessorSceneWidget;
 
@@ -96,7 +96,7 @@ private:
     PostprocessorScenePost2DWidget *m_post2DWidget;
     PostprocessorScenePost3DWidget *m_post3DWidget;
     PostprocessorSceneChartWidget *m_chartWidget;
-    PostprocessorSceneParticleTracingWidget *m_particleTracingWidget;
+    // PostprocessorSceneParticleTracingWidget *m_particleTracingWidget;
 
     SceneViewMesh *m_sceneViewMesh;
     SceneViewPost2D *m_sceneViewPost2D;

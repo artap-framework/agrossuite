@@ -79,9 +79,6 @@ public:
     void selectNone();
 
     // transform operations
-    void moveSelection(double dx, double dy, bool copy, bool withMarkers);
-    void rotateSelection(double x, double y, double angle, bool copy, bool withMarkers);
-    void scaleSelection(double x, double y, double scale, bool copy, bool withMarkers);
     void removeSelection();
 
     // vtk

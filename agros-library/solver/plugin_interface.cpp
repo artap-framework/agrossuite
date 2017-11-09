@@ -25,12 +25,18 @@
 const QString GENERAL = "general";
 const QString VERSION = "version";
 const QString ID = "id";
+const QString I = "i";
+const QString J = "j";
 const QString NAME = "name";
 const QString TYPE = "type";
 const QString VALUE = "value";
 
 const QString CONSTANTS = "constants";
 const QString MACROS = "macros";
+
+const QString MATRIX_FORMS = "matrix_forms";
+const QString VECTOR_FORMS = "vector_forms";
+const QString ESSENTIONAL_FORMS = "essentional_forms";
 
 const QString ANALYSES = "analyses";
 const QString ANALYSIS = "analysis";
@@ -341,35 +347,118 @@ void PluginModule::save(const QString &fileName)
     QJsonObject proJson;
 
     {
-        QJsonObject proVolumeJson;
-        QJsonArray variablesJson;
-        foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeVolume.variables)
+        // volume
         {
-            QJsonObject variableJson;
-            variableJson[ID] = variable.id;
-            variableJson[SHORTNAME] = variable.shortName;
+            QJsonObject proVolumeJson;
 
-            variablesJson.append(variableJson);
+            QJsonArray variablesJson;
+            foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeVolume.variables)
+            {
+                QJsonObject variableJson;
+                variableJson[ID] = variable.id;
+                variableJson[SHORTNAME] = variable.shortName;
+
+                variablesJson.append(variableJson);
+            }
+            proVolumeJson[VARIABLES] = variablesJson;
+
+            QJsonArray matrixFormsJson;
+            foreach (PluginWeakFormRecipe::MatrixForm form, weakFormRecipeVolume.matrixForms)
+            {
+                QJsonObject matrixJson;
+                matrixJson[ID] = form.id;
+                matrixJson[I] = form.i;
+                matrixJson[J] = form.i;
+                matrixJson[PLANAR] = form.planar;
+                matrixJson[AXI] = form.axi;
+                matrixJson[CART] = form.cart;
+                matrixJson[CONDITION] = form.condition;
+
+                matrixFormsJson.append(matrixJson);
+            }
+            proVolumeJson[MATRIX_FORMS] = matrixFormsJson;
+
+            QJsonArray vectorFormsJson;
+            foreach (PluginWeakFormRecipe::VectorForm form, weakFormRecipeVolume.vectorForms)
+            {
+                QJsonObject vectorJson;
+                vectorJson[ID] = form.id;
+                vectorJson[I] = form.i;
+                vectorJson[PLANAR] = form.planar;
+                vectorJson[AXI] = form.axi;
+                vectorJson[CART] = form.cart;
+                vectorJson[CONDITION] = form.condition;
+
+                vectorFormsJson.append(vectorJson);
+            }
+            proVolumeJson[VECTOR_FORMS] = vectorFormsJson;
+
+            proJson[VOLUMEGROUPS] = proVolumeJson;
         }
 
-        proVolumeJson[VARIABLES] = variablesJson;
-        proJson[VOLUMEGROUPS] = proVolumeJson;
-    }
-
-    {
-        QJsonObject proSurfaceJson;
-        QJsonArray variablesJson;
-        foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeSurface.variables)
+        // surface
         {
-            QJsonObject variableJson;
-            variableJson[ID] = variable.id;
-            variableJson[SHORTNAME] = variable.shortName;
+            QJsonObject proSurfaceJson;
 
-            variablesJson.append(variableJson);
+            QJsonArray variablesJson;
+            foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeSurface.variables)
+            {
+                QJsonObject variableJson;
+                variableJson[ID] = variable.id;
+                variableJson[SHORTNAME] = variable.shortName;
+
+                variablesJson.append(variableJson);
+            }
+            proSurfaceJson[VARIABLES] = variablesJson;
+
+            QJsonArray matrixFormsJson;
+            foreach (PluginWeakFormRecipe::MatrixForm form, weakFormRecipeSurface.matrixForms)
+            {
+                QJsonObject matrixJson;
+                matrixJson[ID] = form.id;
+                matrixJson[I] = form.i;
+                matrixJson[J] = form.i;
+                matrixJson[PLANAR] = form.planar;
+                matrixJson[AXI] = form.axi;
+                matrixJson[CART] = form.cart;
+                matrixJson[CONDITION] = form.condition;
+
+                matrixFormsJson.append(matrixJson);
+            }
+            proSurfaceJson[MATRIX_FORMS] = matrixFormsJson;
+
+            QJsonArray vectorFormsJson;
+            foreach (PluginWeakFormRecipe::VectorForm form, weakFormRecipeSurface.vectorForms)
+            {
+                QJsonObject vectorJson;
+                vectorJson[ID] = form.id;
+                vectorJson[I] = form.i;
+                vectorJson[PLANAR] = form.planar;
+                vectorJson[AXI] = form.axi;
+                vectorJson[CART] = form.cart;
+                vectorJson[CONDITION] = form.condition;
+
+                vectorFormsJson.append(vectorJson);
+            }
+            proSurfaceJson[VECTOR_FORMS] = vectorFormsJson;
+
+            QJsonArray essentialFormsJson;
+            foreach (PluginWeakFormRecipe::EssentialForm form, weakFormRecipeSurface.essentialForms)
+            {
+                QJsonObject essentialJson;
+                essentialJson[ID] = form.id;
+                essentialJson[I] = form.i;
+                essentialJson[PLANAR] = form.planar;
+                essentialJson[AXI] = form.axi;
+                essentialJson[CART] = form.cart;
+                essentialJson[CONDITION] = form.condition;
+
+                essentialFormsJson.append(essentialJson);
+            }
+            proSurfaceJson[ESSENTIONAL_FORMS] = essentialFormsJson;
+
+            proJson[SURFACEGROUPS] = proSurfaceJson;
         }
-
-        proSurfaceJson[VARIABLES] = variablesJson;
-        proJson[SURFACEGROUPS] = proSurfaceJson;
     }
 
     rootJson[PROCESSOR] = proJson;
@@ -563,6 +652,17 @@ void PluginModule::clear()
     analyses.clear();
     constants.clear();
     macros.clear();
+
+    // processor
+    weakFormRecipeVolume.variables.clear();
+    weakFormRecipeVolume.matrixForms.clear();
+    weakFormRecipeVolume.vectorForms.clear();
+    weakFormRecipeVolume.essentialForms.clear();
+
+    weakFormRecipeSurface.variables.clear();
+    weakFormRecipeSurface.matrixForms.clear();
+    weakFormRecipeSurface.vectorForms.clear();
+    weakFormRecipeSurface.essentialForms.clear();
 
     // preprocessor
     preVolumeGroups.clear();

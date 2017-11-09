@@ -91,16 +91,19 @@ public:
     LocalVariable(const QString &id = "",
                   const QString &name = "",
                   const QString &shortname = "",
+                  const QString &shortnameHtml = "",
                   const QString &unit = "",
-                  const QString &unitHtml = "")
+                  const QString &unitHtml = "",
+                  bool isScalar = true,
+                  const Expression expression = Expression())
         : m_id(id),
           m_name(name),
           m_shortname(shortname),
+          m_shortnameHtml(shortnameHtml),
           m_unit(unit),
           m_unitHtml(unitHtml),
-          m_isScalar(true),
-          m_expression(Expression()) {}
-    LocalVariable(const FieldInfo *fieldInfo, XMLModule::localvariable lv, CoordinateType problemType, AnalysisType analysisType);
+          m_isScalar(isScalar),
+          m_expression(expression) {}
 
     // id
     inline QString id() const { return m_id; }
@@ -136,24 +139,6 @@ private:
 
     // expressions
     Expression m_expression;
-};
-
-// space
-struct Space
-{
-    Space(int i = 1, const QString &type = "h1", int orderAdjust = 0)
-        : m_i(i), m_type(type), m_orderAdjust(orderAdjust) {}
-
-    // expressions
-    inline int i() const { return m_i; }
-    inline const QString &type() const { return m_type; }
-    inline int orderAdjust() const { return m_orderAdjust; }
-
-private:
-    // expressions
-    int m_i;
-    QString m_type;
-    int m_orderAdjust;
 };
 
 // force
@@ -361,7 +346,19 @@ private:
 // dialog UI
 struct DialogRow
 {
-    DialogRow(const FieldInfo *fieldInfo, XMLModule::quantity qty);
+    DialogRow(const QString &id = "",
+              const QString &name = "",
+              const QString &shortname = "",
+              const QString &shortnameHtml = "",
+              const QString &shortnameDependence = "",
+              const QString &shortnameDependenceHtml = "",
+              const QString &unit = "",
+              const QString &unitHtml = "",
+              double defaultValue = 0,
+              const QString &condition = "") :
+        m_id(id), m_name(name), m_shortname(shortname),
+        m_shortnameHtml(shortnameHtml), m_shortnameDependence(shortnameDependence), m_shortnameDependenceHtml(shortnameDependenceHtml),
+        m_unit(unit), m_unitHtml(unitHtml), m_defaultValue(defaultValue), m_condition(condition) {}
 
     inline QString id() const { return m_id; }
 
@@ -396,7 +393,7 @@ private:
 struct DialogUI
 {
     DialogUI() {}
-    DialogUI(const FieldInfo *fieldInfo, XMLModule::gui ui);
+    DialogUI(QMap<QString, QList<Module::DialogRow> > groups) : m_groups(groups) {}
 
     inline QMap<QString, QList<Module::DialogRow> > groups() const { return m_groups; }
     DialogRow dialogRow(const QString &id);

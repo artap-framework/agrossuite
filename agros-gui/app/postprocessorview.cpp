@@ -22,7 +22,7 @@
 #include "postprocessorview_post2d.h"
 #include "postprocessorview_post3d.h"
 #include "postprocessorview_chart.h"
-#include "postprocessorview_particletracing.h"
+// #include "postprocessorview_particletracing.h"
 
 #include "util/global.h"
 
@@ -73,8 +73,8 @@ PostprocessorWidget::PostprocessorWidget()
     m_sceneViewChart = new SceneViewChart(this);
     m_chartWidget = new PostprocessorSceneChartWidget(m_fieldWidget, m_sceneViewChart);
 
-    m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
-    m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(m_fieldWidget, m_sceneViewParticleTracing);
+    // m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
+    // m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(m_fieldWidget, m_sceneViewParticleTracing);
 
     createControls();
 }
@@ -97,7 +97,7 @@ void PostprocessorWidget::createControls()
     tabWidget->addTab(m_meshWidget, tr("Mesh"));
     tabWidget->addTab(m_post2DWidget, tr("2D view"));
     tabWidget->addTab(m_post3DWidget, tr("3D view"));
-    tabWidget->addTab(m_particleTracingWidget, tr("Part. tracing"));
+    // tabWidget->addTab(m_particleTracingWidget, tr("Part. tracing"));
     tabWidget->addTab(m_chartWidget, tr("Chart"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
@@ -122,7 +122,7 @@ void PostprocessorWidget::solveFinished()
     m_sceneViewMesh->doZoomBestFit();
     m_sceneViewPost2D->doZoomBestFit();
     m_sceneViewPost3D->doZoomBestFit();
-    m_sceneViewParticleTracing->doZoomBestFit();
+    // m_sceneViewParticleTracing->doZoomBestFit();
 }
 
 void PostprocessorWidget::apply()
@@ -138,8 +138,8 @@ void PostprocessorWidget::apply()
             m_post3DWidget->save();
         else if (tabWidget->currentWidget() == m_chartWidget)
             m_chartWidget->save();
-        else if (tabWidget->currentWidget() == m_particleTracingWidget)
-            m_particleTracingWidget->save();
+        // else if (tabWidget->currentWidget() == m_particleTracingWidget)
+        //    m_particleTracingWidget->save();
 
         // refresh view
         m_currentComputation->postDeal()->setActiveViewField(m_fieldWidget->selectedField());
@@ -152,7 +152,7 @@ void PostprocessorWidget::apply()
         m_sceneViewPost2D->refresh();
         m_sceneViewPost3D->refresh();
         m_sceneViewChart->refresh();
-        m_sceneViewParticleTracing->refresh();
+        // m_sceneViewParticleTracing->refresh();
 
         emit changed();
     }
@@ -192,7 +192,7 @@ void PostprocessorWidget::refresh()
             m_post2DWidget->refresh();
             m_post3DWidget->refresh();
             m_chartWidget->refresh();
-            m_particleTracingWidget->refresh();
+            // m_particleTracingWidget->refresh();
 
             // default widget
             tabWidget->setCurrentWidget(m_post2DWidget);
@@ -204,7 +204,7 @@ void PostprocessorWidget::refresh()
             m_sceneViewMesh->setControls();
             m_sceneViewPost2D->setControls();
             m_sceneViewPost3D->setControls();
-            m_sceneViewParticleTracing->setControls();
+            // m_sceneViewParticleTracing->setControls();
             m_sceneViewChart->refresh();
 
             tabWidget->setTabEnabled(0, m_currentComputation->isSolved());
@@ -222,7 +222,7 @@ void PostprocessorWidget::refresh()
     m_post2DWidget->load();
     m_post3DWidget->load();
     m_chartWidget->load();
-    m_particleTracingWidget->load();
+    // m_particleTracingWidget->load();
 
     if (computationChanged)
         apply();
@@ -241,13 +241,13 @@ void PostprocessorWidget::processed()
     m_post2DWidget->refresh();
     m_post3DWidget->refresh();
     m_chartWidget->refresh();
-    m_particleTracingWidget->refresh();
+    // m_particleTracingWidget->refresh();
 
     m_sceneViewMesh->refresh();
     m_sceneViewPost2D->refresh();
     m_sceneViewPost3D->refresh();
     m_sceneViewChart->refresh();
-    m_sceneViewParticleTracing->refresh();
+    // m_sceneViewParticleTracing->refresh();
 }
 
 void PostprocessorWidget::createVideo()
@@ -286,8 +286,8 @@ PostprocessorWidgetMode PostprocessorWidget::mode()
         return PostprocessorWidgetMode_Post3D;
     else if (tabWidget->currentWidget() == m_chartWidget)
         return PostprocessorWidgetMode_Chart;
-    else if (tabWidget->currentWidget() == m_particleTracingWidget)
-        return PostprocessorWidgetMode_ParticleTracing;
+    // else if (tabWidget->currentWidget() == m_particleTracingWidget)
+    //     return PostprocessorWidgetMode_ParticleTracing;
     else
         assert(0);
 }

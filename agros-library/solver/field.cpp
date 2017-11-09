@@ -25,8 +25,9 @@
 #include "scene.h"
 #include "scenemarker.h"
 #include "module.h"
-#include "plugin_interface.h"
 #include "logview.h"
+
+#include "plugin_interface.h"
 
 #include "../../resources_source/classes/module_xml.h"
 #include "../../resources_source/classes/problem_a2d_31_xml.h"
@@ -56,6 +57,8 @@ FieldInfo::FieldInfo(QString fieldId)
 
     // default analysis
     setAnalysisType(analyses().begin().key());
+
+    convertJson();
 }
 
 FieldInfo::~FieldInfo()
@@ -71,6 +74,7 @@ void FieldInfo::convertJson()
     // save to Json
     m_plugin->moduleJson()->id = QString::fromStdString(m_plugin->module()->general_field().id());
     m_plugin->moduleJson()->name = QString::fromStdString(m_plugin->module()->general_field().name());
+    m_plugin->moduleJson()->deformedShape = (m_plugin->module()->general_field().deformed_shape().present()) ? m_plugin->module()->general_field().deformed_shape().get() : false;
 
     // constants
     foreach (XMLModule::constant cnst, m_plugin->module()->constants().constant())
@@ -102,6 +106,7 @@ void FieldInfo::convertJson()
 
         PluginModuleAnalysis a;
         a.id = QString::fromStdString(an.id());
+        a.type = analysisTypeFromStringKey(a.id);
         a.name = QString::fromStdString(an.name());
         a.solutions = an.solutions();
 
@@ -124,8 +129,7 @@ void FieldInfo::convertJson()
         m_plugin->moduleJson()->analyses.append(a);
     }
 
-
-    // weakform
+    // volume weakform
     XMLModule::volume volume = m_plugin->module()->volume();
     for (unsigned int i = 0; i < volume.quantity().size(); i++)
     {
@@ -138,10 +142,107 @@ void FieldInfo::convertJson()
         m_plugin->moduleJson()->weakFormRecipeVolume.variables.append(v);
     }
 
+    // volume weakform - matrix
+    for (unsigned int i = 0; i < volume.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form matrix_form = volume.matrix_form().at(i);
+
+        PluginWeakFormRecipe::MatrixForm form;
+        form.id = QString::fromStdString(matrix_form.id());
+        form.i = (matrix_form.i().present()) ? matrix_form.i().get() : -1;
+        form.j = (matrix_form.j().present()) ? matrix_form.j().get() : -1;
+        form.planar = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.axi = (matrix_form.axi().present()) ? QString::fromStdString(matrix_form.axi().get()) : "";
+        form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeVolume.matrixForms.append(form);
+    }
+
+    // volume weakform - vector
+    for (unsigned int i = 0; i < volume.vector_form().size(); i++)
+    {
+        XMLModule::vector_form vector_form = volume.vector_form().at(i);
+
+        PluginWeakFormRecipe::VectorForm form;
+        form.id = QString::fromStdString(vector_form.id());
+        form.i = (vector_form.i().present()) ? vector_form.i().get() : -1;
+        form.planar = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.axi = (vector_form.axi().present()) ? QString::fromStdString(vector_form.axi().get()) : "";
+        form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeVolume.vectorForms.append(form);
+    }
+
+    // surface weakform
+    XMLModule::surface surface = m_plugin->module()->surface();
+    for (unsigned int i = 0; i < surface.quantity().size(); i++)
+    {
+        XMLModule::quantity quantity = surface.quantity().at(i);
+
+        PluginWeakFormRecipe::Variable v;
+        v.id = QString::fromStdString(quantity.id());
+        v.shortName = (quantity.shortname().present()) ? QString::fromStdString(quantity.shortname().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeSurface.variables.append(v);
+    }
+
+    // surface weakform - matrix
+    for (unsigned int i = 0; i < surface.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form matrix_form = surface.matrix_form().at(i);
+
+        PluginWeakFormRecipe::MatrixForm form;
+        form.id = QString::fromStdString(matrix_form.id());
+        form.i = (matrix_form.i().present()) ? matrix_form.i().get() : -1;
+        form.j = (matrix_form.j().present()) ? matrix_form.j().get() : -1;
+        form.planar = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.axi = (matrix_form.axi().present()) ? QString::fromStdString(matrix_form.axi().get()) : "";
+        form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeSurface.matrixForms.append(form);
+    }
+
+    // surface weakform - vector
+    for (unsigned int i = 0; i < surface.vector_form().size(); i++)
+    {
+        XMLModule::vector_form vector_form = surface.vector_form().at(i);
+
+        PluginWeakFormRecipe::VectorForm form;
+        form.id = QString::fromStdString(vector_form.id());
+        form.i = (vector_form.i().present()) ? vector_form.i().get() : -1;
+        form.planar = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.axi = (vector_form.axi().present()) ? QString::fromStdString(vector_form.axi().get()) : "";
+        form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeSurface.vectorForms.append(form);
+    }
+
+    // weakform - essential
+    for (unsigned int i = 0; i < surface.essential_form().size(); i++)
+    {
+        XMLModule::essential_form essential_form = surface.essential_form().at(i);
+
+        PluginWeakFormRecipe::EssentialForm form;
+        form.id = QString::fromStdString(essential_form.id());
+        form.i = (essential_form.i().present()) ? essential_form.i().get() : -1;
+        form.planar = (essential_form.planar().present()) ? QString::fromStdString(essential_form.planar().get()) : "";
+        form.axi = (essential_form.axi().present()) ? QString::fromStdString(essential_form.axi().get()) : "";
+        form.cart = (essential_form.planar().present()) ? QString::fromStdString(essential_form.planar().get()) : "";
+        form.condition = (essential_form.condition().present()) ? QString::fromStdString(essential_form.condition().get()) : "";
+
+        m_plugin->moduleJson()->weakFormRecipeSurface.essentialForms.append(form);
+    }
+
     // volume
+    /*
     foreach(XMLModule::weakform_volume weakform, volume.weakforms_volume().weakform_volume())
     {
         AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()));
+
 
         foreach (CoordinateType coordinateType, PluginFunctions::coordinateTypeList())
         {
@@ -180,33 +281,7 @@ void FieldInfo::convertJson()
             }
         }
     }
-
-    XMLModule::surface surface = m_plugin->module()->surface();
-    for (unsigned int i = 0; i < surface.quantity().size(); i++)
-    {
-        XMLModule::quantity quantity = surface.quantity().at(i);
-
-        PluginWeakFormRecipe::Variable v;
-        v.id = QString::fromStdString(quantity.id());
-        v.shortName = (quantity.shortname().present()) ? QString::fromStdString(quantity.shortname().get()) : "";
-
-        m_plugin->moduleJson()->weakFormRecipeSurface.variables.append(v);
-
-        // essential forms
-        for (unsigned int j = 0; j < surface.essential_form().size(); j++)
-        {
-            XMLModule::essential_form essential = surface.essential_form().at(j);
-
-            PluginWeakFormRecipe::EssentialForm e;
-            e.id = QString::fromStdString(essential.id());
-            e.i = (essential.i().present()) ? essential.i().get() : -1;
-            e.planar = (essential.planar().present()) ? QString::fromStdString(essential.planar().get()) : "";
-            e.axi = (essential.axi().present()) ? QString::fromStdString(essential.axi().get()) : "";
-            e.cart = "";
-
-            m_plugin->moduleJson()->weakFormRecipeSurface.essentialForms.append(e);
-        }
-    }
+    */
 
     // preprocessor GUI
     for (unsigned int i = 0; i < m_plugin->module()->preprocessor().gui().size(); i++)
@@ -251,6 +326,7 @@ void FieldInfo::convertJson()
         XMLModule::localvariable lv = m_plugin->module()->postprocessor().localvariables().localvariable().at(i);
 
         PluginPostVariable variable;
+        variable.id = QString::fromStdString(lv.id());
         variable.name = QString::fromStdString(lv.name());
         variable.type = QString::fromStdString(lv.type());
         variable.shortname = QString::fromStdString(lv.shortname());
@@ -263,7 +339,7 @@ void FieldInfo::convertJson()
             XMLModule::expression expr = lv.expression().at(j);
 
             PluginPostVariable::Expression e;
-            e.analysis = QString::fromStdString(expr.analysistype());
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
             e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.planar_x = (expr.planar_x().present()) ? QString::fromStdString(expr.planar_x().get()) : "";
             e.planar_y = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()) : "";
@@ -286,6 +362,7 @@ void FieldInfo::convertJson()
         XMLModule::volumeintegral in = m_plugin->module()->postprocessor().volumeintegrals().volumeintegral().at(i);
 
         PluginPostVariable variable;
+        variable.id = QString::fromStdString(in.id());
         variable.name = QString::fromStdString(in.name());
         variable.type = "scalar";
         variable.shortname = QString::fromStdString(in.shortname());
@@ -298,7 +375,7 @@ void FieldInfo::convertJson()
             XMLModule::expression expr = in.expression().at(j);
 
             PluginPostVariable::Expression e;
-            e.analysis = QString::fromStdString(expr.analysistype());
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
             e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
             e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
@@ -315,6 +392,7 @@ void FieldInfo::convertJson()
         XMLModule::surfaceintegral in = m_plugin->module()->postprocessor().surfaceintegrals().surfaceintegral().at(i);
 
         PluginPostVariable variable;
+        variable.id = QString::fromStdString(in.id());
         variable.name = QString::fromStdString(in.name());
         variable.type = "scalar";
         variable.shortname = QString::fromStdString(in.shortname());
@@ -327,7 +405,7 @@ void FieldInfo::convertJson()
             XMLModule::expression expr = in.expression().at(j);
 
             PluginPostVariable::Expression e;
-            e.analysis = QString::fromStdString(expr.analysistype());
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
             e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
             e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
             e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
@@ -363,7 +441,36 @@ double FieldInfo::labelArea(int agrosLabel) const
 void FieldInfo::setAnalysisType(AnalysisType analysisType)
 {
     m_setting[Analysis] = QVariant::fromValue(analysisType);
+    /*
+    foreach (PluginModuleAnalysis an, m_plugin->moduleJson()->analyses)
+    {
+        if (an.id == analysisTypeToStringKey(analysisType))
+        {
+            m_numberOfSolutions = an.solutions;
 
+            foreach (int index, an.configs)
+            {
+                Type key = stringKeyToType(an.configs[index].type);
+
+                        if (m_settingDefault[key].type() == QVariant::Double)
+                            m_settingDefault[key] = an.configs[index]. QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toDouble();
+                        else if (m_settingDefault[key].type() == QVariant::Int)
+                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toInt();
+                        else if (m_settingDefault[key].type() == QVariant::Bool)
+                            m_settingDefault[key] = (QString::fromStdString(an.field_config().get().field_item().at(i).field_value()) == "1");
+                        else if (m_settingDefault[key].type() == QVariant::String)
+                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
+                        else if (m_settingDefault[key].type() == QVariant::StringList)
+                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).split("|");
+                        else
+                            qDebug() << "Key not found" << QString::fromStdString(an.field_config().get().field_item().at(i).field_key()) << QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
+                    }
+            }
+
+            m_availableLinearityTypes = availableLinearityTypes(analysisType);
+        }
+    }
+    */
     foreach (XMLModule::analysis an, m_plugin->module()->general_field().analyses().analysis())
     {
         if (an.type() == analysisTypeToStringKey(analysisType).toStdString())
@@ -456,25 +563,23 @@ void FieldInfo::clear()
 // name
 QString FieldInfo::name() const
 {
-    return m_plugin->localeName(QString::fromStdString(m_plugin->module()->general_field().name()));
+    return m_plugin->localeName(m_plugin->moduleJson()->name);
 }
 
 // deformable shape
 bool FieldInfo::hasDeformableShape() const
 {
-    if (m_plugin->module()->general_field().deformed_shape().present())
-        return m_plugin->module()->general_field().deformed_shape().get();
-
-    return false;
+    return m_plugin->moduleJson()->deformedShape;
 }
 
 // constants
 QMap<QString, double> FieldInfo::constants() const
-{
+{    
     QMap<QString, double> constants;
+
     // constants
-    foreach (XMLModule::constant cnst, m_plugin->module()->constants().constant())
-        constants[QString::fromStdString(cnst.id())] = cnst.value();
+    foreach (PluginConstant constant, m_plugin->moduleJson()->constants)
+        constants[constant.id] = constant.value;
 
     return constants;
 }
@@ -483,12 +588,9 @@ QMap<QString, double> FieldInfo::constants() const
 QMap<QString, QString> FieldInfo::macros() const
 {
     QMap<QString, QString> macros;
-    // macros
-    if (m_plugin->module()->macros().present())
-    {
-        foreach (XMLModule::macro mcro, m_plugin->module()->macros().get().macro())
-            macros[QString::fromStdString(mcro.id())] = QString::fromStdString(mcro.expression());
-    }
+
+    foreach (PluginMacro macro, m_plugin->moduleJson()->macros)
+        macros[macro.id] = macro.expression;
 
     return macros;
 }
@@ -497,41 +599,25 @@ QMap<AnalysisType, QString> FieldInfo::analyses() const
 {
     QMap<AnalysisType, QString> analyses;
 
-    for (unsigned int i = 0; i < m_plugin->module()->general_field().analyses().analysis().size(); i++)
-    {
-        XMLModule::analysis an = m_plugin->module()->general_field().analyses().analysis().at(i);
-
-        analyses[analysisTypeFromStringKey(QString::fromStdString(an.id()))] = m_plugin->localeName(QString::fromStdString(an.name()));
-    }
+    foreach (PluginModuleAnalysis analysis, m_plugin->moduleJson()->analyses)
+        analyses[analysis.type] = m_plugin->localeName(analysis.name);
 
     return analyses;
-}
-
-// spaces
-QMap<int, Module::Space> FieldInfo::spaces() const
-{
-    // spaces
-    QMap<int, Module::Space> spaces;
-
-    foreach (XMLModule::space spc, m_plugin->module()->spaces().space())
-        if (spc.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            foreach (XMLModule::space_config config, spc.space_config())
-                spaces[config.i()] = Module::Space(config.i(),
-                                                   QString::fromStdString(config.type()),
-                                                   config.orderadjust());
-    return spaces;
 }
 
 QList<QString> FieldInfo::allMaterialQuantities() const
 {
     QList<QString> result;
 
+    foreach (PluginWeakFormRecipe::Variable variable, m_plugin->moduleJson()->weakFormRecipeVolume.variables)
+        result.append(variable.id);
+
+    return result;
+
     foreach(XMLModule::quantity quantity, m_plugin->module()->volume().quantity())
     {
         result.push_back(QString::fromStdString(quantity.id()));
     }
-
-    return result;
 }
 
 // material type
@@ -723,7 +809,10 @@ Module::BoundaryType FieldInfo::boundaryType(const QString &id) const
 // force
 Module::Force FieldInfo::force(CoordinateType coordinateType) const
 {
+    return Module::Force();
+
     // force
+    /*
     XMLModule::force force = m_plugin->module()->postprocessor().force();
     for (unsigned int i = 0; i < force.expression().size(); i++)
     {
@@ -736,34 +825,60 @@ Module::Force FieldInfo::force(CoordinateType coordinateType) const
 
     assert(0);
     return Module::Force();
+    */
 }
 
 // material and boundary user interface
 Module::DialogUI FieldInfo::materialUI() const
 {
+    QMap<QString, QList<Module::DialogRow> > groups;
+
     // preprocessor
-    for (unsigned int i = 0; i < m_plugin->module()->preprocessor().gui().size(); i++)
+    foreach (PluginPreGroup group, m_plugin->moduleJson()->preVolumeGroups)
     {
-        XMLModule::gui ui = m_plugin->module()->preprocessor().gui().at(i);
-        if (ui.type() == "volume")
-            return Module::DialogUI(this, ui);
+
+        QList<Module::DialogRow> materials;
+
+        foreach (PluginPreGroup::Quantity quantity, group.quantities)
+        {
+            Module::DialogRow row(quantity.id, quantity.name, quantity.shortname, quantity.shortname_html,
+                                  quantity.shortname_dependence, quantity.shortname_dependence_html,
+                                  quantity.unit, quantity.unit_html,
+                                  quantity.default_value, quantity.condition);
+
+            materials.append(row);
+        }
+
+        groups[group.name] = materials;
     }
 
-    assert(0);
-    return Module::DialogUI();
+    return Module::DialogUI(groups);
 }
 
 Module::DialogUI FieldInfo::boundaryUI() const
 {
+    QMap<QString, QList<Module::DialogRow> > groups;
+
     // preprocessor
-    for (unsigned int i = 0; i < m_plugin->module()->preprocessor().gui().size(); i++)
+    foreach (PluginPreGroup group, m_plugin->moduleJson()->preSurfaceGroups)
     {
-        XMLModule::gui ui = m_plugin->module()->preprocessor().gui().at(i);
-        if (ui.type() == "surface")
-            return Module::DialogUI(this, ui);
+
+        QList<Module::DialogRow> materials;
+
+        foreach (PluginPreGroup::Quantity quantity, group.quantities)
+        {
+            Module::DialogRow row(quantity.id, quantity.name, quantity.shortname, quantity.shortname_html,
+                                  quantity.shortname_dependence, quantity.shortname_dependence_html,
+                                  quantity.unit, quantity.unit_html,
+                                  quantity.default_value, quantity.condition);
+
+            materials.append(row);
+        }
+
+        groups[group.name] = materials;
     }
 
-    assert(0);
+    return Module::DialogUI(groups);
 }
 
 // local point variables
@@ -771,19 +886,33 @@ QList<Module::LocalVariable> FieldInfo::localPointVariables(CoordinateType coord
 {
     // local variables
     QList<Module::LocalVariable> variables;
-    for (unsigned int i = 0; i < m_plugin->module()->postprocessor().localvariables().localvariable().size(); i++)
-    {
-        XMLModule::localvariable lv = m_plugin->module()->postprocessor().localvariables().localvariable().at(i);
 
-        for (unsigned int i = 0; i < lv.expression().size(); i++)
+    foreach (PluginPostVariable variable, m_plugin->moduleJson()->postLocalVariables)
+    {
+        foreach (PluginPostVariable::Expression expresion, variable.expresions)
         {
-            XMLModule::expression expr = lv.expression().at(i);
-            if (expr.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
+            if (expresion.analysis == analysisType())
             {
-                variables.append(Module::LocalVariable(this,
-                                                       lv,
-                                                       coordinateType,
-                                                       analysisType()));
+                bool isScalar = (variable.type == "scalar");
+
+                Module::LocalVariable::Expression expr;
+
+                if (coordinateType == CoordinateType_Planar)
+                    expr = Module::LocalVariable::Expression(isScalar ? expresion.planar : "",
+                                                             isScalar ? "" : expresion.planar_x,
+                                                             isScalar ? "" : expresion.planar_y);
+                else if (coordinateType == CoordinateType_Axisymmetric)
+                    expr = Module::LocalVariable::Expression(isScalar ? expresion.axi : "",
+                                                             isScalar ? "" : expresion.axi_r,
+                                                             isScalar ? "" : expresion.axi_z);
+                else
+                    assert(0);
+
+                variables.append(Module::LocalVariable(variable.id, m_plugin->localeName(variable.name),
+                                                       variable.shortname, variable.shortname_html,
+                                                       variable.unit, variable.unit_html,
+                                                       isScalar,
+                                                       expr));
             }
         }
     }
@@ -815,37 +944,28 @@ QList<Module::Integral> FieldInfo::surfaceIntegrals(CoordinateType coordinateTyp
 {
     // surface integrals
     QList<Module::Integral> surfaceIntegrals;
-    for (unsigned int i = 0; i < m_plugin->module()->postprocessor().surfaceintegrals().surfaceintegral().size(); i++)
+
+    foreach (PluginPostVariable variable, m_plugin->moduleJson()->postSurfaceIntegrals)
     {
-        XMLModule::surfaceintegral sur = m_plugin->module()->postprocessor().surfaceintegrals().surfaceintegral().at(i);
-
-        QString expr;
-        for (unsigned int i = 0; i < sur.expression().size(); i++)
+        foreach (PluginPostVariable::Expression expresion, variable.expresions)
         {
-            XMLModule::expression exp = sur.expression().at(i);
-            if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
+            if (expresion.analysis == analysisType())
             {
+                QString expr;
+
                 if (coordinateType == CoordinateType_Planar)
-                    expr = QString::fromStdString(exp.planar().get()).trimmed();
+                    expr = expresion.planar;
+                else if (coordinateType == CoordinateType_Axisymmetric)
+                    expr = expresion.axi;
                 else
-                    expr = QString::fromStdString(exp.axi().get()).trimmed();
+                    assert(0);
+
+                surfaceIntegrals.append(Module::Integral(variable.id, m_plugin->localeName(variable.name),
+                                                         variable.shortname, variable.shortname_html,
+                                                         variable.unit, variable.unit_html,
+                                                         expr,
+                                                         false));
             }
-        }
-
-        // new integral
-        if (!expr.isEmpty())
-        {
-            Module::Integral surint = Module::Integral(
-                        QString::fromStdString(sur.id()),
-                        m_plugin->localeName(QString::fromStdString(sur.name())),
-                        QString::fromStdString(sur.shortname()),
-                        (sur.shortname_html().present()) ? QString::fromStdString(sur.shortname_html().get()) : QString::fromStdString(sur.shortname()),
-                        QString::fromStdString(sur.unit()),
-                        (sur.unit_html().present()) ? QString::fromStdString(sur.unit_html().get()) : QString::fromStdString(sur.unit()),
-                        expr,
-                        false);
-
-            surfaceIntegrals.append(surint);
         }
     }
 
@@ -857,35 +977,29 @@ QList<Module::Integral> FieldInfo::volumeIntegrals(CoordinateType coordinateType
 {
     // volume integrals
     QList<Module::Integral> volumeIntegrals;
-    foreach (XMLModule::volumeintegral vol, m_plugin->module()->postprocessor().volumeintegrals().volumeintegral())
+
+    foreach (PluginPostVariable variable, m_plugin->moduleJson()->postVolumeIntegrals)
     {
-        QString expr;
-        for (unsigned int i = 0; i < vol.expression().size(); i++)
+        foreach (PluginPostVariable::Expression expresion, variable.expresions)
         {
-            XMLModule::expression exp = vol.expression().at(i);
-            if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
+            if (expresion.analysis == analysisType())
             {
+                QString expr;
+
                 if (coordinateType == CoordinateType_Planar)
-                    expr = QString::fromStdString(exp.planar().get()).trimmed();
+                    expr = expresion.planar;
+                else if (coordinateType == CoordinateType_Axisymmetric)
+                    expr = expresion.axi;
                 else
-                    expr = QString::fromStdString(exp.axi().get()).trimmed();
+                    assert(0);
+
+                // TODO: eggshell
+                volumeIntegrals.append(Module::Integral(variable.id, m_plugin->localeName(variable.name),
+                                                        variable.shortname, variable.shortname_html,
+                                                        variable.unit, variable.unit_html,
+                                                        expr,
+                                                        false));
             }
-        }
-
-        // new integral
-        if (!expr.isEmpty())
-        {
-            Module::Integral volint = Module::Integral(
-                        QString::fromStdString(vol.id()),
-                        m_plugin->localeName(QString::fromStdString(vol.name())),
-                        QString::fromStdString(vol.shortname()),
-                        (vol.shortname_html().present()) ? QString::fromStdString(vol.shortname_html().get()) : QString::fromStdString(vol.shortname()),
-                        QString::fromStdString(vol.unit()),
-                        (vol.unit_html().present()) ? QString::fromStdString(vol.unit_html().get()) : QString::fromStdString(vol.unit()),
-                        expr,
-                        (vol.eggshell().present()) ? (vol.eggshell().get() == 1) : false);
-
-            volumeIntegrals.append(volint);
         }
     }
 
@@ -899,8 +1013,11 @@ Module::LocalVariable FieldInfo::localVariable(CoordinateType coordinateType, co
         if (var.id() == id)
             return var;
 
-    qDebug() << "Warning: unable to return local variable: " << id;
-    return Module::LocalVariable();
+    qDebug() << "localVariable: " << id;
+    assert(0);
+
+    // qDebug() << "Warning: unable to return local variable: " << id;
+    // return Module::LocalVariable();
 }
 
 Module::Integral FieldInfo::surfaceIntegral(CoordinateType coordinateType, const QString &id) const
@@ -926,20 +1043,18 @@ Module::Integral FieldInfo::volumeIntegral(CoordinateType coordinateType, const 
 // default variables
 Module::LocalVariable FieldInfo::defaultViewScalarVariable(CoordinateType coordinateType) const
 {
-    // scalar variables default
-    foreach (XMLModule::default_ def, m_plugin->module()->postprocessor().view().scalar_view().default_())
-        if (def.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return localVariable(coordinateType, QString::fromStdString(def.id()));
+    assert(localPointVariables(coordinateType).size() > 0);
 
-    assert(0);
+    // return first variable
+    return localPointVariables(coordinateType).first();
 }
 
 Module::LocalVariable FieldInfo::defaultViewVectorVariable(CoordinateType coordinateType) const
 {
-    // vector variables default
-    foreach (XMLModule::default_ def, m_plugin->module()->postprocessor().view().vector_view().default_())
-        if (def.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return(localVariable(coordinateType, QString::fromStdString(def.id())));
+    // return first vector variable
+    foreach (Module::LocalVariable var, localPointVariables(coordinateType))
+        if (!var.isScalar())
+            return var;
 
     assert(0);
 }
