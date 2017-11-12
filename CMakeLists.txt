@@ -262,16 +262,16 @@ endif(WITH_MPI)
 message("CMake: Start agros")
 message("=====================")
 ADD_SUBDIRECTORY(agros-library)
-# ADD_SUBDIRECTORY(agros-generator)
+ADD_SUBDIRECTORY(agros-generator)
 # solver
-# ADD_SUBDIRECTORY(agros-solver)
+ADD_SUBDIRECTORY(agros-solver)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)
 # SWIG interface
 # ADD_SUBDIRECTORY(agros-swig)
 # GUI
 ADD_SUBDIRECTORY(agros-gui)
-# ADD_SUBDIRECTORY(pythonlab-gui)
+ADD_SUBDIRECTORY(pythonlab-gui)
 
 message("\nagros Configuration results")
 message("---------------------")

@@ -221,6 +221,72 @@ public:
     static QString boundaryTypeString(const QString boundaryName);
 };
 
+class AGROS_LIBRARY_API PluginWeakFormAnalysis
+{
+public:
+    class AGROS_LIBRARY_API Item
+    {
+    public:
+        class AGROS_LIBRARY_API Variable
+        {
+        public:
+            QString id;
+            QString dependency;
+            QString nonlinearity_planar;
+            QString nonlinearity_axi;
+            QString nonlinearity_cart;
+        };
+
+        class AGROS_LIBRARY_API Solver
+        {
+        public:
+            class AGROS_LIBRARY_API Matrix
+            {
+            public:
+                QString id;
+            };
+
+            class AGROS_LIBRARY_API MatrixTransient
+            {
+            public:
+                QString id;
+            };
+
+            class AGROS_LIBRARY_API Vector
+            {
+            public:
+                QString id;
+                int coefficient;
+                QString variant;
+            };
+
+            class AGROS_LIBRARY_API Essential
+            {
+            public:
+                QString id;
+            };
+
+            LinearityType linearity;
+
+            QList<Matrix> matrices;
+            QList<MatrixTransient> matricesTransient;
+            QList<Vector> vectors;
+            QList<Essential> essentials;
+        };
+
+        QString id;
+        QString name;
+        QString equation;
+
+        QList<Variable> variables;
+        QList<Solver> solvers;
+    };
+
+    AnalysisType analysis;
+
+    QList<Item> items;
+};
+
 class AGROS_LIBRARY_API PluginWeakFormRecipe
 {
 public:
@@ -269,29 +335,6 @@ public:
     QList<MatrixForm> matrixForms;
     QList<VectorForm> vectorForms;
     QList<EssentialForm> essentialForms; // only for surface forms
-};
-
-class AGROS_LIBRARY_API PluginWeakFormVolume
-{
-public:
-    class Variable
-    {
-    public:
-        QString id;
-        QString dependence;
-    };
-
-    class Volume
-    {
-    public:
-        QString equation;
-    };
-
-    class Surface
-    {
-    public:
-        QString equation;
-    };
 };
 
 class AGROS_LIBRARY_API PluginPreGroup
@@ -405,6 +448,9 @@ public:
     // processor
     PluginWeakFormRecipe weakFormRecipeVolume;
     PluginWeakFormRecipe weakFormRecipeSurface;
+
+    QList<PluginWeakFormAnalysis> weakFormAnalysisVolume;
+    QList<PluginWeakFormAnalysis> weakFormAnalysisSurface;
 
     void load(const QString &fileName);
     void save(const QString &fileName);

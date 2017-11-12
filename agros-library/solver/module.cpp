@@ -41,87 +41,10 @@
 
 QMap<QString, QString> Module::availableModules()
 {  
-    static QMap<QString, QString> modules;
+    QMap<QString, QString> modules;
 
-    // read modules
-    if (modules.isEmpty())
-    {
-        QDir dir(datadir() + MODULEROOT);
-
-        QStringList filter;
-        filter << "*.xml";
-        QStringList list = dir.entryList(filter);
-
-        foreach (QString filename, list)
-        {
-            try
-            {
-                // todo: find a way to validate if required. If validated here, sensible error messages will be obtained
-                bool validateAtTheBeginning = false;
-                ::xml_schema::flags parsing_flags = xml_schema::flags::dont_validate;
-                if(validateAtTheBeginning)
-                {
-                    parsing_flags = 0;
-                    qDebug() << "Warning: Validating all XML files. This is time-consuming and should be switched off in module.cpp for release. Set validateAtTheBeginning = false.";
-                }
-                std::unique_ptr<XMLModule::module> module_xsd(XMLModule::module_(compatibleFilename(datadir() + MODULEROOT + "/" + filename).toStdString(), parsing_flags));
-
-                XMLModule::module *mod = module_xsd.get();
-                assert(mod->field().present());
-                XMLModule::field *field = &mod->field().get();
-
-                // module name
-                modules[filename.left(filename.size() - 4)] = QString::fromStdString(field->general_field().name());
-            }
-            catch (const xml_schema::expected_element& e)
-            {
-                QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name()));
-                qDebug() << str;
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::expected_attribute& e)
-            {
-                QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name()));
-                qDebug() << str;
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::unexpected_element& e)
-            {
-                QString str = QString("%1: %2 instead of %3").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.encountered_name())).arg(QString::fromStdString(e.expected_name()));
-                qDebug() << str;
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::unexpected_enumerator& e)
-            {
-                QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.enumerator()));
-                qDebug() << str;
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::expected_text_content& e)
-            {
-                QString str = QString("%1").arg(QString::fromStdString(e.what()));
-                qDebug() << str;
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::parsing& e)
-            {
-                QString str = QString("%1").arg(QString::fromStdString(e.what()));
-                qDebug() << str;
-                xml_schema::diagnostics diagnostic = e.diagnostics();
-                for(int i = 0; i < diagnostic.size(); i++)
-                {
-                    xml_schema::error err = diagnostic.at(i);
-                    qDebug() << QString("%1, position %2:%3, %4").arg(QString::fromStdString(err.id())).arg(err.line()).arg(err.column()).arg(QString::fromStdString(err.message()));
-                }
-                throw AgrosException(str);
-            }
-            catch (const xml_schema::exception& e)
-            {
-                qDebug() << QString("Unknow parser exception: %1").arg(QString::fromStdString(e.what()));
-                throw AgrosException(QString::fromStdString(e.what()));
-            }
-        }
-    }
+    foreach (PluginInterface *plugin, Agros::plugins().values())
+        modules[plugin->fieldId()] = plugin->moduleJson()->name;
 
     return modules;
 }

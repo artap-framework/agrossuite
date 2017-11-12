@@ -41,6 +41,434 @@
 
 #include "boost/archive/archive_exception.hpp"
 
+void convertJson(PluginInterface *plugin)
+{
+    // clear current module
+    plugin->moduleJson()->clear();
+
+    // save to Json
+    plugin->moduleJson()->id = QString::fromStdString(plugin->module()->general_field().id());
+    plugin->moduleJson()->name = QString::fromStdString(plugin->module()->general_field().name());
+    plugin->moduleJson()->deformedShape = (plugin->module()->general_field().deformed_shape().present()) ? plugin->module()->general_field().deformed_shape().get() : false;
+
+    // constants
+    foreach (XMLModule::constant cnst, plugin->module()->constants().constant())
+    {
+        PluginConstant c;
+        c.id = QString::fromStdString(cnst.id());
+        c.value = cnst.value();
+
+        plugin->moduleJson()->constants.append(c);
+    }
+
+    // macros
+    if (plugin->module()->macros().present())
+    {
+        foreach (XMLModule::macro mcro, plugin->module()->macros().get().macro())
+        {
+            PluginMacro m;
+            m.id = QString::fromStdString(mcro.id());
+            m.expression = QString::fromStdString(mcro.expression());
+
+            plugin->moduleJson()->macros.append(m);
+        }
+    }
+
+    // analyses
+    for (unsigned int i = 0; i < plugin->module()->general_field().analyses().analysis().size(); i++)
+    {
+        XMLModule::analysis an = plugin->module()->general_field().analyses().analysis().at(i);
+
+        PluginModuleAnalysis a;
+        a.id = QString::fromStdString(an.id());
+        a.type = analysisTypeFromStringKey(a.id);
+        a.name = QString::fromStdString(an.name());
+        a.solutions = an.solutions();
+
+        // spaces
+        foreach (XMLModule::space spc, plugin->module()->spaces().space())
+        {
+            foreach (XMLModule::space_config config, spc.space_config())
+            {
+                if (a.id == QString::fromStdString(spc.analysistype()))
+                {
+                    PluginModuleAnalysis::Equation c;
+                    c.type = QString::fromStdString(config.type());
+                    c.orderIncrease = config.orderadjust();
+
+                    a.configs[config.i()] = c;
+                }
+            }
+        }
+
+        plugin->moduleJson()->analyses.append(a);
+    }
+
+    // volume weakform
+    XMLModule::volume volume = plugin->module()->volume();
+    for (unsigned int i = 0; i < volume.quantity().size(); i++)
+    {
+        XMLModule::quantity quantity = volume.quantity().at(i);
+
+        PluginWeakFormRecipe::Variable v;
+        v.id = QString::fromStdString(quantity.id());
+        v.shortName = (quantity.shortname().present()) ? QString::fromStdString(quantity.shortname().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeVolume.variables.append(v);
+    }
+
+    // volume weakform - matrix
+    for (unsigned int i = 0; i < volume.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form matrix_form = volume.matrix_form().at(i);
+
+        PluginWeakFormRecipe::MatrixForm form;
+        form.id = QString::fromStdString(matrix_form.id());
+        form.i = (matrix_form.i().present()) ? matrix_form.i().get() : -1;
+        form.j = (matrix_form.j().present()) ? matrix_form.j().get() : -1;
+        form.planar = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.axi = (matrix_form.axi().present()) ? QString::fromStdString(matrix_form.axi().get()) : "";
+        form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeVolume.matrixForms.append(form);
+    }
+
+    // volume weakform - vector
+    for (unsigned int i = 0; i < volume.vector_form().size(); i++)
+    {
+        XMLModule::vector_form vector_form = volume.vector_form().at(i);
+
+        PluginWeakFormRecipe::VectorForm form;
+        form.id = QString::fromStdString(vector_form.id());
+        form.i = (vector_form.i().present()) ? vector_form.i().get() : -1;
+        form.planar = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.axi = (vector_form.axi().present()) ? QString::fromStdString(vector_form.axi().get()) : "";
+        form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeVolume.vectorForms.append(form);
+    }
+
+    // volume analyses
+    for (unsigned int i = 0; i < volume.weakforms_volume().weakform_volume().size(); i++)
+    {
+        XMLModule::weakform_volume weakform_volume = volume.weakforms_volume().weakform_volume().at(i);
+
+        PluginWeakFormAnalysis weakForm;
+        weakForm.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.analysistype()));
+
+        // volume
+        PluginWeakFormAnalysis::Item item;
+        item.id = "volume";
+        item.equation = QString::fromStdString(weakform_volume.equation());
+
+        for (unsigned int j = 0; j < weakform_volume.quantity().size(); j++)
+        {
+            XMLModule::quantity quantity = weakform_volume.quantity().at(j);
+
+            PluginWeakFormAnalysis::Item::Variable v;
+            v.id = QString::fromStdString(quantity.id());
+            v.dependency = quantity.dependence().present() ? QString::fromStdString(quantity.dependence().get()) : "";
+            v.nonlinearity_planar = quantity.nonlinearity_planar().present() ? QString::fromStdString(quantity.nonlinearity_planar().get()) : "";
+            v.nonlinearity_axi = quantity.nonlinearity_axi().present() ? QString::fromStdString(quantity.nonlinearity_axi().get()) : "";
+            v.nonlinearity_cart = quantity.nonlinearity_planar().present() ? QString::fromStdString(quantity.nonlinearity_planar().get()) : "";
+
+            item.variables.append(v);
+        }
+
+        for (unsigned int j = 0; j < weakform_volume.linearity_option().size(); j++)
+        {
+            XMLModule::linearity_option linearity = weakform_volume.linearity_option().at(j);
+
+            PluginWeakFormAnalysis::Item::Solver s;
+            s.linearity = linearityTypeFromStringKey(QString::fromStdString(linearity.type()));
+
+            for (unsigned int k = 0; k < linearity.matrix_form().size(); k++)
+            {
+                XMLModule::matrix_form form = linearity.matrix_form().at(k);
+
+                PluginWeakFormAnalysis::Item::Solver::Matrix m;
+                m.id = QString::fromStdString(form.id());
+
+                s.matrices.append(m);
+            }
+
+            for (unsigned int k = 0; k < linearity.matrix_form().size(); k++)
+            {
+                XMLModule::matrix_form form = linearity.matrix_form().at(k);
+
+                PluginWeakFormAnalysis::Item::Solver::Matrix m;
+                m.id = QString::fromStdString(form.id());
+
+                s.matrices.append(m);
+            }
+
+            for (unsigned int k = 0; k < linearity.matrix_transient_form().size(); k++)
+            {
+                XMLModule::matrix_transient_form form = linearity.matrix_transient_form().at(k);
+
+                PluginWeakFormAnalysis::Item::Solver::MatrixTransient m;
+                m.id = QString::fromStdString(form.id());
+
+                s.matricesTransient.append(m);
+            }
+
+            for (unsigned int k = 0; k < linearity.vector_form().size(); k++)
+            {
+                XMLModule::vector_form form = linearity.vector_form().at(k);
+
+                PluginWeakFormAnalysis::Item::Solver::Vector v;
+                v.id = QString::fromStdString(form.id());
+                v.coefficient = form.coefficient().present() ? QString::fromStdString(form.coefficient().get()).toInt() : 1;
+                v.variant = form.variant().present() ? QString::fromStdString(form.variant().get()) : "";
+
+                s.vectors.append(v);
+            }
+
+            item.solvers.append(s);
+        }
+
+        weakForm.items.append(item);
+        plugin->moduleJson()->weakFormAnalysisVolume.append(weakForm);
+    }
+
+    // surface weakform
+    XMLModule::surface surface = plugin->module()->surface();
+    for (unsigned int i = 0; i < surface.quantity().size(); i++)
+    {
+        XMLModule::quantity quantity = surface.quantity().at(i);
+
+        PluginWeakFormRecipe::Variable v;
+        v.id = QString::fromStdString(quantity.id());
+        v.shortName = (quantity.shortname().present()) ? QString::fromStdString(quantity.shortname().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeSurface.variables.append(v);
+    }
+
+    // surface weakform - matrix
+    for (unsigned int i = 0; i < surface.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form matrix_form = surface.matrix_form().at(i);
+
+        PluginWeakFormRecipe::MatrixForm form;
+        form.id = QString::fromStdString(matrix_form.id());
+        form.i = (matrix_form.i().present()) ? matrix_form.i().get() : -1;
+        form.j = (matrix_form.j().present()) ? matrix_form.j().get() : -1;
+        form.planar = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.axi = (matrix_form.axi().present()) ? QString::fromStdString(matrix_form.axi().get()) : "";
+        form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+        form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeSurface.matrixForms.append(form);
+    }
+
+    // surface weakform - vector
+    for (unsigned int i = 0; i < surface.vector_form().size(); i++)
+    {
+        XMLModule::vector_form vector_form = surface.vector_form().at(i);
+
+        PluginWeakFormRecipe::VectorForm form;
+        form.id = QString::fromStdString(vector_form.id());
+        form.i = (vector_form.i().present()) ? vector_form.i().get() : -1;
+        form.planar = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.axi = (vector_form.axi().present()) ? QString::fromStdString(vector_form.axi().get()) : "";
+        form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+        form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeSurface.vectorForms.append(form);
+    }
+
+    // weakform - essential
+    for (unsigned int i = 0; i < surface.essential_form().size(); i++)
+    {
+        XMLModule::essential_form essential_form = surface.essential_form().at(i);
+
+        PluginWeakFormRecipe::EssentialForm form;
+        form.id = QString::fromStdString(essential_form.id());
+        form.i = (essential_form.i().present()) ? essential_form.i().get() : -1;
+        form.planar = (essential_form.planar().present()) ? QString::fromStdString(essential_form.planar().get()) : "";
+        form.axi = (essential_form.axi().present()) ? QString::fromStdString(essential_form.axi().get()) : "";
+        form.cart = (essential_form.planar().present()) ? QString::fromStdString(essential_form.planar().get()) : "";
+        form.condition = (essential_form.condition().present()) ? QString::fromStdString(essential_form.condition().get()) : "";
+
+        plugin->moduleJson()->weakFormRecipeSurface.essentialForms.append(form);
+    }
+
+    // preprocessor GUI
+    for (unsigned int i = 0; i < plugin->module()->preprocessor().gui().size(); i++)
+    {
+        XMLModule::gui ui = plugin->module()->preprocessor().gui().at(i);
+
+        for (unsigned int i = 0; i < ui.group().size(); i++)
+        {
+            XMLModule::group grp = ui.group().at(i);
+
+            PluginPreGroup group;
+            group.name = (grp.name().present()) ? plugin->localeName(QString::fromStdString(grp.name().get())) : "";
+
+            for (unsigned int i = 0; i < grp.quantity().size(); i++)
+            {
+                XMLModule::quantity quant = grp.quantity().at(i);
+
+                PluginPreGroup::Quantity q;
+                q.id = QString::fromStdString(quant.id());
+                q.name = (quant.name().present()) ? QString::fromStdString(quant.name().get()) : "";
+                q.default_value = (quant.default_().present()) ? quant.default_().get() : 0.0;
+                q.condition = (quant.condition().present()) ? QString::fromStdString(quant.condition().get()) : "";
+                q.shortname = (quant.shortname().present()) ? QString::fromStdString(quant.shortname().get()) : "";
+                q.shortname_html = (quant.shortname_html().present()) ? QString::fromStdString(quant.shortname_html().get()) : "";
+                q.shortname_dependence = (quant.shortname_dependence().present()) ? QString::fromStdString(quant.shortname_dependence().get()) : "";
+                q.shortname_dependence_html = (quant.shortname_dependence_html().present()) ? QString::fromStdString(quant.shortname_dependence_html().get()) : "";
+                q.unit = (quant.unit().present()) ? QString::fromStdString(quant.unit().get()) : "";
+                q.unit_html = (quant.unit_html().present()) ? QString::fromStdString(quant.unit_html().get()) : "";
+
+                group.quantities.append(q);
+            }
+            if (ui.type() == "volume")
+                plugin->moduleJson()->preVolumeGroups.append(group);
+            else if (ui.type() == "surface")
+                plugin->moduleJson()->preSurfaceGroups.append(group);
+        }
+    }
+
+    // local variables
+    for (unsigned int i = 0; i < plugin->module()->postprocessor().localvariables().localvariable().size(); i++)
+    {
+        XMLModule::localvariable lv = plugin->module()->postprocessor().localvariables().localvariable().at(i);
+
+        PluginPostVariable variable;
+        variable.id = QString::fromStdString(lv.id());
+        variable.name = QString::fromStdString(lv.name());
+        variable.type = QString::fromStdString(lv.type());
+        variable.shortname = QString::fromStdString(lv.shortname());
+        variable.shortname_html = (lv.shortname_html().present()) ? QString::fromStdString(lv.shortname_html().get()) : QString::fromStdString(lv.shortname());
+        variable.unit = QString::fromStdString(lv.unit());
+        variable.unit_html = (lv.unit_html().present()) ? QString::fromStdString(lv.unit_html().get()) : QString::fromStdString(lv.unit());
+
+        for (unsigned int j = 0; j < lv.expression().size(); j++)
+        {
+            XMLModule::expression expr = lv.expression().at(j);
+
+            PluginPostVariable::Expression e;
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
+            e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+            e.planar_x = (expr.planar_x().present()) ? QString::fromStdString(expr.planar_x().get()) : "";
+            e.planar_y = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()) : "";
+            e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
+            e.axi_r = (expr.axi_r().present()) ? QString::fromStdString(expr.axi_r().get()) : "";
+            e.axi_z = (expr.axi_z().present()) ? QString::fromStdString(expr.axi_z().get()) : "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+            e.cart_x = (expr.planar_x().present()) ? QString::fromStdString(expr.planar_x().get()) : "";
+            e.cart_y = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()) : "";
+            e.cart_z = (expr.planar_y().present()) ? QString::fromStdString(expr.planar_y().get()).replace("dy1", "dz1").replace("dy2", "dz2") : "";
+
+            variable.expresions.append(e);
+        }
+        plugin->moduleJson()->postLocalVariables.append(variable);
+    }
+
+    // volume integrals
+    for (unsigned int i = 0; i < plugin->module()->postprocessor().volumeintegrals().volumeintegral().size(); i++)
+    {
+        XMLModule::volumeintegral in = plugin->module()->postprocessor().volumeintegrals().volumeintegral().at(i);
+
+        PluginPostVariable variable;
+        variable.id = QString::fromStdString(in.id());
+        variable.name = QString::fromStdString(in.name());
+        variable.type = "scalar";
+        variable.shortname = QString::fromStdString(in.shortname());
+        variable.shortname_html = (in.shortname_html().present()) ? QString::fromStdString(in.shortname_html().get()) : QString::fromStdString(in.shortname());
+        variable.unit = QString::fromStdString(in.unit());
+        variable.unit_html = (in.unit_html().present()) ? QString::fromStdString(in.unit_html().get()) : QString::fromStdString(in.unit());
+
+        for (unsigned int j = 0; j < in.expression().size(); j++)
+        {
+            XMLModule::expression expr = in.expression().at(j);
+
+            PluginPostVariable::Expression e;
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
+            e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+            e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+
+            variable.expresions.append(e);
+        }
+
+        plugin->moduleJson()->postVolumeIntegrals.append(variable);
+    }
+
+    // surface integrals
+    for (unsigned int i = 0; i < plugin->module()->postprocessor().surfaceintegrals().surfaceintegral().size(); i++)
+    {
+        XMLModule::surfaceintegral in = plugin->module()->postprocessor().surfaceintegrals().surfaceintegral().at(i);
+
+        PluginPostVariable variable;
+        variable.id = QString::fromStdString(in.id());
+        variable.name = QString::fromStdString(in.name());
+        variable.type = "scalar";
+        variable.shortname = QString::fromStdString(in.shortname());
+        variable.shortname_html = (in.shortname_html().present()) ? QString::fromStdString(in.shortname_html().get()) : QString::fromStdString(in.shortname());
+        variable.unit = QString::fromStdString(in.unit());
+        variable.unit_html = (in.unit_html().present()) ? QString::fromStdString(in.unit_html().get()) : QString::fromStdString(in.unit());
+
+        for (unsigned int j = 0; j < in.expression().size(); j++)
+        {
+            XMLModule::expression expr = in.expression().at(j);
+
+            PluginPostVariable::Expression e;
+            e.analysis = analysisTypeFromStringKey(QString::fromStdString(expr.analysistype()));
+            e.planar = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+            e.axi = (expr.axi().present()) ? QString::fromStdString(expr.axi().get()) : "";
+            e.cart = (expr.planar().present()) ? QString::fromStdString(expr.planar().get()) : "";
+
+            variable.expresions.append(e);
+        }
+
+        plugin->moduleJson()->postSurfaceIntegrals.append(variable);
+    }
+
+    plugin->moduleJson()->save(QString("%1/resources/modules/%2.json").arg(datadir()).arg(plugin->fieldId()));
+}
+
+bool isPluginDir(const QString &path)
+{
+    QDir dir(path);
+
+    QStringList filters;
+    filters << "libagros_plugin_*.so" << "agros_plugin_*.dll";
+    QStringList list = dir.entryList(filters);
+
+    return (list.size() > 0);
+}
+
+QStringList pluginList()
+{
+    QString pluginPath = "";
+
+    if (isPluginDir(datadir() + "/libs/"))
+        pluginPath = datadir() + "/libs/";
+    else if (isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
+        pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
+
+    if (pluginPath.isEmpty())
+    {
+        throw AgrosPluginException(QObject::tr("Could not load find plugins in directory."));
+        assert(0);
+    }
+
+    QDir dir(pluginPath);
+
+    QStringList filters;
+    filters << "libagros_plugin_*.so" << "agros_plugin_*.dll";
+
+    QStringList list;
+    foreach (QString entry, dir.entryList(filters))
+        list.append(QString("%1/%2").arg(pluginPath).arg(entry));
+
+    return list;
+}
+
 void initSingleton()
 {
     setlocale(LC_NUMERIC, "C");
@@ -103,7 +531,46 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 
     m_configComputer = new Config();
     // qInfo() << "Agros::Agros(QSharedPointer<Log> log) - m_configComputer = new Config();";
+
+    // plugins
+    // read plugins
+#ifdef AGROS_BUILD_STATIC
+    foreach (QObject *obj, QPluginLoader::staticInstances())
+    {
+        PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
+        m_plugins[plugin->fieldId()] = plugin;
+    }
+#else
+    foreach (QString pluginPath, pluginList())
+    {
+        // load new plugin
+        QPluginLoader *loader = new QPluginLoader(pluginPath);
+
+        if (!loader)
+        {
+            throw AgrosPluginException(QObject::tr("Could not find 'agros2d_plugin_%1'").arg(pluginPath));
+        }
+
+        if (!loader->load())
+        {
+            QString error = loader->errorString();
+            delete loader;
+            throw AgrosPluginException(QObject::tr("Could not load 'agros2d_plugin_%1' (%2)").arg(pluginPath).arg(error));
+        }
+
+        assert(loader->instance());
+        PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
+        m_plugins[plugin->fieldId()] = plugin;
+
+        // convert JSON
+        convertJson(plugin);
+
+        delete loader;
+    }
+#endif
 }
+
+
 
 void Agros::clear()
 {    
@@ -147,59 +614,12 @@ Agros *Agros::singleton()
     return m_singleton.data();
 }
 
-static QMap<QString, PluginInterface *> plugins;
 PluginInterface *Agros::loadPlugin(const QString &pluginName)
 {
-#ifdef AGROS_BUILD_STATIC
-    foreach (QObject *obj, QPluginLoader::staticInstances())
-    {
-        PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
-
-        if (plugin->fieldId() == pluginName)
-            return plugin;
-    }
+    if (Agros::singleton()->m_plugins.contains(pluginName))
+        return Agros::singleton()->m_plugins[pluginName];
 
     assert(0);
-    return nullptr;
-#else
-    if (plugins.contains(pluginName))
-        return plugins[pluginName];
-
-    // load new plugin
-    QPluginLoader *loader = NULL;
-
-#ifdef Q_WS_X11
-    if (QFile::exists(QString("%1/libs/libagros_plugin_%2.so").arg(datadir()).arg(pluginName)))
-        loader = new QPluginLoader(QString("%1/libs/libagros_plugin_%2.so").arg(datadir()).arg(pluginName));
-    else if (QFile::exists(QString(QCoreApplication::applicationDirPath() + "/../lib/libagros_plugin_%1.so").arg(pluginName)))
-        loader = new QPluginLoader(QString(QCoreApplication::applicationDirPath() + "/../lib/libagros_plugin_%1.so").arg(pluginName));
-#endif
-
-#ifdef Q_WS_WIN
-    if (QFile::exists(QString("%1/libs/agros_plugin_%2.dll").arg(datadir()).arg(pluginName)))
-        loader = new QPluginLoader(QString("%1/libs/agros_plugin_%2.dll").arg(datadir()).arg(pluginName));
-#endif
-
-    if (!loader)
-    {
-        throw AgrosPluginException(QObject::tr("Could not find 'agros2d_plugin_%1'").arg(pluginName));
-    }
-
-    if (!loader->load())
-    {
-        QString error = loader->errorString();
-        delete loader;
-        throw AgrosPluginException(QObject::tr("Could not load 'agros2d_plugin_%1' (%2)").arg(pluginName).arg(error));
-    }
-
-    assert(loader->instance());
-    PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
-    plugins[pluginName] = plugin;
-
-    delete loader;
-
-    return plugin;
-#endif
 }
 
 // create script from model

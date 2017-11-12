@@ -53,6 +53,7 @@ public:
 
     static inline Log *log() { return Agros::singleton()->m_log.data(); }
 
+    static inline QMap<QString, PluginInterface *> plugins()  { return Agros::singleton()->m_plugins; }
     static PluginInterface *loadPlugin(const QString &pluginName);
 
     static void clear();
@@ -66,6 +67,8 @@ private:
     QMap<QString, QSharedPointer<Computation> > m_computations;
     // log
     QSharedPointer<Log> m_log;
+    // plugins
+    QMap<QString, PluginInterface *> m_plugins;
 };
 
 // create script from model

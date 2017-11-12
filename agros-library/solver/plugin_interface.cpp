@@ -35,6 +35,7 @@ const QString CONSTANTS = "constants";
 const QString MACROS = "macros";
 
 const QString MATRIX_FORMS = "matrix_forms";
+const QString MATRIX_TRANSIENT_FORMS = "matrix_transient_forms";
 const QString VECTOR_FORMS = "vector_forms";
 const QString ESSENTIONAL_FORMS = "essentional_forms";
 
@@ -48,13 +49,23 @@ const QString ANALYSISTYPE = "analysistype";
 const QString PROCESSOR = "processor";
 const QString VARIABLES = "variables";
 const QString VARIABLE = "variable";
+const QString EQUATION = "equation";
+const QString VOLUME_ANALYSES = "volume_analyses";
+const QString SURFACE_ANALYSES = "surface_analyses";
+
+const QString ITEMS = "items";
+const QString ITEM = "item";
+const QString DEPENDENCY = "dependency";
+const QString NONLINEARITY_PLANAR = "nonlinearity_planar";
+const QString NONLINEARITY_AXI = "nonlinearity_axi";
+const QString NONLINEARITY_CART = "nonlinearity_cart";
+const QString SOLVERS = "solvers";
 
 // preprocessor
 const QString PREPROCESSOR = "preprocessor";
 const QString GUI = "gui";
-const QString GROUP = "group";
-const QString VOLUMEGROUPS = "volumegroups";
-const QString SURFACEGROUPS = "surfacegroups";
+const QString VOLUME_RECIPES = "volume_recipes";
+const QString SURFACE_RECIPES = "surface_recipes";
 const QString QUANTITIES = "quantities";
 const QString CONDITION = "condition";
 const QString DEFAULT_VALUE = "default_value";
@@ -295,28 +306,20 @@ void PluginModule::save(const QString &fileName)
     generalJson[NAME] = name;
 
     // constants
-    QJsonArray constantsArrayJson;
+    QJsonObject constantsJson;
     foreach (PluginConstant constant, constants)
     {
-        QJsonObject constantJson;
-        constantJson[ID] = constant.id;
-        constantJson[VALUE] = constant.value;
-
-        constantsArrayJson.append(constantJson);
+        constantsJson[constant.id] = constant.value;
     }
-    generalJson[CONSTANTS] = constantsArrayJson;
+    generalJson[CONSTANTS] = constantsJson;
 
     // macros
-    QJsonArray macrosArrayJson;
+    QJsonObject macrosJson;
     foreach (PluginMacro macro, macros)
     {
-        QJsonObject macroJson;
-        macroJson[ID] = macro.id;
-        macroJson[EXPRESSION] = macro.expression;
-
-        macrosArrayJson.append(macroJson);
+        macrosJson[macro.id] = macro.expression;
     }
-    generalJson[MACROS] = macrosArrayJson;
+    generalJson[MACROS] = macrosJson;
 
     // analyses
     QJsonObject analysesJson;
@@ -345,28 +348,22 @@ void PluginModule::save(const QString &fileName)
 
     // processor
     QJsonObject proJson;
-
     {
         // volume
         {
             QJsonObject proVolumeJson;
 
-            QJsonArray variablesJson;
+            QJsonObject variablesJson;
             foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeVolume.variables)
             {
-                QJsonObject variableJson;
-                variableJson[ID] = variable.id;
-                variableJson[SHORTNAME] = variable.shortName;
-
-                variablesJson.append(variableJson);
+                variablesJson[variable.id] = variable.shortName;
             }
             proVolumeJson[VARIABLES] = variablesJson;
 
-            QJsonArray matrixFormsJson;
+            QJsonObject matrixFormsJson;
             foreach (PluginWeakFormRecipe::MatrixForm form, weakFormRecipeVolume.matrixForms)
             {
                 QJsonObject matrixJson;
-                matrixJson[ID] = form.id;
                 matrixJson[I] = form.i;
                 matrixJson[J] = form.i;
                 matrixJson[PLANAR] = form.planar;
@@ -374,48 +371,122 @@ void PluginModule::save(const QString &fileName)
                 matrixJson[CART] = form.cart;
                 matrixJson[CONDITION] = form.condition;
 
-                matrixFormsJson.append(matrixJson);
+                matrixFormsJson[form.id] = matrixJson;
             }
             proVolumeJson[MATRIX_FORMS] = matrixFormsJson;
 
-            QJsonArray vectorFormsJson;
+            QJsonObject vectorFormsJson;
             foreach (PluginWeakFormRecipe::VectorForm form, weakFormRecipeVolume.vectorForms)
             {
                 QJsonObject vectorJson;
-                vectorJson[ID] = form.id;
                 vectorJson[I] = form.i;
                 vectorJson[PLANAR] = form.planar;
                 vectorJson[AXI] = form.axi;
                 vectorJson[CART] = form.cart;
                 vectorJson[CONDITION] = form.condition;
 
-                vectorFormsJson.append(vectorJson);
+                vectorFormsJson[form.id] = vectorJson;
             }
             proVolumeJson[VECTOR_FORMS] = vectorFormsJson;
 
-            proJson[VOLUMEGROUPS] = proVolumeJson;
+            proJson[VOLUME_RECIPES] = proVolumeJson;
         }
+
+        // analyses
+        QJsonObject proVolumeAnalysesJson;
+        foreach (PluginWeakFormAnalysis analysis, weakFormAnalysisVolume)
+        {
+            QJsonObject analysisJson;
+
+            // items (volume - only one)
+            QJsonObject itemsJson;
+            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
+            {
+                QJsonObject itemJson;
+                itemJson[NAME] = item.name;
+                itemJson[EQUATION] = item.equation;
+
+                // variables
+                QJsonObject variablesJson;
+                foreach (PluginWeakFormAnalysis::Item::Variable variable, item.variables)
+                {
+                    QJsonObject variableJson;
+                    variableJson[DEPENDENCY] = variable.dependency;
+                    variableJson[NONLINEARITY_PLANAR] = variable.nonlinearity_planar;
+                    variableJson[NONLINEARITY_AXI] = variable.nonlinearity_axi;
+                    variableJson[NONLINEARITY_CART] = variable.nonlinearity_cart;
+
+                    variablesJson[variable.id] = variableJson;
+                }
+                itemJson[VARIABLES] = variablesJson;
+
+                // solver
+                QJsonObject solverJson;
+                // only one solver
+                foreach (PluginWeakFormAnalysis::Item::Solver solver, item.solvers)
+                {
+                    QJsonObject solverJson;
+
+                    // matrix forms
+                    QJsonObject matricesJson;
+                    foreach (PluginWeakFormAnalysis::Item::Solver::Matrix form, solver.matrices)
+                    {
+                        QJsonObject formJson;
+
+                        matricesJson[form.id] = formJson;
+                    }
+                    solverJson[MATRIX_FORMS] = matricesJson;
+
+                    // matrix transient forms
+                    QJsonObject matricesTransientJson;
+                    foreach (PluginWeakFormAnalysis::Item::Solver::MatrixTransient form, solver.matricesTransient)
+                    {
+                        QJsonObject formJson;
+
+                        matricesTransientJson[form.id] = formJson;
+                    }
+                    solverJson[MATRIX_TRANSIENT_FORMS] = matricesTransientJson;
+
+                    // vector forms
+                    QJsonObject vectorJson;
+                    foreach (PluginWeakFormAnalysis::Item::Solver::Vector form, solver.vectors)
+                    {
+                        QJsonObject formJson;
+
+                        vectorJson[form.id] = formJson;
+                    }
+                    solverJson[VECTOR_FORMS] = vectorJson;
+
+                    solverJson[linearityTypeToStringKey(solver.linearity)] = solverJson;
+                }
+
+                itemJson[SOLVERS] = solverJson;
+                itemsJson[item.id] = itemJson;
+            }
+            analysisJson[ITEMS] = itemsJson;
+
+            proVolumeAnalysesJson[analysisTypeToStringKey(analysis.analysis)] = analysisJson;
+        }
+        proJson[VOLUME_ANALYSES] = proVolumeAnalysesJson;
 
         // surface
         {
             QJsonObject proSurfaceJson;
 
-            QJsonArray variablesJson;
+            QJsonObject variablesJson;
             foreach (PluginWeakFormRecipe::Variable variable, weakFormRecipeSurface.variables)
             {
                 QJsonObject variableJson;
-                variableJson[ID] = variable.id;
                 variableJson[SHORTNAME] = variable.shortName;
 
-                variablesJson.append(variableJson);
+                variablesJson[variable.id] = variableJson;
             }
             proSurfaceJson[VARIABLES] = variablesJson;
 
-            QJsonArray matrixFormsJson;
+            QJsonObject matrixFormsJson;
             foreach (PluginWeakFormRecipe::MatrixForm form, weakFormRecipeSurface.matrixForms)
             {
                 QJsonObject matrixJson;
-                matrixJson[ID] = form.id;
                 matrixJson[I] = form.i;
                 matrixJson[J] = form.i;
                 matrixJson[PLANAR] = form.planar;
@@ -423,41 +494,39 @@ void PluginModule::save(const QString &fileName)
                 matrixJson[CART] = form.cart;
                 matrixJson[CONDITION] = form.condition;
 
-                matrixFormsJson.append(matrixJson);
+                matrixFormsJson[form.id] = matrixJson;
             }
             proSurfaceJson[MATRIX_FORMS] = matrixFormsJson;
 
-            QJsonArray vectorFormsJson;
+            QJsonObject vectorFormsJson;
             foreach (PluginWeakFormRecipe::VectorForm form, weakFormRecipeSurface.vectorForms)
             {
                 QJsonObject vectorJson;
-                vectorJson[ID] = form.id;
                 vectorJson[I] = form.i;
                 vectorJson[PLANAR] = form.planar;
                 vectorJson[AXI] = form.axi;
                 vectorJson[CART] = form.cart;
                 vectorJson[CONDITION] = form.condition;
 
-                vectorFormsJson.append(vectorJson);
+                vectorFormsJson[form.id] = vectorJson;
             }
             proSurfaceJson[VECTOR_FORMS] = vectorFormsJson;
 
-            QJsonArray essentialFormsJson;
+            QJsonObject essentialFormsJson;
             foreach (PluginWeakFormRecipe::EssentialForm form, weakFormRecipeSurface.essentialForms)
             {
                 QJsonObject essentialJson;
-                essentialJson[ID] = form.id;
                 essentialJson[I] = form.i;
                 essentialJson[PLANAR] = form.planar;
                 essentialJson[AXI] = form.axi;
                 essentialJson[CART] = form.cart;
                 essentialJson[CONDITION] = form.condition;
 
-                essentialFormsJson.append(essentialJson);
+                essentialFormsJson[form.id] = essentialJson;
             }
             proSurfaceJson[ESSENTIONAL_FORMS] = essentialFormsJson;
 
-            proJson[SURFACEGROUPS] = proSurfaceJson;
+            proJson[SURFACE_RECIPES] = proSurfaceJson;
         }
     }
 
@@ -475,12 +544,11 @@ void PluginModule::save(const QString &fileName)
         QJsonObject groupJson;
         groupJson[NAME] = group.name;
 
-        QJsonArray quantitiesArrayJson;
+        QJsonObject quantitiesJson;
         foreach (PluginPreGroup::Quantity quant, group.quantities)
         {
             QJsonObject quantityJson;
             quantityJson[NAME] = quant.name;
-            quantityJson[ID] = quant.id;
             quantityJson[CONDITION] = quant.condition;
             quantityJson[DEFAULT_VALUE] = quant.default_value;
             quantityJson[IS_SOURCE] = quant.is_source;
@@ -491,13 +559,13 @@ void PluginModule::save(const QString &fileName)
             quantityJson[UNIT] = quant.unit;
             quantityJson[UNIT_HTML] = quant.unit_html;
 
-            quantitiesArrayJson.append(quantityJson);
+            quantitiesJson[quant.id] = quantityJson;
         }
-        groupJson[QUANTITIES] = quantitiesArrayJson;
+        groupJson[QUANTITIES] = quantitiesJson;
 
         volumeGroupsArrayJson.append(groupJson);
     }
-    guiJson[VOLUMEGROUPS] = volumeGroupsArrayJson;
+    guiJson[VOLUME_RECIPES] = volumeGroupsArrayJson;
 
     // surface groups
     QJsonArray surfaceGroupsArrayJson;
@@ -506,12 +574,11 @@ void PluginModule::save(const QString &fileName)
         QJsonObject groupJson;
         groupJson[NAME] = group.name;
 
-        QJsonArray quantitiesArrayJson;
+        QJsonObject quantitiesJson;
         foreach (PluginPreGroup::Quantity quant, group.quantities)
         {
             QJsonObject quantityJson;
             quantityJson[NAME] = quant.name;
-            quantityJson[ID] = quant.id;
             quantityJson[CONDITION] = quant.condition;
             quantityJson[DEFAULT_VALUE] = quant.default_value;
             quantityJson[IS_SOURCE] = quant.is_source;
@@ -520,13 +587,13 @@ void PluginModule::save(const QString &fileName)
             quantityJson[UNIT] = quant.unit;
             quantityJson[UNIT_HTML] = quant.unit_html;
 
-            quantitiesArrayJson.append(quantityJson);
+            quantitiesJson[quant.id] = quantityJson;
         }
-        groupJson[QUANTITIES] = quantitiesArrayJson;
+        groupJson[QUANTITIES] = quantitiesJson;
 
         surfaceGroupsArrayJson.append(groupJson);
     }
-    guiJson[SURFACEGROUPS] = surfaceGroupsArrayJson;
+    guiJson[SURFACE_RECIPES] = surfaceGroupsArrayJson;
 
     preJson[GUI] = guiJson;
     rootJson[PREPROCESSOR] = preJson;
@@ -546,11 +613,10 @@ void PluginModule::save(const QString &fileName)
         variableJson[UNIT] = variable.unit;
         variableJson[UNIT_HTML] = variable.unit_html;
 
-        QJsonArray expressionsArrayJson;
+        QJsonObject expressionsJson;
         foreach (PluginPostVariable::Expression expr, variable.expresions)
         {
             QJsonObject expressionJson;
-            expressionJson[ANALYSIS] = expr.analysis;
             if (variable.type == "scalar")
             {
                 expressionJson[PLANAR] = expr.planar;
@@ -570,9 +636,9 @@ void PluginModule::save(const QString &fileName)
             else
                 assert(0);
 
-            expressionsArrayJson.append(expressionJson);
+            expressionsJson[analysisTypeToStringKey(expr.analysis)] = expressionJson;
         }
-        variableJson[EXPRESSION] = expressionsArrayJson;
+        variableJson[EXPRESSION] = expressionsJson;
 
         localVariablesArrayJson.append(variableJson);
     }
@@ -590,18 +656,17 @@ void PluginModule::save(const QString &fileName)
         variableJson[UNIT] = variable.unit;
         variableJson[UNIT_HTML] = variable.unit_html;
 
-        QJsonArray expressionsArrayJson;
+        QJsonObject expressionsJson;
         foreach (PluginPostVariable::Expression expr, variable.expresions)
         {
             QJsonObject expressionJson;
-            expressionJson[ANALYSIS] = expr.analysis;
             expressionJson[PLANAR] = expr.planar;
             expressionJson[AXI] = expr.axi;
             expressionJson[CART] = expr.axi;
 
-            expressionsArrayJson.append(expressionJson);
+            expressionsJson[analysisTypeToStringKey(expr.analysis)] = expressionJson;
         }
-        variableJson[EXPRESSION] = expressionsArrayJson;
+        variableJson[EXPRESSION] = expressionsJson;
 
         volumeIntegralsArrayJson.append(variableJson);
     }
@@ -619,18 +684,17 @@ void PluginModule::save(const QString &fileName)
         variableJson[UNIT] = variable.unit;
         variableJson[UNIT_HTML] = variable.unit_html;
 
-        QJsonArray expressionsArrayJson;
+        QJsonObject expressionsJson;
         foreach (PluginPostVariable::Expression expr, variable.expresions)
         {
             QJsonObject expressionJson;
-            expressionJson[ANALYSIS] = expr.analysis;
             expressionJson[PLANAR] = expr.planar;
             expressionJson[AXI] = expr.axi;
             expressionJson[CART] = expr.axi;
 
-            expressionsArrayJson.append(expressionJson);
+            expressionsJson[analysisTypeToStringKey(expr.analysis)] = expressionJson;
         }
-        variableJson[EXPRESSION] = expressionsArrayJson;
+        variableJson[EXPRESSION] = expressionsJson;
 
         surfaceIntegralsArrayJson.append(variableJson);
     }
@@ -663,6 +727,9 @@ void PluginModule::clear()
     weakFormRecipeSurface.matrixForms.clear();
     weakFormRecipeSurface.vectorForms.clear();
     weakFormRecipeSurface.essentialForms.clear();
+
+    weakFormAnalysisVolume.clear();
+    weakFormAnalysisSurface.clear();
 
     // preprocessor
     preVolumeGroups.clear();
