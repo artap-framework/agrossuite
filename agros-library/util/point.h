@@ -26,8 +26,8 @@
 #include <cmath>
 #include <iostream>
 
-#define POINT_ABS_ZERO 1e-10
-#define POINT_REL_ZERO 1e-5
+#define POINT_ABS_ZERO 1e-12
+#define POINT_REL_ZERO 1e-7
 
 struct Point;
 
