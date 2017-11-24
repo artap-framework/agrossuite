@@ -86,37 +86,17 @@ double FieldInfo::labelArea(int agrosLabel) const
 void FieldInfo::setAnalysisType(AnalysisType analysisType)
 {
     m_setting[Analysis] = QVariant::fromValue(analysisType);
-    /*
+
     foreach (PluginModuleAnalysis an, m_plugin->moduleJson()->analyses)
     {
         if (an.id == analysisTypeToStringKey(analysisType))
-        {
             m_numberOfSolutions = an.solutions;
 
-            foreach (int index, an.configs)
-            {
-                Type key = stringKeyToType(an.configs[index].type);
-
-                        if (m_settingDefault[key].type() == QVariant::Double)
-                            m_settingDefault[key] = an.configs[index]. QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toDouble();
-                        else if (m_settingDefault[key].type() == QVariant::Int)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toInt();
-                        else if (m_settingDefault[key].type() == QVariant::Bool)
-                            m_settingDefault[key] = (QString::fromStdString(an.field_config().get().field_item().at(i).field_value()) == "1");
-                        else if (m_settingDefault[key].type() == QVariant::String)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
-                        else if (m_settingDefault[key].type() == QVariant::StringList)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).split("|");
-                        else
-                            qDebug() << "Key not found" << QString::fromStdString(an.field_config().get().field_item().at(i).field_key()) << QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
-                    }
-            }
-
-            m_availableLinearityTypes = availableLinearityTypes(analysisType);
-        }
+        m_availableLinearityTypes = availableLinearityTypes(analysisType);
     }
-    */
-    foreach (XMLModule::analysis an, m_plugin->module()->general_field().analyses().analysis())
+
+    /*
+    foreach (XMLXXXModule::analysis an, m_plugin->module()->general_field().analyses().analysis())
     {
         if (an.type() == analysisTypeToStringKey(analysisType).toStdString())
         {
@@ -149,19 +129,21 @@ void FieldInfo::setAnalysisType(AnalysisType analysisType)
             m_availableLinearityTypes = availableLinearityTypes(analysisType);
         }
     }
+    */
 }
 
 QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
 {
     QList<LinearityType> availableLinearityTypes;
 
-    foreach (XMLModule::weakform_volume weakformVolume, m_plugin->module()->volume().weakforms_volume().weakform_volume())
+    foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisVolume)
     {
-        if (weakformVolume.analysistype() == analysisTypeToStringKey(at).toStdString())
+        if (analysis.analysis == at)
         {
-            foreach(XMLModule::linearity_option linearityOption, weakformVolume.linearity_option())
+            // should be only one
+            foreach (PluginWeakFormAnalysis::Solver solver, analysis.solvers)
             {
-                availableLinearityTypes.push_back(linearityTypeFromStringKey(QString::fromStdString(linearityOption.type())));
+                availableLinearityTypes.append(solver.linearity);
             }
         }
     }
@@ -219,7 +201,7 @@ bool FieldInfo::hasDeformableShape() const
 
 // constants
 QMap<QString, double> FieldInfo::constants() const
-{    
+{
     QMap<QString, double> constants;
 
     // constants
@@ -258,95 +240,58 @@ QList<QString> FieldInfo::allMaterialQuantities() const
         result.append(variable.id);
 
     return result;
-
-    foreach(XMLModule::quantity quantity, m_plugin->module()->volume().quantity())
-    {
-        result.push_back(QString::fromStdString(quantity.id()));
-    }
 }
 
 // material type
 QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
 {
-    // all materials variables
-    QList<Module::MaterialTypeVariable> materialTypeVariablesAll;
-    for (int i = 0; i < m_plugin->module()->volume().quantity().size(); i++)
+    QList<Module::MaterialTypeVariable> materialTypeVariables;
+    foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisVolume)
     {
-        XMLModule::quantity quant = m_plugin->module()->volume().quantity().at(i);
-
-        // gui default
-        for (unsigned int i = 0; i < m_plugin->module()->preprocessor().gui().size(); i++)
+        if (analysis.analysis == analysisType())
         {
-            XMLModule::gui ui = m_plugin->module()->preprocessor().gui().at(i);
-            if (ui.type() == "volume")
+            foreach (PluginWeakFormAnalysis::Variable variable, analysis.variables)
             {
-                for (unsigned int i = 0; i < ui.group().size(); i++)
+                foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeVolume.variables)
                 {
-                    XMLModule::group grp = ui.group().at(i);
-                    for (unsigned int i = 0; i < grp.quantity().size(); i++)
+                    if (variable.id == variableRecipe.id)
                     {
-                        XMLModule::quantity quant_ui = grp.quantity().at(i);
-                        if (quant_ui.id() == quant.id())
+                        bool isTimeDep = false;
+
+                        // time dep
+                        if (!variable.dependency.isEmpty())
                         {
-                            if (quant_ui.default_().present())
-                                quant.default_().set(quant_ui.default_().get());
+                            if (variable.dependency == "time")
+                            {
+                                isTimeDep = true;
+                            }
+                        }
 
-                            if (quant_ui.is_bool().present())
-                                quant.is_bool().set(quant_ui.is_bool().get());
+                        // nonlinearity
+                        QString nonlinearExpression;
+                        if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar && !variable.nonlinearity_planar.isEmpty())
+                            nonlinearExpression = variable.nonlinearity_planar;
+                        else if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && !variable.nonlinearity_axi.isEmpty())
+                            nonlinearExpression = variable.nonlinearity_axi;
 
-                            if (quant_ui.only_if().present())
-                                quant.only_if().set(quant_ui.only_if().get());
-
-                            if (quant_ui.only_if_not().present())
-                                quant.only_if_not().set(quant_ui.only_if_not().get());
-
-                            if (quant_ui.is_source().present())
-                                quant.is_source().set(quant_ui.is_source().get());
+                        // UI
+                        foreach (PluginPreGroup group, m_plugin->moduleJson()->preVolumeGroups)
+                        {
+                            foreach (PluginPreGroup::Quantity quantity, group.quantities)
+                            {
+                                if (quantity.id == variable.id)
+                                {
+                                    materialTypeVariables.append(Module::MaterialTypeVariable(variable.id, variableRecipe.shortName, quantity.default_value,
+                                                                                              nonlinearExpression,
+                                                                                              isTimeDep, quantity.isBool, quantity.onlyIf, quantity.onlyIfNot, quantity.isSource));
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-
-        // add to the list
-        materialTypeVariablesAll.append(Module::MaterialTypeVariable(quant));
     }
-
-    QList<Module::MaterialTypeVariable> materialTypeVariables;
-    for (unsigned int i = 0; i < m_plugin->module()->volume().weakforms_volume().weakform_volume().size(); i++)
-    {
-        XMLModule::weakform_volume wf = m_plugin->module()->volume().weakforms_volume().weakform_volume().at(i);
-
-        if (wf.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-        {
-            for (unsigned int i = 0; i < wf.quantity().size(); i++)
-            {
-                XMLModule::quantity qty = wf.quantity().at(i);
-
-                foreach (Module::MaterialTypeVariable variable, materialTypeVariablesAll)
-                {
-                    if (variable.id().toStdString() == qty.id())
-                    {
-                        QString nonlinearExpression;
-                        if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
-                            nonlinearExpression = QString::fromStdString(qty.nonlinearity_planar().get());
-                        else
-                            if (qty.nonlinearity_axi().present())
-                                nonlinearExpression = QString::fromStdString(qty.nonlinearity_axi().get());
-
-                        bool isTimeDep = false;
-                        if (qty.dependence().present())
-                            isTimeDep = (QString::fromStdString(qty.dependence().get()) == "time");
-
-                        materialTypeVariables.append(Module::MaterialTypeVariable(variable.id(), variable.shortname(),
-                                                                                  nonlinearExpression, isTimeDep, variable.isBool(), variable.onlyIf(), variable.onlyIfNot(), variable.isSource()));
-                    }
-                }
-            }
-        }
-    }
-
-    materialTypeVariablesAll.clear();
 
     return materialTypeVariables;
 }
@@ -357,23 +302,6 @@ bool FieldInfo::materialTypeVariableContains(const QString &id) const
     foreach (Module::MaterialTypeVariable var, materialTypeVariables())
         if (var.id() == id)
             return true;
-
-    return false;
-}
-
-bool FieldInfo::functionUsedInAnalysis(const QString &id) const
-{
-    foreach(XMLModule::weakform_volume weakform, this->plugin()->module()->volume().weakforms_volume().weakform_volume())
-    {
-        if(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())) == this->analysisType())
-        {
-            foreach (XMLModule::function_use functionUse, weakform.function_use())
-            {
-                if(QString::fromStdString(functionUse.id()) == id)
-                    return true;
-            }
-        }
-    }
 
     return false;
 }
@@ -389,47 +317,55 @@ Module::MaterialTypeVariable FieldInfo::materialTypeVariable(const QString &id) 
 
 QList<Module::BoundaryType> FieldInfo::boundaryTypes() const
 {
-    QList<Module::BoundaryTypeVariable> boundaryTypeVariablesAll;
-    for (int i = 0; i < m_plugin->module()->surface().quantity().size(); i++)
-    {
-        XMLModule::quantity quant = m_plugin->module()->surface().quantity().at(i);
-
-        // add to list
-        boundaryTypeVariablesAll.append(Module::BoundaryTypeVariable(quant));
-    }
-
     QList<Module::BoundaryType> boundaryTypes;
-    for (int i = 0; i < m_plugin->module()->surface().weakforms_surface().weakform_surface().size(); i++)
+    foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisSurface)
     {
-        XMLModule::weakform_surface wf = m_plugin->module()->surface().weakforms_surface().weakform_surface().at(i);
-
-        if (wf.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
+        if (analysis.analysis == analysisType())
         {
-            for (int i = 0; i < wf.boundary().size(); i++)
+            // variables
+            QList<Module::BoundaryTypeVariable> variables;
+
+            foreach (PluginWeakFormAnalysis::Variable variable, analysis.variables)
             {
-                XMLModule::boundary bdy = wf.boundary().at(i);
-                boundaryTypes.append(Module::BoundaryType(this, boundaryTypeVariablesAll, bdy));
+                foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeSurface.variables)
+                {
+                    if (variable.id == variableRecipe.id)
+                    {
+                        bool isTimeDep = false;
+                        bool isSpaceDep = false;
+
+                        if (!variable.dependency.isEmpty())
+                        {
+                            if (variable.dependency == "time")
+                            {
+                                isTimeDep = true;
+                            }
+                            else if (variable.dependency == "space")
+                            {
+                                isSpaceDep = true;
+                            }
+                            else if (variable.dependency == "time-space")
+                            {
+                                isTimeDep = true;
+                                isSpaceDep = true;
+                            }
+                        }
+
+                        variables.append(Module::BoundaryTypeVariable(variable.id, variableRecipe.shortName, isTimeDep, isSpaceDep));
+                    }
+                }
             }
+
+            QList<FormInfo> wfMatrix; //  = Module::wfMatrixSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+            QList<FormInfo> wfVector; //  = Module::wfVectorSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+            QList<FormInfo> essential; //  = Module::essential(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+
+            boundaryTypes.append(Module::BoundaryType(analysis.id, m_plugin->localeName(analysis.name), analysis.equation,
+                                                      variables, wfMatrix, wfVector, essential));
         }
     }
 
-    boundaryTypeVariablesAll.clear();
-
     return boundaryTypes;
-}
-
-// default boundary condition
-Module::BoundaryType FieldInfo::boundaryTypeDefault() const
-{
-    for (int i = 0; i < m_plugin->module()->surface().weakforms_surface().weakform_surface().size(); i++)
-    {
-        XMLModule::weakform_surface wf = m_plugin->module()->surface().weakforms_surface().weakform_surface().at(i);
-
-        // default
-        return boundaryType(QString::fromStdString(wf.default_().get()));
-    }
-
-    assert(0);
 }
 
 // variable by name
@@ -458,10 +394,10 @@ Module::Force FieldInfo::force(CoordinateType coordinateType) const
 
     // force
     /*
-    XMLModule::force force = m_plugin->module()->postprocessor().force();
+    XMLXXXModule::force force = m_plugin->module()->postprocessor().force();
     for (unsigned int i = 0; i < force.expression().size(); i++)
     {
-        XMLModule::expression exp = force.expression().at(i);
+        XMLXXXModule::expression exp = force.expression().at(i);
         if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
             return Module::Force((coordinateType == CoordinateType_Planar) ? QString::fromStdString(exp.planar_x().get()) : QString::fromStdString(exp.axi_r().get()),
                                  (coordinateType == CoordinateType_Planar) ? QString::fromStdString(exp.planar_y().get()) : QString::fromStdString(exp.axi_z().get()),
@@ -481,7 +417,6 @@ Module::DialogUI FieldInfo::materialUI() const
     // preprocessor
     foreach (PluginPreGroup group, m_plugin->moduleJson()->preVolumeGroups)
     {
-
         QList<Module::DialogRow> materials;
 
         foreach (PluginPreGroup::Quantity quantity, group.quantities)
@@ -704,46 +639,46 @@ Module::LocalVariable FieldInfo::defaultViewVectorVariable(CoordinateType coordi
     assert(0);
 }
 
-void FieldInfo::load(XMLProblem::field_config *configxsd)
-{
-    // default
-    m_setting = m_settingDefault;
+//void FieldInfo::load(XMLProblem::field_config *configxsd)
+//{
+//    // default
+//    m_setting = m_settingDefault;
 
-    for (int i = 0; i < configxsd->field_item().size(); i ++)
-    {
-        Type key = stringKeyToType(QString::fromStdString(configxsd->field_item().at(i).field_key()));
+//    for (int i = 0; i < configxsd->field_item().size(); i ++)
+//    {
+//        Type key = stringKeyToType(QString::fromStdString(configxsd->field_item().at(i).field_key()));
 
-        if (m_settingDefault.keys().contains(key))
-        {
-            if (m_settingDefault[key].type() == QVariant::Double)
-                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toDouble();
-            else if (m_settingDefault[key].type() == QVariant::Int)
-                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toInt();
-            else if (m_settingDefault[key].type() == QVariant::Bool)
-                m_setting[key] = (QString::fromStdString(configxsd->field_item().at(i).field_value()) == "1");
-            else if (m_settingDefault[key].type() == QVariant::String)
-                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value());
-            else if (m_settingDefault[key].type() == QVariant::StringList)
-                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).split("|");
-            // else
-            //    qDebug() << "Key not found" << QString::fromStdString(configxsd->field_item().at(i).field_key()) << QString::fromStdString(configxsd->field_item().at(i).field_value());
-        }
-    }
-}
+//        if (m_settingDefault.keys().contains(key))
+//        {
+//            if (m_settingDefault[key].type() == QVariant::Double)
+//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toDouble();
+//            else if (m_settingDefault[key].type() == QVariant::Int)
+//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toInt();
+//            else if (m_settingDefault[key].type() == QVariant::Bool)
+//                m_setting[key] = (QString::fromStdString(configxsd->field_item().at(i).field_value()) == "1");
+//            else if (m_settingDefault[key].type() == QVariant::String)
+//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value());
+//            else if (m_settingDefault[key].type() == QVariant::StringList)
+//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).split("|");
+//            // else
+//            //    qDebug() << "Key not found" << QString::fromStdString(configxsd->field_item().at(i).field_key()) << QString::fromStdString(configxsd->field_item().at(i).field_value());
+//        }
+//    }
+//}
 
-void FieldInfo::save(XMLProblem::field_config *configxsd)
-{
-    foreach (Type key, m_settingDefault.keys())
-    {
-        if (m_settingDefault[key].type() == QVariant::StringList)
-            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
-        else if (m_settingDefault[key].type() == QVariant::Bool)
-            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-        else
-            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
+//void FieldInfo::save(XMLProblem::field_config *configxsd)
+//{
+//    foreach (Type key, m_settingDefault.keys())
+//    {
+//        if (m_settingDefault[key].type() == QVariant::StringList)
+//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
+//        else if (m_settingDefault[key].type() == QVariant::Bool)
+//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
+//        else
+//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
 
-    }
-}
+//    }
+//}
 
 void FieldInfo::load(QJsonObject &object)
 {

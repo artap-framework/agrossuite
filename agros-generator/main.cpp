@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "util/util.h"
+#include "util/global.h"
 #include "generator.h"
 
 #include "../3rdparty/tclap/CmdLine.h"
@@ -35,6 +36,9 @@ int main(int argc, char *argv[])
 
         // parse the argv array.
         cmd.parse(argc, argv);
+
+        // init singleton
+        Agros::createSingleton(QSharedPointer<Log>());
 
         Agros2DGenerator a(argc, argv);
 

@@ -39,22 +39,6 @@ public:
     }
 };
 
-namespace XMLModule
-{
-class field;
-class coupling;
-class quantity;
-class boundary;
-class surface;
-class force;
-class localvariable;
-class gui;
-class space;
-class calculator;
-class volume;
-class linearity_option;
-}
-
 class Marker;
 class Boundary;
 class Material;
@@ -161,13 +145,11 @@ private:
 
 // material property
 struct MaterialTypeVariable
-{
-    MaterialTypeVariable() : m_id(""), m_shortname(""), m_defaultValue(0),  m_expressionNonlinear(""), m_isTimeDep(false), m_isBool(false), m_onlyIf(QString()), m_onlyIfNot(QString()){}
-    MaterialTypeVariable(const QString &id, const QString &shortname,
+{    
+    MaterialTypeVariable(const QString &id = "", const QString &shortname = "", double defaultValue = 0,
                          const QString &expressionNonlinear = "", bool isTimedep = false, bool isBool = false, QString onlyIf = QString(), QString onlyIfNot = QString(), bool isSource = false)
-        : m_id(id), m_shortname(shortname),
+        : m_id(id), m_shortname(shortname), m_defaultValue(defaultValue),
           m_expressionNonlinear(expressionNonlinear), m_isTimeDep(isTimedep), m_isBool(isBool), m_onlyIf(onlyIf), m_onlyIfNot(onlyIfNot), m_isSource(isSource) {}
-    MaterialTypeVariable(XMLModule::quantity quant);
 
     // id
     inline QString id() const { return m_id; }
@@ -212,13 +194,12 @@ private:
 struct BoundaryTypeVariable
 {
     BoundaryTypeVariable()
-        : m_id(""), m_shortname(""), m_defaultValue(0),
+        : m_id(""), m_shortname(""),
           m_isTimeDep(false), m_isSpaceDep(false) {}
     BoundaryTypeVariable(const QString &id, QString shortname,
                          bool isTimedep = false, bool isSpaceDep = false)
         : m_id(id), m_shortname(shortname),
           m_isTimeDep(isTimedep), m_isSpaceDep(isSpaceDep) {}
-    BoundaryTypeVariable(XMLModule::quantity quant);
 
     // id
     inline QString id() const { return m_id; }
@@ -234,8 +215,6 @@ private:
     QString m_id;
     // short name
     QString m_shortname;
-    // default value
-    double m_defaultValue;
     // timedep
     bool m_isTimeDep;
     // spacedep
@@ -245,10 +224,10 @@ private:
 // boundary condition type
 struct AGROS_LIBRARY_API BoundaryType
 {
-    BoundaryType() : m_id(""), m_name(""), m_equation("") {}
-    BoundaryType(const FieldInfo *fieldInfo,
-                 QList<BoundaryTypeVariable> boundary_type_variables,
-                 XMLModule::boundary bdy);
+    BoundaryType(const QString &id, const QString &name, const QString &equation,
+                 QList<BoundaryTypeVariable> variables,
+                 QList<FormInfo> wfMatrix, QList<FormInfo> wfVector, QList<FormInfo> essential)
+        : m_id(id), m_name(name), m_equation(equation), m_variables(variables), m_wfMatrix(wfMatrix), m_wfVector(wfVector), m_essential(essential) {}
     ~BoundaryType();
 
     // id
@@ -274,6 +253,8 @@ private:
     QString m_id;
     // name
     QString m_name;
+    // latex equation
+    QString m_equation;
 
     // steady state and harmonic
     QList<FormInfo> m_wfMatrix;
@@ -282,9 +263,6 @@ private:
 
     // variables
     QList<BoundaryTypeVariable> m_variables;
-
-    // latex equation
-    QString m_equation;
 };
 
 // surface and volume integral value
@@ -405,20 +383,6 @@ private:
 
 // available modules
 AGROS_LIBRARY_API QMap<QString, QString> availableModules();
-
-// read and write mesh
-
-// index of quantity in the list of quantities at the begining of the volume section of the XML (NOT the reduced list in individual analysis)
-void AGROS_LIBRARY_API volumeQuantityProperties(XMLModule::field *module, QMap<QString, int> &quantityOrder, QMap<QString, bool> &quantityIsNonlin, QMap<QString, int> &functionOrder);
-
-QList<FormInfo> AGROS_LIBRARY_API wfMatrixVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
-QList<FormInfo> AGROS_LIBRARY_API wfVectorVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
-// transient
-QList<FormInfo> AGROS_LIBRARY_API wfMatrixTransientVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
-
-QList<FormInfo> AGROS_LIBRARY_API wfMatrixSurface(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
-QList<FormInfo> AGROS_LIBRARY_API wfVectorSurface(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
-QList<FormInfo> AGROS_LIBRARY_API essential(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
 }
 
 #endif // HERMES_FIELD_H

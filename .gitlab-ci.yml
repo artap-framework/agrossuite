@@ -69,9 +69,7 @@ build:
     # - export CC=/usr/bin/clang
     # - export CXX=/usr/bin/clang++     
     - cmake . 
-    - make -j12
-    # dek (if exists)
-    - if [ -f ../agros2d-dek/module/dek.xml ]; then ln -r -s ../agros2d-dek/module/dek.xml resources/modules/dek.xml; fi
+    - make -j12    
     # generator
     - ./agros_generator
     - cd plugins

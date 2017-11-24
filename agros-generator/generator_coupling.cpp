@@ -33,6 +33,148 @@
 
 #include "util/constants.h"
 
+#include "generator.h"
+
+XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
+{
+    for (unsigned int i = 0; i < volume->weakforms_volume().weakform_volume().size(); i++)
+    {
+        XMLModule::weakform_volume wf = volume->weakforms_volume().weakform_volume().at(i);
+
+        if ((wf.sourceanalysis().get() == analysisTypeToStringKey(analysisTypeSource).toStdString()) &&
+                (wf.analysistype() == analysisTypeToStringKey(analysisTypeTarget).toStdString()) &&
+                (wf.couplingtype().get() == couplingTypeToStringKey(couplingType).toStdString()))
+        {
+            for(unsigned int i = 0; i < wf.linearity_option().size(); i++)
+            {
+                XMLModule::linearity_option lo = wf.linearity_option().at(i);
+                if(lo.type() == linearityTypeToStringKey(linearityType).toStdString())
+                {
+                    return lo;
+                }
+            }
+        }
+    }
+
+    return XMLModule::linearity_option("");
+}
+
+// weak forms
+template <typename SectionWithElements>
+QList<FormInfo> wfMatrixCouplingElements(SectionWithElements *section, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
+{
+    // matrix weakforms
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(section, analysisTypeSource, analysisTypeTarget, couplingType, linearityType);
+
+    for (unsigned int i = 0; i < lo.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form form = lo.matrix_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+template <typename SectionWithElements>
+QList<FormInfo> wfVectorCouplingElements(SectionWithElements *section, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
+{
+    // vector weakforms
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(section, analysisTypeSource, analysisTypeTarget, couplingType, linearityType);
+
+    for (unsigned int i = 0; i < lo.vector_form().size(); i++)
+    {
+        XMLModule::vector_form form = lo.vector_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        if(form.variant().present())
+            formInfo.variant = weakFormVariantFromStringKey(QString::fromStdString(form.variant().get()));
+        if(form.coefficient().present())
+            formInfo.coefficient = QString::fromStdString(form.coefficient().get()).toDouble();
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+
+template <typename SectionWithTemplates>
+QList<FormInfo> wfMatrixCouplingTemplates(SectionWithTemplates *section)
+{
+    // matrix weakforms
+    QList<FormInfo> weakForms;
+    // weakform
+    for (unsigned int i = 0; i < section->matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form form = section->matrix_form().at(i);
+        assert(form.i().present() && form.j().present() && form.planar().present() && form.axi().present());
+        SymFlag symPlanar = SymFlag_NONSYM;
+        SymFlag symAxi = SymFlag_NONSYM;
+        if(form.symmetric().present())
+        {
+            symPlanar = (SymFlag) form.symmetric().get();
+            symAxi = (SymFlag) form.symmetric().get();
+        }
+        if(form.symmetric_planar().present())
+        {
+            symPlanar = (SymFlag) form.symmetric_planar().get();
+        }
+        if(form.symmetric_axi().present())
+        {
+            symAxi = (SymFlag) form.symmetric_axi().get();
+        }
+        FormInfo formInfo(QString::fromStdString(form.id()),
+                          form.i().get(),
+                          form.j().get(),
+                          symPlanar,
+                          symAxi);
+        formInfo.condition = form.condition().present() ? QString::fromStdString(form.condition().get()) : "";
+        formInfo.expr_planar = QString::fromStdString(form.planar().get());
+        formInfo.expr_axi = QString::fromStdString(form.axi().get());
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+template <typename SectionWithTemplates>
+QList<FormInfo> wfVectorCouplingTemplates(SectionWithTemplates *section)
+{
+    // vector weakforms
+    QList<FormInfo> weakForms;
+    for (unsigned int i = 0; i < section->vector_form().size(); i++)
+    {
+        XMLModule::vector_form form = section->vector_form().at(i);
+        assert(form.i().present() && form.j().present() && form.planar().present() && form.axi().present());
+        FormInfo formInfo(QString::fromStdString(form.id()),
+                          form.i().get(),
+                          form.j().get());
+        formInfo.condition = form.condition().present() ? QString::fromStdString(form.condition().get()) : "";
+        formInfo.expr_planar = QString::fromStdString(form.planar().get());
+        formInfo.expr_axi = QString::fromStdString(form.axi().get());
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+QList<FormInfo> wfMatrixVolumeCouplingSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType)
+{
+    QList<FormInfo> templates = wfMatrixCouplingTemplates(volume);
+    QList<FormInfo> elements = wfMatrixCouplingElements(volume, sourceAnalysis, targetAnalysis, couplingType, linearityType);
+
+    return wfGenerateSeparated(elements, templates);
+}
+
+QList<FormInfo> wfVectorVolumeCouplingSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType)
+{
+    QList<FormInfo> templatesVector = wfVectorCouplingTemplates(volume);
+    QList<FormInfo> templatesMatrix = wfMatrixCouplingTemplates(volume);
+    QList<FormInfo> elements = wfVectorCouplingElements(volume, sourceAnalysis, targetAnalysis, couplingType, linearityType);
+
+    return wfGenerateSeparated(elements, templatesVector, templatesMatrix);
+}
 
 Agros2DGeneratorCoupling::Agros2DGeneratorCoupling(const QString &couplingId) : m_output(nullptr)
 {
@@ -75,8 +217,8 @@ Agros2DGeneratorCoupling::Agros2DGeneratorCoupling(const QString &couplingId) : 
         m_targetVariables.insert(iD, shortName);
     }
 
-    Module::volumeQuantityProperties(m_targetModule, quantityOrdering, quantityIsNonlinear, functionOrdering);
-    Module::volumeQuantityProperties(m_sourceModule, sourceQuantityOrdering, sourceQuantityIsNonlinear, sourceFunctionOrdering);
+    volumeQuantityModuleProperties(m_targetModule, quantityOrdering, quantityIsNonlinear, functionOrdering);
+    volumeQuantityModuleProperties(m_sourceModule, sourceQuantityOrdering, sourceQuantityIsNonlinear, sourceFunctionOrdering);
 }
 
 void Agros2DGeneratorCoupling::generatePluginProjectFile()
@@ -255,14 +397,14 @@ void Agros2DGeneratorCoupling::generateWeakForms(ctemplate::TemplateDictionary &
             LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(option.type().c_str()));
 
             // generate individual forms
-            QList<FormInfo> matrixForms = CouplingInfo::wfMatrixVolumeSeparated(&m_coupling->volume(), sourceAnalysis, targetAnalysis, couplingType, linearityType);
+            QList<FormInfo> matrixForms = wfMatrixVolumeCouplingSeparated(&m_coupling->volume(), sourceAnalysis, targetAnalysis, couplingType, linearityType);
             foreach(FormInfo formInfo, matrixForms)
             {
                 generateForm(formInfo, linearityType, output, weakform, "VOLUME_MATRIX");
             }
 
             // generate individual forms
-            QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&m_coupling->volume(), sourceAnalysis, targetAnalysis, couplingType, linearityType);
+            QList<FormInfo> vectorForms = wfVectorVolumeCouplingSeparated(&m_coupling->volume(), sourceAnalysis, targetAnalysis, couplingType, linearityType);
             foreach(FormInfo formInfo, vectorForms)
             {
                 generateForm(formInfo, linearityType, output, weakform, "VOLUME_VECTOR");

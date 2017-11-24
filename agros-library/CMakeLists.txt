@@ -54,24 +54,10 @@ foreach(LANGFILE ${lang_files})
         OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources/lang/${basefile}.qm)
 endforeach()
 
-# XSDCXX
-# message("XML cpp/h files")
-message("${XSD_FILE}")
-FILE(GLOB xsd_files "${CMAKE_HOME_DIRECTORY}/resources/xsd/*.xsd")
-foreach(XSD_FILE ${xsd_files})
-  GET_FILENAME_COMPONENT(basefile ${XSD_FILE} NAME_WE)
-  add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)      
-   message("${XSD_BIN} ${ARGS} cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}")
-  ADD_CUSTOM_COMMAND(
-        COMMAND  ${XSD_BIN} ${ARGS} cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}
-        DEPENDS ${CMAKE_HOME_DIRECTORY}/resources/xsd/${basefile}.xsd
-        OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
-endforeach()
-
 SET(SOURCES
     # sceneview_vtk2d.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
+    # ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
     datatable.cpp
     logview.cpp
     mesh/agros_manifold.cpp
@@ -133,7 +119,6 @@ SET(SOURCES
 SOURCE_GROUP(
   "Source Files\\Generated Classes" FILES 
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp  
 )
 
 SOURCE_GROUP(

@@ -168,34 +168,6 @@ protected:
 };
 
 // plugin module
-/*
-<module:volume>
-  <module:quantity id="electrostatic_permittivity" shortname="el_epsr"/>
-  <module:quantity id="electrostatic_charge_density" shortname="el_rho"/>
-  <module:matrix_form id="laplace" i="1" j="1" axi="el_epsr * EPS0 * r * (udr * vdr + udz * vdz)"
-                                               planar="el_epsr * EPS0 * (udx * vdx + udy * vdy)"
-                                               symmetric="1" />
-  <module:vector_form id="rhs" i="1" j="1" axi="el_rho * r * vval"
-                                           planar="el_rho * vval"
-                                           condition="fabs(el_rho) > 0.0" />
-
-  <module:weakforms_volume>
-    <module:weakform_volume analysistype="steadystate" equation="-\, \div \left( \varepsilon\,\, \grad \varphi \right) = \rho">
-      <module:quantity id="electrostatic_permittivity"/>
-      <module:quantity id="electrostatic_charge_density"/>
-
-      <module:linearity_option type="linear">
-        <module:matrix_form id="laplace" />
-        <module:vector_form id="rhs" />
-      </module:linearity_option>
-
-      </module:weakform_volume>
-  </module:weakforms_volume>
-</module:volume>
-*/
-
-// functions
-
 class PluginFunctions
 {
 public:
@@ -224,67 +196,60 @@ public:
 class AGROS_LIBRARY_API PluginWeakFormAnalysis
 {
 public:
-    class AGROS_LIBRARY_API Item
+    class AGROS_LIBRARY_API Variable
     {
     public:
-        class AGROS_LIBRARY_API Variable
+        QString id;
+        QString dependency;
+        QString nonlinearity_planar;
+        QString nonlinearity_axi;
+        QString nonlinearity_cart;
+    };
+
+    class AGROS_LIBRARY_API Solver
+    {
+    public:
+        class AGROS_LIBRARY_API Matrix
         {
         public:
             QString id;
-            QString dependency;
-            QString nonlinearity_planar;
-            QString nonlinearity_axi;
-            QString nonlinearity_cart;
         };
 
-        class AGROS_LIBRARY_API Solver
+        class AGROS_LIBRARY_API MatrixTransient
         {
         public:
-            class AGROS_LIBRARY_API Matrix
-            {
-            public:
-                QString id;
-            };
-
-            class AGROS_LIBRARY_API MatrixTransient
-            {
-            public:
-                QString id;
-            };
-
-            class AGROS_LIBRARY_API Vector
-            {
-            public:
-                QString id;
-                int coefficient;
-                QString variant;
-            };
-
-            class AGROS_LIBRARY_API Essential
-            {
-            public:
-                QString id;
-            };
-
-            LinearityType linearity;
-
-            QList<Matrix> matrices;
-            QList<MatrixTransient> matricesTransient;
-            QList<Vector> vectors;
-            QList<Essential> essentials;
+            QString id;
         };
 
-        QString id;
-        QString name;
-        QString equation;
+        class AGROS_LIBRARY_API Vector
+        {
+        public:
+            QString id;
+            int coefficient;
+            QString variant;
+        };
 
-        QList<Variable> variables;
-        QList<Solver> solvers;
+        class AGROS_LIBRARY_API Essential
+        {
+        public:
+            QString id;
+        };
+
+        LinearityType linearity;
+
+        QList<Matrix> matrices;
+        QList<MatrixTransient> matricesTransient;
+        QList<Vector> vectors;
+        QList<Essential> essentials;
     };
 
+    QString id;
+    QString name;
+    QString equation;
     AnalysisType analysis;
 
-    QList<Item> items;
+    QList<Variable> variables;
+    QList<Solver> solvers;
 };
 
 class AGROS_LIBRARY_API PluginWeakFormRecipe
@@ -347,13 +312,16 @@ public:
         QString name;
         QString condition;
         double default_value;
-        bool is_source;
         QString shortname;
         QString shortname_html;
         QString shortname_dependence;
         QString shortname_dependence_html;
         QString unit;
         QString unit_html;
+        bool isSource;
+        bool isBool;
+        QString onlyIf;
+        QString onlyIfNot;
     };
 
     QString name;
@@ -466,8 +434,8 @@ public:
 
     virtual QString fieldId() = 0;
 
-    inline XMLModule::field *module() const { assert(m_module); return m_module; }
     PluginModule *moduleJson() { return m_moduleJson; }
+    void convertJson();
 
     // weak forms
     virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo) = 0;
@@ -513,7 +481,6 @@ protected:
     XMLModule::field *m_module;
     PluginModule *m_moduleJson;
 };
-
 
 QT_BEGIN_NAMESPACE
 #define PluginInterface_IID "org.agros.PluginInterface"

@@ -1368,10 +1368,14 @@ void PreprocessorWidget::doNewBoundary()
 
 void PreprocessorWidget::doNewBoundary(QString field)
 {
+    // first boundary as default
+    QList<Module::BoundaryType> boundaryTypes = Agros::problem()->fieldInfo(field)->boundaryTypes();
+    assert(boundaryTypes.count() > 1);
+
     SceneBoundary *boundary = new SceneBoundary(Agros::problem()->scene(),
                                                 Agros::problem()->fieldInfo(field),
                                                 tr("new boundary"),
-                                                Agros::problem()->fieldInfo(field)->boundaryTypeDefault().id());
+                                                boundaryTypes.first().id());
 
     SceneBoundaryDialog *dialog = new SceneBoundaryDialog(boundary, this);
     if (dialog)

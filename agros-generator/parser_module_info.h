@@ -5,6 +5,8 @@
 #include "util/enums.h"
 #include "../../resources_source/classes/module_xml.h"
 
+void volumeQuantityModuleProperties(XMLModule::field *module, QMap<QString, int> &quantityOrder, QMap<QString, bool> &quantityIsNonlin, QMap<QString, int> &functionOrder);
+
 // encapsulates information needed for construction of specific parser instances
 struct ParserModuleInfo
 {

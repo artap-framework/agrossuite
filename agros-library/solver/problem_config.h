@@ -31,11 +31,11 @@ class ProblemBase;
 class ProblemFunctions;
 class ProblemParameters;
 
-namespace XMLProblem
-{
-class config;
-class problem_config;
-}
+//namespace XMLProblem
+//{
+//class config;
+//class problem_config;
+//}
 
 typedef QMap<QString, double> StringToDoubleMap;
 Q_DECLARE_METATYPE(StringToDoubleMap)
@@ -81,8 +81,8 @@ public:
     void setMeshType(const MeshType meshType) { m_config[ProblemConfig::Mesh] = QVariant::fromValue(meshType); }
 
     // load and save
-    void load(XMLProblem::problem_config *configxsd);
-    void save(XMLProblem::problem_config *configxsd);
+    // void load(XMLProblem::problem_config *configxsd);
+    // void save(XMLProblem::problem_config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
@@ -228,8 +228,8 @@ public:
     void copy(const PostprocessorSetting *origin);
 
     // load and save
-    void load(XMLProblem::config *configxsd);
-    void save(XMLProblem::config *configxsd);
+    // void load(XMLProblem::config *configxsd);
+    // void save(XMLProblem::config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 

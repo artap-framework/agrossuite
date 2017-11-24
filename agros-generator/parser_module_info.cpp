@@ -5,6 +5,41 @@
 #include "generator.h"
 #include "parser_module_info.h"
 
+void volumeQuantityModuleProperties(XMLModule::field *module, QMap<QString, int> &quantityOrder, QMap<QString, bool> &quantityIsNonlin, QMap<QString, int> &functionOrder)
+{
+    int nextIndex = 0;
+    foreach(XMLModule::quantity quantity, module->volume().quantity())
+    {
+        QString quantityId = QString::fromStdString(quantity.id());
+        quantityOrder[quantityId] = nextIndex;
+        nextIndex++;
+        quantityIsNonlin[quantityId] = false;
+        foreach(XMLModule::weakform_volume weakform, module->volume().weakforms_volume().weakform_volume())
+        {
+            foreach(XMLModule::quantity quantityInAnalysis, weakform.quantity())
+            {
+                if(quantity.id() == quantityInAnalysis.id())
+                {
+                    if(quantityInAnalysis.nonlinearity_axi().present() || quantityInAnalysis.nonlinearity_planar().present())
+                    {
+                        quantityIsNonlin[quantityId] = true;
+                    }
+                }
+            }
+        }
+
+        // if the quantity is nonlinear, we have to reserve space for its derivative as well
+        if(quantityIsNonlin[quantityId])
+            nextIndex++;
+    }
+
+    foreach(XMLModule::function function, module->volume().function())
+    {
+        QString functionID = QString::fromStdString(function.id());
+        functionOrder[functionID] = nextIndex;
+        nextIndex++;
+    }
+}
 
 ParserModuleInfo::ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType, bool isSurface) :
     analysisType(analysisType), coordinateType(coordinateType), linearityType(linearityType), isSurface(isSurface),
@@ -13,7 +48,7 @@ ParserModuleInfo::ParserModuleInfo(XMLModule::field field, AnalysisType analysis
     numSolutions = Agros2DGenerator::numberOfSolutions(field.general_field().analyses(), analysisType);
     id = QString::fromStdString(field.general_field().id());
 
-    Module::volumeQuantityProperties(&field, quantityOrdering, quantityIsNonlinear, functionOrdering);
+    volumeQuantityModuleProperties(&field, quantityOrdering, quantityIsNonlinear, functionOrdering);
 }
 
 QString ParserModuleInfo::nonlinearExpressionVolume(const QString &variable) const

@@ -31,6 +31,17 @@ const QString GENERATOR_DOCROOT = "resources_source/doc/source/modules";
 const QString GENERATOR_PLUGINROOT = "plugins";
 
 class LexicalAnalyser;
+class FormInfo;
+
+QList<FormInfo> wfGenerateSeparated(QList<FormInfo> elements, QList<FormInfo> templates, QList<FormInfo> templatesForResidual = QList<FormInfo>());
+
+QList<FormInfo> wfMatrixVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
+QList<FormInfo> wfVectorVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
+QList<FormInfo> wfMatrixTransientVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
+
+QList<FormInfo> wfMatrixSurfaceModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
+QList<FormInfo> wfVectorSurfaceModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
+QList<FormInfo> essentialModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
 
 class Agros2DGenerator : public QCoreApplication
 {

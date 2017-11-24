@@ -21,6 +21,7 @@
 #define GENERATOR_COUPLING_H
 
 #include "generator.h"
+
 struct FormInfo;
 
 class Agros2DGeneratorCoupling : public Agros2DGeneratorBase

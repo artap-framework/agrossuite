@@ -86,10 +86,6 @@ public:
     // description
     QString description() const;
 
-    // weak forms
-    static QList<FormInfo> wfMatrixVolumeSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
-    static QList<FormInfo> wfVectorVolumeSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
-
 private:
     // pointers to problem infos
     FieldInfo *m_sourceField;

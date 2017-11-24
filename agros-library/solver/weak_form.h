@@ -19,7 +19,6 @@ class boundary;
 class surface;
 class force;
 class localvariable;
-class gui;
 class space;
 class calculator;
 class linearity_option;
@@ -80,10 +79,6 @@ struct ProblemID
 const int INVALID_POSITION_INFO_VALUE = -223344;
 // maximal number of existing modules
 const int MAX_FIELDS = 10;
-
-void findVolumeLinearityOption(XMLModule::linearity_option& option, XMLModule::field *module, AnalysisType analysisType, LinearityType linearityType);
-
-QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> templates, QList<FormInfo> templatesForResidual = QList<FormInfo>());
 
 template <typename SectionWithTemplates>
 QList<FormInfo> wfMatrixTemplates(SectionWithTemplates *section);

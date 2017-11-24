@@ -30,6 +30,337 @@
 
 #include "util/constants.h"
 
+void checkDuplicities(QList<FormInfo> list)
+{
+    for(int i = 0; i < list.size(); i++)
+    {
+        for(int j = 0; j < list.size(); j++)
+        {
+            if(i != j)
+            {
+                if(list[i].id == list[j].id)
+                    throw AgrosGeneratorException("Duplicities in forms");
+            }
+        }
+    }
+}
+
+FormInfo findFormInfo(QList<FormInfo> list, QString id)
+{
+    foreach(FormInfo form, list)
+    {
+        if(form.id == id)
+            return form;
+    }
+    throw AgrosGeneratorException(QString("Form %1 not found").arg(id));
+}
+
+// todo: implement properly. What if uval is part of some identifier?
+void replaceForVariant(QString& str, WeakFormVariant variant, int solutionIndex)
+{
+    if (variant == WeakFormVariant_Normal)
+    {
+        // pass
+    }
+    else if (variant == WeakFormVariant_Residual)
+    {
+        str.replace("uval", QString("upval%1").arg(solutionIndex));
+        str.replace("udx", QString("updx%1").arg(solutionIndex));
+        str.replace("udy", QString("updy%1").arg(solutionIndex));
+        str.replace("udr", QString("updr%1").arg(solutionIndex));
+        str.replace("udz", QString("updz%1").arg(solutionIndex));
+    }
+    else
+    {
+        throw AgrosGeneratorException("Unknown form variant");
+    }
+}
+
+template <typename SectionWithTemplates>
+QList<FormInfo> wfMatrixTemplates(SectionWithTemplates *section)
+{
+    // matrix weakforms
+    QList<FormInfo> weakForms;
+    // weakform
+    for (unsigned int i = 0; i < section->matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form form = section->matrix_form().at(i);
+        assert(form.i().present() && form.j().present() && form.planar().present() && form.axi().present());
+        SymFlag symPlanar = SymFlag_NONSYM;
+        SymFlag symAxi = SymFlag_NONSYM;
+        if(form.symmetric().present())
+        {
+            symPlanar = (SymFlag) form.symmetric().get();
+            symAxi = (SymFlag) form.symmetric().get();
+        }
+        if(form.symmetric_planar().present())
+        {
+            symPlanar = (SymFlag) form.symmetric_planar().get();
+        }
+        if(form.symmetric_axi().present())
+        {
+            symAxi = (SymFlag) form.symmetric_axi().get();
+        }
+        FormInfo formInfo(QString::fromStdString(form.id()),
+                          form.i().get(),
+                          form.j().get(),
+                          symPlanar,
+                          symAxi);
+        formInfo.condition = form.condition().present() ? QString::fromStdString(form.condition().get()) : "";
+        formInfo.expr_planar = QString::fromStdString(form.planar().get());
+        formInfo.expr_axi = QString::fromStdString(form.axi().get());
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+template <typename SectionWithTemplates>
+QList<FormInfo> wfVectorModuleTemplates(SectionWithTemplates *section)
+{
+    // vector weakforms
+    QList<FormInfo> weakForms;
+    for (unsigned int i = 0; i < section->vector_form().size(); i++)
+    {
+        XMLModule::vector_form form = section->vector_form().at(i);
+        assert(form.i().present() && form.j().present() && form.planar().present() && form.axi().present());
+        FormInfo formInfo(QString::fromStdString(form.id()),
+                          form.i().get(),
+                          form.j().get());
+        formInfo.condition = form.condition().present() ? QString::fromStdString(form.condition().get()) : "";
+        formInfo.expr_planar = QString::fromStdString(form.planar().get());
+        formInfo.expr_axi = QString::fromStdString(form.axi().get());
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+QList<FormInfo> wfEssentialModuleTemplates(XMLModule::surface *surface)
+{
+    // vector weakforms
+    QList<FormInfo> weakForms;
+    for (unsigned int i = 0; i < surface->essential_form().size(); i++)
+    {
+        XMLModule::essential_form form = surface->essential_form().at(i);
+        assert(form.i().present() && form.planar().present() && form.axi().present());
+        FormInfo formInfo(QString::fromStdString(form.id()),
+                          form.i().get());
+        formInfo.condition = form.condition().present() ? QString::fromStdString(form.condition().get()) : "";
+        formInfo.expr_planar = QString::fromStdString(form.planar().get());
+        formInfo.expr_axi = QString::fromStdString(form.axi().get());
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, AnalysisType analysisType, LinearityType linearityType)
+{
+    for (unsigned int i = 0; i < volume->weakforms_volume().weakform_volume().size(); i++)
+    {
+        XMLModule::weakform_volume wf = volume->weakforms_volume().weakform_volume().at(i);
+
+        if (wf.analysistype() == analysisTypeToStringKey(analysisType).toStdString())
+        {
+            for(unsigned int i = 0; i < wf.linearity_option().size(); i++)
+            {
+                XMLModule::linearity_option lo = wf.linearity_option().at(i);
+                if(lo.type() == linearityTypeToStringKey(linearityType).toStdString())
+                {
+                    return lo;
+                }
+            }
+        }
+    }
+
+    assert(0);
+    return XMLModule::linearity_option("");
+}
+
+XMLModule::linearity_option findLinearityOption(XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
+{
+    for(unsigned int i = 0; i < boundary->linearity_option().size(); i++)
+    {
+        XMLModule::linearity_option lo = boundary->linearity_option().at(i);
+        if(lo.type() == linearityTypeToStringKey(linearityType).toStdString())
+        {
+            return lo;
+        }
+    }
+
+    assert(0);
+    return XMLModule::linearity_option("");
+}
+
+QList<FormInfo> wfGenerateSeparated(QList<FormInfo> elements, QList<FormInfo> templates, QList<FormInfo> templatesForResidual)
+{
+    checkDuplicities(templates);
+    checkDuplicities(elements);
+    QList<FormInfo> listResult;
+    foreach (FormInfo formElement, elements)
+    {
+        FormInfo formTemplate;
+        try
+        {
+            formTemplate = findFormInfo(templates, formElement.id);
+        }
+        catch(AgrosGeneratorException &err)
+        {
+            if(templatesForResidual.empty())
+            {
+                throw;
+            }
+            else
+            {
+                formTemplate = findFormInfo(templatesForResidual, formElement.id);
+                formTemplate.variant = WeakFormVariant_Residual;
+            }
+        }
+
+        FormInfo formResult(formTemplate.id, formTemplate.i, formTemplate.j, formTemplate.sym_planar, formTemplate.sym_axi);
+        formResult.condition = formTemplate.condition;
+        formResult.variant = formTemplate.variant;
+
+        if (formElement.coefficient != 1.)
+        {
+            formResult.expr_axi = QString("%1*(%2)").arg(formElement.coefficient).arg(formTemplate.expr_axi);
+            formResult.expr_planar = QString("%1*(%2)").arg(formElement.coefficient).arg(formTemplate.expr_planar);
+        }
+        else
+        {
+            formResult.expr_axi = formTemplate.expr_axi;
+            formResult.expr_planar = formTemplate.expr_planar;
+        }
+
+        // qDebug() << "i" << formResult.i << "j" << formResult.j;
+
+        replaceForVariant(formResult.expr_axi, formElement.variant, formResult.j);
+        replaceForVariant(formResult.expr_planar, formElement.variant, formResult.j);
+
+        listResult.push_back(formResult);
+    }
+
+    return listResult;
+}
+
+template <typename SectionWithElements>
+QList<FormInfo> wfMatrixModuleElements(SectionWithElements *section, AnalysisType analysisType, LinearityType linearityType)
+{
+    // matrix weakforms
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(section, analysisType, linearityType);
+
+    for (unsigned int i = 0; i < lo.matrix_form().size(); i++)
+    {
+        XMLModule::matrix_form form = lo.matrix_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+template <typename SectionWithElements>
+QList<FormInfo> wfMatrixTransientModuleElements(SectionWithElements *section, AnalysisType analysisType, LinearityType linearityType)
+{
+    // matrix weakforms
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(section, analysisType, linearityType);
+
+    for (unsigned int i = 0; i < lo.matrix_transient_form().size(); i++)
+    {
+        XMLModule::matrix_transient_form form = lo.matrix_transient_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+template <typename SectionWithElements>
+QList<FormInfo> wfVectorModuleElements(SectionWithElements *section, AnalysisType analysisType, LinearityType linearityType)
+{
+    // vector weakforms
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(section, analysisType, linearityType);
+
+    for (unsigned int i = 0; i < lo.vector_form().size(); i++)
+    {
+        XMLModule::vector_form form = lo.vector_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        if(form.variant().present())
+            formInfo.variant = weakFormVariantFromStringKey(QString::fromStdString(form.variant().get()));
+        if(form.coefficient().present())
+            formInfo.coefficient = QString::fromStdString(form.coefficient().get()).toDouble();
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+QList<FormInfo> wfEssentialElements(XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
+{
+    // essential
+    QList<FormInfo> weakForms;
+    XMLModule::linearity_option lo = findLinearityOption(boundary, analysisType, linearityType);
+
+    for (unsigned int i = 0; i < lo.essential_form().size(); i++)
+    {
+        XMLModule::essential_form form = lo.essential_form().at(i);
+        FormInfo formInfo(QString::fromStdString(form.id()));
+        weakForms.append(formInfo);
+    }
+
+    return weakForms;
+}
+
+QList<FormInfo> wfMatrixVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(&module->volume());
+    QList<FormInfo> matrixElements = wfMatrixModuleElements(&module->volume(), analysisType, linearityType);
+
+    return wfGenerateSeparated(matrixElements, matrixTemplates);
+}
+
+QList<FormInfo> wfVectorVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> vectorTemplates = wfVectorModuleTemplates(&module->volume());
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(&module->volume());
+    QList<FormInfo> vectorElements = wfVectorModuleElements(&module->volume(), analysisType, linearityType);
+
+    return wfGenerateSeparated(vectorElements, vectorTemplates, matrixTemplates);
+}
+
+QList<FormInfo> wfMatrixTransientVolumeModuleSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> templates = wfMatrixTemplates(&module->volume());
+    QList<FormInfo> matrixElements = wfMatrixTransientModuleElements(&module->volume(), analysisType, linearityType);
+
+    return wfGenerateSeparated(matrixElements, templates);
+}
+
+QList<FormInfo> wfMatrixSurfaceModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(surface);
+    QList<FormInfo> matrixElements = wfMatrixModuleElements<XMLModule::boundary>(boundary, analysisType, linearityType);
+    return wfGenerateSeparated(matrixElements, matrixTemplates);
+}
+
+QList<FormInfo> wfVectorSurfaceModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> vectorTemplates = wfVectorModuleTemplates(surface);
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(surface);
+    QList<FormInfo> vectorElements = wfVectorModuleElements<XMLModule::boundary>(boundary, analysisType, linearityType);
+    return wfGenerateSeparated(vectorElements, vectorTemplates, matrixTemplates);
+}
+
+QList<FormInfo> essentialModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
+{
+    QList<FormInfo> essentialTemplates = wfEssentialModuleTemplates(surface);
+    QList<FormInfo> essentialElements = wfEssentialElements(boundary, analysisType, linearityType);
+    return wfGenerateSeparated(essentialElements, essentialTemplates);
+}
 
 int Agros2DGenerator::numberOfSolutions(XMLModule::analyses analyses, AnalysisType analysisType)
 {

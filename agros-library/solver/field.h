@@ -34,10 +34,10 @@ namespace Module
     struct ModuleAgros;
 }
 
-namespace XMLProblem
-{
-    class field_config;
-}
+//namespace XMLProblem
+//{
+//    class field_config;
+//}
 
 class ProblemConfig;
 class CouplingInfo;
@@ -137,8 +137,8 @@ public:
     void removeLabelPolynomialOrder(SceneLabel *label) { m_labelsPolynomialOrder.remove(label); }
 
     // load and save
-    void load(XMLProblem::field_config *configxsd);
-    void save(XMLProblem::field_config *configxsd);
+    // void load(XMLProblem::field_config *configxsd);
+    // void save(XMLProblem::field_config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
@@ -181,13 +181,8 @@ public:
     bool materialTypeVariableContains(const QString &id) const;
     Module::MaterialTypeVariable materialTypeVariable(const QString &id) const;
 
-    // is function contained in this  analysis
-    bool functionUsedInAnalysis(const QString &id) const;
-
     // boundary conditions
     QList<Module::BoundaryType> boundaryTypes() const;
-    // default boundary condition
-    Module::BoundaryType boundaryTypeDefault() const;
     // variable by name
     bool boundaryTypeContains(const QString &id) const;
     Module::BoundaryType boundaryType(const QString &id) const;
@@ -253,8 +248,6 @@ private:
     int* m_hermesMarkerToAgrosLabelConversion;
     double* m_labelAreas;
 };
-
-XMLModule::linearity_option findLinearityOption(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
 
 ostream& operator<<(ostream& output, FieldInfo& id);
 

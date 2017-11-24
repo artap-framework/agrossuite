@@ -70,7 +70,7 @@ Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_outp
     // localization
     getNames(moduleId);
 
-    Module::volumeQuantityProperties(m_module, quantityOrdering, quantityIsNonlinear, functionOrdering);
+    volumeQuantityModuleProperties(m_module, quantityOrdering, quantityIsNonlinear, functionOrdering);
 }
 
 Agros2DGeneratorModule::~Agros2DGeneratorModule()

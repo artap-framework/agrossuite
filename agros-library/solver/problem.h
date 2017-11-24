@@ -203,7 +203,6 @@ public:
     virtual QString problemFileName() const = 0;
 
     void importProblemFromA2D(const QString &fileName);
-    void exportProblemToA2D(const QString &fileName);
 
     void readProblemFromJson(const QString &fileName = "");
     void writeProblemToJson(const QString &fileName = "");
