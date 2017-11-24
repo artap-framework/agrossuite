@@ -9,20 +9,6 @@ ELSE(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate/linux)
 ENDIF(WIN32)
 
-# XSDCXX
-# message("XML cpp/h files")
-message("${XSD_FILE}")
-FILE(GLOB xsd_files "${CMAKE_HOME_DIRECTORY}/resources/xsd/*.xsd")
-foreach(XSD_FILE ${xsd_files})
-  GET_FILENAME_COMPONENT(basefile ${XSD_FILE} NAME_WE)
-  add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)      
-   message("${XSD_BIN} ${ARGS} cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}")
-  ADD_CUSTOM_COMMAND(
-        COMMAND  ${XSD_BIN} ${ARGS} cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}
-        DEPENDS ${CMAKE_HOME_DIRECTORY}/resources/xsd/${basefile}.xsd
-        OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
-endforeach()
-
 SET(SOURCES main.cpp 
     generator.cpp 
     generator_module.cpp 
@@ -41,27 +27,6 @@ SET(HEADERS generator.h
     generator_coupling.h
     parser.h
 )
-
-IF(WIN32)
-  # XSDCXX
-  # message("XML cpp/h files")
-  FILE(GLOB generator_xsd_files "${CMAKE_HOME_DIRECTORY}/resources/xsd/*.xsd")
-  foreach(XSD_FILE ${generator_xsd_files})
-    GET_FILENAME_COMPONENT(basefile ${XSD_FILE} NAME_WE)
-    ADD_CUSTOM_TARGET(generator-${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
-
-    # message("\txsdcxx ${basefile}")
-
-    ADD_CUSTOM_COMMAND(
-          COMMAND  ${XSD_BIN} ARGS cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}
-	  DEPENDS ${XSD_FILE}
-	  OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
-  endforeach()
-
-  SET(SOURCES_XML ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-)
-ENDIF(WIN32)
     
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${SOURCES_XML} ${HEADERS})
 
