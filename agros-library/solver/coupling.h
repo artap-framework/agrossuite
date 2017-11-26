@@ -80,8 +80,6 @@ public:
 
     // name
     QString name() const;
-    // description
-    QString description() const;
 
 private:
     // pointers to problem infos

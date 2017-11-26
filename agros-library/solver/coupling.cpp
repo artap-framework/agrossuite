@@ -235,8 +235,3 @@ QString CouplingInfo::name() const
 {
     return couplingList()->name(m_sourceField, m_targetField);
 }
-
-QString CouplingInfo::description() const
-{
-    return couplingList()->description(m_sourceField, m_targetField);
-}
