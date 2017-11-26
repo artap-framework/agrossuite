@@ -78,7 +78,6 @@ CouplingList::CouplingList()
                 CouplingList::Item item;
 
                 item.name = QString::fromStdString(coup->general_coupling().name());
-                item.description = QString::fromStdString(coup->general_coupling().description());
                 item.sourceField = QString::fromStdString(coup->general_coupling().modules().source().id());
                 item.sourceAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.sourceanalysis().get()));
                 item.targetField = QString::fromStdString(coup->general_coupling().modules().target().id());

@@ -51,7 +51,6 @@ public:
     CouplingList();
 
     QString name(FieldInfo *sourceField, FieldInfo *targetField) const;
-    QString description(FieldInfo *sourceField, FieldInfo *targetField) const;
     bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const;
     bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const;
     bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const;

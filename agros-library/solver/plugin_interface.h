@@ -250,6 +250,7 @@ public:
     QString name;
     QString equation;
     AnalysisType analysis;
+    AnalysisType analysisTarget;
 
     QList<Variable> variables;
     QList<Solver> solvers;
@@ -426,6 +427,21 @@ public:
     void load(const QString &fileName);
     void save(const QString &fileName);
     void clear();
+};
+
+class AGROS_LIBRARY_API PluginCoupling
+{
+public:
+    QString id;
+    QString name;
+    QString source;
+    QString target;
+
+    QList<PluginConstant> constants;
+
+    // processor
+    PluginWeakFormRecipe weakFormRecipeVolume;
+    QList<PluginWeakFormAnalysis> weakFormAnalysisVolume;
 };
 
 // plugin interface

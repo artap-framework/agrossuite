@@ -22,6 +22,7 @@
 
 #include "util/util.h"
 #include "util/enums.h"
+#include "solver/form_info.h"
 
 #include "ctemplate/template.h"
 #include "../../resources_source/classes/module_xml.h"
@@ -31,7 +32,6 @@ const QString GENERATOR_DOCROOT = "resources_source/doc/source/modules";
 const QString GENERATOR_PLUGINROOT = "plugins";
 
 class LexicalAnalyser;
-class FormInfo;
 
 QList<FormInfo> wfGenerateSeparated(QList<FormInfo> elements, QList<FormInfo> templates, QList<FormInfo> templatesForResidual = QList<FormInfo>());
 
