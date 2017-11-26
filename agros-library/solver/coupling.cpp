@@ -149,18 +149,6 @@ QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
     return "";
 }
 
-QString CouplingList::description(FieldInfo *sourceField, FieldInfo *targetField) const
-{
-    foreach (Item item, m_couplings)
-    {
-        if (item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
-            return item.description;
-    }
-
-    assert(0);
-    return "";
-}
-
 bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
