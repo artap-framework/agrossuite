@@ -21,6 +21,8 @@
 #include "field.h"
 #include "util/global.h"
 
+#include "../../resources_source/classes/module_xml.h"
+
 // general
 const QString GENERAL = "general";
 const QString VERSION = "version";
@@ -42,6 +44,7 @@ const QString ESSENTIONAL_FORMS = "essentional_forms";
 const QString ANALYSES = "analyses";
 const QString ANALYSIS = "analysis";
 const QString EQUATIONS = "equations";
+const QString SOLUTIONS = "solutions";
 const QString ORDERINCREASE = "orderincrease";
 const QString ANALYSISTYPE = "analysistype";
 
@@ -266,7 +269,7 @@ QString PluginFunctions::boundaryTypeString(const QString boundaryName)
 
 // *************************************************************************************************
 
-PluginInterface::PluginInterface() : m_module(nullptr), m_moduleJson(new PluginModule())
+PluginInterface::PluginInterface() : m_moduleJson(new PluginModule())
 {
 }
 
@@ -303,11 +306,49 @@ void PluginModule::load(const QString &fileName)
     {
         PluginConstant constant;
         constant.id = it.key();
-        // QJsonValue val = it.value();
-        // constant.value = val.toDouble();
         constant.value = it.value().toDouble();
 
         constants.append(constant);
+    }
+
+    // macros
+    macros.clear();
+    QJsonObject macrosJson = generalJson[MACROS].toObject();
+    for (QJsonObject::iterator it = macrosJson.begin(); it != macrosJson.end(); it++)
+    {
+        PluginMacro macro;
+        macro.id = it.key();
+        macro.expression = it.value().toString();
+
+        macros.append(macro);
+    }
+
+    // analyses
+    analyses.clear();
+    QJsonObject analysesJson = generalJson[ANALYSES].toObject();
+    for (QJsonObject::iterator it = analysesJson.begin(); it != analysesJson.end(); it++)
+    {
+        QJsonObject analysisJson = it.value().toObject();
+
+        PluginModuleAnalysis analysis;
+        analysis.id = it.key();
+        analysis.type = analysisTypeFromStringKey(analysisJson[TYPE].toString());
+        analysis.name = analysisJson[NAME].toString();
+        analysis.solutions = analysisJson[SOLUTIONS].toInt();
+
+        QJsonObject configsJson = analysisJson[EQUATIONS].toObject();
+        for (QJsonObject::iterator cfg = configsJson.begin(); cfg != configsJson.end(); cfg++)
+        {
+            QJsonObject configJson = cfg.value().toObject();
+
+            PluginModuleAnalysis::Equation eq;
+            eq.orderIncrease = configJson[ORDERINCREASE].toInt();
+            eq.type = configJson[TYPE].toString();
+
+            analysis.configs[cfg.key().toInt()] = eq;
+        }
+
+        analyses.append(analysis);
     }
 }
 
@@ -365,6 +406,9 @@ void PluginModule::save(const QString &fileName)
             ++config;
         }
         analysisJson[EQUATIONS] = configsJson;
+        analysisJson[NAME] = analysis.name;
+        analysisJson[TYPE] = analysisTypeToStringKey(analysis.type);
+        analysisJson[SOLUTIONS] = analysis.solutions;
 
         analysesJson[analysis.id] = analysisJson;
     }
@@ -870,18 +914,18 @@ IntegralValue::IntegralScratchData::IntegralScratchData(const IntegralScratchDat
 {}
 
 
-void PluginInterface::convertJson()
+void PluginInterface::convertJson(XMLModule::field *module)
 {
     // clear current module
     m_moduleJson->clear();
 
     // save to Json
-    m_moduleJson->id = QString::fromStdString(m_module->general_field().id());
-    m_moduleJson->name = QString::fromStdString(m_module->general_field().name());
-    m_moduleJson->deformedShape = (m_module->general_field().deformed_shape().present()) ? m_module->general_field().deformed_shape().get() : false;
+    m_moduleJson->id = QString::fromStdString(module->general_field().id());
+    m_moduleJson->name = QString::fromStdString(module->general_field().name());
+    m_moduleJson->deformedShape = (module->general_field().deformed_shape().present()) ? module->general_field().deformed_shape().get() : false;
 
     // constants
-    foreach (XMLModule::constant cnst, m_module->constants().constant())
+    foreach (XMLModule::constant cnst, module->constants().constant())
     {
         PluginConstant c;
         c.id = QString::fromStdString(cnst.id());
@@ -891,9 +935,9 @@ void PluginInterface::convertJson()
     }
 
     // macros
-    if (m_module->macros().present())
+    if (module->macros().present())
     {
-        foreach (XMLModule::macro mcro, m_module->macros().get().macro())
+        foreach (XMLModule::macro mcro, module->macros().get().macro())
         {
             PluginMacro m;
             m.id = QString::fromStdString(mcro.id());
@@ -904,9 +948,9 @@ void PluginInterface::convertJson()
     }
 
     // analyses
-    for (unsigned int i = 0; i < m_module->general_field().analyses().analysis().size(); i++)
+    for (unsigned int i = 0; i < module->general_field().analyses().analysis().size(); i++)
     {
-        XMLModule::analysis an = m_module->general_field().analyses().analysis().at(i);
+        XMLModule::analysis an = module->general_field().analyses().analysis().at(i);
 
         PluginModuleAnalysis a;
         a.id = QString::fromStdString(an.id());
@@ -915,7 +959,7 @@ void PluginInterface::convertJson()
         a.solutions = an.solutions();
 
         // spaces
-        foreach (XMLModule::space spc, m_module->spaces().space())
+        foreach (XMLModule::space spc, module->spaces().space())
         {
             foreach (XMLModule::space_config config, spc.space_config())
             {
@@ -934,7 +978,7 @@ void PluginInterface::convertJson()
     }
 
     // volume weakform
-    XMLModule::volume volume = m_module->volume();
+    XMLModule::volume volume = module->volume();
     for (unsigned int i = 0; i < volume.quantity().size(); i++)
     {
         XMLModule::quantity quantity = volume.quantity().at(i);
@@ -1060,7 +1104,7 @@ void PluginInterface::convertJson()
     }
 
     // surface weakform
-    XMLModule::surface surface = m_module->surface();
+    XMLModule::surface surface = module->surface();
     for (unsigned int i = 0; i < surface.quantity().size(); i++)
     {
         XMLModule::quantity quantity = surface.quantity().at(i);
@@ -1218,9 +1262,9 @@ void PluginInterface::convertJson()
     }
 
     // preprocessor GUI
-    for (unsigned int i = 0; i < m_module->preprocessor().gui().size(); i++)
+    for (unsigned int i = 0; i < module->preprocessor().gui().size(); i++)
     {
-        XMLModule::gui ui = m_module->preprocessor().gui().at(i);
+        XMLModule::gui ui = module->preprocessor().gui().at(i);
 
         for (unsigned int i = 0; i < ui.group().size(); i++)
         {
@@ -1259,9 +1303,9 @@ void PluginInterface::convertJson()
     }
 
     // local variables
-    for (unsigned int i = 0; i < m_module->postprocessor().localvariables().localvariable().size(); i++)
+    for (unsigned int i = 0; i < module->postprocessor().localvariables().localvariable().size(); i++)
     {
-        XMLModule::localvariable lv = m_module->postprocessor().localvariables().localvariable().at(i);
+        XMLModule::localvariable lv = module->postprocessor().localvariables().localvariable().at(i);
 
         PluginPostVariable variable;
         variable.id = QString::fromStdString(lv.id());
@@ -1295,9 +1339,9 @@ void PluginInterface::convertJson()
     }
 
     // volume integrals
-    for (unsigned int i = 0; i < m_module->postprocessor().volumeintegrals().volumeintegral().size(); i++)
+    for (unsigned int i = 0; i < module->postprocessor().volumeintegrals().volumeintegral().size(); i++)
     {
-        XMLModule::volumeintegral in = m_module->postprocessor().volumeintegrals().volumeintegral().at(i);
+        XMLModule::volumeintegral in = module->postprocessor().volumeintegrals().volumeintegral().at(i);
 
         PluginPostVariable variable;
         variable.id = QString::fromStdString(in.id());
@@ -1325,9 +1369,9 @@ void PluginInterface::convertJson()
     }
 
     // surface integrals
-    for (unsigned int i = 0; i < m_module->postprocessor().surfaceintegrals().surfaceintegral().size(); i++)
+    for (unsigned int i = 0; i < module->postprocessor().surfaceintegrals().surfaceintegral().size(); i++)
     {
-        XMLModule::surfaceintegral in = m_module->postprocessor().surfaceintegrals().surfaceintegral().at(i);
+        XMLModule::surfaceintegral in = module->postprocessor().surfaceintegrals().surfaceintegral().at(i);
 
         PluginPostVariable variable;
         variable.id = QString::fromStdString(in.id());

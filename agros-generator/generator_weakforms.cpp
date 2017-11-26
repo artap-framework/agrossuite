@@ -1,5 +1,6 @@
 #include "generator.h"
 #include "generator_module.h"
+#include "generator_coupling.h"
 #include "parser.h"
 #include "util/constants.h"
 #include "solver/plugin_interface.h"
@@ -16,7 +17,7 @@ void Agros2DGeneratorModule::generatePluginWeakFormFiles()
 
 void Agros2DGeneratorModule::generatePluginWeakFormSourceFiles()
 {
-    qDebug() << (QString("generating weakform source file").toLatin1());
+    qWarning() << (QString("generating weakform source file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
     std::string textWeakform;
@@ -34,7 +35,7 @@ void Agros2DGeneratorModule::generatePluginWeakFormSourceFiles()
 
 void Agros2DGeneratorModule::generatePluginWeakFormHeaderFiles()
 {
-    qDebug() << (QString("generating weakform header file").toLatin1());
+    qWarning() << (QString("generating weakform header file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
     std::string textWeakform;
@@ -56,7 +57,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
 {
     this->m_docString = "";
 
-    QMap<QString, QString> availableModules = Module::availableModules();
+    QStringList modules = Agros2DGenerator::availableModules();
     QMap<QString, XMLModule::coupling *> xml_couplings;
 
     QMap<QString, std::shared_ptr<XMLModule::module> > couplings_xsd;
@@ -67,10 +68,9 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
     allAnalysisTypes.push_back(AnalysisType_Transient);
     allAnalysisTypes.push_back(AnalysisType_Harmonic);
 
-    //qDebug() << couplingList()->availableCouplings();
-    foreach(QString sourceField, availableModules.keys())
+    foreach (QString sourceField, modules)
     {
-        if(couplingList()->isCouplingAvailable(sourceField, this->m_id, CouplingType_Weak))
+        if (couplingList()->isCouplingAvailable(sourceField, this->m_id, CouplingType_Weak))
         {
             ctemplate::TemplateDictionary *coupling = output.AddSectionDictionary("COUPLING_SOURCE");
             coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
@@ -151,8 +151,8 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                         ctemplate::TemplateDictionary *sectionAnalysisType = coupling->AddSectionDictionary("COUPLING_FORMS_ANALYSIS_TYPE");
                         sectionAnalysisType->SetValue("ANALYSIS_TYPE", PluginFunctions::analysisTypeStringEnum(sourceAnalysisType).toStdString());
 
-                        assert(0); // TODO
-                        // QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), sourceAnalysisType, analysisType, CouplingType_Weak, linearityType);
+                        // assert(0); // TODO
+                        QList<FormInfo> vectorForms = wfVectorVolumeCouplingSeparated(&(xml_couplings[sourceField]->volume()), sourceAnalysisType, analysisType, CouplingType_Weak, linearityType);
                         if (!vectorForms.isEmpty())
                         {
                             foreach(FormInfo formInfo, vectorForms)
@@ -164,9 +164,9 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                 }
 
                 // find if there are any possible coupling sources
-                foreach(QString mod, availableModules.keys())
+                foreach(QString mod, modules)
                 {
-                    //qDebug() << mod;
+                    // qWarning() << mod;
                 }
             }
         }

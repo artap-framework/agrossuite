@@ -40,8 +40,6 @@
 #include "mesh/meshgenerator.h"
 #include "logview.h"
 
-#include "../resources_source/classes/problem_a2d_31_xml.h"
-
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem),
     m_parameters(new ProblemParameters()), m_functions(new ProblemFunctions())
 {

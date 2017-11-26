@@ -49,6 +49,23 @@ QMap<QString, QString> Module::availableModules()
     return modules;
 }
 
+QStringList Module::availableCouplings()
+{
+    QStringList list;
+
+    // read images
+    QStringList filters;
+    filters << "*.xml";
+
+    QDir dir(QString("resources/couplings/"));
+    dir.setNameFilters(filters);
+
+    foreach (QString id, dir.entryList())
+        list.append(id.left(id.count() - 4));
+
+    return list;
+}
+
 // ***********************************************************************************************
 
 Module::BoundaryType::~BoundaryType()

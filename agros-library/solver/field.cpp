@@ -29,8 +29,7 @@
 
 #include "plugin_interface.h"
 
-#include "../../resources_source/classes/module_xml.h"
-#include "../../resources_source/classes/problem_a2d_31_xml.h"
+// #include "../../resources_source/classes/problem_a2d_31_xml.h"
 
 FieldInfo::FieldInfo(QString fieldId)
     : m_plugin(nullptr), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)

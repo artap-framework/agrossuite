@@ -1283,9 +1283,9 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         if (!y.isEvaluated()) throw AgrosException(y.error());
 
         m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
+        if (i != m_scene->nodes->count() - 1)
+            throw AgrosException(tr("Node with coordinates (%1, %2) is too close to an existing node.").arg(nodeJson[X].toString()).arg(nodeJson[Y].toString()));
     }
-
-    qWarning() << m_scene->nodes->count();
 
     // edges
     QJsonArray facesJson = geometryJson[FACES].toArray();

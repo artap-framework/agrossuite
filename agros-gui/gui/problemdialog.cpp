@@ -53,7 +53,7 @@ void CouplingsWidget::createContent()
     layoutTable->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutTable->setColumnStretch(1, 1);
 
-    for (int i = 0; i < couplingList()->availableCouplings().count(); i++)
+    for (int i = 0; i < Module::availableCouplings().count(); i++)
     {
         QLabel *label = new QLabel(this);
         label->setVisible(false);

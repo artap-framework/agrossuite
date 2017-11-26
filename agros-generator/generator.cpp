@@ -233,7 +233,7 @@ QList<FormInfo> wfGenerateSeparated(QList<FormInfo> elements, QList<FormInfo> te
             formResult.expr_planar = formTemplate.expr_planar;
         }
 
-        // qDebug() << "i" << formResult.i << "j" << formResult.j;
+        // qWarning() << "i" << formResult.i << "j" << formResult.j;
 
         replaceForVariant(formResult.expr_axi, formElement.variant, formResult.j);
         replaceForVariant(formResult.expr_planar, formElement.variant, formResult.j);
@@ -377,6 +377,40 @@ Agros2DGenerator::Agros2DGenerator(int &argc, char **argv) : QCoreApplication(ar
 {
 }
 
+QStringList Agros2DGenerator::availableModules()
+{
+    QStringList list;
+
+    // read images
+    QStringList filters;
+    filters << "*.xml";
+
+    QDir dir(QString("resources/modules/"));
+    dir.setNameFilters(filters);
+
+    foreach (QString id, dir.entryList())
+        list.append(id.left(id.count() - 4));
+
+    return list;
+}
+
+QStringList Agros2DGenerator::availableCouplings()
+{
+    QStringList list;
+
+    // read images
+    QStringList filters;
+    filters << "*.xml";
+
+    QDir dir(QString("resources/couplings/"));
+    dir.setNameFilters(filters);
+
+    foreach (QString id, dir.entryList())
+        list.append(id.left(id.count() - 4));
+
+    return list;
+}
+
 void Agros2DGenerator::run()
 {
     // generate structure
@@ -385,12 +419,12 @@ void Agros2DGenerator::run()
     if (!m_module.isEmpty())
     {
         // generate one module or coupling
-        QMap<QString, QString> modules = Module::availableModules();
-        QList<QString> couplings = couplingList()->availableCouplings();
+        QStringList modules = Agros2DGenerator::availableModules();
+        QStringList couplings = Agros2DGenerator::availableCouplings();
 
         try
         {
-            if (modules.keys().contains(m_module))
+            if (modules.contains(m_module))
                 generateModule(m_module);
             else if (couplings.contains(m_module))
                 generateCoupling(m_module);
@@ -399,7 +433,7 @@ void Agros2DGenerator::run()
         }
         catch(AgrosGeneratorException& err)
         {
-            qDebug() << "Generator exception " << err.what();
+            qWarning() << "Generator exception " << err.what();
             exit(1);
         }
     }
@@ -413,7 +447,7 @@ void Agros2DGenerator::run()
         }
         catch(AgrosGeneratorException& err)
         {
-            qDebug() << "Generator exception " << err.what();
+            qWarning() << "Generator exception " << err.what();
             exit(1);
         }
     }
@@ -430,8 +464,8 @@ void Agros2DGenerator::createStructure()
     doc_root.mkpath(GENERATOR_DOCROOT);
 
     ctemplate::TemplateDictionary output("project_output");
-    QMap<QString, QString> modules = Module::availableModules();
-    foreach (QString moduleId, modules.keys())
+    QStringList modules = Agros2DGenerator::availableModules();
+    foreach (QString moduleId, modules)
     {
         ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
         field->SetValue("ID", moduleId.toStdString());
@@ -471,12 +505,12 @@ void Agros2DGenerator::createStructure()
 
 void Agros2DGenerator::generateSources()
 {
-    QMap<QString, QString> modules = Module::availableModules();
-    QList<QString> couplings = couplingList()->availableCouplings();
+    QStringList modules = Agros2DGenerator::availableModules();
+    QStringList couplings = Agros2DGenerator::availableCouplings();
 
-    qDebug() << couplings;
+    qWarning() << couplings;
 
-    foreach (QString moduleId, modules.keys())
+    foreach (QString moduleId, modules)
     {
         generateModule(moduleId);
         generateDocumentation(moduleId);
@@ -492,7 +526,7 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
 {
     Agros2DGeneratorModule generator(moduleId);
 
-    qDebug() << (QString("Module: %1.").arg(moduleId).toLatin1());
+    qWarning() << (QString("Module: %1.").arg(moduleId).toLatin1());
 
     generator.generatePluginProjectFile();
     generator.prepareWeakFormsOutput();

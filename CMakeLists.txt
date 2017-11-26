@@ -129,7 +129,6 @@ INCLUDE_DIRECTORIES(${XSD_INCLUDE_DIR})
 # SET(XercesC_LIBRARY ${CMAKE_HOME_DIRECTORY}/3rdparty/xerces-c/libxerces-c.a)
 find_package(XercesC REQUIRED)
 INCLUDE_DIRECTORIES(${XercesC_INCLUDE_DIRS})
-message(x ${XercesC_LIBRARIES} x)
 # curl
 find_package(CURL REQUIRED)
 

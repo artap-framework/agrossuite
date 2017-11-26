@@ -35,11 +35,14 @@
 #include "solver/solver.h"
 #include "solver/solver_nonlinear.h"
 
-#include "../../resources_source/classes/module_xml.h"
-
 #undef signals
 #include <deal.II/numerics/data_postprocessor.h>
 #define signals public
+
+namespace XMLModule
+{
+class field;
+}
 
 class PositionInfo;
 
@@ -435,7 +438,7 @@ public:
     virtual QString fieldId() = 0;
 
     PluginModule *moduleJson() { return m_moduleJson; }
-    void convertJson();
+    void convertJson(XMLModule::field *module);
 
     // weak forms
     virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo) = 0;
@@ -477,8 +480,7 @@ public:
     // description
     virtual QString localeDescription() = 0;
 
-protected:
-    XMLModule::field *m_module;
+protected:    
     PluginModule *m_moduleJson;
 };
 

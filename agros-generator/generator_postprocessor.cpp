@@ -20,7 +20,7 @@
 
 void Agros2DGeneratorModule::generatePluginFilterFiles()
 {
-    qDebug() << (QString("generating filter file").toLatin1());
+    qWarning() << (QString("generating filter file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 
@@ -152,7 +152,7 @@ void Agros2DGeneratorModule::generatePluginFilterFiles()
 
 void Agros2DGeneratorModule::generatePluginForceFiles()
 {
-    qDebug() << (QString("generating force file").toLatin1());
+    qWarning() << (QString("generating force file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 
@@ -233,7 +233,7 @@ void Agros2DGeneratorModule::generatePluginForceFiles()
 
 void Agros2DGeneratorModule::generatePluginLocalPointFiles()
 {
-    qDebug() << (QString("generating local point file").toLatin1());
+    qWarning() << (QString("generating local point file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 
@@ -322,7 +322,7 @@ void Agros2DGeneratorModule::generatePluginLocalPointFiles()
 
 void Agros2DGeneratorModule::generatePluginSurfaceIntegralFiles()
 {
-    qDebug() << (QString("generating surface integral file").toLatin1());
+    qWarning() << (QString("generating surface integral file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 
@@ -424,7 +424,7 @@ void Agros2DGeneratorModule::generatePluginSurfaceIntegralFiles()
 
 void Agros2DGeneratorModule::generatePluginVolumeIntegralFiles()
 {
-    qDebug() << (QString("generating volume integral file").toLatin1());
+    qWarning() << (QString("generating volume integral file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 

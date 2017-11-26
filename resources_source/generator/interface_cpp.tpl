@@ -88,7 +88,8 @@ static XMLModule::module *module_module = NULL;
             qDebug() << QString::fromStdString(e.what());
         }
     }
-    m_module = &module_module->field().get();
+    
+    convertJson(&module_module->field().get());
 }
 
 {{CLASS}}Interface::~{{CLASS}}Interface()

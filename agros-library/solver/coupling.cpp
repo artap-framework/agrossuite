@@ -138,20 +138,6 @@ CouplingList::CouplingList()
     }
 }
 
-QList<QString> CouplingList::availableCouplings()
-{
-    QList<QString> couplings;
-
-    foreach (Item item, m_couplings)
-    {
-        QString couplingId = QString("%1-%2").arg(item.sourceField).arg(item.targetField);
-        if (!couplings.contains(couplingId))
-            couplings.append(couplingId);
-    }
-
-    return couplings;
-}
-
 QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
 {
     foreach (Item item, m_couplings)
@@ -267,4 +253,3 @@ QString CouplingInfo::description() const
 {
     return couplingList()->description(m_sourceField, m_targetField);
 }
-

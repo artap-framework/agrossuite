@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         cmd.parse(argc, argv);
 
         // init singleton
-        Agros::createSingleton(QSharedPointer<Log>());
+        // Agros::createSingleton(QSharedPointer<Log>());
 
         Agros2DGenerator a(argc, argv);
 

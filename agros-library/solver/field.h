@@ -53,8 +53,6 @@ public:
     FieldInfo(QString fieldId);
     ~FieldInfo();
 
-    void convertJson();
-
     void copy(const FieldInfo *origin);
 
     void clear();

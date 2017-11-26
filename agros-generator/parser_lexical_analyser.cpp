@@ -108,10 +108,10 @@ void ParserInstance::addCouplingWeakformTokens(int numSourceSolutions)
 {
     for (int i = 1; i < numSourceSolutions + 1; i++)
     {
-        foreach(QString moduleId, Module::availableModules().keys())
+        foreach (QString moduleId, Agros2DGenerator::availableModules())
         {
             m_dict[moduleId + QString("%1").arg(i)] = moduleId + QString("_value[q_point][%1]").arg(i-1);
-            if(m_parserModuleInfo.coordinateType == CoordinateType_Planar)
+            if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
             {
                 m_dict[moduleId + QString("%1dx").arg(i)] = moduleId + QString("_grad[q_point][%1][0]").arg(i-1);
                 m_dict[moduleId + QString("%1dy").arg(i)] = moduleId + QString("_grad[q_point][%1][1]").arg(i-1);

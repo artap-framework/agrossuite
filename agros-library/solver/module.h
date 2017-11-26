@@ -383,6 +383,7 @@ private:
 
 // available modules
 AGROS_LIBRARY_API QMap<QString, QString> availableModules();
+AGROS_LIBRARY_API QStringList availableCouplings();
 }
 
 #endif // HERMES_FIELD_H

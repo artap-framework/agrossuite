@@ -172,9 +172,6 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
         PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
         m_plugins[plugin->fieldId()] = plugin;
 
-        // convert JSON
-        plugin->convertJson();
-
         delete loader;
     }
 #endif

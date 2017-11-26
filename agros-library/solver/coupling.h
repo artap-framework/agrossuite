@@ -50,8 +50,6 @@ public:
 
     CouplingList();
 
-    QList<QString> availableCouplings();
-
     QString name(FieldInfo *sourceField, FieldInfo *targetField) const;
     QString description(FieldInfo *sourceField, FieldInfo *targetField) const;
     bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const;

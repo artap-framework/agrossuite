@@ -36,7 +36,6 @@
 #include "solver/module.h"
 
 #include "../3rdparty/quazip/JlCompress.h"
-#include "../resources_source/classes/problem_a2d_31_xml.h"
 
 ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     : QWidget(parent), m_infoWidget(infoWidget)

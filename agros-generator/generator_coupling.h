@@ -34,7 +34,6 @@ public:
     void prepareWeakFormsOutput();
     void deleteWeakFormOutput();
 
-
     void generatePluginProjectFile();
     void generatePluginFilterFiles();
     void generatePluginLocalPointFiles();
@@ -77,7 +76,8 @@ private:
     QMap<QString, int> sourceFunctionOrdering;
 
     ctemplate::TemplateDictionary* m_output;
-
 };
+
+QList<FormInfo> wfVectorVolumeCouplingSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
 
 #endif // GENERATOR_COUPLING_H

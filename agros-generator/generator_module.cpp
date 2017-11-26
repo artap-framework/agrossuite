@@ -79,7 +79,7 @@ Agros2DGeneratorModule::~Agros2DGeneratorModule()
 
 void Agros2DGeneratorModule::generatePluginProjectFile()
 {
-    qDebug() << (QString("generating project file").toLatin1());
+    qWarning() << (QString("generating project file").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
 
@@ -101,7 +101,7 @@ void Agros2DGeneratorModule::generatePluginProjectFile()
 
 void Agros2DGeneratorModule::prepareWeakFormsOutput()
 {
-    qDebug() << (QString("parsing weak forms").toLatin1());
+    qWarning() << (QString("parsing weak forms").toLatin1());
     assert(! m_output);
     m_output = new ctemplate::TemplateDictionary("output");
 
@@ -167,7 +167,7 @@ void Agros2DGeneratorModule::deleteWeakFormOutput()
 
 void Agros2DGeneratorModule::generatePluginInterfaceFiles()
 {
-    qDebug() << (QString("generating interface file").toLatin1());
+    qWarning() << (QString("generating interface file").toLatin1());
     QString id = QString::fromStdString(m_module->general_field().id());
 
     std::string text;
@@ -201,7 +201,7 @@ void Agros2DGeneratorModule::generatePluginInterfaceFiles()
 
 void Agros2DGeneratorModule::generatePluginEquations()
 {
-    qDebug() << (QString("generating equations").toLatin1());
+    qWarning() << (QString("generating equations").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
     QString outputDir = QDir().absoluteFilePath(QString("%1/%2").arg(QCoreApplication::applicationDirPath()).arg("resources/images/equations/"));
