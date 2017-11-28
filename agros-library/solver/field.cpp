@@ -139,10 +139,13 @@ QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
     {
         if (analysis.analysis == at)
         {
-            // should be only one
-            foreach (PluginWeakFormAnalysis::Solver solver, analysis.solvers)
+            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
             {
-                availableLinearityTypes.append(solver.linearity);
+                // should be only one
+                foreach (PluginWeakFormAnalysis::Item::Solver solver, item.solvers)
+                {
+                    availableLinearityTypes.append(solver.linearity);
+                }
             }
         }
     }
@@ -203,7 +206,6 @@ QMap<QString, double> FieldInfo::constants() const
 {
     QMap<QString, double> constants;
 
-    // constants
     foreach (PluginConstant constant, m_plugin->moduleJson()->constants)
         constants[constant.id] = constant.value;
 
@@ -249,40 +251,43 @@ QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
     {
         if (analysis.analysis == analysisType())
         {
-            foreach (PluginWeakFormAnalysis::Variable variable, analysis.variables)
+            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
             {
-                foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeVolume.variables)
+                foreach (PluginWeakFormAnalysis::Item::Variable variable, item.variables)
                 {
-                    if (variable.id == variableRecipe.id)
+                    foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeVolume.variables)
                     {
-                        bool isTimeDep = false;
-
-                        // time dep
-                        if (!variable.dependency.isEmpty())
+                        if (variable.id == variableRecipe.id)
                         {
-                            if (variable.dependency == "time")
-                            {
-                                isTimeDep = true;
-                            }
-                        }
+                            bool isTimeDep = false;
 
-                        // nonlinearity
-                        QString nonlinearExpression;
-                        if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar && !variable.nonlinearity_planar.isEmpty())
-                            nonlinearExpression = variable.nonlinearity_planar;
-                        else if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && !variable.nonlinearity_axi.isEmpty())
-                            nonlinearExpression = variable.nonlinearity_axi;
-
-                        // UI
-                        foreach (PluginPreGroup group, m_plugin->moduleJson()->preVolumeGroups)
-                        {
-                            foreach (PluginPreGroup::Quantity quantity, group.quantities)
+                            // time dep
+                            if (!variable.dependency.isEmpty())
                             {
-                                if (quantity.id == variable.id)
+                                if (variable.dependency == "time")
                                 {
-                                    materialTypeVariables.append(Module::MaterialTypeVariable(variable.id, variableRecipe.shortName, quantity.default_value,
-                                                                                              nonlinearExpression,
-                                                                                              isTimeDep, quantity.isBool, quantity.onlyIf, quantity.onlyIfNot, quantity.isSource));
+                                    isTimeDep = true;
+                                }
+                            }
+
+                            // nonlinearity
+                            QString nonlinearExpression;
+                            if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar && !variable.nonlinearity_planar.isEmpty())
+                                nonlinearExpression = variable.nonlinearity_planar;
+                            else if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && !variable.nonlinearity_axi.isEmpty())
+                                nonlinearExpression = variable.nonlinearity_axi;
+
+                            // UI
+                            foreach (PluginPreGroup group, m_plugin->moduleJson()->preVolumeGroups)
+                            {
+                                foreach (PluginPreGroup::Quantity quantity, group.quantities)
+                                {
+                                    if (quantity.id == variable.id)
+                                    {
+                                        materialTypeVariables.append(Module::MaterialTypeVariable(variable.id, variableRecipe.shortName, quantity.default_value,
+                                                                                                  nonlinearExpression,
+                                                                                                  isTimeDep, quantity.isBool, quantity.onlyIf, quantity.onlyIfNot, quantity.isSource));
+                                    }
                                 }
                             }
                         }
@@ -321,46 +326,49 @@ QList<Module::BoundaryType> FieldInfo::boundaryTypes() const
     {
         if (analysis.analysis == analysisType())
         {
-            // variables
-            QList<Module::BoundaryTypeVariable> variables;
-
-            foreach (PluginWeakFormAnalysis::Variable variable, analysis.variables)
+            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
             {
-                foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeSurface.variables)
+                // variables
+                QList<Module::BoundaryTypeVariable> variables;
+
+                foreach (PluginWeakFormAnalysis::Item::Variable variable, item.variables)
                 {
-                    if (variable.id == variableRecipe.id)
+                    foreach (PluginWeakFormRecipe::Variable variableRecipe, m_plugin->moduleJson()->weakFormRecipeSurface.variables)
                     {
-                        bool isTimeDep = false;
-                        bool isSpaceDep = false;
-
-                        if (!variable.dependency.isEmpty())
+                        if (variable.id == variableRecipe.id)
                         {
-                            if (variable.dependency == "time")
-                            {
-                                isTimeDep = true;
-                            }
-                            else if (variable.dependency == "space")
-                            {
-                                isSpaceDep = true;
-                            }
-                            else if (variable.dependency == "time-space")
-                            {
-                                isTimeDep = true;
-                                isSpaceDep = true;
-                            }
-                        }
+                            bool isTimeDep = false;
+                            bool isSpaceDep = false;
 
-                        variables.append(Module::BoundaryTypeVariable(variable.id, variableRecipe.shortName, isTimeDep, isSpaceDep));
+                            if (!variable.dependency.isEmpty())
+                            {
+                                if (variable.dependency == "time")
+                                {
+                                    isTimeDep = true;
+                                }
+                                else if (variable.dependency == "space")
+                                {
+                                    isSpaceDep = true;
+                                }
+                                else if (variable.dependency == "time-space")
+                                {
+                                    isTimeDep = true;
+                                    isSpaceDep = true;
+                                }
+                            }
+
+                            variables.append(Module::BoundaryTypeVariable(variable.id, variableRecipe.shortName, isTimeDep, isSpaceDep));
+                        }
                     }
                 }
+
+                QList<FormInfo> wfMatrix; //  = Module::wfMatrixSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+                QList<FormInfo> wfVector; //  = Module::wfVectorSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+                QList<FormInfo> essential; //  = Module::essential(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
+
+                boundaryTypes.append(Module::BoundaryType(item.id, m_plugin->localeName(item.name), item.equation,
+                                                          variables, wfMatrix, wfVector, essential));
             }
-
-            QList<FormInfo> wfMatrix; //  = Module::wfMatrixSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-            QList<FormInfo> wfVector; //  = Module::wfVectorSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-            QList<FormInfo> essential; //  = Module::essential(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-
-            boundaryTypes.append(Module::BoundaryType(analysis.id, m_plugin->localeName(analysis.name), analysis.equation,
-                                                      variables, wfMatrix, wfVector, essential));
         }
     }
 

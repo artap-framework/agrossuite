@@ -26,7 +26,9 @@
 #include "scene.h"
 #include "util/util.h"
 #include "module.h"
+#include "module.h"
 #include "weak_form.h"
+#include "plugin_interface.h"
 
 #include "solver/field.h"
 #include "solver/problem.h"
@@ -65,27 +67,171 @@ CouplingList::CouplingList()
             }
 
             std::unique_ptr<XMLModule::module> module_xsd = XMLModule::module_(compatibleFilename(datadir() + COUPLINGROOT + "/" + filename).toStdString(),
-                                                                                   xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
+                                                                               xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
             XMLModule::module *mod = module_xsd.get();
             assert(mod->coupling().present());
             XMLModule::coupling *coup = &mod->coupling().get();
 
-            // check whether coupling is available for values of source and target fields such as analysis type
-            for (int i = 0; i < coup->volume().weakforms_volume().weakform_volume().size(); i++)
+            CouplingList::Item item;
+            item.id = QString::fromStdString(coup->general_coupling().id());
+            item.name = QString::fromStdString(coup->general_coupling().name());
+            item.source = QString::fromStdString(coup->general_coupling().modules().source().id());
+            item.target = QString::fromStdString(coup->general_coupling().modules().target().id());
+
+            // convert JSON
+            PluginCoupling couplingJson;
+            couplingJson.id = QString::fromStdString(coup->general_coupling().id());
+            couplingJson.name = QString::fromStdString(coup->general_coupling().name());
+            couplingJson.source = QString::fromStdString(coup->general_coupling().modules().source().id());
+            couplingJson.target = QString::fromStdString(coup->general_coupling().modules().target().id());
+
+            // constants
+            foreach (XMLModule::constant cnst, coup->constants().constant())
             {
-                XMLModule::weakform_volume wf = coup->volume().weakforms_volume().weakform_volume().at(i);
+                PluginConstant c;
+                c.id = QString::fromStdString(cnst.id());
+                c.value = cnst.value();
 
-                CouplingList::Item item;
-
-                item.name = QString::fromStdString(coup->general_coupling().name());
-                item.sourceField = QString::fromStdString(coup->general_coupling().modules().source().id());
-                item.sourceAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.sourceanalysis().get()));
-                item.targetField = QString::fromStdString(coup->general_coupling().modules().target().id());
-                item.targetAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.analysistype()));
-                item.couplingType = couplingTypeFromStringKey(QString::fromStdString(wf.couplingtype().get()));
-
-                m_couplings.append(item);
+                couplingJson.constants.append(c);
             }
+
+            // check whether coupling is available for values of source and target fields such as analysis type
+            for (int k = 0; k < coup->volume().weakforms_volume().weakform_volume().size(); k++)
+            {
+                XMLModule::weakform_volume wf = coup->volume().weakforms_volume().weakform_volume().at(k);
+
+                CouplingList::Item::Analysis analysis;
+
+                analysis.sourceAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.sourceanalysis().get()));
+                analysis.targetAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.analysistype()));
+                analysis.couplingType = couplingTypeFromStringKey(QString::fromStdString(wf.couplingtype().get()));
+
+                item.analyses.append(analysis);
+
+                // volume weakform - matrix
+                for (unsigned int i = 0; i < coup->volume().matrix_form().size(); i++)
+                {
+                    XMLModule::matrix_form matrix_form = coup->volume().matrix_form().at(i);
+
+                    PluginWeakFormRecipe::MatrixForm form;
+                    form.id = QString::fromStdString(matrix_form.id());
+                    form.i = (matrix_form.i().present()) ? matrix_form.i().get() : -1;
+                    form.j = (matrix_form.j().present()) ? matrix_form.j().get() : -1;
+                    form.planar = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+                    form.axi = (matrix_form.axi().present()) ? QString::fromStdString(matrix_form.axi().get()) : "";
+                    form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
+                    form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
+
+                    couplingJson.weakFormRecipeVolume.matrixForms.append(form);
+                }
+
+                // volume weakform - vector
+                for (unsigned int i = 0; i < coup->volume().vector_form().size(); i++)
+                {
+                    XMLModule::vector_form vector_form = coup->volume().vector_form().at(i);
+
+                    PluginWeakFormRecipe::VectorForm form;
+                    form.id = QString::fromStdString(vector_form.id());
+                    form.i = (vector_form.i().present()) ? vector_form.i().get() : -1;
+                    form.planar = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+                    form.axi = (vector_form.axi().present()) ? QString::fromStdString(vector_form.axi().get()) : "";
+                    form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
+                    form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
+
+                    couplingJson.weakFormRecipeVolume.vectorForms.append(form);
+                }
+
+                // volume analyses
+                for (unsigned int i = 0; i < coup->volume().weakforms_volume().weakform_volume().size(); i++)
+                {
+                    XMLModule::weakform_volume weakform_volume = coup->volume().weakforms_volume().weakform_volume().at(i);
+
+                    PluginWeakFormAnalysis analysis;
+                    analysis.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.analysistype()));
+
+                    // only one item
+                    PluginWeakFormAnalysis::Item item;
+                    item.id = "volume";
+                    item.name = "Volume";
+                    item.analysisSource = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.sourceanalysis().get()));
+                    item.coupling = couplingTypeFromStringKey(QString::fromStdString(weakform_volume.couplingtype().get()));
+                    item.equation = QString::fromStdString(weakform_volume.equation());
+
+                    for (unsigned int j = 0; j < weakform_volume.quantity().size(); j++)
+                    {
+                        XMLModule::quantity quantity = weakform_volume.quantity().at(j);
+
+                        PluginWeakFormAnalysis::Item::Variable v;
+                        v.id = QString::fromStdString(quantity.id());
+                        v.dependency = quantity.dependence().present() ? QString::fromStdString(quantity.dependence().get()) : "";
+                        v.nonlinearity_planar = quantity.nonlinearity_planar().present() ? QString::fromStdString(quantity.nonlinearity_planar().get()) : "";
+                        v.nonlinearity_axi = quantity.nonlinearity_axi().present() ? QString::fromStdString(quantity.nonlinearity_axi().get()) : "";
+                        v.nonlinearity_cart = quantity.nonlinearity_planar().present() ? QString::fromStdString(quantity.nonlinearity_planar().get()) : "";
+
+                        item.variables.append(v);
+                    }
+
+                    for (unsigned int j = 0; j < weakform_volume.linearity_option().size(); j++)
+                    {
+                        XMLModule::linearity_option linearity = weakform_volume.linearity_option().at(j);
+
+                        PluginWeakFormAnalysis::Item::Solver s;
+                        s.linearity = linearityTypeFromStringKey(QString::fromStdString(linearity.type()));
+
+                        for (unsigned int k = 0; k < linearity.matrix_form().size(); k++)
+                        {
+                            XMLModule::matrix_form form = linearity.matrix_form().at(k);
+
+                            PluginWeakFormAnalysis::Item::Solver::Matrix m;
+                            m.id = QString::fromStdString(form.id());
+
+                            s.matrices.append(m);
+                        }
+
+                        for (unsigned int k = 0; k < linearity.matrix_form().size(); k++)
+                        {
+                            XMLModule::matrix_form form = linearity.matrix_form().at(k);
+
+                            PluginWeakFormAnalysis::Item::Solver::Matrix m;
+                            m.id = QString::fromStdString(form.id());
+
+                            s.matrices.append(m);
+                        }
+
+                        for (unsigned int k = 0; k < linearity.matrix_transient_form().size(); k++)
+                        {
+                            XMLModule::matrix_transient_form form = linearity.matrix_transient_form().at(k);
+
+                            PluginWeakFormAnalysis::Item::Solver::MatrixTransient m;
+                            m.id = QString::fromStdString(form.id());
+
+                            s.matricesTransient.append(m);
+                        }
+
+                        for (unsigned int k = 0; k < linearity.vector_form().size(); k++)
+                        {
+                            XMLModule::vector_form form = linearity.vector_form().at(k);
+
+                            PluginWeakFormAnalysis::Item::Solver::Vector v;
+                            v.id = QString::fromStdString(form.id());
+                            v.coefficient = form.coefficient().present() ? QString::fromStdString(form.coefficient().get()).toInt() : 1;
+                            v.variant = form.variant().present() ? QString::fromStdString(form.variant().get()) : "";
+
+                            s.vectors.append(v);
+                        }
+
+                        item.solvers.append(s);
+                    }
+                    analysis.items.append(item);
+
+                    couplingJson.weakFormAnalysisVolume.append(analysis);
+                }
+            }
+
+            m_couplings.append(item);
+
+            couplingJson.save(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
+            couplingJson.load(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
         }
         catch (const xml_schema::expected_element& e)
         {
@@ -141,7 +287,7 @@ QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
+        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
             return item.name;
     }
 
@@ -149,14 +295,20 @@ QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
     return "";
 }
 
-bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const
+bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField,
+                                       CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceAnalysisType == sourceField->analysisType() && item.targetAnalysisType == targetField->analysisType()
-                && item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId()
-                && item.couplingType == couplingType)
-            return true;
+        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+        {
+            foreach (Item::Analysis analysis, item.analyses)
+            {
+                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType()
+                        && analysis.couplingType == couplingType)
+                    return true;
+            }
+        }
     }
 
     return false;
@@ -166,22 +318,34 @@ bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *target
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceAnalysisType == sourceField->analysisType() && item.targetAnalysisType == targetField->analysisType()
-                && item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
-            return true;
+        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+        {
+            foreach (Item::Analysis analysis, item.analyses)
+            {
+                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType())
+                    return true;
+            }
+        }
     }
 
     return false;
 }
 
-bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const
+bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
+                                       QString targetField, AnalysisType targetAnalysis,
+                                       CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceAnalysisType == sourceAnalysis && item.targetAnalysisType == targetAnalysis
-                && item.sourceField == sourceField && item.targetField == targetField
-                && item.couplingType == couplingType)
-            return true;
+        if (item.source == sourceField && item.target == targetField)
+        {
+            foreach (Item::Analysis analysis, item.analyses)
+            {
+                if (analysis.sourceAnalysisType == sourceAnalysis && analysis.targetAnalysisType == targetAnalysis
+                        && analysis.couplingType == couplingType)
+                    return true;
+            }
+        }
     }
 
     return false;
@@ -191,9 +355,14 @@ bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField,
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceField == sourceField && item.targetField == targetField
-                && item.couplingType == couplingType)
-            return true;
+        if (item.source == sourceField && item.target == targetField)
+        {
+            foreach (Item::Analysis analysis, item.analyses)
+            {
+                if (analysis.couplingType == couplingType)
+                    return true;
+            }
+        }
     }
 
     return false;
@@ -233,5 +402,5 @@ QString CouplingInfo::couplingId() const
 
 QString CouplingInfo::name() const
 {
-    return couplingList()->name(m_sourceField, m_targetField);
+    return m_name;
 }

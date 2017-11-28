@@ -199,61 +199,73 @@ public:
 class AGROS_LIBRARY_API PluginWeakFormAnalysis
 {
 public:
-    class AGROS_LIBRARY_API Variable
+    PluginWeakFormAnalysis() : analysis(AnalysisType_Undefined) {}
+
+    class AGROS_LIBRARY_API Item
     {
     public:
+        Item() : analysisSource(AnalysisType_Undefined), coupling(CouplingType_Undefined) {}
+
+        class AGROS_LIBRARY_API Variable
+        {
+        public:
+            QString id;
+            QString dependency;
+            QString nonlinearity_planar;
+            QString nonlinearity_axi;
+            QString nonlinearity_cart;
+        };
+
+        class AGROS_LIBRARY_API Solver
+        {
+        public:
+            class AGROS_LIBRARY_API Matrix
+            {
+            public:
+                QString id;
+            };
+
+            class AGROS_LIBRARY_API MatrixTransient
+            {
+            public:
+                QString id;
+            };
+
+            class AGROS_LIBRARY_API Vector
+            {
+            public:
+                QString id;
+                int coefficient;
+                QString variant;
+            };
+
+            class AGROS_LIBRARY_API Essential
+            {
+            public:
+                QString id;
+            };
+
+            LinearityType linearity;
+
+            QList<Matrix> matrices;
+            QList<MatrixTransient> matricesTransient;
+            QList<Vector> vectors;
+            QList<Essential> essentials;
+        };
+
         QString id;
-        QString dependency;
-        QString nonlinearity_planar;
-        QString nonlinearity_axi;
-        QString nonlinearity_cart;
+        QString name;
+        QString equation;
+        // coupling only
+        AnalysisType analysisSource;
+        CouplingType coupling;
+
+        QList<Variable> variables;
+        QList<Solver> solvers;
     };
 
-    class AGROS_LIBRARY_API Solver
-    {
-    public:
-        class AGROS_LIBRARY_API Matrix
-        {
-        public:
-            QString id;
-        };
-
-        class AGROS_LIBRARY_API MatrixTransient
-        {
-        public:
-            QString id;
-        };
-
-        class AGROS_LIBRARY_API Vector
-        {
-        public:
-            QString id;
-            int coefficient;
-            QString variant;
-        };
-
-        class AGROS_LIBRARY_API Essential
-        {
-        public:
-            QString id;
-        };
-
-        LinearityType linearity;
-
-        QList<Matrix> matrices;
-        QList<MatrixTransient> matricesTransient;
-        QList<Vector> vectors;
-        QList<Essential> essentials;
-    };
-
-    QString id;
-    QString name;
-    QString equation;
     AnalysisType analysis;
-    AnalysisType analysisTarget;
-
-    QList<Variable> variables;
-    QList<Solver> solvers;
+    QList<Item> items;
 };
 
 class AGROS_LIBRARY_API PluginWeakFormRecipe
@@ -442,6 +454,10 @@ public:
     // processor
     PluginWeakFormRecipe weakFormRecipeVolume;
     QList<PluginWeakFormAnalysis> weakFormAnalysisVolume;
+
+    void load(const QString &fileName);
+    void save(const QString &fileName);
+    void clear();
 };
 
 // plugin interface

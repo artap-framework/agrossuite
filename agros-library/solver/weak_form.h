@@ -11,19 +11,6 @@ class SceneMaterial;
 class CouplingInfo;
 class FieldInfo;
 
-namespace XMLModule
-{
-class field;
-class quantity;
-class boundary;
-class surface;
-class force;
-class localvariable;
-class space;
-class calculator;
-class linearity_option;
-}
-
 struct PositionInfo
 {
     PositionInfo();

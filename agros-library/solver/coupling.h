@@ -33,19 +33,19 @@ class AGROS_LIBRARY_API CouplingList
 public:
     struct Item
     {
+        QString id;
         QString name;
-        QString description;
+        QString source;
+        QString target;
 
-        QString sourceField;
-        AnalysisType sourceAnalysisType;
-        QString targetField;
-        AnalysisType targetAnalysisType;
-        CouplingType couplingType;
-
-        inline QString toString()
+        struct Analysis
         {
-            return QString("source: %1 (%2), target: %3 (%4), %5").arg(sourceField).arg(analysisTypeString(sourceAnalysisType)).arg(targetField).arg(analysisTypeString(targetAnalysisType)).arg(couplingTypeString(couplingType));
-        }
+            AnalysisType sourceAnalysisType;
+            AnalysisType targetAnalysisType;
+            CouplingType couplingType;
+        };
+
+        QList<Analysis> analyses;
     };
 
     CouplingList();
@@ -66,7 +66,8 @@ AGROS_LIBRARY_API CouplingList *couplingList();
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {
 public:
-    CouplingInfo(FieldInfo* sourceField, FieldInfo* targetField,
+    CouplingInfo(FieldInfo *sourceField,
+                 FieldInfo *targetField,
                  CouplingType couplingType = CouplingType_Weak);
     ~CouplingInfo();
 
@@ -88,6 +89,9 @@ private:
 
     // coupling type
     CouplingType m_couplingType;
+
+    // name
+    QString m_name;
 };
 
 #endif // COUPLING_H
