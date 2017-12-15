@@ -21,7 +21,7 @@
 #include "field.h"
 #include "util/global.h"
 
-#include "../../resources_source/classes/module_xml.h"
+// #include "../../resources_source/classes/module_xml.h"
 
 // general
 const QString GENERAL = "general";
@@ -285,7 +285,7 @@ PluginInterface::~PluginInterface()
 
 void PluginModule::load(const QString &fileName)
 {
-    // clear();
+    clear();
 
     QFile file(fileName);
 
@@ -305,7 +305,6 @@ void PluginModule::load(const QString &fileName)
     name = generalJson[NAME].toString();
 
     // constants
-    constants.clear();
     QJsonObject constantsJson = generalJson[CONSTANTS].toObject();
     for (QJsonObject::iterator it = constantsJson.begin(); it != constantsJson.end(); it++)
     {
@@ -317,7 +316,6 @@ void PluginModule::load(const QString &fileName)
     }
 
     // macros
-    macros.clear();
     QJsonObject macrosJson = generalJson[MACROS].toObject();
     for (QJsonObject::iterator it = macrosJson.begin(); it != macrosJson.end(); it++)
     {
@@ -329,7 +327,6 @@ void PluginModule::load(const QString &fileName)
     }
 
     // analyses
-    analyses.clear();
     QJsonObject analysesJson = generalJson[ANALYSES].toObject();
     for (QJsonObject::iterator it = analysesJson.begin(); it != analysesJson.end(); it++)
     {
@@ -363,7 +360,16 @@ void PluginModule::load(const QString &fileName)
 
     // volume recipes
     {
-        weakFormRecipeVolume.matrixForms.clear();
+        QJsonObject variablesJson = proVolumeJson[VARIABLES].toObject();
+        for (QJsonObject::iterator it = variablesJson.begin(); it != variablesJson.end(); it++)
+        {
+            PluginWeakFormRecipe::Variable variable;
+            variable.id = it.key();
+            variable.shortName = it.value().toString();
+
+            weakFormRecipeVolume.variables.append(variable);
+        }
+
         QJsonObject matrixFormsJson = proVolumeJson[MATRIX_FORMS].toObject();
         for (QJsonObject::iterator it = matrixFormsJson.begin(); it != matrixFormsJson.end(); it++)
         {
@@ -380,7 +386,6 @@ void PluginModule::load(const QString &fileName)
             weakFormRecipeVolume.matrixForms.append(form);
         }
 
-        weakFormRecipeVolume.vectorForms.clear();
         QJsonObject vectorFormsJson = proVolumeJson[VECTOR_FORMS].toObject();
         for (QJsonObject::iterator it = vectorFormsJson.begin(); it != vectorFormsJson.end(); it++)
         {
@@ -398,15 +403,13 @@ void PluginModule::load(const QString &fileName)
     }
 
     // volume analyses
-    QJsonObject proVolumeAnalysesJson = proJson[VOLUME_ANALYSES].toObject();
+    QJsonArray proVolumeAnalysesJson = proJson[VOLUME_ANALYSES].toArray();
     {
-        weakFormAnalysisVolume.clear();
-        for (QJsonObject::iterator it = proVolumeAnalysesJson.begin(); it != proVolumeAnalysesJson.end(); it++)
+        for (int ai = 0; ai < proVolumeAnalysesJson.count(); ai++)
         {
-            QJsonObject analysisJson = it.value().toObject();
+            QJsonObject analysisJson = proVolumeAnalysesJson[ai].toObject();
 
             PluginWeakFormAnalysis analysis;
-            analysis.analysis = analysisTypeFromStringKey(it.key());
 
             for (QJsonObject::iterator it = analysisJson.begin(); it != analysisJson.end(); it++)
             {
@@ -416,6 +419,7 @@ void PluginModule::load(const QString &fileName)
                 item.id = itemJson[ID].toString();
                 item.name = itemJson[NAME].toString();
                 item.equation = itemJson[EQUATION].toString();
+                item.analysis = analysisTypeFromStringKey(itemJson[ANALYSISTYPE].toString());
 
                 // variables
                 QJsonObject variablesJson = itemJson[VARIABLES].toObject();
@@ -485,9 +489,9 @@ void PluginModule::load(const QString &fileName)
                 }
 
                 analysis.items.append(item);
-            }
 
-            weakFormAnalysisVolume.append(analysis);
+                weakFormAnalysisVolume.append(analysis);
+            }
         }
     }
 
@@ -495,7 +499,16 @@ void PluginModule::load(const QString &fileName)
 
     // surface recipes
     {
-        weakFormRecipeSurface.matrixForms.clear();
+        QJsonObject variablesJson = proSurfaceJson[VARIABLES].toObject();
+        for (QJsonObject::iterator it = variablesJson.begin(); it != variablesJson.end(); it++)
+        {
+            PluginWeakFormRecipe::Variable variable;
+            variable.id = it.key();
+            variable.shortName = it.value().toString();
+
+            weakFormRecipeSurface.variables.append(variable);
+        }
+
         QJsonObject matrixFormsJson = proSurfaceJson[MATRIX_FORMS].toObject();
         for (QJsonObject::iterator it = matrixFormsJson.begin(); it != matrixFormsJson.end(); it++)
         {
@@ -512,7 +525,6 @@ void PluginModule::load(const QString &fileName)
             weakFormRecipeSurface.matrixForms.append(form);
         }
 
-        weakFormRecipeSurface.vectorForms.clear();
         QJsonObject vectorFormsJson = proSurfaceJson[VECTOR_FORMS].toObject();
         for (QJsonObject::iterator it = vectorFormsJson.begin(); it != vectorFormsJson.end(); it++)
         {
@@ -528,7 +540,6 @@ void PluginModule::load(const QString &fileName)
             weakFormRecipeSurface.vectorForms.append(form);
         }
 
-        weakFormRecipeSurface.essentialForms.clear();
         QJsonObject essentialFormsJson = proSurfaceJson[ESSENTIONAL_FORMS].toObject();
         for (QJsonObject::iterator it = essentialFormsJson.begin(); it != essentialFormsJson.end(); it++)
         {
@@ -546,15 +557,13 @@ void PluginModule::load(const QString &fileName)
     }
 
     // surface analyses
-    QJsonObject proSurfaceAnalysesJson = proJson[SURFACE_ANALYSES].toObject();
+    QJsonArray proSurfaceAnalysesJson = proJson[SURFACE_ANALYSES].toArray();
     {
-        weakFormAnalysisSurface.clear();
-        for (QJsonObject::iterator it = proSurfaceAnalysesJson.begin(); it != proSurfaceAnalysesJson.end(); it++)
+        for (int ai = 0; ai < proSurfaceAnalysesJson.count(); ai++)
         {
-            QJsonObject analysisJson = it.value().toObject();
+            QJsonObject analysisJson = proSurfaceAnalysesJson[ai].toObject();
 
             PluginWeakFormAnalysis analysis;
-            analysis.analysis = analysisTypeFromStringKey(it.key());
 
             for (QJsonObject::iterator it = analysisJson.begin(); it != analysisJson.end(); it++)
             {
@@ -564,6 +573,7 @@ void PluginModule::load(const QString &fileName)
                 item.id = itemJson[ID].toString();
                 item.name = itemJson[NAME].toString();
                 item.equation = itemJson[EQUATION].toString();
+                item.analysis = analysisTypeFromStringKey(itemJson[ANALYSISTYPE].toString());
 
                 // variables
                 QJsonObject variablesJson = itemJson[VARIABLES].toObject();
@@ -656,7 +666,6 @@ void PluginModule::load(const QString &fileName)
     QJsonObject guiJson = preJson[GUI].toObject();
 
     // volume groups
-    preVolumeGroups.clear();
     QJsonArray volumeGroupsArrayJson = guiJson[VOLUME_RECIPES].toArray();
     for (int i = 0; i < volumeGroupsArrayJson.count(); i++)
     {
@@ -693,7 +702,6 @@ void PluginModule::load(const QString &fileName)
     }
 
     // volume groups
-    preSurfaceGroups.clear();
     QJsonArray surfaceGroupsArrayJson = guiJson[SURFACE_RECIPES].toArray();
     for (int i = 0; i < surfaceGroupsArrayJson.count(); i++)
     {
@@ -731,7 +739,6 @@ void PluginModule::load(const QString &fileName)
     QJsonObject postJson = rootJson[POSTPROCESSOR].toObject();
 
     // local variables
-    postLocalVariables.clear();
     QJsonArray localVariablesArrayJson = postJson[LOCALVARIABLES].toArray();
     for (int i = 0; i < localVariablesArrayJson.count(); i++)
     {
@@ -780,7 +787,6 @@ void PluginModule::load(const QString &fileName)
     }
 
     // volume integrals
-    postVolumeIntegrals.clear();
     QJsonArray volumeIntegralsArrayJson = postJson[VOLUMEINTEGRALS].toArray();
     for (int i = 0; i < volumeIntegralsArrayJson.count(); i++)
     {
@@ -813,7 +819,6 @@ void PluginModule::load(const QString &fileName)
     }
 
     // volume integrals
-    postSurfaceIntegrals.clear();
     QJsonArray surfaceIntegralsArrayJson = postJson[SURFACEINTEGRALS].toArray();
     for (int i = 0; i < surfaceIntegralsArrayJson.count(); i++)
     {
@@ -957,7 +962,7 @@ void PluginModule::save(const QString &fileName)
         }
 
         // analyses
-        QJsonObject proVolumeAnalysesJson;
+        QJsonArray proVolumeAnalysesJson;
         foreach (PluginWeakFormAnalysis analysis, weakFormAnalysisVolume)
         {
             QJsonObject itemsJson;
@@ -968,6 +973,7 @@ void PluginModule::save(const QString &fileName)
                 itemJson[ID] = item.id;
                 itemJson[NAME] = item.name;
                 itemJson[EQUATION] = item.equation;
+                itemJson[ANALYSISTYPE] = analysisTypeToStringKey(item.analysis);
 
                 // variables
                 QJsonObject variablesJson;
@@ -1030,7 +1036,7 @@ void PluginModule::save(const QString &fileName)
                 itemsJson[item.id] = itemJson;
             }
 
-            proVolumeAnalysesJson[analysisTypeToStringKey(analysis.analysis)] = itemsJson;
+            proVolumeAnalysesJson.append(itemsJson);
         }
 
         proJson[VOLUME_ANALYSES] = proVolumeAnalysesJson;
@@ -1096,7 +1102,7 @@ void PluginModule::save(const QString &fileName)
         proJson[SURFACE_RECIPES] = proSurfaceJson;
     }
 
-    QJsonObject proSurfaceAnalysesJson;
+    QJsonArray proSurfaceAnalysesJson;
     foreach (PluginWeakFormAnalysis analysis, weakFormAnalysisSurface)
     {
         QJsonObject itemsJson;
@@ -1106,6 +1112,7 @@ void PluginModule::save(const QString &fileName)
             itemJson[ID] = item.id;
             itemJson[NAME] = item.name;
             itemJson[EQUATION] = item.equation;
+            itemJson[ANALYSISTYPE] = analysisTypeToStringKey(item.analysis);
 
             // variables
             QJsonObject variablesJson;
@@ -1177,7 +1184,7 @@ void PluginModule::save(const QString &fileName)
 
             itemsJson[item.id] = itemJson;
         }
-        proSurfaceAnalysesJson[analysisTypeToStringKey(analysis.analysis)] = itemsJson;
+        proSurfaceAnalysesJson.append(itemsJson);
     }
     proJson[SURFACE_ANALYSES] = proSurfaceAnalysesJson;
 
@@ -1403,6 +1410,8 @@ void PluginModule::clear()
 
 void PluginCoupling::load(const QString &fileName)
 {
+    clear();
+
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly))
@@ -1423,7 +1432,6 @@ void PluginCoupling::load(const QString &fileName)
     target = generalJson[TARGET].toString();
 
     // constants
-    constants.clear();
     QJsonObject constantsJson = generalJson[CONSTANTS].toObject();
     for (QJsonObject::iterator it = constantsJson.begin(); it != constantsJson.end(); it++)
     {
@@ -1432,6 +1440,150 @@ void PluginCoupling::load(const QString &fileName)
         constant.value = it.value().toDouble();
 
         constants.append(constant);
+    }
+
+    // processor
+    QJsonObject proJson = rootJson[PROCESSOR].toObject();
+
+    QJsonObject proVolumeJson = proJson[VOLUME_RECIPES].toObject();
+
+    // volume recipes
+    {
+        QJsonObject variablesJson = proVolumeJson[VARIABLES].toObject();
+        for (QJsonObject::iterator it = variablesJson.begin(); it != variablesJson.end(); it++)
+        {
+            PluginWeakFormRecipe::Variable variable;
+            variable.id = it.key();
+            variable.shortName = it.value().toString();
+
+            weakFormRecipeVolume.variables.append(variable);
+        }
+
+        QJsonObject matrixFormsJson = proVolumeJson[MATRIX_FORMS].toObject();
+        for (QJsonObject::iterator it = matrixFormsJson.begin(); it != matrixFormsJson.end(); it++)
+        {
+            QJsonObject matrixJson = it.value().toObject();
+
+            PluginWeakFormRecipe::MatrixForm form;
+            form.i = matrixJson[I].toInt();
+            form.j = matrixJson[J].toInt();
+            form.planar = matrixJson[PLANAR].toString();
+            form.axi = matrixJson[AXI].toString();
+            form.cart = matrixJson[CART].toString();
+            form.condition = matrixJson[CONDITION].toString();
+
+            weakFormRecipeVolume.matrixForms.append(form);
+        }
+
+        QJsonObject vectorFormsJson = proVolumeJson[VECTOR_FORMS].toObject();
+        for (QJsonObject::iterator it = vectorFormsJson.begin(); it != vectorFormsJson.end(); it++)
+        {
+            QJsonObject vectorJson = it.value().toObject();
+
+            PluginWeakFormRecipe::VectorForm form;
+            form.i = vectorJson[I].toInt();
+            form.planar = vectorJson[PLANAR].toString();
+            form.axi = vectorJson[AXI].toString();
+            form.cart = vectorJson[CART].toString();
+            form.condition = vectorJson[CONDITION].toString();
+
+            weakFormRecipeVolume.vectorForms.append(form);
+        }
+    }
+
+    // volume analyses
+    QJsonArray proVolumeAnalysesJson = proJson[VOLUME_ANALYSES].toArray();
+    {
+        for (int ai = 0; ai < proVolumeAnalysesJson.count(); ai++)
+        {
+            QJsonObject analysisJson = proVolumeAnalysesJson[ai].toObject();
+
+            for (QJsonObject::iterator it = analysisJson.begin(); it != analysisJson.end(); it++)
+            {
+                PluginWeakFormAnalysis analysis;
+
+                QJsonObject itemJson = it.value().toObject();
+
+                PluginWeakFormAnalysis::Item item;
+                item.analysis = analysisTypeFromStringKey(itemJson[ANALYSISTYPE].toString());
+                item.id = itemJson[ID].toString();
+                item.name = itemJson[NAME].toString();
+                item.equation = itemJson[EQUATION].toString();
+                item.analysisSource = analysisTypeFromStringKey(itemJson[ANALYSISSOURCETYPE].toString());
+                item.coupling = couplingTypeFromStringKey(itemJson[COUPLINGTYPE].toString());
+
+                // variables
+                QJsonObject variablesJson = itemJson[VARIABLES].toObject();
+                for (QJsonObject::iterator it = variablesJson.begin(); it != variablesJson.end(); it++)
+                {
+                    QJsonObject variableJson = it.value().toObject();
+
+                    PluginWeakFormAnalysis::Item::Variable variable;
+                    variable.id = it.key();
+                    variable.dependency = variableJson[DEPENDENCY].toString();
+                    variable.nonlinearity_planar = variableJson[NONLINEARITY_PLANAR].toString();
+                    variable.nonlinearity_axi = variableJson[NONLINEARITY_AXI].toString();
+                    variable.nonlinearity_cart = variableJson[NONLINEARITY_CART].toString();
+
+                    item.variables.append(variable);
+                }
+
+                // solver
+                QJsonObject solversJson = itemJson[SOLVERS].toObject();
+
+                for (QJsonObject::iterator its = solversJson.begin(); its != solversJson.end(); its++)
+                {
+                    QJsonObject solverJson = its.value().toObject();
+
+                    PluginWeakFormAnalysis::Item::Solver solver;
+                    solver.linearity = linearityTypeFromStringKey(its.key());
+
+                    // matrix forms
+                    QJsonObject matricesJson = solverJson[MATRIX_FORMS].toObject();
+                    for (QJsonObject::iterator itm = matricesJson.begin(); itm != matricesJson.end(); itm++)
+                    {
+                        QJsonObject formJson = itm.value().toObject();
+
+                        PluginWeakFormAnalysis::Item::Solver::Matrix form;
+                        form.id = itm.key();
+
+                        solver.matrices.append(form);
+                    }
+
+                    // matrix transient forms
+                    QJsonObject matricesTransientJson = solverJson[MATRIX_TRANSIENT_FORMS].toObject();
+                    for (QJsonObject::iterator itm = matricesTransientJson.begin(); itm != matricesTransientJson.end(); itm++)
+                    {
+                        QJsonObject formJson = itm.value().toObject();
+
+                        PluginWeakFormAnalysis::Item::Solver::MatrixTransient form;
+                        form.id = itm.key();
+
+                        solver.matricesTransient.append(form);
+                    }
+
+                    // vector forms
+                    QJsonObject vectorJson = solverJson[VECTOR_FORMS].toObject();
+                    for (QJsonObject::iterator itm = vectorJson.begin(); itm != vectorJson.end(); itm++)
+                    {
+                        QJsonObject formJson = itm.value().toObject();
+
+                        PluginWeakFormAnalysis::Item::Solver::Vector form;
+                        form.id = itm.key();
+                        form.coefficient = formJson[COEFFICIENT].toInt();
+                        form.variant = formJson[VARIANT].toString();
+
+                        solver.vectors.append(form);
+                    };
+
+                    item.solvers.append(solver);
+
+                    analysis.items.append(item);
+                }
+
+                weakFormAnalysisVolume.append(analysis);
+            }
+        }
     }
 }
 
@@ -1500,7 +1652,7 @@ void PluginCoupling::save(const QString &fileName)
         proJson[VOLUME_RECIPES] = proVolumeJson;
 
         // analyses
-        QJsonObject proVolumeAnalysesJson;
+        QJsonArray proVolumeAnalysesJson;
         foreach (PluginWeakFormAnalysis analysis, weakFormAnalysisVolume)
         {
             QJsonObject itemsJson;
@@ -1511,6 +1663,7 @@ void PluginCoupling::save(const QString &fileName)
                 itemJson[ID] = item.id;
                 itemJson[NAME] = item.name;
                 itemJson[EQUATION] = item.equation;
+                itemJson[ANALYSISTYPE] = analysisTypeToStringKey(item.analysis);
                 itemJson[ANALYSISSOURCETYPE] = analysisTypeToStringKey(item.analysisSource);
                 itemJson[COUPLINGTYPE] = couplingTypeToStringKey(item.coupling);
 
@@ -1575,7 +1728,7 @@ void PluginCoupling::save(const QString &fileName)
                 itemsJson[item.id] = itemJson;
             }
 
-            proVolumeAnalysesJson[analysisTypeToStringKey(analysis.analysis)] = itemsJson;
+            proVolumeAnalysesJson.append(itemsJson);
         }
 
         proJson[VOLUME_ANALYSES] = proVolumeAnalysesJson;
@@ -1631,6 +1784,7 @@ IntegralValue::IntegralScratchData::IntegralScratchData(const IntegralScratchDat
 
 void PluginInterface::convertJson(XMLModule::field *module)
 {
+    /*
     // clear current module
     m_moduleJson->clear();
 
@@ -1744,13 +1898,13 @@ void PluginInterface::convertJson(XMLModule::field *module)
         XMLModule::weakform_volume weakform_volume = volume.weakforms_volume().weakform_volume().at(i);
 
         PluginWeakFormAnalysis analysis;
-        analysis.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.analysistype()));
 
         // only one item
         PluginWeakFormAnalysis::Item item;
         item.id = "volume";
         item.name = "Volume";
         item.equation = QString::fromStdString(weakform_volume.equation());
+        item.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.analysistype()));
 
         for (unsigned int j = 0; j < weakform_volume.quantity().size(); j++)
         {
@@ -1880,7 +2034,6 @@ void PluginInterface::convertJson(XMLModule::field *module)
         XMLModule::weakform_surface weakform_surface = surface.weakforms_surface().weakform_surface().at(i);
 
         PluginWeakFormAnalysis analysis;
-        analysis.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_surface.analysistype()));
 
         for (unsigned int k = 0; k < weakform_surface.boundary().size(); k++)
         {
@@ -1891,6 +2044,7 @@ void PluginInterface::convertJson(XMLModule::field *module)
             item.id = QString::fromStdString(boundary.id());
             item.name = QString::fromStdString(boundary.name());
             item.equation = QString::fromStdString(boundary.equation());
+            item.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_surface.analysistype()));
 
             for (unsigned int j = 0; j < boundary.quantity().size(); j++)
             {
@@ -2102,7 +2256,8 @@ void PluginInterface::convertJson(XMLModule::field *module)
     }
 
     m_moduleJson->save(QString("%1/resources/modules/%2.json").arg(datadir()).arg(this->fieldId()));
+    */
 
     // load
-    // m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(this->fieldId()));
+    m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(this->fieldId()));
 }

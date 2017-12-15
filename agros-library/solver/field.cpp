@@ -32,7 +32,7 @@
 // #include "../../resources_source/classes/problem_a2d_31_xml.h"
 
 FieldInfo::FieldInfo(QString fieldId)
-    : m_plugin(nullptr), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)
+    : m_plugin(nullptr), m_numberOfSolutions(0)
 {    
     assert(!fieldId.isEmpty());
     m_fieldId = fieldId;
@@ -76,12 +76,6 @@ void FieldInfo::copy(const FieldInfo *origin)
     setMatrixSolver(origin->matrixSolver());
 }
 
-double FieldInfo::labelArea(int agrosLabel) const
-{
-    assert(m_labelAreas);
-    return m_labelAreas[agrosLabel];
-}
-
 void FieldInfo::setAnalysisType(AnalysisType analysisType)
 {
     m_setting[Analysis] = QVariant::fromValue(analysisType);
@@ -92,43 +86,7 @@ void FieldInfo::setAnalysisType(AnalysisType analysisType)
             m_numberOfSolutions = an.solutions;
 
         m_availableLinearityTypes = availableLinearityTypes(analysisType);
-    }
-
-    /*
-    foreach (XMLXXXModule::analysis an, m_plugin->module()->general_field().analyses().analysis())
-    {
-        if (an.type() == analysisTypeToStringKey(analysisType).toStdString())
-        {
-            m_numberOfSolutions = an.solutions();
-
-            if (an.field_config().present())
-            {
-                for (int i = 0; i < an.field_config().get().field_item().size(); i ++)
-                {
-                    Type key = stringKeyToType(QString::fromStdString(an.field_config().get().field_item().at(i).field_key()));
-
-                    if (m_settingDefault.keys().contains(key))
-                    {
-                        if (m_settingDefault[key].type() == QVariant::Double)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toDouble();
-                        else if (m_settingDefault[key].type() == QVariant::Int)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).toInt();
-                        else if (m_settingDefault[key].type() == QVariant::Bool)
-                            m_settingDefault[key] = (QString::fromStdString(an.field_config().get().field_item().at(i).field_value()) == "1");
-                        else if (m_settingDefault[key].type() == QVariant::String)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
-                        else if (m_settingDefault[key].type() == QVariant::StringList)
-                            m_settingDefault[key] = QString::fromStdString(an.field_config().get().field_item().at(i).field_value()).split("|");
-                        else
-                            qDebug() << "Key not found" << QString::fromStdString(an.field_config().get().field_item().at(i).field_key()) << QString::fromStdString(an.field_config().get().field_item().at(i).field_value());
-                    }
-                }
-            }
-
-            m_availableLinearityTypes = availableLinearityTypes(analysisType);
-        }
-    }
-    */
+    }    
 }
 
 QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
@@ -137,9 +95,9 @@ QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
 
     foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisVolume)
     {
-        if (analysis.analysis == at)
+        foreach (PluginWeakFormAnalysis::Item item, analysis.items)
         {
-            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
+            if (item.analysis == at)
             {
                 // should be only one
                 foreach (PluginWeakFormAnalysis::Item::Solver solver, item.solvers)
@@ -188,7 +146,8 @@ void FieldInfo::clear()
     m_labelsPolynomialOrder.clear();
 }
 
-// xml module
+// module
+
 // name
 QString FieldInfo::name() const
 {
@@ -249,9 +208,9 @@ QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
     QList<Module::MaterialTypeVariable> materialTypeVariables;
     foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisVolume)
     {
-        if (analysis.analysis == analysisType())
+        foreach (PluginWeakFormAnalysis::Item item, analysis.items)
         {
-            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
+            if (item.analysis == analysisType())
             {
                 foreach (PluginWeakFormAnalysis::Item::Variable variable, item.variables)
                 {
@@ -324,9 +283,9 @@ QList<Module::BoundaryType> FieldInfo::boundaryTypes() const
     QList<Module::BoundaryType> boundaryTypes;
     foreach (PluginWeakFormAnalysis analysis, m_plugin->moduleJson()->weakFormAnalysisSurface)
     {
-        if (analysis.analysis == analysisType())
+        foreach (PluginWeakFormAnalysis::Item item, analysis.items)
         {
-            foreach (PluginWeakFormAnalysis::Item item, analysis.items)
+            if (item.analysis == analysisType())
             {
                 // variables
                 QList<Module::BoundaryTypeVariable> variables;
@@ -362,12 +321,7 @@ QList<Module::BoundaryType> FieldInfo::boundaryTypes() const
                     }
                 }
 
-                QList<FormInfo> wfMatrix; //  = Module::wfMatrixSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-                QList<FormInfo> wfVector; //  = Module::wfVectorSurface(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-                QList<FormInfo> essential; //  = Module::essential(&fieldInfo->plugin()->module()->surface(), &variable, fieldInfo->analysisType(), fieldInfo->linearityType());
-
-                boundaryTypes.append(Module::BoundaryType(item.id, m_plugin->localeName(item.name), item.equation,
-                                                          variables, wfMatrix, wfVector, essential));
+                boundaryTypes.append(Module::BoundaryType(item.id, m_plugin->localeName(item.name), variables));
             }
         }
     }
@@ -544,6 +498,8 @@ QList<Module::Integral> FieldInfo::surfaceIntegrals(CoordinateType coordinateTyp
                     expr = expresion.planar;
                 else if (coordinateType == CoordinateType_Axisymmetric)
                     expr = expresion.axi;
+                else if (coordinateType == CoordinateType_Cart)
+                    expr = expresion.cart;
                 else
                     assert(0);
 
@@ -577,6 +533,8 @@ QList<Module::Integral> FieldInfo::volumeIntegrals(CoordinateType coordinateType
                     expr = expresion.planar;
                 else if (coordinateType == CoordinateType_Axisymmetric)
                     expr = expresion.axi;
+                else if (coordinateType == CoordinateType_Cart)
+                    expr = expresion.cart;
                 else
                     assert(0);
 

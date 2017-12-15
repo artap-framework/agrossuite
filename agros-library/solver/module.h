@@ -224,10 +224,8 @@ private:
 // boundary condition type
 struct AGROS_LIBRARY_API BoundaryType
 {
-    BoundaryType(const QString &id, const QString &name, const QString &equation,
-                 QList<BoundaryTypeVariable> variables,
-                 QList<FormInfo> wfMatrix, QList<FormInfo> wfVector, QList<FormInfo> essential)
-        : m_id(id), m_name(name), m_equation(equation), m_variables(variables), m_wfMatrix(wfMatrix), m_wfVector(wfVector), m_essential(essential) {}
+    BoundaryType(const QString &id, const QString &name, QList<BoundaryTypeVariable> variables)
+        : m_id(id), m_name(name), m_variables(variables) {}
     ~BoundaryType();
 
     // id
@@ -238,28 +236,11 @@ struct AGROS_LIBRARY_API BoundaryType
     // variables
     inline QList<BoundaryTypeVariable> variables() const { return m_variables; }
 
-    // weakform
-    inline QList<FormInfo> wfMatrixSurface() const {return m_wfMatrix; }
-    inline QList<FormInfo> wfVectorSurface() const {return m_wfVector; }
-
-    // essential
-    inline QList<FormInfo> essential() const {return m_essential; }
-
-    // latex equation
-    inline QString equation() { return m_equation; }
-
 private:
     // id
     QString m_id;
     // name
     QString m_name;
-    // latex equation
-    QString m_equation;
-
-    // steady state and harmonic
-    QList<FormInfo> m_wfMatrix;
-    QList<FormInfo> m_wfVector;
-    QList<FormInfo> m_essential;
 
     // variables
     QList<BoundaryTypeVariable> m_variables;

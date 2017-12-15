@@ -199,12 +199,12 @@ public:
 class AGROS_LIBRARY_API PluginWeakFormAnalysis
 {
 public:
-    PluginWeakFormAnalysis() : analysis(AnalysisType_Undefined) {}
+    PluginWeakFormAnalysis() {}
 
     class AGROS_LIBRARY_API Item
     {
     public:
-        Item() : analysisSource(AnalysisType_Undefined), coupling(CouplingType_Undefined) {}
+        Item() : analysis(AnalysisType_Undefined), analysisSource(AnalysisType_Undefined), coupling(CouplingType_Undefined) {}
 
         class AGROS_LIBRARY_API Variable
         {
@@ -256,6 +256,7 @@ public:
         QString id;
         QString name;
         QString equation;
+        AnalysisType analysis;
         // coupling only
         AnalysisType analysisSource;
         CouplingType coupling;
@@ -264,7 +265,6 @@ public:
         QList<Solver> solvers;
     };
 
-    AnalysisType analysis;
     QList<Item> items;
 };
 

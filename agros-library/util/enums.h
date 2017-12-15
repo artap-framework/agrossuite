@@ -33,7 +33,8 @@ enum CoordinateType
 {
     CoordinateType_Undefined = -1,
     CoordinateType_Planar = 0,
-    CoordinateType_Axisymmetric = 1
+    CoordinateType_Axisymmetric = 1,
+    CoordinateType_Cart = 2
 };
 Q_DECLARE_METATYPE(CoordinateType)
 
@@ -102,8 +103,8 @@ enum CouplingType
 {
     CouplingType_Undefined = -1,
     CouplingType_None = 0,
-    CouplingType_Weak = 1
-    // CouplingType_Hard = 2
+    CouplingType_Weak = 1,
+    CouplingType_Hard = 2
 };
 
 enum MeshType

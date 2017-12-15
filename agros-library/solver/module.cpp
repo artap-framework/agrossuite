@@ -37,7 +37,7 @@
 
 #include "util/constants.h"
 
-#include "../../resources_source/classes/module_xml.h"
+// #include "../../resources_source/classes/module_xml.h"
 
 QMap<QString, QString> Module::availableModules()
 {  
@@ -55,7 +55,7 @@ QStringList Module::availableCouplings()
 
     // read images
     QStringList filters;
-    filters << "*.xml";
+    filters << "*.json";
 
     QDir dir(QString("resources/couplings/"));
     dir.setNameFilters(filters);
@@ -71,10 +71,6 @@ QStringList Module::availableCouplings()
 Module::BoundaryType::~BoundaryType()
 {
     m_variables.clear();
-
-    m_wfMatrix.clear();
-    m_wfVector.clear();
-    m_essential.clear();
 }
 
 

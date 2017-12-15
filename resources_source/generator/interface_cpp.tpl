@@ -32,12 +32,13 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-#include "../../resources_source/classes/module_xml.h"
+// #include "../../resources_source/classes/module_xml.h"
 
-static XMLModule::module *module_module = NULL;
+// static XMLModule::module *module_module = NULL;
 
 {{CLASS}}Interface::{{CLASS}}Interface() : PluginInterface()
-{    
+{  
+    /*  
     // xml module description
     if (!module_module)
     {
@@ -88,8 +89,10 @@ static XMLModule::module *module_module = NULL;
             qDebug() << QString::fromStdString(e.what());
         }
     }
+    */
     
-    convertJson(&module_module->field().get());
+    // convertJson(&module_module->field().get());
+    m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(fieldId()));   
 }
 
 {{CLASS}}Interface::~{{CLASS}}Interface()

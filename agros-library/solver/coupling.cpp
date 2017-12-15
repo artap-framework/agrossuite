@@ -34,7 +34,7 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-#include "../../resources_source/classes/module_xml.h"
+// #include "../../resources_source/classes/module_xml.h"
 
 static CouplingList *m_couplingList = NULL;
 CouplingList *couplingList()
@@ -50,6 +50,19 @@ CouplingList::CouplingList()
     // read couplings
     QDir dir(datadir() + COUPLINGROOT);
 
+    QStringList filter;
+    filter << "*.json";
+    QStringList list = dir.entryList(filter);
+
+    foreach (QString filename, list)
+    {
+        PluginCoupling *coupling = new PluginCoupling();
+        coupling->load(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + "json");
+
+        m_couplingJson.append(coupling);
+    }
+
+    /*
     QStringList filter;
     filter << "*.xml";
     QStringList list = dir.entryList(filter);
@@ -72,18 +85,14 @@ CouplingList::CouplingList()
             assert(mod->coupling().present());
             XMLModule::coupling *coup = &mod->coupling().get();
 
-            CouplingList::Item item;
-            item.id = QString::fromStdString(coup->general_coupling().id());
-            item.name = QString::fromStdString(coup->general_coupling().name());
-            item.source = QString::fromStdString(coup->general_coupling().modules().source().id());
-            item.target = QString::fromStdString(coup->general_coupling().modules().target().id());
-
             // convert JSON
-            PluginCoupling couplingJson;
-            couplingJson.id = QString::fromStdString(coup->general_coupling().id());
-            couplingJson.name = QString::fromStdString(coup->general_coupling().name());
-            couplingJson.source = QString::fromStdString(coup->general_coupling().modules().source().id());
-            couplingJson.target = QString::fromStdString(coup->general_coupling().modules().target().id());
+            PluginCoupling coupling;
+            coupling.id = QString::fromStdString(coup->general_coupling().id());
+            coupling.name = QString::fromStdString(coup->general_coupling().name());
+            coupling.source = QString::fromStdString(coup->general_coupling().modules().source().id());
+            coupling.target = QString::fromStdString(coup->general_coupling().modules().target().id());
+
+            qWarning() << coupling.id;
 
             // constants
             foreach (XMLModule::constant cnst, coup->constants().constant())
@@ -92,21 +101,13 @@ CouplingList::CouplingList()
                 c.id = QString::fromStdString(cnst.id());
                 c.value = cnst.value();
 
-                couplingJson.constants.append(c);
+                coupling.constants.append(c);
             }
 
             // check whether coupling is available for values of source and target fields such as analysis type
             for (int k = 0; k < coup->volume().weakforms_volume().weakform_volume().size(); k++)
             {
                 XMLModule::weakform_volume wf = coup->volume().weakforms_volume().weakform_volume().at(k);
-
-                CouplingList::Item::Analysis analysis;
-
-                analysis.sourceAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.sourceanalysis().get()));
-                analysis.targetAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.analysistype()));
-                analysis.couplingType = couplingTypeFromStringKey(QString::fromStdString(wf.couplingtype().get()));
-
-                item.analyses.append(analysis);
 
                 // volume weakform - matrix
                 for (unsigned int i = 0; i < coup->volume().matrix_form().size(); i++)
@@ -122,7 +123,7 @@ CouplingList::CouplingList()
                     form.cart = (matrix_form.planar().present()) ? QString::fromStdString(matrix_form.planar().get()) : "";
                     form.condition = (matrix_form.condition().present()) ? QString::fromStdString(matrix_form.condition().get()) : "";
 
-                    couplingJson.weakFormRecipeVolume.matrixForms.append(form);
+                    coupling.weakFormRecipeVolume.matrixForms.append(form);
                 }
 
                 // volume weakform - vector
@@ -138,24 +139,27 @@ CouplingList::CouplingList()
                     form.cart = (vector_form.planar().present()) ? QString::fromStdString(vector_form.planar().get()) : "";
                     form.condition = (vector_form.condition().present()) ? QString::fromStdString(vector_form.condition().get()) : "";
 
-                    couplingJson.weakFormRecipeVolume.vectorForms.append(form);
+                    coupling.weakFormRecipeVolume.vectorForms.append(form);
                 }
 
                 // volume analyses
+                PluginWeakFormAnalysis analysis;
+
                 for (unsigned int i = 0; i < coup->volume().weakforms_volume().weakform_volume().size(); i++)
                 {
                     XMLModule::weakform_volume weakform_volume = coup->volume().weakforms_volume().weakform_volume().at(i);
-
-                    PluginWeakFormAnalysis analysis;
-                    analysis.analysis = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.analysistype()));
 
                     // only one item
                     PluginWeakFormAnalysis::Item item;
                     item.id = "volume";
                     item.name = "Volume";
+                    item.analysis = analysisTypeFromStringKey(QString::fromStdString(wf.analysistype()));
                     item.analysisSource = analysisTypeFromStringKey(QString::fromStdString(weakform_volume.sourceanalysis().get()));
                     item.coupling = couplingTypeFromStringKey(QString::fromStdString(weakform_volume.couplingtype().get()));
                     item.equation = QString::fromStdString(weakform_volume.equation());
+                    qWarning() << i << QString::fromStdString(weakform_volume.sourceanalysis().get()) <<
+                                  QString::fromStdString(weakform_volume.analysistype()) <<
+                                  QString::fromStdString(weakform_volume.couplingtype().get());
 
                     for (unsigned int j = 0; j < weakform_volume.quantity().size(); j++)
                     {
@@ -222,16 +226,15 @@ CouplingList::CouplingList()
 
                         item.solvers.append(s);
                     }
+
                     analysis.items.append(item);
 
-                    couplingJson.weakFormAnalysisVolume.append(analysis);
+                    coupling.weakFormAnalysisVolume.append(analysis);
                 }
             }
 
-            m_couplings.append(item);
-
-            couplingJson.save(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
-            couplingJson.load(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
+            coupling.save(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
+            coupling.load(datadir() + COUPLINGROOT + "/" + filename.left(filename.count() - 4) + ".json");
         }
         catch (const xml_schema::expected_element& e)
         {
@@ -281,91 +284,171 @@ CouplingList::CouplingList()
             throw AgrosException(QString::fromStdString(e.what()));
         }
     }
+    */
+}
+
+CouplingList::~CouplingList()
+{
+    foreach (PluginCoupling *plugin, m_couplingJson)
+        delete plugin;
 }
 
 QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
 {
-    foreach (Item item, m_couplings)
+    foreach (PluginCoupling *coupling, m_couplingJson)
     {
-        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
-            return item.name;
+        if (coupling->source == sourceField->fieldId() && coupling->target == targetField->fieldId())
+            return coupling->name;
     }
 
     assert(0);
     return "";
+
+    //    foreach (Item item, m_couplings)
+    //    {
+    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+    //            return item.name;
+    //    }
 }
 
 bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField,
                                        CouplingType couplingType) const
 {
-    foreach (Item item, m_couplings)
+    foreach (PluginCoupling *coupling, m_couplingJson)
     {
-        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+        if (coupling->source == sourceField->fieldId() && coupling->target == targetField->fieldId())
         {
-            foreach (Item::Analysis analysis, item.analyses)
+            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
             {
-                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType()
-                        && analysis.couplingType == couplingType)
-                    return true;
+                foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
+                {
+                    if (item.analysis == targetField->analysisType() && item.analysisSource == sourceField->analysisType() && item.coupling == couplingType)
+                        return true;
+                }
             }
         }
     }
 
     return false;
+
+    //    foreach (Item item, m_couplings)
+    //    {
+    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+    //        {
+    //            foreach (Item::Analysis analysis, item.analyses)
+    //            {
+    //                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType()
+    //                        && analysis.couplingType == couplingType)
+    //                    return true;
+    //            }
+    //        }
+    //    }
 }
 
 bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const
 {
-    foreach (Item item, m_couplings)
+    foreach (PluginCoupling *coupling, m_couplingJson)
     {
-        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+        if (coupling->source == sourceField->fieldId() && coupling->target == targetField->fieldId())
         {
-            foreach (Item::Analysis analysis, item.analyses)
+            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
             {
-                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType())
-                    return true;
+                foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
+                {
+                    if (item.analysis == targetField->analysisType() && item.analysisSource == sourceField->analysisType())
+                        return true;
+                }
             }
         }
     }
 
     return false;
+
+    //    foreach (Item item, m_couplings)
+    //    {
+    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
+    //        {
+    //            foreach (Item::Analysis analysis, item.analyses)
+    //            {
+    //                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType())
+    //                    return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
 }
 
 bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
                                        QString targetField, AnalysisType targetAnalysis,
                                        CouplingType couplingType) const
 {
-    foreach (Item item, m_couplings)
+    foreach (PluginCoupling *coupling, m_couplingJson)
     {
-        if (item.source == sourceField && item.target == targetField)
+        if (coupling->source == sourceField && coupling->target == targetField)
         {
-            foreach (Item::Analysis analysis, item.analyses)
+            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
             {
-                if (analysis.sourceAnalysisType == sourceAnalysis && analysis.targetAnalysisType == targetAnalysis
-                        && analysis.couplingType == couplingType)
-                    return true;
+                    foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
+                    {
+                        if (item.analysis == targetAnalysis && item.analysisSource == sourceAnalysis && item.coupling == couplingType)
+                            return true;
+                    }
             }
         }
     }
 
     return false;
+
+    //    foreach (Item item, m_couplings)
+    //    {
+    //        if (item.source == sourceField && item.target == targetField)
+    //        {
+    //            foreach (Item::Analysis analysis, item.analyses)
+    //            {
+    //                if (analysis.sourceAnalysisType == sourceAnalysis && analysis.targetAnalysisType == targetAnalysis
+    //                        && analysis.couplingType == couplingType)
+    //                    return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
 }
 
-bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType) const
+bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField,
+                                       CouplingType couplingType) const
 {
-    foreach (Item item, m_couplings)
+    foreach (PluginCoupling *coupling, m_couplingJson)
     {
-        if (item.source == sourceField && item.target == targetField)
+        if (coupling->source == sourceField && coupling->target == targetField)
         {
-            foreach (Item::Analysis analysis, item.analyses)
+            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
             {
-                if (analysis.couplingType == couplingType)
-                    return true;
+                foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
+                {
+                    if (item.coupling == couplingType)
+                        return true;
+                }
             }
         }
     }
 
     return false;
+
+    //    foreach (Item item, m_couplings)
+    //    {
+    //        if (item.source == sourceField && item.target == targetField)
+    //        {
+    //            foreach (Item::Analysis analysis, item.analyses)
+    //            {
+    //                if (analysis.couplingType == couplingType)
+    //                    return true;
+    //            }
+    //        }
+    //    }
+
+    //    return false;
 }
 
 CouplingInfo::CouplingInfo(FieldInfo *sourceField,

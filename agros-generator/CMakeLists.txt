@@ -20,6 +20,7 @@ SET(SOURCES main.cpp
     parser_instance.cpp
     parser_lexical_analyser.cpp
     parser_module_info.cpp
+    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
 )
 
 SET(HEADERS generator.h
@@ -37,6 +38,11 @@ IF(WIN32)
     endforeach()
 ENDIF(WIN32)
 
+foreach(XSD_FILE ${xsd_files})
+  GET_FILENAME_COMPONENT(basefile ${XSD_FILE} NAME_WE)
+  ADD_DEPENDENCIES(${PROJECT_NAME} ${basefile})
+endforeach()
+
 find_package(Threads)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${CTEMPLATE_LIBRARY} ${XSD_LIBRARY} ${XercesC_LIBRARIES} ${AGROS_LIBRARY} ${DEAL_II_LIBRARIES} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${CTEMPLATE_LIBRARY} ${XSD_LIBRARY} ${XercesC_LIBRARIES} ${AGROS_LIBRARY} ${DEAL_II_LIBRARIES} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${XSD_LIBRARY} ${XercesC_LIBRARIES} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)

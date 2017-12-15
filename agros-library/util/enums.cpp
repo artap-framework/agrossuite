@@ -177,6 +177,7 @@ void initLists()
     // coordinate list
     coordinateTypeList.insert(CoordinateType_Planar, "planar");
     coordinateTypeList.insert(CoordinateType_Axisymmetric, "axisymmetric");
+    // coordinateTypeList.insert(CoordinateType_Cart, "3D");
 
     // Analysis Type
     analysisTypeList.insert(AnalysisType_SteadyState, "steadystate");
@@ -184,7 +185,7 @@ void initLists()
     analysisTypeList.insert(AnalysisType_Harmonic, "harmonic");
 
     // coupling type
-    // couplingTypeList.insert(CouplingType_Hard, "hard");
+    couplingTypeList.insert(CouplingType_Hard, "hard");
     couplingTypeList.insert(CouplingType_Weak, "weak");
     couplingTypeList.insert(CouplingType_None, "none");
 

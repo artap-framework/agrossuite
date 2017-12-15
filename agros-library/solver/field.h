@@ -214,7 +214,6 @@ public:
 
     QList<LinearityType> availableLinearityTypes() const {return m_availableLinearityTypes;}
 
-    double labelArea(int agrosLabel) const;
 private:
     /// plugin
     PluginInterface *m_plugin;
@@ -240,11 +239,6 @@ private:
 
     void setDefaultValues();
     void setStringKeys();
-
-    // for speed optimisations
-    QMap<QString, QList<QWeakPointer<Value> > > m_valuePointersTable;
-    int* m_hermesMarkerToAgrosLabelConversion;
-    double* m_labelAreas;
 };
 
 ostream& operator<<(ostream& output, FieldInfo& id);

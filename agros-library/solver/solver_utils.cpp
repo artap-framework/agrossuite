@@ -297,13 +297,13 @@ void ProblemSolver::solveProblem()
     }
     while (swapped);
 
-    foreach (FieldInfo* targetfieldInfo, fieldInfosSorted)
+    foreach (FieldInfo *targetfieldInfo, fieldInfosSorted)
     {
         // frequency
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 
         // look for coupling sources
-        foreach (FieldInfo* sourceFieldInfo, fieldInfosSorted)
+        foreach (FieldInfo *sourceFieldInfo, fieldInfosSorted)
         {
             if (m_computation->hasCoupling(sourceFieldInfo, targetfieldInfo))
             {
