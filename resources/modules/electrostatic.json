@@ -1,0 +1,563 @@
+{
+    "general": {
+        "analyses": {
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 1,
+                "type": "steadystate"
+            }
+        },
+        "constants": {
+            "EPS0": 8.854e-12,
+            "SMALL": 1e-05
+        },
+        "id": "electrostatic",
+        "macros": {
+        },
+        "name": "Electrostatic field",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "electrostatic_potential",
+                "name": "Scalar potential",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "V",
+                "unit_html": "V"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- dr1",
+                        "axi_z": "- dz1",
+                        "cart_x": "- dx1",
+                        "cart_y": "- dy1",
+                        "cart_z": "- dz1",
+                        "planar_x": "- dx1",
+                        "planar_y": "- dy1"
+                    }
+                },
+                "id": "electrostatic_electric_field",
+                "name": "Electric field",
+                "shortname": "E",
+                "shortname_html": "<i>E</i>",
+                "type": "vector",
+                "unit": "V/m",
+                "unit_html": "V.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- el_epsr * EPS0 * dr1",
+                        "axi_z": "- el_epsr * EPS0 * dz1",
+                        "cart_x": "- el_epsr * EPS0 * dx1",
+                        "cart_y": "- el_epsr * EPS0 * dy1",
+                        "cart_z": "- el_epsr * EPS0 * dz1",
+                        "planar_x": "- el_epsr * EPS0 * dx1",
+                        "planar_y": "- el_epsr * EPS0 * dy1"
+                    }
+                },
+                "id": "electrostatic_displacement",
+                "name": "Displacement",
+                "shortname": "D",
+                "shortname_html": "<i>D</i>",
+                "type": "vector",
+                "unit": "C/m2",
+                "unit_html": "C.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0.5 * el_epsr * EPS0 * (dr1 * dr1 + dz1 * dz1)",
+                        "cart": "0.5 * el_epsr * EPS0 * (dx1 * dx1 + dy1 * dy1)",
+                        "planar": "0.5 * el_epsr * EPS0 * (dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "electrostatic_energy_density",
+                "name": "Energy density",
+                "shortname": "we",
+                "shortname_html": "<i>w</i><sub>e</sub>",
+                "type": "scalar",
+                "unit": "J/m3",
+                "unit_html": "J.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "el_epsr",
+                        "cart": "el_epsr",
+                        "planar": "el_epsr"
+                    }
+                },
+                "id": "electrostatic_permittivity",
+                "name": "Permittivity",
+                "shortname": "epsr",
+                "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "el_rho",
+                        "cart": "el_rho",
+                        "planar": "el_rho"
+                    }
+                },
+                "id": "electrostatic_charge_density",
+                "name": "Charge density",
+                "shortname": "rho",
+                "shortname_html": "<i>&rho;</i>",
+                "type": "scalar",
+                "unit": "C/m3",
+                "unit_html": "C.m<sup>-3</sup>"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "electrostatic_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "electrostatic_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * el_epsr * EPS0 * (tanz * dr1 - tanr * dz1)",
+                        "cart": "2.0 * PI * r * el_epsr * EPS0 * (tanz * dr1 - tanr * dz1)",
+                        "planar": "el_epsr * EPS0 * (tany * dx1 - tanx * dy1)"
+                    }
+                },
+                "id": "electrostatic_charge",
+                "name": "Charge",
+                "shortname": "Q",
+                "shortname_html": "<i>Q</i>",
+                "type": "scalar",
+                "unit": "C",
+                "unit_html": "C"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0.0",
+                        "cart": "0.0",
+                        "planar": "y * (tern(SMALL > fabs(el_epsr - 1.0), - 2.0 * (EPS0 * el_epsr) * ((-dy1) * (tany * (-dy1) + (-tanx) * dx1) - 0.5 * tany * (dy1*dy1 + dx1*dx1)), 0.0)) - x * (tern(SMALL > fabs(el_epsr - 1.0), - 2.0 * (EPS0 * el_epsr) * ((-dy1) * (tany * (-dy1) + (-tanx) * dx1) - 0.5 * tany * (dy1*dy1 + dx1*dx1)), 0.0))"
+                    }
+                },
+                "id": "electrostatic_tensor_torque",
+                "name": "Maxwell torque",
+                "shortname": "Tm",
+                "shortname_html": "<i>T</i><sub>m</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0.0",
+                        "cart": "0.0",
+                        "planar": "2.0 * (tany * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (-tanx * dx1 * dy1)) * EPS0 * el_epsr"
+                    }
+                },
+                "id": "electrostatic_tensor_x",
+                "name": "Maxwell force - x",
+                "shortname": "Ftx",
+                "shortname_html": "<i>F</i><sub>tx</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "tern(SMALL > fabs(el_epsr - 1.0), - 4.0 * PI * r * (EPS0 * el_epsr) * ((dr1 + tern(r > SMALL, value1/r, dr1)) * ((tanz) * (- dz1) + (- tanr) * (dr1 + tern(r > SMALL, value1/r, dr1))) - 0.5 * (- tanr) * ((- dz1)*(- dz1) + (dr1 + tern(r > SMALL, value1/r, dr1))*(dr1 + tern(r > SMALL, value1/r, dr1)))), 0.0)",
+                        "cart": "tern(SMALL > fabs(el_epsr - 1.0), - 4.0 * PI * r * (EPS0 * el_epsr) * ((dr1 + tern(r > SMALL, value1/r, dr1)) * ((tanz) * (- dz1) + (- tanr) * (dr1 + tern(r > SMALL, value1/r, dr1))) - 0.5 * (- tanr) * ((- dz1)*(- dz1) + (dr1 + tern(r > SMALL, value1/r, dr1))*(dr1 + tern(r > SMALL, value1/r, dr1)))), 0.0)",
+                        "planar": "2.0 * (-tanx * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (tany * dx1 * dy1)) * EPS0 * el_epsr"
+                    }
+                },
+                "id": "electrostatic_tensor_y",
+                "name": "Maxwell force - y",
+                "shortname": "Fty",
+                "shortname_html": "<i>F</i><sub>ty</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "electrostatic_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "electrostatic_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * 0.5 * el_epsr * EPS0 * (dr1 * dr1 + dz1 * dz1)",
+                        "cart": "2.0 * PI * r * 0.5 * el_epsr * EPS0 * (dr1 * dr1 + dz1 * dz1)",
+                        "planar": "0.5 * el_epsr * EPS0 * (dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "electrostatic_energy",
+                "name": "Energy",
+                "shortname": "We",
+                "shortname_html": "<i>W<sub>e</sub></i>",
+                "type": "scalar",
+                "unit": "J",
+                "unit_html": "J"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "(x * (1) - y * (1))"
+                    }
+                },
+                "id": "electrostatic_tensor_torque",
+                "name": "Maxwell torque",
+                "shortname": "Tt",
+                "shortname_html": "<i>T</i></i><sub>t</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (dregg * (dr1 * dr1 - (dr1 * dr1 + dz1 * dz1) / 2.0) + (dzegg * dr1 * dz1)) * el_epsr * EPS0",
+                        "cart": "2.0 * PI * r * (dregg * (dr1 * dr1 - (dr1 * dr1 + dz1 * dz1) / 2.0) + (dzegg * dr1 * dz1)) * el_epsr * EPS0",
+                        "planar": "(dxegg * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dyegg * dx1 * dy1)) * el_epsr * EPS0"
+                    }
+                },
+                "id": "electrostatic_tensor_force_x",
+                "name": "Maxwell force - x",
+                "shortname": "Ftx",
+                "shortname_html": "<i>F</i><sub>tx</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (dzegg * (dz1 * dz1 - (dr1 * dr1 + dz1 * dz1) / 2.0) + (dregg * dr1 * dz1)) * el_epsr * EPS0",
+                        "cart": "2.0 * PI * r * (dzegg * (dz1 * dz1 - (dr1 * dr1 + dz1 * dz1) / 2.0) + (dregg * dr1 * dz1)) * el_epsr * EPS0",
+                        "planar": "(dyegg * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dxegg * dx1 * dy1)) * el_epsr * EPS0"
+                    }
+                },
+                "id": "electrostatic_tensor_force_y",
+                "name": "Maxwell force - y",
+                "shortname": "Fty",
+                "shortname_html": "<i>F</i><sub>ty</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "electrostatic_potential": {
+                            "condition": "",
+                            "default_value": 1000,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Fixed voltage",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "V",
+                            "shortname_html": "<i>&phi;</i>",
+                            "unit": "V",
+                            "unit_html": "V"
+                        },
+                        "electrostatic_surface_charge_density": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Surface charge density",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "sigma",
+                            "shortname_html": "<i>&sigma;</i>",
+                            "unit": "C/m2",
+                            "unit_html": "C.m<sup>-2</sup>"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "electrostatic_charge_density": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Charge density",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "rho",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&rho;</i>",
+                            "unit": "C/m3",
+                            "unit_html": "C.m<sup>-3</sup>"
+                        },
+                        "electrostatic_permittivity": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permittivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "epsr",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "electrostatic_potential": {
+                    "analysistype": "steadystate",
+                    "equation": "\\varphi = \\varphi_0",
+                    "id": "electrostatic_potential",
+                    "name": "Fixed voltage",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "electrostatic_potential": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "electrostatic_surface_charge_density": {
+                    "analysistype": "steadystate",
+                    "equation": "\\sigma = D_\\mathrm{n} = \\varepsilon \\frac{\\partial \\varphi}{\\partial n_0} = \\sigma_0",
+                    "id": "electrostatic_surface_charge_density",
+                    "name": "Surface charge density",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "neumann": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "electrostatic_surface_charge_density": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "essential": {
+                    "axi": "el_u",
+                    "cart": "el_u",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "el_u"
+                }
+            },
+            "matrix_forms": {
+            },
+            "variables": {
+                "electrostatic_potential": {
+                    "shortname": "el_u"
+                },
+                "electrostatic_surface_charge_density": {
+                    "shortname": "el_sigma"
+                }
+            },
+            "vector_forms": {
+                "neumann": {
+                    "axi": "el_sigma * r * vval",
+                    "cart": "el_sigma * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "el_sigma * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "-\\, \\div \\left( \\varepsilon\\,\\, \\grad \\varphi \\right) = \\rho",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "laplace": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "electrostatic_charge_density": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "electrostatic_permittivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "laplace": {
+                    "axi": "el_epsr * EPS0 * r * (udr * vdr + udz * vdz)",
+                    "cart": "el_epsr * EPS0 * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "el_epsr * EPS0 * (udx * vdx + udy * vdy)"
+                }
+            },
+            "variables": {
+                "electrostatic_charge_density": "el_rho",
+                "electrostatic_permittivity": "el_epsr"
+            },
+            "vector_forms": {
+                "rhs": {
+                    "axi": "el_rho * r * vval",
+                    "cart": "el_rho * vval",
+                    "condition": "fabs(el_rho) > 0.0",
+                    "i": 1,
+                    "planar": "el_rho * vval"
+                }
+            }
+        }
+    }
+}

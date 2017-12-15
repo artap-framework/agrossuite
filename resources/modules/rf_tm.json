@@ -1,0 +1,1017 @@
+{
+    "general": {
+        "analyses": {
+            "harmonic": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    },
+                    "2": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Harmonic",
+                "solutions": 2,
+                "type": "harmonic"
+            }
+        },
+        "constants": {
+            "EPS0": 8.854e-12,
+            "MU0": 1.25664e-06,
+            "SMALL": 1e-05
+        },
+        "id": "rf_tm",
+        "macros": {
+        },
+        "name": "TM waves",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(value1*value1 + value2*value2)",
+                        "cart": "sqrt(value1*value1 + value2*value2)",
+                        "planar": "sqrt(value1*value1 + value2*value2)"
+                    }
+                },
+                "id": "rf_tm_magnetic_field",
+                "name": "Magnetic field",
+                "shortname": "H",
+                "shortname_html": "<i>H</i>",
+                "type": "scalar",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "rf_tm_magnetic_field_real",
+                "name": "Magnetic field - real",
+                "shortname": "Hr",
+                "shortname_html": "<i>H</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "value2",
+                        "cart": "value2",
+                        "planar": "value2"
+                    }
+                },
+                "id": "rf_tm_magnetic_field_imag",
+                "name": "Magnetic field - imag",
+                "shortname": "Hi",
+                "shortname_html": "<i>H</i><sub>i</sub>",
+                "type": "scalar",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_mur * MU0 * sqrt(value1 * value1 + value2 * value2)",
+                        "cart": "rf_mur * MU0 * sqrt(value1 * value1 + value2 * value2)",
+                        "planar": "rf_mur * MU0 * sqrt(value1 * value1 + value2 * value2)"
+                    }
+                },
+                "id": "rf_tm_flux_density",
+                "name": "Flux density",
+                "shortname": "B",
+                "shortname_html": "<i>B</i>",
+                "type": "scalar",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_mur * MU0 * value1",
+                        "cart": "rf_mur * MU0 * value1",
+                        "planar": "rf_mur * MU0 * value1"
+                    }
+                },
+                "id": "rf_tm_flux_density_real",
+                "name": "Flux density - real",
+                "shortname": "Br",
+                "shortname_html": "<i>B</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_mur * MU0 * value2",
+                        "cart": "rf_mur * MU0 * value2",
+                        "planar": "rf_mur * MU0 * value2"
+                    }
+                },
+                "id": "rf_tm_flux_density_imag",
+                "name": "Flux density - imag",
+                "shortname": "Bi",
+                "shortname_html": "<i>B</i><sub>i</sub>",
+                "type": "scalar",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(pow((- 1 / (2 * PI * f) * dz2) ,2) + pow( (1 / (2 * PI * f) * (dr2 + (r > 0) * value2 / r)) ,2) + pow((-1 / (2 * PI * f) * dz1) ,2) + pow((1 / (2 * PI * f) * (dr1 + tern(r > SMALL, value1/r, dr1))) ,2))",
+                        "cart": "sqrt(pow((- 1 / (2 * PI * f) * dy2) ,2) + pow(1 / (2 * PI * f ) * dx2 ,2) + pow((1 / (2 * PI * f) * dy1) ,2) + pow((- 1 / (2 * PI * f) * dx1) ,2))",
+                        "planar": "sqrt(pow((- 1 / (2 * PI * f) * dy2) ,2) + pow(1 / (2 * PI * f ) * dx2 ,2) + pow((1 / (2 * PI * f) * dy1) ,2) + pow((- 1 / (2 * PI * f) * dx1) ,2))"
+                    }
+                },
+                "id": "rf_tm_displacement",
+                "name": "Displacement",
+                "shortname": "D",
+                "shortname_html": "<i>D</i>",
+                "type": "scalar",
+                "unit": "C/m2",
+                "unit_html": "C.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "rf_eps * EPS0 * (-1 / (2 * PI * f * rf_eps * EPS0) * dz2)",
+                        "axi_z": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * (dr2 + (r > 0) * value2 / r))",
+                        "cart_x": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dy2)",
+                        "cart_y": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "cart_z": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "planar_x": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dy2)",
+                        "planar_y": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)"
+                    }
+                },
+                "id": "rf_tm_displacement_real",
+                "name": "Displacement - real",
+                "shortname": "Dr",
+                "shortname_html": "<i>D</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "C/m2",
+                "unit_html": "C.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dz1)",
+                        "axi_z": "- rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * (dr1 + tern(r > SMALL, value1/r, dr1)))",
+                        "cart_x": " - rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dy1)",
+                        "cart_y": " - rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "cart_z": " - rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "planar_x": " - rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dy1)",
+                        "planar_y": " - rf_eps * EPS0 * (1 / (2 * PI * f * rf_eps * EPS0) * dx1)"
+                    }
+                },
+                "id": "rf_tm_displacement_imag",
+                "name": "Displacement - imag",
+                "shortname": "Di",
+                "shortname_html": "<i>D</i><sub>i</sub>",
+                "type": "vector",
+                "unit": "C/m2",
+                "unit_html": "C.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "rf_gamma * (-1 / (2 * PI * f * rf_eps * EPS0) * dz2)",
+                        "axi_z": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * (dr2 + (r > 0) * value2 / r))",
+                        "cart_x": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * dy2)",
+                        "cart_y": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx2)",
+                        "cart_z": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx2)",
+                        "planar_x": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * dy2)",
+                        "planar_y": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx2)"
+                    }
+                },
+                "id": "rf_tm_surface_current_real",
+                "name": "Current density - real",
+                "shortname": "Jr",
+                "shortname_html": "<i>J</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "rf_gamma * (-1 / (2 * PI * f * rf_eps * EPS0) * dz1)",
+                        "axi_z": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * (dr1 + tern(r > SMALL, value1/r, dr1)))",
+                        "cart_x": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * dy1)",
+                        "cart_y": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "cart_z": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx1)",
+                        "planar_x": "rf_gamma * (1 / (2 * PI * f * rf_eps * EPS0) * dy1)",
+                        "planar_y": "rf_gamma * (- 1 / (2 * PI * f * rf_eps * EPS0) * dx1)"
+                    }
+                },
+                "id": "rf_tm_surface_current_imag",
+                "name": "Current density - imag",
+                "shortname": "Ji",
+                "shortname_html": "<i>J</i><sub>i</sub>",
+                "type": "vector",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1 / (2 * PI * f * rf_eps * EPS0) * sqrt(pow(- dz2,2) + pow((dr2 + (r > 0) * value2 / r),2) + pow(- dz1,2) + pow((dr1 + tern(r > SMALL, value1/r, dr1)), 2) )",
+                        "cart": "1 / (2 * PI * f * rf_eps * EPS0) * sqrt(pow(dy2,2) + pow(- dx2,2) + pow(dy1,2) + pow(- dx1,2))",
+                        "planar": "1 / (2 * PI * f * rf_eps * EPS0) * sqrt(pow(dy2,2) + pow(- dx2,2) + pow(dy1,2) + pow(- dx1,2))"
+                    }
+                },
+                "id": "rf_tm_electric_field",
+                "name": "Electric field",
+                "shortname": "E",
+                "shortname_html": "<i>E</i>",
+                "type": "scalar",
+                "unit": "V/m",
+                "unit_html": "V.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "-1 / (2 * PI * f * rf_eps * EPS0) * dz2",
+                        "axi_z": "1 / (2 * PI * f * rf_eps * EPS0) * (dr2 + (r > 0) * value2 / r)",
+                        "cart_x": "1 / (2 * PI * f * rf_eps * EPS0) * dy2",
+                        "cart_y": "- 1 / (2 * PI * f * rf_eps * EPS0) * dx2",
+                        "cart_z": "- 1 / (2 * PI * f * rf_eps * EPS0) * dx2",
+                        "planar_x": "1 / (2 * PI * f * rf_eps * EPS0) * dy2",
+                        "planar_y": "- 1 / (2 * PI * f * rf_eps * EPS0) * dx2"
+                    }
+                },
+                "id": "rf_tm_electric_field_real",
+                "name": "Electric field - real",
+                "shortname": "Er",
+                "shortname_html": "<i>E</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "V/m",
+                "unit_html": "V.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "1 / (2 * PI * f * rf_eps * EPS0) * dz1",
+                        "axi_z": "- 1 / (2 * PI * f * rf_eps * EPS0) * (dr1 + tern(r > SMALL, value1/r, dr1))",
+                        "cart_x": "-1 / (2 * PI * f * rf_eps * EPS0) * dy1",
+                        "cart_y": "1 / (2 * PI * f * rf_eps * EPS0) * dx1",
+                        "cart_z": "1 / (2 * PI * f * rf_eps * EPS0) * dx1",
+                        "planar_x": "-1 / (2 * PI * f * rf_eps * EPS0) * dy1",
+                        "planar_y": "1 / (2 * PI * f * rf_eps * EPS0) * dx1"
+                    }
+                },
+                "id": "rf_tm_electric_field_imag",
+                "name": "Electric field - imag",
+                "shortname": "Ei",
+                "shortname_html": "<i>E</i><sub>i</sub>",
+                "type": "vector",
+                "unit": "V/m",
+                "unit_html": "V.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * (dr1 + tern(r > SMALL, value1/r, dr1)) - value1 * (dr2 + (r > 0) * value2 / r))",
+                        "axi_z": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dz1 - value1 * dz2)",
+                        "cart_x": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dx1 - value1 * dx2)",
+                        "cart_y": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dy1 - value1 * dy2)",
+                        "cart_z": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dz1 - value1 * dz2)",
+                        "planar_x": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dx1 - value1 * dx2)",
+                        "planar_y": "0.5 / (2.0 * PI * f * rf_eps * EPS0) * (value2 * dy1 - value1 * dy2)"
+                    }
+                },
+                "id": "rf_tm_poynting_vector",
+                "name": "Poynting vector",
+                "shortname": "N",
+                "shortname_html": "<i>N</i>",
+                "type": "vector",
+                "unit": "W/m2",
+                "unit_html": "W.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_eps",
+                        "cart": "rf_eps",
+                        "planar": "rf_eps"
+                    }
+                },
+                "id": "rf_tm_permittivity",
+                "name": "Permittivity",
+                "shortname": "epsr",
+                "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_mur",
+                        "cart": "rf_mur",
+                        "planar": "rf_mur"
+                    }
+                },
+                "id": "rf_tm_permeability",
+                "name": "Permeability",
+                "shortname": "mur",
+                "shortname_html": "<i>&mu;</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "rf_gamma",
+                        "cart": "rf_gamma",
+                        "planar": "rf_gamma"
+                    }
+                },
+                "id": "rf_tm_conductivity",
+                "name": "Conductivity",
+                "shortname": "gamma",
+                "shortname_html": "<i>&gamma;</i>",
+                "type": "scalar",
+                "unit": "S/m",
+                "unit_html": "S.m<sup>-1</sup>"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "rf_tm_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "rf_tm_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "rf_tm_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "rf_tm_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(value1*value1 + value2*value2)",
+                        "cart": "sqrt(value1*value1 + value2*value2)",
+                        "planar": "sqrt(value1*value1 + value2*value2)"
+                    }
+                },
+                "id": "rf_tm_magnetic_field",
+                "name": "Magnetic field",
+                "shortname": "H",
+                "shortname_html": "<i>H</i>",
+                "type": "scalar",
+                "unit": "A m",
+                "unit_html": "A.m"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "rf_tm_conductivity": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Conductivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "gamma",
+                            "shortname_html": "<i>&gamma;</i>",
+                            "unit": "S/m",
+                            "unit_html": "S.m<sup>-1</sup>"
+                        },
+                        "rf_tm_electric_field_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Electric field - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ei",
+                            "shortname_html": "<i>E</i><sub>i</sub>",
+                            "unit": "V/m",
+                            "unit_html": "V.m<sup>-1</sup>"
+                        },
+                        "rf_tm_electric_field_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Electric field - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Er",
+                            "shortname_html": "<i>E</i><sub>r</sub>",
+                            "unit": "V/m",
+                            "unit_html": "V.m<sup>-1</sup>"
+                        },
+                        "rf_tm_impedance": {
+                            "condition": "value > 0",
+                            "default_value": 377,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Impedance",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Z0",
+                            "shortname_html": "<i>Z</i><sub>0</sub>",
+                            "unit": "",
+                            "unit_html": "&Omega;"
+                        },
+                        "rf_tm_magnetic_field_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Magnetic field - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Hi",
+                            "shortname_html": "<i>H</i><sub>i</sub>",
+                            "unit": "A/m",
+                            "unit_html": "A.m<sup>-1</sup>"
+                        },
+                        "rf_tm_magnetic_field_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Magnetic field - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Hr",
+                            "shortname_html": "<i>H</i><sub>r</sub>",
+                            "unit": "A/m",
+                            "unit_html": "A.m<sup>-1</sup>"
+                        },
+                        "rf_tm_permittivity": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permittivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "epsr",
+                            "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "rf_tm_surface_current_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Surface current - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ji",
+                            "shortname_html": "<i>J</i><sub>i</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "rf_tm_surface_current_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Surface current - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Jr",
+                            "shortname_html": "<i>J</i><sub>r</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "rf_tm_conductivity": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Conductivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "gamma",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&gamma;</i>",
+                            "unit": "S/m",
+                            "unit_html": "S.m<sup>-1</sup>"
+                        },
+                        "rf_tm_current_density_external_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Current dens. - ext. - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Jei",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>J</i><sub>i,ext</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "rf_tm_current_density_external_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Current dens. - ext. - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Jer",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>J</i><sub>r,ext</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "rf_tm_permeability": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permeability",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "mur",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&mu;</i><sub>r</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "rf_tm_permittivity": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permittivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "epsr",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "rf_tm_electric_field": {
+                    "analysistype": "harmonic",
+                    "equation": "n \\times E = n \\times E_0",
+                    "id": "rf_tm_electric_field",
+                    "name": "Electric field",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "electric_field_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "electric_field_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "rf_tm_electric_field_imag": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_electric_field_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "rf_tm_impedance": {
+                    "analysistype": "harmonic",
+                    "equation": "- \\frac{1}{\\omega \\varepsilon} \\frac{\\partial \\vecfaz{H}}{\\partial n_0} = \\sqrt{\\frac{\\mu - \\mj \\gamma / \\omega}{\\varepsilon}} \\vecfaz{H}",
+                    "id": "rf_tm_impedance",
+                    "name": "Impedance boundary condition",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "impedance_1_2": {
+                                },
+                                "impedance_2_1": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "rf_tm_impedance": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "rf_tm_magnetic_field": {
+                    "analysistype": "harmonic",
+                    "equation": "\\vecfaz{H} = \\vecfaz{H}_0",
+                    "id": "rf_tm_magnetic_field",
+                    "name": "Magnetic field",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "essential_1": {
+                                },
+                                "essential_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "rf_tm_magnetic_field_imag": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_magnetic_field_real": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "rf_tm_surface_current": {
+                    "analysistype": "harmonic",
+                    "equation": "\\faz{J}_{t} = - \\frac{\\gamma}{\\omega \\varepsilon} \\frac{\\partial \\vecfaz{H}}{\\partial n_0} = \\faz{J}_0",
+                    "id": "rf_tm_surface_current",
+                    "name": "Surface current",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "current_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "current_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "rf_tm_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_surface_current_imag": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_surface_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "essential_1": {
+                    "axi": "rf_Hr",
+                    "cart": "rf_Hr",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "rf_Hr"
+                },
+                "essential_2": {
+                    "axi": "rf_Hi",
+                    "cart": "rf_Hi",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "rf_Hi"
+                }
+            },
+            "matrix_forms": {
+                "impedance_1_2": {
+                    "axi": "2 * r * PI * f * rf_Z0 * uval * vval",
+                    "cart": "2 * PI * f * rf_Z0 * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "2 * PI * f * rf_Z0 * uval * vval"
+                },
+                "impedance_2_1": {
+                    "axi": "-2 * r * PI * f * rf_Z0 * uval * vval",
+                    "cart": "-2 * PI * f * rf_Z0 * uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "-2 * PI * f * rf_Z0 * uval * vval"
+                }
+            },
+            "variables": {
+                "rf_tm_conductivity": {
+                    "shortname": "gamma"
+                },
+                "rf_tm_electric_field_imag": {
+                    "shortname": "rf_Ei"
+                },
+                "rf_tm_electric_field_real": {
+                    "shortname": "rf_Er"
+                },
+                "rf_tm_impedance": {
+                    "shortname": "rf_Z0"
+                },
+                "rf_tm_magnetic_field_imag": {
+                    "shortname": "rf_Hi"
+                },
+                "rf_tm_magnetic_field_real": {
+                    "shortname": "rf_Hr"
+                },
+                "rf_tm_surface_current_imag": {
+                    "shortname": "rf_Ji"
+                },
+                "rf_tm_surface_current_real": {
+                    "shortname": "rf_Jr"
+                }
+            },
+            "vector_forms": {
+                "current_1": {
+                    "axi": "2 * PI * f * rf_Ji / gamma * r * vval",
+                    "cart": "- 2 * PI * f / gamma * rf_Ji * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "- 2 * PI * f / gamma * rf_Ji * vval"
+                },
+                "current_2": {
+                    "axi": "-2 * PI * f * rf_Jr / gamma * r * vval",
+                    "cart": "2 * PI * f / gamma * rf_Jr * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "2 * PI * f / gamma * rf_Jr * vval"
+                },
+                "electric_field_1": {
+                    "axi": "2 * PI * f * rf_Ei * r * vval",
+                    "cart": "- 2 * PI * f * rf_Ei * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "- 2 * PI * f * rf_Ei * vval"
+                },
+                "electric_field_2": {
+                    "axi": "-2 * PI * f * rf_Er * r * vval",
+                    "cart": "2 * PI * f * rf_Er * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "2 * PI * f * rf_Er * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "harmonic",
+                    "equation": "\\curl \\left( \\frac{1}{\\mu}\\, \\curl \\vecfaz{H} \\right) - \\mj \\omega \\left( \\gamma + \\mj \\omega \\varepsilon \\right) \\vecfaz{H} = - \\curl \\vecfaz{J}_{\\mathrm{ext}}",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "frequency_1_1": {
+                                },
+                                "frequency_1_2": {
+                                },
+                                "frequency_2_1": {
+                                },
+                                "frequency_2_2": {
+                                },
+                                "laplace_1_1": {
+                                },
+                                "laplace_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs_remove": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "rf_tm_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_permeability": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "rf_tm_permittivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "frequency_1_1": {
+                    "axi": "r * pow(2 * PI * f, 2) * rf_mur* MU0 * uval * vval",
+                    "cart": "pow(2 * PI * f, 2) * rf_mur * MU0 * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "pow(2 * PI * f, 2) * rf_mur * MU0 * uval * vval"
+                },
+                "frequency_1_2": {
+                    "axi": "2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval",
+                    "cart": "2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval"
+                },
+                "frequency_2_1": {
+                    "axi": "- 2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval",
+                    "cart": "- 2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "- 2 * PI * f * rf_gamma * 1 / (rf_eps * EPS0) * uval * vval"
+                },
+                "frequency_2_2": {
+                    "axi": "r * pow(2 * PI * f, 2) * rf_mur* MU0 * uval * vval",
+                    "cart": "pow(2 * PI * f, 2) * rf_mur * MU0 * uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "pow(2 * PI * f, 2) * rf_mur * MU0 * uval * vval"
+                },
+                "laplace_1_1": {
+                    "axi": "- 1 / (rf_eps * EPS0) * (r * udr * vdr + r * udz * vdz + uval * vval/r + uval * vdr + vval * udr)",
+                    "cart": "- 1 / (rf_eps * EPS0) * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "- 1 / (rf_eps * EPS0) * (udx * vdx + udy * vdy)"
+                },
+                "laplace_2_2": {
+                    "axi": "- 1 / (rf_eps * EPS0) * (r * udr * vdr + r * udz * vdz + uval * vval/r + uval * vdr + vval * udr)",
+                    "cart": "- 1 / (rf_eps * EPS0) * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "- 1 / (rf_eps * EPS0) * (udx * vdx + udy * vdy)"
+                }
+            },
+            "variables": {
+                "rf_tm_conductivity": "rf_gamma",
+                "rf_tm_permeability": "rf_mur",
+                "rf_tm_permittivity": "rf_eps"
+            },
+            "vector_forms": {
+                "rhs_remove": {
+                    "axi": "0",
+                    "cart": "0",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "0"
+                }
+            }
+        }
+    }
+}

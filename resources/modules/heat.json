@@ -1,0 +1,1287 @@
+{
+    "general": {
+        "analyses": {
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 1,
+                "type": "steadystate"
+            },
+            "transient": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Transient",
+                "solutions": 1,
+                "type": "transient"
+            }
+        },
+        "constants": {
+            "SIGMA0": 5.670373e-08,
+            "T0ABS": 273.15
+        },
+        "id": "heat",
+        "macros": {
+        },
+        "name": "Heat transfer",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "heat_temperature",
+                "name": "Temperature",
+                "shortname": "T",
+                "shortname_html": "<i>T</i>",
+                "type": "scalar",
+                "unit": "K",
+                "unit_html": "K"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "value1-273.15",
+                        "cart": "value1-273.15",
+                        "planar": "value1-273.15"
+                    },
+                    "transient": {
+                        "axi": "value1-273.15",
+                        "cart": "value1-273.15",
+                        "planar": "value1-273.15"
+                    }
+                },
+                "id": "heat_temperature_degrees",
+                "name": "Temperature (deg.)",
+                "shortname": "Td",
+                "shortname_html": "<i>T</i>",
+                "type": "scalar",
+                "unit": "°C",
+                "unit_html": "°C"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- he_lambda * dr1",
+                        "axi_z": "- he_lambda * dz1",
+                        "cart_x": "- he_lambda * dx1",
+                        "cart_y": "- he_lambda * dy1",
+                        "cart_z": "- he_lambda * dz1",
+                        "planar_x": "- he_lambda * dx1",
+                        "planar_y": "- he_lambda * dy1"
+                    },
+                    "transient": {
+                        "axi_r": "- he_lambda * dr1",
+                        "axi_z": "- he_lambda * dz1",
+                        "cart_x": "- he_lambda * dx1",
+                        "cart_y": "- he_lambda * dy1",
+                        "cart_z": "- he_lambda * dz1",
+                        "planar_x": "- he_lambda * dx1",
+                        "planar_y": "- he_lambda * dy1"
+                    }
+                },
+                "id": "heat_heat_flux",
+                "name": "Heat flux",
+                "shortname": "F",
+                "shortname_html": "<i>F</i>",
+                "type": "vector",
+                "unit": "W/m2",
+                "unit_html": "W.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- dr1",
+                        "axi_z": "- dz1",
+                        "cart_x": "- dx1",
+                        "cart_y": "- dy1",
+                        "cart_z": "- dz1",
+                        "planar_x": "- dx1",
+                        "planar_y": "- dy1"
+                    },
+                    "transient": {
+                        "axi_r": "- dr1",
+                        "axi_z": "- dz1",
+                        "cart_x": "- dx1",
+                        "cart_y": "- dy1",
+                        "cart_z": "- dz1",
+                        "planar_x": "- dx1",
+                        "planar_y": "- dy1"
+                    }
+                },
+                "id": "heat_temperature_gradient",
+                "name": "Temperature gradient",
+                "shortname": "G",
+                "shortname_html": "<i>G</i>",
+                "type": "vector",
+                "unit": "K/m",
+                "unit_html": "K.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "he_lambda",
+                        "cart": "he_lambda",
+                        "planar": "he_lambda"
+                    },
+                    "transient": {
+                        "axi": "he_lambda",
+                        "cart": "he_lambda",
+                        "planar": "he_lambda"
+                    }
+                },
+                "id": "heat_conductivity",
+                "name": "Thermal conductivity",
+                "shortname": "lambda",
+                "shortname_html": "<i>&lambda;</i>",
+                "type": "scalar",
+                "unit": "W/m.K",
+                "unit_html": "W.m<sup>-1</sup>.K<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "he_p",
+                        "cart": "he_p",
+                        "planar": "he_p"
+                    },
+                    "transient": {
+                        "axi": "he_p",
+                        "cart": "he_p",
+                        "planar": "he_p"
+                    }
+                },
+                "id": "heat_volume_heat",
+                "name": "Volume heat",
+                "shortname": "p",
+                "shortname_html": "<i>p</i>",
+                "type": "scalar",
+                "unit": "W/m3",
+                "unit_html": "W.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "he_rho",
+                        "cart": "he_rho",
+                        "planar": "he_rho"
+                    },
+                    "transient": {
+                        "axi": "he_rho",
+                        "cart": "he_rho",
+                        "planar": "he_rho"
+                    }
+                },
+                "id": "heat_density",
+                "name": "Density",
+                "shortname": "rho",
+                "shortname_html": "<i>&rho;</i>",
+                "type": "scalar",
+                "unit": "kg/m3",
+                "unit_html": "kg.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "he_cp",
+                        "cart": "he_cp",
+                        "planar": "he_cp"
+                    },
+                    "transient": {
+                        "axi": "he_cp",
+                        "cart": "he_cp",
+                        "planar": "he_cp"
+                    }
+                },
+                "id": "heat_specific_heat",
+                "name": "Specific heat",
+                "shortname": "cp",
+                "shortname_html": "<i>c</i><sub>P</sub>",
+                "type": "scalar",
+                "unit": "J/kg.K",
+                "unit_html": "J.kg<sup>-1</sup>.K<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "0",
+                        "axi_z": "he_vy",
+                        "cart_x": "he_vx - he_va * y",
+                        "cart_y": "he_vy + he_va * x",
+                        "cart_z": "he_vy + he_va * x",
+                        "planar_x": "he_vx - he_va * y",
+                        "planar_y": "he_vy + he_va * x"
+                    },
+                    "transient": {
+                        "axi_r": "0",
+                        "axi_z": "he_vy",
+                        "cart_x": "he_vx - he_va * y",
+                        "cart_y": "he_vy + he_va * x",
+                        "cart_z": "he_vy + he_va * x",
+                        "planar_x": "he_vx - he_va * y",
+                        "planar_y": "he_vy + he_va * x"
+                    }
+                },
+                "id": "heat_velocity",
+                "name": "Velocity",
+                "shortname": "v",
+                "shortname_html": "v",
+                "type": "vector",
+                "unit": "m/s",
+                "unit_html": "m.s<sup>-1</sup>"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "heat_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "heat_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "heat_temperature",
+                "name": "Temperature",
+                "shortname": "T",
+                "shortname_html": "<i>T</i>",
+                "type": "scalar",
+                "unit": "K.m2",
+                "unit_html": "K.m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "- 2.0 * PI * r * he_lambda * (tanz * dr1 - tanr * dz1)",
+                        "cart": "- 2.0 * PI * r * he_lambda * (tanz * dr1 - tanr * dz1)",
+                        "planar": "- he_lambda * (tany * dx1 - tanx * dy1)"
+                    },
+                    "transient": {
+                        "axi": "- 2.0 * PI * r * he_lambda * (tanz * dr1 - tanr * dz1)",
+                        "cart": "- 2.0 * PI * r * he_lambda * (tanz * dr1 - tanr * dz1)",
+                        "planar": "- he_lambda * (tany * dx1 - tanx * dy1)"
+                    }
+                },
+                "id": "heat_heat_flux",
+                "name": "Heat flux",
+                "shortname": "f",
+                "shortname_html": "<i>f</i>",
+                "type": "scalar",
+                "unit": "W",
+                "unit_html": "W"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "heat_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "heat_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "heat_temperature",
+                "name": "Temperature",
+                "shortname": "T",
+                "shortname_html": "<i>T</i>",
+                "type": "scalar",
+                "unit": "K.m3",
+                "unit_html": " K.m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (value1-273.15)",
+                        "cart": "2.0 * PI * r * (value1-273.15)",
+                        "planar": "value1-273.15"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * (value1-273.15)",
+                        "cart": "2.0 * PI * r * (value1-273.15)",
+                        "planar": "value1-273.15"
+                    }
+                },
+                "id": "heat_temperature_degrees",
+                "name": "Temperature (deg.)",
+                "shortname": "Td",
+                "shortname_html": "<i>T</i>",
+                "type": "scalar",
+                "unit": "°C.m3",
+                "unit_html": " °C.m<sup>3</sup>"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "heat_convection_external_temperature": {
+                            "condition": "",
+                            "default_value": 293.15,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Convection - external temperature",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Te",
+                            "shortname_html": "<i>T</i><sub>e</sub>",
+                            "unit": "K",
+                            "unit_html": "K"
+                        },
+                        "heat_convection_heat_transfer_coefficient": {
+                            "condition": "value >= 0",
+                            "default_value": 5,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Heat transfer coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "alpha",
+                            "shortname_html": "<i>&alpha;</i>",
+                            "unit": "W/m2.K",
+                            "unit_html": "W.m<sup>-2</sup>.K<sup>-1</sup>"
+                        },
+                        "heat_heat_flux": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Heat flux",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "f",
+                            "shortname_html": "<i>f</i><sub>0</sub>",
+                            "unit": "W/m2",
+                            "unit_html": "W.m<sup>-2</sup>"
+                        },
+                        "heat_radiation_ambient_temperature": {
+                            "condition": "",
+                            "default_value": 293.15,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Radiation - ambient temperature",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ta",
+                            "shortname_html": "<i>T</i><sub>a</sub>",
+                            "unit": "K",
+                            "unit_html": "K"
+                        },
+                        "heat_radiation_emissivity": {
+                            "condition": "value >= 0",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Emissivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "eps",
+                            "shortname_html": "<i>&epsilon;</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "heat_temperature": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Temperature",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "T",
+                            "shortname_html": "<i>T</i>",
+                            "unit": "K",
+                            "unit_html": "K"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "heat_conductivity": {
+                            "condition": "value > 0",
+                            "default_value": 385,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Thermal conductivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "lambda",
+                            "shortname_dependence": "T",
+                            "shortname_dependence_html": "<i>T</i>",
+                            "shortname_html": "<i>&lambda;</i>",
+                            "unit": "W/m.K",
+                            "unit_html": "W.m<sup>-1</sup>.K<sup>-1</sup>"
+                        },
+                        "heat_density": {
+                            "condition": "value >= 0",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Density",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "rho",
+                            "shortname_dependence": "T",
+                            "shortname_dependence_html": "<i>T</i>",
+                            "shortname_html": "<i>&rho;</i>",
+                            "unit": "kg/m3",
+                            "unit_html": "kg.m<sup>-3</sup>"
+                        },
+                        "heat_specific_heat": {
+                            "condition": "value >= 0",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Specific heat",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "cp",
+                            "shortname_dependence": "T",
+                            "shortname_dependence_html": "<i>T</i>",
+                            "shortname_html": "<i>c</i><sub>P</sub>",
+                            "unit": "J/kg.K",
+                            "unit_html": "J.kg<sup>-1</sup>.K<sup>-1</sup>"
+                        },
+                        "heat_volume_heat": {
+                            "condition": "value >= 0",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Volume heat",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "p",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>p</i>",
+                            "unit": "W/m3",
+                            "unit_html": "W.m<sup>-3</sup>"
+                        }
+                    }
+                },
+                {
+                    "name": "Velocity",
+                    "quantities": {
+                        "heat_velocity_angular": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - angular",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "va",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&omega;</i>",
+                            "unit": "m/s",
+                            "unit_html": "m.s<sup>-1</sup>"
+                        },
+                        "heat_velocity_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - x",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "vx",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>v</i><sub>x</sub>",
+                            "unit": "m/s",
+                            "unit_html": "m.s<sup>-1</sup>"
+                        },
+                        "heat_velocity_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - y",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "vy",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>v</i><sub>y</sub>",
+                            "unit": "m/s",
+                            "unit_html": "m.s<sup>-1</sup>"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "heat_heat_flux": {
+                    "analysistype": "steadystate",
+                    "equation": "f = - \\lambda \\frac{\\partial T}{\\partial n_0} = f_0 + \\alpha \\left ( T_\\mathrm{ext} - T \\right) + \\epsilon \\sigma \\left ( T_\\mathrm{amb}^4 - T^4 \\right)",
+                    "id": "heat_heat_flux",
+                    "name": "Heat flux",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "emission_jacobian": {
+                                },
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "emission_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "flux_matrix": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "flux_vector": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_convection_external_temperature": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_convection_heat_transfer_coefficient": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_heat_flux": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_radiation_ambient_temperature": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_radiation_emissivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "heat_temperature": {
+                    "analysistype": "steadystate",
+                    "equation": "T = T_0",
+                    "id": "heat_temperature",
+                    "name": "Temperature",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_temperature": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "heat_heat_flux": {
+                    "analysistype": "transient",
+                    "equation": "f = - \\lambda \\frac{\\partial T}{\\partial n_0} = f_0 + \\alpha \\left ( T_\\mathrm{ext} - T \\right) + \\epsilon \\sigma \\left ( T_\\mathrm{amb}^4 - T^4 \\right)",
+                    "id": "heat_heat_flux",
+                    "name": "Heat flux",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "emission_jacobian": {
+                                },
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "emission_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "flux_matrix": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "flux_vector": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                                "flux_matrix": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux_vector": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_convection_external_temperature": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_convection_heat_transfer_coefficient": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_heat_flux": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_radiation_ambient_temperature": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_radiation_emissivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "heat_temperature": {
+                    "analysistype": "transient",
+                    "equation": "T = T_0",
+                    "id": "heat_temperature",
+                    "name": "Temperature",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_temperature": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "essential": {
+                    "axi": "he_T",
+                    "cart": "he_T",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "he_T"
+                }
+            },
+            "matrix_forms": {
+                "emission_jacobian": {
+                    "axi": "SIGMA0 * he_eps * r * 4 * uval * value1*value1*value1 * vval",
+                    "cart": "SIGMA0 * he_eps * 4 * uval * value1*value1*value1 * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "SIGMA0 * he_eps * 4 * uval * value1*value1*value1 * vval"
+                },
+                "flux_matrix": {
+                    "axi": "he_h * r * uval * vval",
+                    "cart": "he_h * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "he_h * uval * vval"
+                }
+            },
+            "variables": {
+                "heat_convection_external_temperature": {
+                    "shortname": "he_Te"
+                },
+                "heat_convection_heat_transfer_coefficient": {
+                    "shortname": "he_h"
+                },
+                "heat_heat_flux": {
+                    "shortname": "he_f"
+                },
+                "heat_radiation_ambient_temperature": {
+                    "shortname": "he_Ta"
+                },
+                "heat_radiation_emissivity": {
+                    "shortname": "he_eps"
+                },
+                "heat_temperature": {
+                    "shortname": "he_T"
+                }
+            },
+            "vector_forms": {
+                "emission_vector": {
+                    "axi": "r * (- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * value1*value1*value1*value1) * vval",
+                    "cart": "(- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * value1*value1*value1*value1) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "(- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * value1*value1*value1*value1) * vval"
+                },
+                "flux_vector": {
+                    "axi": "r * (he_f + he_h * he_Te) * vval",
+                    "cart": "(he_f + he_h * he_Te) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "(he_f + he_h * he_Te) * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "-\\, \\div \\left( \\lambda\\,\\, \\grad T \\right) + \\rho c_\\mathrm{p} \\left(\\vec{v} \\cdot \\grad T\\right) = Q",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "jac_laplace": {
+                                },
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "laplace": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "rhs": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "velocity": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                }
+                            }
+                        },
+                        "picard": {
+                            "matrix_forms": {
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_density": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_specific_heat": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_velocity_angular": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_velocity_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_velocity_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_volume_heat": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysistype": "transient",
+                    "equation": "-\\, \\div \\left( \\lambda\\,\\, \\grad T \\right) + \\rho c_\\mathrm{p} \\left(\\frac{\\partial T}{\\partial t} + \\vec{v} \\cdot \\grad T\\right) = Q",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                                "transient": {
+                                }
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "jac_laplace": {
+                                },
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "laplace": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "rhs": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "velocity": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                }
+                            }
+                        },
+                        "picard": {
+                            "matrix_forms": {
+                                "laplace": {
+                                },
+                                "velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "heat_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_density": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_specific_heat": {
+                            "dependency": "",
+                            "nonlinearity_axi": "value1",
+                            "nonlinearity_cart": "value1",
+                            "nonlinearity_planar": "value1"
+                        },
+                        "heat_velocity_angular": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_velocity_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_velocity_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "heat_volume_heat": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "jac_laplace": {
+                    "axi": "dhe_lambda * r * uval * (dr1 * vdr + dz1 * vdz)",
+                    "cart": "dhe_lambda * uval * (dx1 * vdx + dy1 * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "dhe_lambda * uval * (dx1 * vdx + dy1 * vdy)"
+                },
+                "laplace": {
+                    "axi": "he_lambda * r * (udr * vdr + udz * vdz)",
+                    "cart": "he_lambda * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "he_lambda * (udx * vdx + udy * vdy)"
+                },
+                "transient": {
+                    "axi": "he_rho * he_cp * r * uval * vval",
+                    "cart": "he_rho * he_cp * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "he_rho * he_cp * uval * vval"
+                },
+                "velocity": {
+                    "axi": "r * he_rho * he_cp * (he_vy * udz) * vval",
+                    "cart": "he_rho * he_cp * ((he_vx - y * he_va) * udx + (he_vy + x * he_va) * udy) * vval",
+                    "condition": "(((fabs(he_rho) > 0.0) && ((fabs(he_cp) > 0.0)) && ((fabs(he_vx) > 0.0) || (fabs(he_vy) > 0.0) || (fabs(he_va) > 0.0))))",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "he_rho * he_cp * ((he_vx - y * he_va) * udx + (he_vy + x * he_va) * udy) * vval"
+                }
+            },
+            "variables": {
+                "heat_conductivity": "he_lambda",
+                "heat_density": "he_rho",
+                "heat_specific_heat": "he_cp",
+                "heat_velocity_angular": "he_va",
+                "heat_velocity_x": "he_vx",
+                "heat_velocity_y": "he_vy",
+                "heat_volume_heat": "he_p"
+            },
+            "vector_forms": {
+                "rhs": {
+                    "axi": "r * he_p * vval",
+                    "cart": "he_p * vval",
+                    "condition": "fabs(he_p) > 0.0",
+                    "i": 1,
+                    "planar": "he_p * vval"
+                }
+            }
+        }
+    }
+}

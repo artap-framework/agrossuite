@@ -1,0 +1,2645 @@
+{
+    "general": {
+        "analyses": {
+            "harmonic": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    },
+                    "2": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Harmonic",
+                "solutions": 2,
+                "type": "harmonic"
+            },
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 1,
+                "type": "steadystate"
+            },
+            "transient": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    },
+                    "2": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Transient",
+                "solutions": 2,
+                "type": "transient"
+            }
+        },
+        "constants": {
+            "MU0": 1.2566371e-06,
+            "SMALL": 1e-05
+        },
+        "id": "magnetic",
+        "macros": {
+        },
+        "name": "Magnetic field",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(value1*value1 + value2*value2)",
+                        "cart": "sqrt(value1*value1 + value2*value2)",
+                        "planar": "sqrt(value1*value1 + value2*value2)"
+                    }
+                },
+                "id": "magnetic_potential",
+                "name": "Vector potential",
+                "shortname": "A",
+                "shortname_html": "<i>A</i>",
+                "type": "scalar",
+                "unit": "Wb/m",
+                "unit_html": "Wb.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    },
+                    "steadystate": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "magnetic_potential_real",
+                "name": "Vector potential - real",
+                "shortname": "Ar",
+                "shortname_html": "<i>A</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "Wb/m",
+                "unit_html": "Wb.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "value2",
+                        "cart": "value2",
+                        "planar": "value2"
+                    }
+                },
+                "id": "magnetic_potential_imag",
+                "name": "Vector potential - imag",
+                "shortname": "Ai",
+                "shortname_html": "<i>A</i><sub>i</sub>",
+                "type": "scalar",
+                "unit": "Wb/m",
+                "unit_html": "Wb.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt((value1)*(value1) + (value2)*(value2)) * r",
+                        "cart": "sqrt((value1)*(value1) + (value2)*(value2))",
+                        "planar": "sqrt((value1)*(value1) + (value2)*(value2))"
+                    }
+                },
+                "id": "magnetic_potential_lines",
+                "name": "Vector potential lines",
+                "shortname": "Al",
+                "shortname_html": "<i>A</i><sub>l</sub>",
+                "type": "scalar",
+                "unit": "Wb",
+                "unit_html": "Wb"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "(value1) * r",
+                        "cart": "(value1)",
+                        "planar": "(value1)"
+                    },
+                    "steadystate": {
+                        "axi": "value1 * r",
+                        "cart": "value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "value1 * r",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "magnetic_potential_lines_real",
+                "name": "Vector potential lines - real",
+                "shortname": "Alr",
+                "shortname_html": "<i>A</i><sub>lr</sub>",
+                "type": "scalar",
+                "unit": "Wb",
+                "unit_html": "Wb"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "(value2) * r",
+                        "cart": "(value2)",
+                        "planar": "(value2)"
+                    }
+                },
+                "id": "magnetic_potential_lines_imag",
+                "name": "Vector potential lines - imag",
+                "shortname": "Ali",
+                "shortname_html": "<i>A</i><sub>li</sub>",
+                "type": "scalar",
+                "unit": "Wb",
+                "unit_html": "Wb"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2 + dz2*dz2 + (dr2 + tern(r > SMALL, value2/r, dr2))^2)",
+                        "cart": "sqrt(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2)",
+                        "planar": "sqrt(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2)"
+                    }
+                },
+                "id": "magnetic_flux_density",
+                "name": "Flux density",
+                "shortname": "B",
+                "shortname_html": "<i>B</i>",
+                "type": "scalar",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "- dz1",
+                        "axi_z": "dr1 + tern(r > SMALL, value1/r, dr1)",
+                        "cart_x": "dy1",
+                        "cart_y": "- dx1",
+                        "cart_z": "- dx1",
+                        "planar_x": "dy1",
+                        "planar_y": "- dx1"
+                    },
+                    "steadystate": {
+                        "axi_r": "- dz1",
+                        "axi_z": "dr1 + tern(r > SMALL, value1/r, dr1)",
+                        "cart_x": "dy1",
+                        "cart_y": "- dx1",
+                        "cart_z": "- dx1",
+                        "planar_x": "dy1",
+                        "planar_y": "- dx1"
+                    },
+                    "transient": {
+                        "axi_r": "- dz1",
+                        "axi_z": "dr1 + tern(r > SMALL, value1/r, dr1)",
+                        "cart_x": "dy1",
+                        "cart_y": "- dx1",
+                        "cart_z": "- dx1",
+                        "planar_x": "dy1",
+                        "planar_y": "- dx1"
+                    }
+                },
+                "id": "magnetic_flux_density_real",
+                "name": "Flux density - real",
+                "shortname": "Br",
+                "shortname_html": "<i>B</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "- dz2",
+                        "axi_z": "dr2 + tern(r > SMALL, value2/r, dr2)",
+                        "cart_x": "dy2",
+                        "cart_y": "- dx2",
+                        "cart_z": "- dx2",
+                        "planar_x": "dy2",
+                        "planar_y": "- dx2"
+                    }
+                },
+                "id": "magnetic_flux_density_imag",
+                "name": "Flux density - imag",
+                "shortname": "Bi",
+                "shortname_html": "<i>B</i><sub>i</sub>",
+                "type": "vector",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2 + dz2*dz2 + (dr2 + tern(r > SMALL, value2/r, dr2))^2) / (ma_mur * MU0)",
+                        "cart": "sqrt(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2) / (ma_mur * MU0)",
+                        "planar": "sqrt(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2) / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_magnetic_field",
+                "name": "Magnetic field",
+                "shortname": "H",
+                "shortname_html": "<i>H</i>",
+                "type": "scalar",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "- dz1 / (ma_mur * MU0)",
+                        "axi_z": "(dr1 + tern(r > SMALL, value1/r, dr1)) / (ma_mur * MU0)",
+                        "cart_x": "dy1 / (ma_mur * MU0)",
+                        "cart_y": "- dx1 / (ma_mur * MU0)",
+                        "cart_z": "- dx1 / (ma_mur * MU0)",
+                        "planar_x": "dy1 / (ma_mur * MU0)",
+                        "planar_y": "- dx1 / (ma_mur * MU0)"
+                    },
+                    "steadystate": {
+                        "axi_r": "- dz1 / (ma_mur * MU0)",
+                        "axi_z": "(dr1 + tern(r > SMALL, value1/r, dr1)) / (ma_mur * MU0)",
+                        "cart_x": "dy1 / (ma_mur * MU0)",
+                        "cart_y": "- dx1 / (ma_mur * MU0)",
+                        "cart_z": "- dx1 / (ma_mur * MU0)",
+                        "planar_x": "dy1 / (ma_mur * MU0)",
+                        "planar_y": "- dx1 / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi_r": "- dz1 / (ma_mur * MU0)",
+                        "axi_z": "(dr1 + tern(r > SMALL, value1/r, dr1)) / (ma_mur * MU0)",
+                        "cart_x": "dy1 / (ma_mur * MU0)",
+                        "cart_y": "- dx1 / (ma_mur * MU0)",
+                        "cart_z": "- dx1 / (ma_mur * MU0)",
+                        "planar_x": "dy1 / (ma_mur * MU0)",
+                        "planar_y": "- dx1 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_magnetic_field_real",
+                "name": "Magnetic field - real",
+                "shortname": "Hr",
+                "shortname_html": "<i>H</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "- dz2 / (ma_mur * MU0)",
+                        "axi_z": "(dr2 + tern(r > SMALL, value2/r, dr2)) / (ma_mur * MU0)",
+                        "cart_x": "dy2 / (ma_mur * MU0)",
+                        "cart_y": "- dx2 / (ma_mur * MU0)",
+                        "cart_z": "- dx2 / (ma_mur * MU0)",
+                        "planar_x": "dy2 / (ma_mur * MU0)",
+                        "planar_y": "- dx2 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_magnetic_field_imag",
+                "name": "Magnetic field - imag",
+                "shortname": "Hi",
+                "shortname_html": "<i>H</i><sub>i</sub>",
+                "type": "vector",
+                "unit": "A/m",
+                "unit_html": "A.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "0.25*(dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2 + dz2*dz2 + (dr2 + tern(r > SMALL, value2/r, dr2))^2) / (ma_mur * MU0)",
+                        "cart": "0.25*(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2) / (ma_mur * MU0)",
+                        "planar": "0.25*(dy1*dy1 + dx1*dx1 + dy2*dy2 + dx2*dx2) / (ma_mur * MU0)"
+                    },
+                    "steadystate": {
+                        "axi": "0.5 * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2) / (ma_mur * MU0)",
+                        "cart": "0.5 * (dy1*dy1 + dx1*dx1) / (ma_mur * MU0)",
+                        "planar": "0.5 * (dy1*dy1 + dx1*dx1) / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi": "0.5 * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2) / (ma_mur * MU0)",
+                        "cart": "0.5 * (dy1*dy1 + dx1*dx1) / (ma_mur * MU0)",
+                        "planar": "0.5 * (dy1*dy1 + dx1*dx1) / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_energy_density",
+                "name": "Energy density",
+                "shortname": "wm",
+                "shortname_html": "<i>w</i><sub>m</sub>",
+                "type": "scalar",
+                "unit": "J/m3",
+                "unit_html": "J.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_mur",
+                        "cart": "ma_mur",
+                        "planar": "ma_mur"
+                    },
+                    "steadystate": {
+                        "axi": "ma_mur",
+                        "cart": "ma_mur",
+                        "planar": "ma_mur"
+                    }
+                },
+                "id": "magnetic_permeability",
+                "name": "Permeability",
+                "shortname": "mur",
+                "shortname_html": "<i>&mu;</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_gamma",
+                        "cart": "ma_gamma",
+                        "planar": "ma_gamma"
+                    },
+                    "steadystate": {
+                        "axi": "ma_gamma",
+                        "cart": "ma_gamma",
+                        "planar": "ma_gamma"
+                    },
+                    "transient": {
+                        "axi": "ma_gamma",
+                        "cart": "ma_gamma",
+                        "planar": "ma_gamma"
+                    }
+                },
+                "id": "magnetic_conductivity",
+                "name": "Conductivity",
+                "shortname": "gamma",
+                "shortname_html": "<i>&gamma;</i>",
+                "type": "scalar",
+                "unit": "S/m",
+                "unit_html": "S.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "axi_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "cart_y": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "planar_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "planar_y": "mu_Brm * sin((ma_Bra/180*PI))"
+                    },
+                    "steadystate": {
+                        "axi_r": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "axi_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "cart_y": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "planar_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "planar_y": "mu_Brm * sin((ma_Bra/180*PI))"
+                    },
+                    "transient": {
+                        "axi_r": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "axi_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "cart_y": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "cart_z": "mu_Brm * sin((ma_Bra/180*PI))",
+                        "planar_x": "mu_Brm * cos((ma_Bra/180*PI))",
+                        "planar_y": "mu_Brm * sin((ma_Bra/180*PI))"
+                    }
+                },
+                "id": "magnetic_remanence",
+                "name": "Remanent flux density",
+                "shortname": "Brm",
+                "shortname_html": "<i>B</i><sub>rm</sub>",
+                "type": "vector",
+                "unit": "T",
+                "unit_html": "T"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "0",
+                        "axi_z": "ma_vy",
+                        "cart_x": "ma_vx - ma_va * y",
+                        "cart_y": "ma_vy + ma_va * x",
+                        "cart_z": "ma_vy + ma_va * x",
+                        "planar_x": "ma_vx - ma_va * y",
+                        "planar_y": "ma_vy + ma_va * x"
+                    },
+                    "steadystate": {
+                        "axi_r": "0",
+                        "axi_z": "ma_vy",
+                        "cart_x": "ma_vx - ma_va * y",
+                        "cart_y": "ma_vy + ma_va * x",
+                        "cart_z": "ma_vy + ma_va * x",
+                        "planar_x": "ma_vx - ma_va * y",
+                        "planar_y": "ma_vy + ma_va * x"
+                    },
+                    "transient": {
+                        "axi_r": "0",
+                        "axi_z": "ma_vy",
+                        "cart_x": "ma_vx - ma_va * y",
+                        "cart_y": "ma_vy + ma_va * x",
+                        "cart_z": "ma_vy + ma_va * x",
+                        "planar_x": "ma_vx - ma_va * y",
+                        "planar_y": "ma_vy + ma_va * x"
+                    }
+                },
+                "id": "magnetic_velocity",
+                "name": "Velocity",
+                "shortname": "v",
+                "shortname_html": "<i>v</i>",
+                "type": "vector",
+                "unit": "m/s",
+                "unit_html": "m.s<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt(((ma_Jer ) )^2+((ma_Jei ))^2)",
+                        "cart": "sqrt(((ma_Jer ))^2+((ma_Jei ))^2)",
+                        "planar": "sqrt(((ma_Jer ))^2+((ma_Jei ))^2)"
+                    },
+                    "steadystate": {
+                        "axi": "ma_Jer",
+                        "cart": "ma_Jer",
+                        "planar": "ma_Jer"
+                    },
+                    "transient": {
+                        "axi": "ma_Jer",
+                        "cart": "ma_Jer",
+                        "planar": "ma_Jer"
+                    }
+                },
+                "id": "magnetic_current_density_external",
+                "name": "Current dens. - ext.",
+                "shortname": "Je",
+                "shortname_html": "<i>J</i><sub>e</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jer  ",
+                        "cart": "ma_Jer",
+                        "planar": "ma_Jer"
+                    }
+                },
+                "id": "magnetic_current_density_external_real",
+                "name": "Current dens. - ext. - real",
+                "shortname": "Jer",
+                "shortname_html": "<i>J</i><sub>er</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "(ma_Jei )",
+                        "cart": "ma_Jei",
+                        "planar": "ma_Jei"
+                    }
+                },
+                "id": "magnetic_current_density_external_imag",
+                "name": "Current dens. - ext. - imag",
+                "shortname": "Jei",
+                "shortname_html": "<i>J</i><sub>ei</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt((- ma_gamma * (ma_vy * dz1))^2+(- ma_gamma * (ma_vy * dz2))^2)",
+                        "cart": "sqrt((- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))^2+(- ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2))^2)",
+                        "planar": "sqrt((- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))^2+(- ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2))^2)"
+                    }
+                },
+                "id": "magnetic_current_density_induced_velocity",
+                "name": "Current dens. - ind. velocity",
+                "shortname": "Jiv",
+                "shortname_html": "<i>J</i><sub>iv</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "- ma_gamma * (ma_vy * dz1)",
+                        "cart": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "steadystate": {
+                        "axi": "- ma_gamma * (ma_vy * dz1)",
+                        "cart": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "- ma_gamma * (ma_vy * dz1)",
+                        "cart": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    }
+                },
+                "id": "magnetic_current_density_induced_velocity_real",
+                "name": "Current dens. - ind. velocity - real",
+                "shortname": "Jivr",
+                "shortname_html": "<i>J</i><sub>ivr</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "- ma_gamma * (ma_vy * dz2)",
+                        "cart": "- ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2)"
+                    }
+                },
+                "id": "magnetic_current_density_induced_velocity_imag",
+                "name": "Current dens. - ind. velocity - imag",
+                "shortname": "Jivi",
+                "shortname_html": "<i>J</i><sub>ivi</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt((2 * PI * f * ma_gamma * value2)^2+(- 2 * PI * f * ma_gamma * value1)^2)",
+                        "cart": "sqrt((2 * PI * f * ma_gamma * value2)^2+(- 2 * PI * f * ma_gamma * value1)^2)",
+                        "planar": "sqrt((2 * PI * f * ma_gamma * value2)^2+(- 2 * PI * f * ma_gamma * value1)^2)"
+                    }
+                },
+                "id": "magnetic_current_density_induced_transform",
+                "name": "Current dens. - ind. transform",
+                "shortname": "Jit",
+                "shortname_html": "<i>J</i><sub>it</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2 * PI * f * ma_gamma * value2",
+                        "cart": "2 * PI * f * ma_gamma * value2",
+                        "planar": "2 * PI * f * ma_gamma * value2"
+                    },
+                    "transient": {
+                        "axi": "- ma_gamma * value2",
+                        "cart": "- ma_gamma * value2",
+                        "planar": "- ma_gamma * value2"
+                    }
+                },
+                "id": "magnetic_current_density_induced_transform_real",
+                "name": "Current dens. - ind. transform - real",
+                "shortname": "Jitr",
+                "shortname_html": "<i>J</i><sub>itr</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "- 2 * PI * f * ma_gamma * value1",
+                        "cart": "- 2 * PI * f * ma_gamma * value1",
+                        "planar": "- 2 * PI * f * ma_gamma * value1"
+                    }
+                },
+                "id": "magnetic_current_density_induced_transform_imag",
+                "name": "Current dens. - ind. transform - imag",
+                "shortname": "Jiti",
+                "shortname_html": "<i>J</i><sub>iti</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "sqrt((ma_Jer  - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2))^2+(ma_Jei  - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1))^2)",
+                        "cart": "sqrt((ma_Jer  - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2))^2+(ma_Jei  - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1))^2)",
+                        "planar": "sqrt((ma_Jer  - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2))^2+(ma_Jei  - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1))^2)"
+                    },
+                    "steadystate": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1)",
+                        "cart": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1)",
+                        "cart": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    }
+                },
+                "id": "magnetic_current_density_total",
+                "name": "Current dens. - total",
+                "shortname": "J",
+                "shortname_html": "<i>J</i>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jer  - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2)",
+                        "cart": "ma_Jer  - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2)",
+                        "planar": "ma_Jer  - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2)"
+                    },
+                    "steadystate": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1)",
+                        "cart": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2",
+                        "cart": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2"
+                    }
+                },
+                "id": "magnetic_current_density_total_real",
+                "name": "Current dens. - total - real",
+                "shortname": "Jr",
+                "shortname_html": "<i>J</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jei  - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1)",
+                        "cart": "ma_Jei  - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1)",
+                        "planar": "ma_Jei  - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1)"
+                    }
+                },
+                "id": "magnetic_current_density_total_imag",
+                "name": "Current dens. - total - imag",
+                "shortname": "Ji",
+                "shortname_html": "<i>J</i><sub>i</sub>",
+                "type": "scalar",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "(ma_gamma > 0.0) ? 0.5 * (((ma_Jer ) - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2))^2 + (ma_Jei - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1))^2) / ma_gamma : 0.0",
+                        "cart": "(ma_gamma > 0.0) ? 0.5 * (((ma_Jer ) - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2))^2 + (ma_Jei - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1))^2) / ma_gamma : 0.0",
+                        "planar": "(ma_gamma > 0.0) ? 0.5 * (((ma_Jer ) - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2))^2 + (ma_Jei - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1))^2) / ma_gamma : 0.0"
+                    },
+                    "steadystate": {
+                        "axi": "((ma_gamma > 0.0) ? ma_Jer*ma_Jer / ma_gamma : 0.0) + ma_gamma * (ma_vy * dz1)^2",
+                        "cart": "((ma_gamma > 0.0) ? ma_Jer*ma_Jer / ma_gamma : 0.0) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)^2",
+                        "planar": "((ma_gamma > 0.0) ? ma_Jer*ma_Jer / ma_gamma : 0.0) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)^2"
+                    },
+                    "transient": {
+                        "axi": "((ma_gamma > 0.0) ? (ma_Jer+ma_gamma * value2)^2 / ma_gamma : 0.0) + ma_gamma * (ma_vy * dz1)^2",
+                        "cart": "((ma_gamma > 0.0) ? (ma_Jer - ma_gamma * value2)^2 / ma_gamma : 0.0) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)^2",
+                        "planar": "((ma_gamma > 0.0) ? (ma_Jer - ma_gamma * value2)^2 / ma_gamma : 0.0) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)^2"
+                    }
+                },
+                "id": "magnetic_losses_density",
+                "name": "Losses density",
+                "shortname": "pj",
+                "shortname_html": "<i>p</i><sub>J</sub>",
+                "type": "scalar",
+                "unit": "W/m3",
+                "unit_html": "W.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi_r": "0.5 * ((((ma_Jer ) - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2)) * (dr1 + tern(r > SMALL, (value1)/r, dr1)) - (((ma_Jei ) - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1)) * (dr2 + tern(r > 0, (value2)/r, dr2)))))",
+                        "axi_z": "- 0.5 * (((((ma_Jer ) - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2)) * (- dz1)) - (((ma_Jei ) - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1)) * (- dz2))))",
+                        "cart_x": "0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (- dx1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * ( - dx2)))",
+                        "cart_y": "-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (dy1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * (dy2)))",
+                        "cart_z": "-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dz1) - (2 * PI * f * ma_gamma * (value2))) * (dz1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dz2) + (2 * PI * f * ma_gamma * (value1))) * (dz2)))",
+                        "planar_x": "0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (- dx1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * ( - dx2)))",
+                        "planar_y": "-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (dy1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * (dy2)))"
+                    },
+                    "steadystate": {
+                        "axi_r": "(ma_Jer - ma_gamma * (ma_vy * dz1)) * (dr1 + tern(r > SMALL, value1/r, dr1))",
+                        "axi_z": "- ((ma_Jer - ma_gamma * (ma_vy * dz1)) * (- dz1))",
+                        "cart_x": "- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * (- dx1)",
+                        "cart_y": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * dy1",
+                        "cart_z": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dz1)) * dz1",
+                        "planar_x": "- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * (- dx1)",
+                        "planar_y": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * dy1"
+                    },
+                    "transient": {
+                        "axi_r": "(ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2) * (dr1 + tern(r > SMALL, value1/r, dr1))",
+                        "axi_z": "- ((ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2) * (- dz1))",
+                        "cart_x": "- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * (- dx1)",
+                        "cart_y": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * dy1",
+                        "cart_z": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dz1) - ma_gamma * value2) * dz1",
+                        "planar_x": "- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * (- dx1)",
+                        "planar_y": "(ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * dy1"
+                    }
+                },
+                "id": "magnetic_lorentz_force",
+                "name": "Lorentz force",
+                "shortname": "Fl",
+                "shortname_html": "<i>F</i><sub>L</sub>",
+                "type": "vector",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "0",
+                        "cart": "y * (0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (- dx1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * ( - dx2)))) - x * (-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (dy1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * (dy2))))",
+                        "planar": "y * (0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (- dx1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * ( - dx2)))) - x * (-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (dy1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * (dy2))))"
+                    },
+                    "steadystate": {
+                        "axi": "0",
+                        "cart": "y * (- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * (- dx1)) - x * ((ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * dy1)",
+                        "planar": "y * (- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * (- dx1)) - x * ((ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "0",
+                        "cart": "x * (- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * (- dx1)) - x * ((ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * dy1)",
+                        "planar": "x * (- (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * (- dx1)) - x * ((ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) * dy1)"
+                    }
+                },
+                "id": "magnetic_lorentz_torque",
+                "name": "Lorentz torque",
+                "shortname": "Tl",
+                "shortname_html": "<i>T</i><sub>L</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "magnetic_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "magnetic_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0.0",
+                        "cart": "0.0",
+                        "planar": "0.5 * (x * (2.0 * (-tanx * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (tany * dx1 * dy1)) * 1.0 / (ma_mur * MU0)) - y * (2.0 * (tany * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (-tanx * dx1 * dy1)) * 1.0 / (ma_mur * MU0)))"
+                    },
+                    "transient": {
+                        "axi": "0.0",
+                        "cart": "0.0",
+                        "planar": "0.5 * (x * (2.0 * (-tanx * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (tany * dx1 * dy1)) * 1.0 / (ma_mur * MU0)) - y * (2.0 * (tany * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (-tanx * dx1 * dy1)) * 1.0 / (ma_mur * MU0)))"
+                    }
+                },
+                "id": "magnetic_tensor_torque",
+                "name": "Maxwell torque",
+                "shortname": "Tt",
+                "shortname_html": "<i>T</i><sub>m</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * 2.0 * PI * r * (tanz * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (-tanr * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * 2.0 * PI * r * (tanz * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (-tanr * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "2.0 * (tany * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (-tanx * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * 2.0 * PI * r * (tanz * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (-tanr * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * 2.0 * PI * r * (tanz * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (-tanr * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "2.0 * (tany * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (-tanx * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_tensor_x",
+                "name": "Maxwell force - x",
+                "shortname": "Ftx",
+                "shortname_html": "<i>F</i><sub>tx</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * 2.0 * PI * r * (-tanr * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (tanz * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * 2.0 * PI * r * (-tanr * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (tanz * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "2.0 * (-tanx * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (tany * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * 2.0 * PI * r * (-tanr * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (tanz * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * 2.0 * PI * r * (-tanr * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (tanz * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "2.0 * (-tanx * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (tany * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_tensor_y",
+                "name": "Maxwell force - y",
+                "shortname": "Fty",
+                "shortname_html": "<i>F</i><sub>ty</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "magnetic_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "magnetic_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jer  ",
+                        "cart": "ma_Jer  ",
+                        "planar": "ma_Jer"
+                    },
+                    "steadystate": {
+                        "axi": "ma_Jer",
+                        "cart": "ma_Jer",
+                        "planar": "ma_Jer"
+                    },
+                    "transient": {
+                        "axi": "ma_Jer",
+                        "cart": "ma_Jer",
+                        "planar": "ma_Jer"
+                    }
+                },
+                "id": "magnetic_current_external_real",
+                "name": "Current - ext. - real",
+                "shortname": "Ier",
+                "shortname_html": "<i>I</i><sub>er</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jei",
+                        "cart": "ma_Jei",
+                        "planar": "ma_Jei"
+                    }
+                },
+                "id": "magnetic_current_external_imag",
+                "name": "Current - ext. - imag",
+                "shortname": "Iei",
+                "shortname_html": "<i>I</i><sub>ei</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2 * PI * f * ma_gamma * value2",
+                        "cart": "2 * PI * f * ma_gamma * value2",
+                        "planar": "2 * PI * f * ma_gamma * value2"
+                    }
+                },
+                "id": "magnetic_current_induced_transform_real",
+                "name": "Current - ind. transform - real",
+                "shortname": "Iitr",
+                "shortname_html": "<i>I</i><sub>itr</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "- 2 * PI * f * ma_gamma * value1",
+                        "cart": "- 2 * PI * f * ma_gamma * value1",
+                        "planar": "- 2 * PI * f * ma_gamma * value1"
+                    }
+                },
+                "id": "magnetic_current_induced_transform_imag",
+                "name": "Current - ind. transform - imag",
+                "shortname": "Iiti",
+                "shortname_html": "<i>I</i><sub>iti</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "- ma_gamma * (ma_vy * dz1)",
+                        "cart": "- ma_gamma * (ma_vy * dz1)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * value2"
+                    },
+                    "steadystate": {
+                        "axi": "- ma_gamma * (ma_vy * dz1)",
+                        "cart": "- ma_gamma * (ma_vy * dz1)",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "- ma_gamma * (ma_vy * dz1) - ma_gamma * value2",
+                        "cart": "- ma_gamma * (ma_vy * dz1) - ma_gamma * value2",
+                        "planar": "- ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2"
+                    }
+                },
+                "id": "magnetic_current_velocity_real",
+                "name": "Current - velocity - real",
+                "shortname": "Iivr",
+                "shortname_html": "<i>I</i><sub>ivr</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jer  - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2)",
+                        "cart": "ma_Jer  - ma_gamma * (ma_vy * dz1) + 2 * PI * f * ma_gamma * (value2)",
+                        "planar": "ma_Jer  - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2)"
+                    },
+                    "steadystate": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1)",
+                        "cart": "ma_Jer - ma_gamma * (ma_vy * dz1)",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)"
+                    },
+                    "transient": {
+                        "axi": "ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2",
+                        "cart": "ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2",
+                        "planar": "ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2"
+                    }
+                },
+                "id": "magnetic_current_total_real",
+                "name": "Current - total - real",
+                "shortname": "Ir",
+                "shortname_html": "<i>I</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "ma_Jei  - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1)",
+                        "cart": "ma_Jei  - ma_gamma * (ma_vy * dz2) - 2 * PI * f * ma_gamma * (value1)",
+                        "planar": "ma_Jei  - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1)"
+                    }
+                },
+                "id": "magnetic_current_total_imag",
+                "name": "Current - total - imag",
+                "shortname": "Ii",
+                "shortname_html": "<i>I</i><sub>i</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "2 * PI * r * 0.25 / (ma_mur * MU0) * ((dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2) + (dz2*dz2 + (dr2 + tern(r > SMALL, value2/r, dr2))^2))",
+                        "cart": "2 * PI * r * 0.25 / (ma_mur * MU0) * ((dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2) + (dz2*dz2 + (dr2 + tern(r > SMALL, value2/r, dr2))^2))",
+                        "planar": "0.25 * ((dx1*dx1 + dy1*dy1) + (dx2*dx2 + dy2*dy2)) / (ma_mur * MU0)"
+                    },
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * 0.5 / (ma_mur * MU0) * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2)",
+                        "cart": "2.0 * PI * r * 0.5 / (ma_mur * MU0) * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2)",
+                        "planar": "0.5 / (ma_mur * MU0) * (dx1 * dx1 + dy1 * dy1)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * 0.5 / (ma_mur * MU0) * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2)",
+                        "cart": "2.0 * PI * r * 0.5 / (ma_mur * MU0) * (dz1*dz1 + (dr1 + tern(r > SMALL, value1/r, dr1))^2)",
+                        "planar": "0.5 / (ma_mur * MU0) * (dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "magnetic_energy",
+                "name": "Energy",
+                "shortname": "Wm",
+                "shortname_html": "<i>W</i><sub>m</sub>",
+                "type": "scalar",
+                "unit": "J",
+                "unit_html": "J"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "(ma_gamma > 0.0) ? 2 * PI * r * 0.5 / ma_gamma * (((ma_Jei ) - ma_gamma * ((ma_vx - ma_va * z) * dr2 + (ma_vy + ma_va * r) * dz2) - 2 * PI * f * ma_gamma * (value1))^2 + ((ma_Jer ) - ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1) + 2 * PI * f * ma_gamma * (value2))^2) : 0.0",
+                        "cart": "(ma_gamma > 0.0) ? 2 * PI * r * 0.5 / ma_gamma * (((ma_Jei ) - ma_gamma * ((ma_vx - ma_va * z) * dr2 + (ma_vy + ma_va * r) * dz2) - 2 * PI * f * ma_gamma * (value1))^2 + ((ma_Jer ) - ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1) + 2 * PI * f * ma_gamma * (value2))^2) : 0.0",
+                        "planar": "(ma_gamma > 0.0) ? 0.5 * (((ma_Jer ) - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) + 2 * PI * f * ma_gamma * (value2))^2 + ((ma_Jei ) - ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) - 2 * PI * f * ma_gamma * (value1))^2) / ma_gamma : 0.0"
+                    },
+                    "steadystate": {
+                        "axi": "(ma_gamma > 0.0) ? 2 * PI * r / ma_gamma * (ma_Jer - ma_vy * dz1)^2 : 0.0",
+                        "cart": "(ma_gamma > 0.0) ? 2 * PI * r / ma_gamma * (ma_Jer - ma_vy * dz1)^2 : 0.0",
+                        "planar": "(ma_gamma > 0.0) ? 1.0 / ma_gamma * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))^2 : 0.0"
+                    },
+                    "transient": {
+                        "axi": "(ma_gamma > 0.0) ? 2 * PI * r / ma_gamma * (ma_Jer - ma_gamma * value2 - ma_vy * dz1)^2 : 0.0",
+                        "cart": "(ma_gamma > 0.0) ? 2 * PI * r / ma_gamma * (ma_Jer - ma_gamma * value2 - ma_vy * dz1)^2 : 0.0",
+                        "planar": "((ma_gamma > 0.0) ? (ma_Jer - ma_gamma * value2)^2 / ma_gamma : 0.0) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)^2"
+                    }
+                },
+                "id": "magnetic_losses",
+                "name": "Power losses",
+                "shortname": "Pj",
+                "shortname_html": "<i>P</i><sub>j</sub>",
+                "type": "scalar",
+                "unit": "W",
+                "unit_html": "W"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "y * (0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (- dx1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * ( - dx2)))) - x * (-0.5 * (((- (ma_Jer ) + ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - (2 * PI * f * ma_gamma * (value2))) * (dy1)) + ((- (ma_Jei ) + ma_gamma * ((ma_vx - ma_va * y) * dx2 + (ma_vy + ma_va * x) * dy2) + (2 * PI * f * ma_gamma * (value1))) * (dy2))))"
+                    },
+                    "steadystate": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "y * dx1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)) - x * dy1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va *x) * dy1))"
+                    },
+                    "transient": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "y * dx1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2) - x * dy1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va *x) * dy1))"
+                    }
+                },
+                "id": "magnetic_lorentz_torque",
+                "name": "Lorentz torque",
+                "shortname": "Tl",
+                "shortname_html": "<i>T</i></i><sub>L</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "-0.5 * ((-(2 * PI * r * ((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * (dr1 + ((r > 0) ? (value1) / r : 0.0))) + (2 * PI * r * ((ma_Jei ) + 2 * PI * f * ma_gamma * (value1)) * (dr2 + ((r > 0) ? (value2) / r : 0.0))))                                              + dr1 * (-ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1)))",
+                        "cart": "-0.5 * ((-(2 * PI * r * ((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * (dr1 + ((r > 0) ? (value1) / r : 0.0))) + (2 * PI * r * ((ma_Jei ) + 2 * PI * f * ma_gamma * (value1)) * (dr2 + ((r > 0) ? (value2) / r : 0.0))))                                              + dr1 * (-ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1)))",
+                        "planar": "-0.5 * (-(((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * dx1) + ((ma_Jei + 2 * PI * f * ma_gamma * (value1)) * dx2))                                                 + dx1 * (ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))"
+                    },
+                    "steadystate": {
+                        "axi": "2 * PI * r * (dr1 + tern(r > SMALL, value1/r, dr1)) * (ma_Jer - ma_gamma * (ma_vy * dz1))",
+                        "cart": "2 * PI * r * (dr1 + tern(r > SMALL, value1/r, dr1)) * (ma_Jer - ma_gamma * (ma_vy * dz1))",
+                        "planar": "dx1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))"
+                    },
+                    "transient": {
+                        "axi": "2 * PI * r * (dr1 + tern(r > SMALL, value1/r, dr1)) * (ma_Jer - ma_gamma * (ma_vy * dz1)- ma_gamma * value2)",
+                        "cart": "2 * PI * r * (dr1 + tern(r > SMALL, value1/r, dr1)) * (ma_Jer - ma_gamma * (ma_vy * dz1)- ma_gamma * value2)",
+                        "planar": "dx1 * (ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1)- ma_gamma * value2)"
+                    }
+                },
+                "id": "magnetic_lorentz_force_x",
+                "name": "Lorentz force - x",
+                "shortname": "Flx",
+                "shortname_html": "<i>F</i><sub>Lx</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "harmonic": {
+                        "axi": "-2 * PI * r * 0.5 * (-(((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * dz1) + (((ma_Jei ) + 2 * PI * f * ma_gamma * (value1)) * dz2))                                              + 2 * PI * r * dz1 * (-ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1))",
+                        "cart": "-2 * PI * r * 0.5 * (-(((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * dz1) + (((ma_Jei ) + 2 * PI * f * ma_gamma * (value1)) * dz2))                                              + 2 * PI * r * dz1 * (-ma_gamma * ((ma_vx - ma_va * z) * dr1 + (ma_vy + ma_va * r) * dz1))",
+                        "planar": "-0.5 * (-(((ma_Jer ) + 2 * PI * f * ma_gamma * (value2)) * dy1) + ((ma_Jei + 2 * PI * f * ma_gamma * (value1)) * dy2))                                                 + dy1 * (ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))"
+                    },
+                    "steadystate": {
+                        "axi": "2 * PI * r * dz1 * (ma_Jer - ma_gamma * (ma_vy * dz1))",
+                        "cart": "2 * PI * r * dz1 * (ma_Jer - ma_gamma * (ma_vy * dz1))",
+                        "planar": "dy1 * (-ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1))"
+                    },
+                    "transient": {
+                        "axi": "2 * PI * r * dz1 * (ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2)",
+                        "cart": "2 * PI * r * dz1 * (ma_Jer - ma_gamma * (ma_vy * dz1) - ma_gamma * value2)",
+                        "planar": "dy1 * (-ma_Jer - ma_gamma * ((ma_vx - ma_va * y) * dx1 + (ma_vy + ma_va * x) * dy1) - ma_gamma * value2)"
+                    }
+                },
+                "id": "magnetic_lorentz_force_y",
+                "name": "Lorentz force - y",
+                "shortname": "Fly",
+                "shortname_html": "<i>F</i><sub>Ly</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "0.5 * (x * ((dyegg * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dxegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)) - y * ((dxegg * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dyegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)))"
+                    },
+                    "transient": {
+                        "axi": "0",
+                        "cart": "0",
+                        "planar": "0.5 * (x * ((dyegg * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dxegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)) - y * ((dxegg * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dyegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)))"
+                    }
+                },
+                "id": "magnetic_tensor_torque",
+                "name": "Maxwell torque",
+                "shortname": "Tt",
+                "shortname_html": "<i>T</i></i><sub>t</sub>",
+                "type": "scalar",
+                "unit": "Nm",
+                "unit_html": "Nm"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (dregg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (dzegg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * PI * r * (dregg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (dzegg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "(dxegg * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dyegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * (dregg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (dzegg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * PI * r * (dregg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1)))) + (dzegg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "(dxegg * (dx1 * dx1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dyegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_tensor_force_x",
+                "name": "Maxwell force - x",
+                "shortname": "Ftx",
+                "shortname_html": "<i>F</i><sub>tx</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (dzegg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (dregg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * PI * r * (dzegg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (dregg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "(dyegg * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dxegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * (dzegg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (dregg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "cart": "2.0 * PI * r * (dzegg * (dz1 * dz1 - ((dr1 + tern(r > SMALL, value1/r, dr1)) * (dr1 + tern(r > SMALL, value1/r, dr1))) / 2.0 + (dz1 * dz1)) + (dregg * (dr1 + tern(r > SMALL, value1/r, dr1)) * dz1)) * 1.0 / (ma_mur * MU0)",
+                        "planar": "(dyegg * (dy1 * dy1 - (dx1 * dx1 + dy1 * dy1) / 2.0) + (dxegg * dx1 * dy1)) * 1.0 / (ma_mur * MU0)"
+                    }
+                },
+                "id": "magnetic_tensor_force_y",
+                "name": "Maxwell force - y",
+                "shortname": "Fty",
+                "shortname_html": "<i>F</i><sub>ty</sub>",
+                "type": "scalar",
+                "unit": "N",
+                "unit_html": "N"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "magnetic_potential_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Vector potential - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ai",
+                            "shortname_html": "<i>A</i><sub>i</sub>",
+                            "unit": "Wb/m",
+                            "unit_html": "Wb.m<sup>-1</sup>"
+                        },
+                        "magnetic_potential_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Vector potential - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ar",
+                            "shortname_html": "<i>A</i><sub>r</sub>",
+                            "unit": "Wb/m",
+                            "unit_html": "Wb.m<sup>-1</sup>"
+                        },
+                        "magnetic_surface_current_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Surface current - imag",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Ji",
+                            "shortname_html": "<i>J</i><sub>i</sub>",
+                            "unit": "A/m",
+                            "unit_html": "A.m<sup>-1</sup>"
+                        },
+                        "magnetic_surface_current_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Surface current - real",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Jr",
+                            "shortname_html": "<i>J</i><sub>r</sub>",
+                            "unit": "A/m",
+                            "unit_html": "A.m<sup>-1</sup>"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "Material properties",
+                    "quantities": {
+                        "magnetic_conductivity": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Electrical conductivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "gamma",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&gamma;</i>",
+                            "unit": "S/m",
+                            "unit_html": "S.m<sup>-1</sup>"
+                        },
+                        "magnetic_permeability": {
+                            "condition": "value > 0",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permeability",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "mur",
+                            "shortname_dependence": "B",
+                            "shortname_dependence_html": "<i>B</i>",
+                            "shortname_html": "<i>&mu;</i><sub>r</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Source",
+                    "quantities": {
+                        "magnetic_current_density_external_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Current dens. - ext. - imag",
+                            "only_if": "",
+                            "only_if_not": "magnetic_total_current_prescribed",
+                            "shortname": "Jei",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>J</i><sub>ext,i</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "magnetic_current_density_external_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Current dens. - ext. - real",
+                            "only_if": "",
+                            "only_if_not": "magnetic_total_current_prescribed",
+                            "shortname": "Jer",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>J</i><sub>ext,r</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "magnetic_total_current_imag": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Total current - imag",
+                            "only_if": "magnetic_total_current_prescribed",
+                            "only_if_not": "",
+                            "shortname": "Iti",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>I</i><sub>t,i</sub>",
+                            "unit": "A",
+                            "unit_html": "A"
+                        },
+                        "magnetic_total_current_prescribed": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": true,
+                            "is_source": false,
+                            "name": "Total current prescribed",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "IPrescribed",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "IPrescribed",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "magnetic_total_current_real": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Total current - real",
+                            "only_if": "magnetic_total_current_prescribed",
+                            "only_if_not": "",
+                            "shortname": "Itr",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>I</i><sub>t,r</sub>",
+                            "unit": "A",
+                            "unit_html": "A"
+                        }
+                    }
+                },
+                {
+                    "name": "Permanent magnet",
+                    "quantities": {
+                        "magnetic_remanence": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Remanent flux density",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Brm",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>B</i><sub>rm</sub>",
+                            "unit": "T",
+                            "unit_html": "T"
+                        },
+                        "magnetic_remanence_angle": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Remanent flux density - angle",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Bra",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&alpha;</i><sub>rm</sub>",
+                            "unit": "deg.",
+                            "unit_html": "deg."
+                        }
+                    }
+                },
+                {
+                    "name": "Velocity",
+                    "quantities": {
+                        "magnetic_velocity_angular": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - angular",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "va",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&omega;</i>",
+                            "unit": "rad/s",
+                            "unit_html": "rad.s<sup>-1</sup>"
+                        },
+                        "magnetic_velocity_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - x",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "vx",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>v</i><sub>x</sub>",
+                            "unit": "m/s",
+                            "unit_html": "m.s<sup>-1</sup>"
+                        },
+                        "magnetic_velocity_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Velocity - y",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "vy",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>v</i><sub>y</sub>",
+                            "unit": "m/s",
+                            "unit_html": "m.s<sup>-1</sup>"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "magnetic_potential": {
+                    "analysistype": "steadystate",
+                    "equation": "A = A_0",
+                    "id": "magnetic_potential",
+                    "name": "Magnetic potential",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_potential_real": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "magnetic_surface_current": {
+                    "analysistype": "steadystate",
+                    "equation": "K = - \\frac{1}{\\mu} \\frac{\\partial A}{\\partial n_0} = K_0",
+                    "id": "magnetic_surface_current",
+                    "name": "Surface current",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_surface_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "magnetic_potential": {
+                    "analysistype": "transient",
+                    "equation": "A = A_0",
+                    "id": "magnetic_potential",
+                    "name": "Magnetic potential",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                                "steady_essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_potential_real": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "magnetic_surface_current": {
+                    "analysistype": "transient",
+                    "equation": "K = - \\frac{1}{\\mu} \\frac{\\partial A}{\\partial n_0} = K_0",
+                    "id": "magnetic_surface_current",
+                    "name": "Surface current",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_surface_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "magnetic_potential": {
+                    "analysistype": "harmonic",
+                    "equation": "\\vecfaz{A} = \\vecfaz{A}_0",
+                    "id": "magnetic_potential",
+                    "name": "Magnetic potential",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "harmonic_essential_1": {
+                                },
+                                "harmonic_essential_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "harmonic_essential_1": {
+                                },
+                                "harmonic_essential_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                                "harmonic_essential_1": {
+                                },
+                                "harmonic_essential_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_potential_imag": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_potential_real": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "magnetic_surface_current": {
+                    "analysistype": "harmonic",
+                    "equation": "\\faz{K} = - \\frac{1}{\\mu} \\frac{\\partial \\vecfaz{A}}{\\partial n_0} = \\faz{K}_0",
+                    "id": "magnetic_surface_current",
+                    "name": "Surface current",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_current_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_current_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_current_1": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "harmonic_current_2": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_current_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_current_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_surface_current_imag": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_surface_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "harmonic_essential_1": {
+                    "axi": "Ar",
+                    "cart": "Ar",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "Ar"
+                },
+                "harmonic_essential_2": {
+                    "axi": "Ai",
+                    "cart": "Ai",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "Ai"
+                },
+                "steady_essential": {
+                    "axi": "Ar",
+                    "cart": "Ar",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "Ar"
+                }
+            },
+            "matrix_forms": {
+            },
+            "variables": {
+                "magnetic_potential_imag": {
+                    "shortname": "Ai"
+                },
+                "magnetic_potential_real": {
+                    "shortname": "Ar"
+                },
+                "magnetic_surface_current_imag": {
+                    "shortname": "Ji"
+                },
+                "magnetic_surface_current_real": {
+                    "shortname": "Jr"
+                }
+            },
+            "vector_forms": {
+                "harmonic_current_1": {
+                    "axi": "-Jr * vval",
+                    "cart": "-Jr * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "-Jr * vval"
+                },
+                "harmonic_current_2": {
+                    "axi": "-Ji * vval",
+                    "cart": "-Ji * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "-Ji * vval"
+                },
+                "steady_current": {
+                    "axi": "-Jr * vval",
+                    "cart": "-Jr * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "-Jr * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "\\curl \\left( \\frac{1}{\\mu}\\, \\left( \\curl \\vec{A} - \\vec{B}_\\mathrm{r} \\right) \\right) - \\gamma \\vec{v} \\times \\curl \\vec{A} = \\vec{J}_\\mathrm{ext}",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                },
+                                "steady_velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_rhs_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "steady_rhs_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "steady_jac_laplace": {
+                                },
+                                "steady_laplace": {
+                                },
+                                "steady_velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_laplace": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "steady_rhs_current": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "steady_rhs_remanence": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "steady_velocity": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                }
+                            }
+                        },
+                        "picard": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                },
+                                "steady_velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_rhs_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "steady_rhs_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_current_density_external_real": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_permeability": {
+                            "dependency": "",
+                            "nonlinearity_axi": "sqrt(dz1*dz1 + (dr1 + value1 / (r+1e-12))*(dr1 + value1 / (r+1e-12)))",
+                            "nonlinearity_cart": "sqrt(dx1*dx1 + dy1*dy1)",
+                            "nonlinearity_planar": "sqrt(dx1*dx1 + dy1*dy1)"
+                        },
+                        "magnetic_remanence": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_remanence_angle": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_total_current_prescribed": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_total_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_angular": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysistype": "transient",
+                    "equation": "\\curl \\left( \\frac{1}{\\mu}\\, \\left( \\curl \\vec{A} - \\vec{B}_\\mathrm{r} \\right) \\right) - \\gamma \\vec{v} \\times \\curl \\vec{A} + \\gamma \\frac{\\partial \\vec{A}}{\\partial t} = \\vec{J}_\\mathrm{ext}",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                },
+                                "steady_velocity": {
+                                },
+                                "transient": {
+                                },
+                                "transient_intensity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                                "transient_intensity_mass": {
+                                }
+                            },
+                            "vector_forms": {
+                                "steady_rhs_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "transient_rhs_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "picard": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                },
+                                "steady_velocity": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_rhs_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "transient_rhs_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_current_density_external_real": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_permeability": {
+                            "dependency": "",
+                            "nonlinearity_axi": "sqrt(dz1*dz1 + (dr1 + value1 / (r+1e-12))*(dr1 + value1 / (r+1e-12)))",
+                            "nonlinearity_cart": "sqrt(dx1*dx1 + dy1*dy1)",
+                            "nonlinearity_planar": "sqrt(dx1*dx1 + dy1*dy1)"
+                        },
+                        "magnetic_remanence": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_remanence_angle": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_angular": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysistype": "harmonic",
+                    "equation": "\\curl \\left( \\frac{1}{\\mu}\\, \\left( \\curl \\vecfaz{A} - \\vec{B}_\\mathrm{r} \\right) \\right) - \\gamma \\vec{v} \\times \\curl \\vecfaz{A} + \\mj \\omega \\gamma \\vecfaz{A} = \\vec{J}_\\mathrm{ext}",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "harmonic_gamma_1_2": {
+                                },
+                                "harmonic_gamma_2_1": {
+                                },
+                                "harmonic_laplace_1_1": {
+                                },
+                                "harmonic_laplace_2_2": {
+                                },
+                                "harmonic_velocity_1_1": {
+                                },
+                                "harmonic_velocity_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_rhs_1_1_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_1_1_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_2_2_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_gamma_1_2": {
+                                },
+                                "harmonic_gamma_2_1": {
+                                },
+                                "harmonic_jac_laplace_1_1": {
+                                },
+                                "harmonic_jac_laplace_2_2": {
+                                },
+                                "harmonic_laplace_1_1": {
+                                },
+                                "harmonic_laplace_2_2": {
+                                },
+                                "harmonic_velocity_1_1": {
+                                },
+                                "harmonic_velocity_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_gamma_1_2": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "harmonic_gamma_2_1": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "harmonic_laplace_1_1": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "harmonic_laplace_2_2": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "harmonic_rhs_1_1_current": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_1_1_remanence": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_2_2_current": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "harmonic_velocity_1_1": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "harmonic_velocity_2_2": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                }
+                            }
+                        },
+                        "picard": {
+                            "matrix_forms": {
+                                "harmonic_gamma_1_2": {
+                                },
+                                "harmonic_gamma_2_1": {
+                                },
+                                "harmonic_laplace_1_1": {
+                                },
+                                "harmonic_laplace_2_2": {
+                                },
+                                "harmonic_velocity_1_1": {
+                                },
+                                "harmonic_velocity_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_rhs_1_1_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_1_1_remanence": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_rhs_2_2_current": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "magnetic_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_current_density_external_imag": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_current_density_external_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_permeability": {
+                            "dependency": "",
+                            "nonlinearity_axi": "sqrt((dr1+value1/(r+1e-12))*(dr1+value1/(r+1e-12)) + dz1*dz1 + (dr2+value2/(r+1e-12))*(dr2+value2/(r+1e-12)) + dz2*dz2)",
+                            "nonlinearity_cart": "sqrt(dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2)",
+                            "nonlinearity_planar": "sqrt(dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2)"
+                        },
+                        "magnetic_remanence": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_remanence_angle": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_total_current_imag": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_total_current_prescribed": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_total_current_real": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_angular": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "magnetic_velocity_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "harmonic_gamma_1_2": {
+                    "axi": "- 2 * PI * f * ma_gamma * uval * vval",
+                    "cart": "- 2 * PI * f * ma_gamma * uval * vval",
+                    "condition": "fabs(ma_gamma) > 0.0",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "- 2 * PI * f * ma_gamma * uval * vval"
+                },
+                "harmonic_gamma_2_1": {
+                    "axi": "2 * PI * f * ma_gamma * uval * vval",
+                    "cart": "2 * PI * f * ma_gamma * uval * vval",
+                    "condition": "fabs(ma_gamma) > 0.0",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "2 * PI * f * ma_gamma * uval * vval"
+                },
+                "harmonic_jac_laplace_1_1": {
+                    "axi": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * ((dr1 + value1 / r) * (udr + uval / r) + dz1 * udz) * ma_one_over_norm_a * (dr1 * vdr + dz1 * vdz + value1 * vdr / r)",
+                    "cart": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx1 * udx + dy1 * udy) * ma_one_over_norm_a * (dx1 * vdx + dy1 * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx1 * udx + dy1 * udy) * ma_one_over_norm_a * (dx1 * vdx + dy1 * vdy)"
+                },
+                "harmonic_jac_laplace_2_2": {
+                    "axi": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * ((dr2 + value2 / r) * (udr + uval / r) + dz2 * udz) * ma_one_over_norm_a * (dr2 * vdr + dz2 * vdz + value2 * vdr / r)",
+                    "cart": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx2 * udx + dy2 * udy) * ma_one_over_norm_a * (dx2 * vdx + dy2 * vdy)",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx2 * udx + dy2 * udy) * ma_one_over_norm_a * (dx2 * vdx + dy2 * vdy)"
+                },
+                "harmonic_laplace_1_1": {
+                    "axi": "ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)",
+                    "cart": "ma_one_over_mu * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "ma_one_over_mu * (udx * vdx + udy * vdy)"
+                },
+                "harmonic_laplace_2_2": {
+                    "axi": "ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)",
+                    "cart": "ma_one_over_mu * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "ma_one_over_mu * (udx * vdx + udy * vdy)"
+                },
+                "harmonic_velocity_1_1": {
+                    "axi": "- ma_gamma * uval * ma_vy * vdz",
+                    "cart": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)",
+                    "condition": "(fabs(ma_gamma) > 0.0) || (fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0)",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)"
+                },
+                "harmonic_velocity_2_2": {
+                    "axi": "- ma_gamma * uval * ma_vy * vdz",
+                    "cart": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)",
+                    "condition": "(fabs(ma_gamma) > 0.0) || (fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0)",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)"
+                },
+                "steady_jac_laplace": {
+                    "axi": "- dma_mur / (MU0 * ma_mur * ma_mur) * ((dr1 + value1 / r) * (udr + uval / r) + dz1 * udz) * ma_one_over_norm_a * (dr1 * vdr + dz1 * vdz + value1 * vdr / r)",
+                    "cart": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx1 * udx + dy1 * udy) * ma_one_over_norm_a * (dx1 * vdx + dy1 * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (dx1 * udx + dy1 * udy) * ma_one_over_norm_a * (dx1 * vdx + dy1 * vdy)"
+                },
+                "steady_laplace": {
+                    "axi": "ma_one_over_mu * ((udr * vdr + udz * vdz) + uval * vdr / r) ",
+                    "cart": "ma_one_over_mu * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "ma_one_over_mu * (udx * vdx + udy * vdy)"
+                },
+                "steady_velocity": {
+                    "axi": "- ma_gamma * uval * ma_vy * vdz",
+                    "cart": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)",
+                    "condition": "(fabs(ma_gamma) > 0.0) && ((fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0))",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)"
+                },
+                "transient": {
+                    "axi": "ma_gamma * uval * vval",
+                    "cart": "ma_gamma * uval * vval",
+                    "condition": "fabs(ma_gamma) > 0.0",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "ma_gamma * uval * vval"
+                },
+                "transient_fake": {
+                    "axi": "1e-9 * uval * vval",
+                    "cart": "1e-9 * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "1e-9 * uval * vval"
+                },
+                "transient_intensity": {
+                    "axi": "uval * vval",
+                    "cart": "uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "uval * vval"
+                },
+                "transient_intensity_mass": {
+                    "axi": "- uval * vval",
+                    "cart": "- uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "- uval * vval"
+                }
+            },
+            "variables": {
+                "magnetic_conductivity": "ma_gamma",
+                "magnetic_current_density_external_imag": "ma_Jei",
+                "magnetic_current_density_external_real": "ma_Jer",
+                "magnetic_permeability": "ma_mur",
+                "magnetic_remanence": "mu_Brm",
+                "magnetic_remanence_angle": "ma_Bra",
+                "magnetic_total_current_imag": "ma_Iti",
+                "magnetic_total_current_prescribed": "ma_IPrescribed",
+                "magnetic_total_current_real": "ma_Itr",
+                "magnetic_velocity_angular": "ma_va",
+                "magnetic_velocity_x": "ma_vx",
+                "magnetic_velocity_y": "ma_vy"
+            },
+            "vector_forms": {
+                "harmonic_rhs_1_1_current": {
+                    "axi": "(ma_JVariable * ma_Jer + (1-ma_JVariable)*ma_Jer_compl) * vval",
+                    "cart": "(ma_JVariable * ma_Jer + (1-ma_JVariable)*ma_Jer_compl) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "(ma_JVariable * ma_Jer + (1-ma_JVariable)*ma_Jer_compl) * vval"
+                },
+                "harmonic_rhs_1_1_remanence": {
+                    "axi": "- mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdr + ma_cos_Bra * vdz)",
+                    "cart": "mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)",
+                    "condition": "fabs(mu_Brm) > 0.0",
+                    "i": 1,
+                    "planar": "mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)"
+                },
+                "harmonic_rhs_2_2_current": {
+                    "axi": "(ma_JVariable * ma_Jei + (1-ma_JVariable)*ma_Jei_compl) * vval",
+                    "cart": "(ma_JVariable * ma_Jei + (1-ma_JVariable)*ma_Jei_compl) * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "(ma_JVariable * ma_Jei + (1-ma_JVariable)*ma_Jei_compl) * vval"
+                },
+                "steady_rhs_current": {
+                    "axi": "ma_Jer_compl * vval",
+                    "cart": "ma_Jer_compl * vval ",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "ma_Jer_compl * vval "
+                },
+                "steady_rhs_remanence": {
+                    "axi": "- mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdr + ma_cos_Bra * vdz)",
+                    "cart": "mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)",
+                    "condition": "fabs(mu_Brm) > 0.0",
+                    "i": 1,
+                    "planar": "mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)"
+                },
+                "transient_rhs_current": {
+                    "axi": "ma_Jer * vval",
+                    "cart": "ma_Jer * vval ",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "ma_Jer * vval "
+                }
+            }
+        }
+    }
+}

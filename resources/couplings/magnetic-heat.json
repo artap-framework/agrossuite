@@ -1,0 +1,1385 @@
+{
+    "general": {
+        "constants": {
+            "MU0": 1.2566371e-06
+        },
+        "id": "magnetic-heat",
+        "name": "Joule losses",
+        "source": "magnetic",
+        "target": "heat"
+    },
+    "processor": {
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "steadystate",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "steadystate",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "harmonic",
+                    "analysistype": "transient",
+                    "couplingtype": "hard",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "newton": {
+                            "matrix_forms": {
+                                "harmonic_hard_matrix_newton_3_1": {
+                                },
+                                "harmonic_hard_matrix_newton_3_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "harmonic_hard_vector_newton_3_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "harmonic_hard_vector_newton_3_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysissourcetype": "steadystate",
+                    "analysistype": "transient",
+                    "couplingtype": "weak",
+                    "equation": "",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_weak": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "harmonic_hard_matrix_newton_3_1": {
+                    "axi": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * r * vval",
+                    "cart": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * vval",
+                    "condition": "",
+                    "i": 5,
+                    "j": 1,
+                    "planar": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * vval"
+                },
+                "harmonic_hard_matrix_newton_3_2": {
+                    "axi": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * r * vval",
+                    "cart": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * vval",
+                    "condition": "",
+                    "i": 5,
+                    "j": 2,
+                    "planar": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * vval"
+                }
+            },
+            "vector_forms": {
+                "harmonic_hard_vector_newton_3_1": {
+                    "axi": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * r * vval",
+                    "cart": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * vval",
+                    "condition": "",
+                    "i": 5,
+                    "planar": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * vval"
+                },
+                "harmonic_hard_vector_newton_3_2": {
+                    "axi": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * r * vval",
+                    "cart": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * vval",
+                    "condition": "",
+                    "i": 5,
+                    "planar": "- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * (upval * upval) * vval"
+                },
+                "harmonic_weak": {
+                    "axi": "0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * r * vval",
+                    "cart": "0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * vval"
+                },
+                "steady_weak": {
+                    "axi": "0",
+                    "cart": "ma_gamma * (((ma_vx - y * ma_va) * magnetic1dx + (ma_vy + x * ma_va) * magnetic1dy)^2) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "ma_gamma * (((ma_vx - y * ma_va) * magnetic1dx + (ma_vy + x * ma_va) * magnetic1dy)^2) * vval"
+                }
+            }
+        }
+    }
+}

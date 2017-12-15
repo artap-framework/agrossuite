@@ -1,0 +1,926 @@
+{
+    "general": {
+        "analyses": {
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    },
+                    "2": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 2,
+                "type": "steadystate"
+            }
+        },
+        "constants": {
+        },
+        "id": "elasticity",
+        "macros": {
+        },
+        "name": "Structural analysis",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "value1",
+                        "axi_z": "value2",
+                        "cart_x": "value1",
+                        "cart_y": "value2",
+                        "cart_z": "value2",
+                        "planar_x": "value1",
+                        "planar_y": "value2"
+                    }
+                },
+                "id": "elasticity_displacement",
+                "name": "Displacement",
+                "shortname": "d",
+                "shortname_html": "<i>d</i>",
+                "type": "vector",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "st_E",
+                        "cart": "st_E",
+                        "planar": "st_E"
+                    }
+                },
+                "id": "elasticity_young_modulus",
+                "name": "Young modulus",
+                "shortname": "E",
+                "shortname_html": "<i>E</i>",
+                "type": "scalar",
+                "unit": "Pa",
+                "unit_html": "Pa"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0/sqrt(2.0) * sqrt((((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dr1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dz2))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dr1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dz2)) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dz2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * value1 / (r + 1e-12)))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dz2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * value1 / (r + 1e-12))) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * value1 / (r + 1e-12))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dr1))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * value1 / (r + 1e-12))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dr1 + dz2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dr1)) + 6*(st_E / (2.0*(1.0 + st_nu)) * (dz1 + dr2))*(st_E / (2.0*(1.0 + st_nu)) * (dz1 + dr2)))",
+                        "cart": "1.0/sqrt(2.0) * sqrt((((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))) *(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)) + 6*(st_E / (2.0*(1.0 + st_nu)) * (dy1 + dx2))*(st_E / (2.0*(1.0 + st_nu)) * (dy1 + dx2)))",
+                        "planar": "1.0/sqrt(2.0) * sqrt((((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))) *(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dy2)-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))) + (((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1))*(((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2))-((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (dx1 + dy2) + 2 * st_E / (2.0*(1.0 + st_nu)) * dx1)) + 6*(st_E / (2.0*(1.0 + st_nu)) * (dy1 + dx2))*(st_E / (2.0*(1.0 + st_nu)) * (dy1 + dx2)))"
+                    }
+                },
+                "id": "elasticity_von_mises_stress",
+                "name": "Von Misses stress",
+                "shortname": "s",
+                "shortname_html": "<i>s</i>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "st_nu",
+                        "cart": "st_nu",
+                        "planar": "st_nu"
+                    }
+                },
+                "id": "elasticity_poisson_ratio",
+                "name": "Poisson ratio",
+                "shortname": "nu",
+                "shortname_html": "<i>&nu;</i>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "st_fvx",
+                        "axi_z": "st_fvy",
+                        "cart_x": "st_fvx",
+                        "cart_y": "st_fvy",
+                        "cart_z": "st_fvy",
+                        "planar_x": "st_fvx",
+                        "planar_y": "st_fvy"
+                    }
+                },
+                "id": "elasticity_inner_force",
+                "name": "Inner force",
+                "shortname": "f",
+                "shortname_html": "<i>f</i>",
+                "type": "vector",
+                "unit": "N",
+                "unit_html": "N"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "st_alpha",
+                        "cart": "st_alpha",
+                        "planar": "st_alpha"
+                    }
+                },
+                "id": "elasticity_alpha",
+                "name": "Temperature coefficient",
+                "shortname": "alpha",
+                "shortname_html": "<i>&alpha;</i>",
+                "type": "scalar",
+                "unit": "1/K",
+                "unit_html": "K<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "st_dT",
+                        "cart": "st_dT",
+                        "planar": "st_dT"
+                    }
+                },
+                "id": "elasticity_temperature_difference",
+                "name": "Temperature difference",
+                "shortname": "dT",
+                "shortname_html": "d<i>T</i>",
+                "type": "scalar",
+                "unit": "K",
+                "unit_html": "K"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "st_Tr",
+                        "cart": "st_Tr",
+                        "planar": "st_Tr"
+                    }
+                },
+                "id": "elasticity_temperature_reference",
+                "name": "Reference temperature",
+                "shortname": "Tr",
+                "shortname_html": "<i>T</i><sub>ref</sub>",
+                "type": "scalar",
+                "unit": "K",
+                "unit_html": "K"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "elasticity_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "elasticity_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "elasticity_displacement_x",
+                "name": "Displacement - x",
+                "shortname": "dx",
+                "shortname_html": "<i>d</i><sub>x</sub>",
+                "type": "scalar",
+                "unit": "m.m2",
+                "unit_html": "m.m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * value2",
+                        "cart": "2.0 * PI * r * value2",
+                        "planar": "value2"
+                    }
+                },
+                "id": "elasticity_displacement_y",
+                "name": "Displacement - y",
+                "shortname": "dy",
+                "shortname_html": "<i>d</i><sub>y</sub>",
+                "type": "scalar",
+                "unit": "m.m2",
+                "unit_html": "m.m<sup>2</sup>"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "elasticity_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "elasticity_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "elasticity_displacement_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Fixed - x",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "dx",
+                            "shortname_html": "<i>&delta;</i><sub>x</sub>",
+                            "unit": "m",
+                            "unit_html": "m"
+                        },
+                        "elasticity_displacement_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Fixed - y",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "dy",
+                            "shortname_html": "<i>&delta;</i><sub>y</sub>",
+                            "unit": "m",
+                            "unit_html": "m"
+                        },
+                        "elasticity_force_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Free - x",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "fx",
+                            "shortname_html": "<i>F</i><sub>x</sub>",
+                            "unit": "N/m2",
+                            "unit_html": "N.m<sup>-2</sup>"
+                        },
+                        "elasticity_force_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Free - y",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "fy",
+                            "shortname_html": "<i>F</i><sub>y</sub>",
+                            "unit": "N/m2",
+                            "unit_html": "N.m<sup>-2</sup>"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "elasticity_alpha": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Temperature coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "alpha",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&alpha;</i>",
+                            "unit": "1/K",
+                            "unit_html": "K<sup>-1</sup>"
+                        },
+                        "elasticity_poisson_ratio": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Poisson ratio",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "nu",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&nu;</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "elasticity_temperature_difference": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Temperature difference",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "dT",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "&Delta;<i>T</i>",
+                            "unit": "K",
+                            "unit_html": "K"
+                        },
+                        "elasticity_temperature_reference": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Reference temperature",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Tr",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>T</i><sub>ref</sub>",
+                            "unit": "K",
+                            "unit_html": "K"
+                        },
+                        "elasticity_volume_force_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Force - x",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "fx",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>f</i><sub>x</sub>",
+                            "unit": "N/m3",
+                            "unit_html": "N.m<sup>-3</sup>"
+                        },
+                        "elasticity_volume_force_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": true,
+                            "name": "Force - y",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "fy",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>f</i><sub>y</sub>",
+                            "unit": "N/m3",
+                            "unit_html": "N.m<sup>-3</sup>"
+                        },
+                        "elasticity_young_modulus": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Young modulus",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "E",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>E</i>",
+                            "unit": "Pa",
+                            "unit_html": "Pa"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "elasticity_fixed_fixed": {
+                    "analysistype": "steadystate",
+                    "equation": "u_x = u_{0,x},\\,\\,\\, u_y = u_{0,y}",
+                    "id": "elasticity_fixed_fixed",
+                    "name": "Fixed - fixed",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "fixed_1": {
+                                },
+                                "fixed_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "fixed_1": {
+                                },
+                                "fixed_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "elasticity_displacement_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_displacement_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "elasticity_fixed_free": {
+                    "analysistype": "steadystate",
+                    "equation": "u_x = u_{0,x},\\,\\,\\, F_y = F_{0,y}",
+                    "id": "elasticity_fixed_free",
+                    "name": "Fixed - free",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "fixed_1": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "fixed_1": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_2": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "elasticity_displacement_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_force_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "elasticity_free_fixed": {
+                    "analysistype": "steadystate",
+                    "equation": "F_x = F_{0,x},\\,\\,\\, u_y = u_{0,y}",
+                    "id": "elasticity_free_fixed",
+                    "name": "Free - fixed",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "fixed_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "fixed_2": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_1": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "elasticity_displacement_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_force_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "elasticity_free_free": {
+                    "analysistype": "steadystate",
+                    "equation": "F_x = F_{0,x},\\,\\,\\, F_y = F_{0,y}",
+                    "id": "elasticity_free_free",
+                    "name": "Free - free",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "free_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "free_1": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "free_2": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "elasticity_force_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_force_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "fixed_1": {
+                    "axi": "st_dx",
+                    "cart": "st_dx",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "st_dx"
+                },
+                "fixed_2": {
+                    "axi": "st_dy",
+                    "cart": "st_dy",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "st_dy"
+                }
+            },
+            "matrix_forms": {
+            },
+            "variables": {
+                "elasticity_displacement_x": {
+                    "shortname": "st_dx"
+                },
+                "elasticity_displacement_y": {
+                    "shortname": "st_dy"
+                },
+                "elasticity_force_x": {
+                    "shortname": "st_fx"
+                },
+                "elasticity_force_y": {
+                    "shortname": "st_fy"
+                }
+            },
+            "vector_forms": {
+                "free_1": {
+                    "axi": "st_fx * r * vval",
+                    "cart": "st_fx * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "st_fx * vval"
+                },
+                "free_2": {
+                    "axi": "st_fy * r * vval",
+                    "cart": "st_fy * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "st_fy * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "-\\, (\\lambda + \\mu)~\\grad \\div \\vec{u} -\\, \\mu \\triangle \\vec{u} - \\alpha_\\mathrm{T} \\left( 3 \\lambda + 2 \\mu \\right) \\grad T = \\vec{f},\\,\\,\\, \\lambda = \\frac{\\nu E}{(1 + \\nu) (1 - 2 \\nu)},\\,\\, \\mu = \\frac{E}{2(1 + \\nu)}",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "form_1_1": {
+                                },
+                                "form_1_2": {
+                                },
+                                "form_2_1": {
+                                },
+                                "form_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs_load_1_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "rhs_load_2_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "rhs_temperature_1_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "rhs_temperature_2_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "form_1_1": {
+                                },
+                                "form_1_2": {
+                                },
+                                "form_2_1": {
+                                },
+                                "form_2_2": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "form_1_1": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "form_1_2": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "form_2_1": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "form_2_2": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                },
+                                "rhs_load_1_1": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "rhs_load_2_2": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "rhs_temperature_1_1": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                },
+                                "rhs_temperature_2_2": {
+                                    "coefficient": -1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "elasticity_alpha": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_poisson_ratio": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_temperature_difference": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_temperature_reference": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_volume_force_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_volume_force_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "elasticity_young_modulus": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "form_1_1": {
+                    "axi": "st_lambda * (r * udr * vdr + uval * vdr + udr * vval + uval * vval / (r + 1e-12)) + st_mu * (2 * r * udr * vdr + 2 * uval * vval / (r + 1e-12) + r * udz * vdz)",
+                    "cart": "(st_lambda + 2*st_mu) * (udx * vdx) + st_mu * (udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "(st_lambda + 2*st_mu) * (udx * vdx) + st_mu * (udy * vdy)"
+                },
+                "form_1_2": {
+                    "axi": "st_lambda * (r * udz * vdr + udz * vval) + st_mu * r * udr * vdz",
+                    "cart": "st_lambda * (udy * vdx) + st_mu * (udx * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "st_lambda * (udy * vdx) + st_mu * (udx * vdy)"
+                },
+                "form_2_1": {
+                    "axi": "st_lambda * (r * udr * vdz + uval * vdz) + st_mu * r * udz * vdr",
+                    "cart": "st_mu * (udy * vdx) + st_lambda * (udx * vdy)",
+                    "condition": "",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "st_mu * (udy * vdx) + st_lambda * (udx * vdy)"
+                },
+                "form_2_2": {
+                    "axi": "r * st_lambda * udz * vdz + r * st_mu * (udr * vdr + 2 * udz * vdz)",
+                    "cart": "st_mu * (udx * vdx) + (st_lambda + 2*st_mu) * (udy * vdy)",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "st_mu * (udx * vdx) + (st_lambda + 2*st_mu) * (udy * vdy)"
+                }
+            },
+            "variables": {
+                "elasticity_alpha": "st_alpha",
+                "elasticity_poisson_ratio": "st_nu",
+                "elasticity_temperature_difference": "st_dT",
+                "elasticity_temperature_reference": "st_Tr",
+                "elasticity_volume_force_x": "st_fvx",
+                "elasticity_volume_force_y": "st_fvy",
+                "elasticity_young_modulus": "st_E"
+            },
+            "vector_forms": {
+                "rhs_load_1_1": {
+                    "axi": "r * st_fvx * vval",
+                    "cart": "st_fvx * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "st_fvx * vval"
+                },
+                "rhs_load_2_2": {
+                    "axi": "r * st_fvy * vval",
+                    "cart": "st_fvy * vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "st_fvy * vval"
+                },
+                "rhs_temperature_1_1": {
+                    "axi": "r * ((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * (vdr + vval / r)",
+                    "cart": "((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdx",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdx"
+                },
+                "rhs_temperature_2_2": {
+                    "axi": "r * ((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdz",
+                    "cart": "((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdy",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdy"
+                }
+            }
+        }
+    }
+}

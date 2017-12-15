@@ -1,0 +1,541 @@
+{
+    "general": {
+        "analyses": {
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 1,
+                "type": "steadystate"
+            }
+        },
+        "constants": {
+            "EPS0": 8.854e-12
+        },
+        "id": "current",
+        "macros": {
+        },
+        "name": "Current field",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "current_potential_real",
+                "name": "Scalar potential - real",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "V",
+                "unit_html": "V"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- dr1",
+                        "axi_z": "- dz1",
+                        "cart_x": "- dx1",
+                        "cart_y": "- dy1",
+                        "cart_z": "- dz1",
+                        "planar_x": "- dx1",
+                        "planar_y": "- dy1"
+                    }
+                },
+                "id": "current_electric_field_real",
+                "name": "Electric field - real",
+                "shortname": "Er",
+                "shortname_html": "<i>E</i>",
+                "type": "vector",
+                "unit": "V/m",
+                "unit_html": "V.m<sup>-1</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- cu_gamma * dr1",
+                        "axi_z": "- cu_gamma * dz1",
+                        "cart_x": "- cu_gamma * dx1",
+                        "cart_y": "- cu_gamma * dy1",
+                        "cart_z": "- cu_gamma * dz1",
+                        "planar_x": "- cu_gamma * dx1",
+                        "planar_y": "- cu_gamma * dy1"
+                    }
+                },
+                "id": "current_current_density_conductive_real",
+                "name": "Current density - conductive - real",
+                "shortname": "Jrc",
+                "shortname_html": "<i>J</i><sub>r,cond</sub>",
+                "type": "vector",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dr1",
+                        "axi_z": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dz1",
+                        "cart_x": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dx1",
+                        "cart_y": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dy1",
+                        "cart_z": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dz1",
+                        "planar_x": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dx1",
+                        "planar_y": "- (cu_gamma + 2 * PI * f * cu_epsr * EPS0) * dy1"
+                    }
+                },
+                "id": "current_current_density_total_real",
+                "name": "Current density - total - real",
+                "shortname": "Jr",
+                "shortname_html": "<i>J</i><sub>r</sub>",
+                "type": "vector",
+                "unit": "A/m2",
+                "unit_html": "A.m<sup>-2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "cu_gamma * (dr1 * dr1 + dz1 * dz1)",
+                        "cart": "cu_gamma * (dx1 * dx1 + dy1 * dy1)",
+                        "planar": "cu_gamma * (dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "current_joule_losses",
+                "name": "Joule losses",
+                "shortname": "pj",
+                "shortname_html": "<i>p</i><sub>j</sub>",
+                "type": "scalar",
+                "unit": "W/m3",
+                "unit_html": "W.m<sup>-3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "cu_gamma",
+                        "cart": "cu_gamma",
+                        "planar": "cu_gamma"
+                    }
+                },
+                "id": "current_conductivity",
+                "name": "Conductivity",
+                "shortname": "gamma",
+                "shortname_html": "<i>&gamma;</i>",
+                "type": "scalar",
+                "unit": "S/m",
+                "unit_html": "S.m<sup>-1</sup>"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "current_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "current_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * cu_gamma * (tanr * dz1 - tanz * dr1)",
+                        "cart": "2.0 * PI * r * cu_gamma * (tanr * dz1 - tanz * dr1)",
+                        "planar": "cu_gamma * (tanx * dy1 - tany * dx1)"
+                    }
+                },
+                "id": "current_current_conductive_real",
+                "name": "Current - conductive - real",
+                "shortname": "Ir",
+                "shortname_html": "<i>I</i><sub>r</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "current_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "current_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * cu_gamma * (dr1 * dr1 + dz1 * dz1)",
+                        "cart": "2.0 * PI * r * cu_gamma * (dr1 * dr1 + dz1 * dz1)",
+                        "planar": "cu_gamma * (dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "current_joule_losses",
+                "name": "Joule losses",
+                "shortname": "Pj",
+                "shortname_html": "<i>P</i><sub>j</sub>",
+                "type": "scalar",
+                "unit": "W",
+                "unit_html": "W"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * cu_gamma * sqrt(dr1 * dr1 + dz1 * dz1)",
+                        "cart": "2.0 * PI * r * cu_gamma * sqrt(dr1 * dr1 + dz1 * dz1)",
+                        "planar": "cu_gamma * sqrt(dx1 * dx1 + dy1 * dy1)"
+                    }
+                },
+                "id": "current_current_density_conductive_real",
+                "name": "Current density - conductive - real",
+                "shortname": "Jrc",
+                "shortname_html": "<i>J</i><sub>r,cond</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * cu_gamma * dr1",
+                        "cart": "2.0 * PI * r * cu_gamma * dr1",
+                        "planar": "cu_gamma * dx1"
+                    }
+                },
+                "id": "current_current_density_conductive_real_x",
+                "name": "Current density - conductive - real - x",
+                "shortname": "Jrcx",
+                "shortname_html": "<i>J</i><sub>r,cond,x</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * cu_gamma * dz1",
+                        "cart": "2.0 * PI * r * cu_gamma * dz1",
+                        "planar": "cu_gamma * dy1"
+                    }
+                },
+                "id": "current_current_density_conductive_real_y",
+                "name": "Current density - conductive - real - y",
+                "shortname": "Jrcy",
+                "shortname_html": "<i>J</i><sub>r,cond,y</sub>",
+                "type": "scalar",
+                "unit": "A",
+                "unit_html": "A"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "current_inward_current_flow": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Current density",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Jn",
+                            "shortname_html": "<i>J</i><sub>n</sub>",
+                            "unit": "A/m2",
+                            "unit_html": "A.m<sup>-2</sup>"
+                        },
+                        "current_potential": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Fixed voltage",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "V",
+                            "shortname_html": "<i>&phi;</i>",
+                            "unit": "V",
+                            "unit_html": "V"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "current_conductivity": {
+                            "condition": "value > 0",
+                            "default_value": 33000000,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Conductivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "gamma",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&gamma;</i>",
+                            "unit": "S/m",
+                            "unit_html": "S.m<sup>-1</sup>"
+                        },
+                        "current_permittivity": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Permittivity",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "epsr",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>&epsilon;</i><sub>r</sub>",
+                            "unit": "F/m",
+                            "unit_html": "F.m<sup>-1</sup>"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "current_inward_current_flow": {
+                    "analysistype": "steadystate",
+                    "equation": "J_\\mathrm{n} = \\sigma \\frac{\\partial \\varphi}{\\partial n_0} = J_0",
+                    "id": "current_inward_current_flow",
+                    "name": "Current density",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "neumann": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "neumann": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "current_inward_current_flow": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "current_potential": {
+                    "analysistype": "steadystate",
+                    "equation": "\\varphi = \\varphi_0",
+                    "id": "current_potential",
+                    "name": "Fixed voltage",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "essentional_forms": {
+                                "essential": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "current_potential": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "essential": {
+                    "axi": "cu_V",
+                    "cart": "cu_V",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "cu_V"
+                }
+            },
+            "matrix_forms": {
+            },
+            "variables": {
+                "current_inward_current_flow": {
+                    "shortname": "cu_Jn"
+                },
+                "current_potential": {
+                    "shortname": "cu_V"
+                }
+            },
+            "vector_forms": {
+                "neumann": {
+                    "axi": "cu_Jn * r * vval",
+                    "cart": "cu_Jn * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "cu_Jn * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "-\\, \\div \\left( \\sigma\\,\\, \\grad \\varphi \\right) = 0",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        },
+                        "newton": {
+                            "matrix_forms": {
+                                "steady_laplace": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "steady_laplace": {
+                                    "coefficient": 1,
+                                    "variant": "residual"
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "current_conductivity": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "steady_laplace": {
+                    "axi": "cu_gamma * r * (udr * vdr + udz * vdz)",
+                    "cart": "cu_gamma * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "cu_gamma * (udx * vdx + udy * vdy)"
+                }
+            },
+            "variables": {
+                "current_conductivity": "cu_gamma",
+                "current_permittivity": "cu_epsr"
+            },
+            "vector_forms": {
+            }
+        }
+    }
+}

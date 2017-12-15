@@ -1,0 +1,901 @@
+{
+    "general": {
+        "analyses": {
+            "steadystate": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Steady state",
+                "solutions": 1,
+                "type": "steadystate"
+            },
+            "transient": {
+                "equations": {
+                    "1": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    },
+                    "2": {
+                        "orderincrease": 0,
+                        "type": "h1"
+                    }
+                },
+                "name": "Transient",
+                "solutions": 2,
+                "type": "transient"
+            }
+        },
+        "constants": {
+        },
+        "id": "math_coeff",
+        "macros": {
+        },
+        "name": "Math - Coefficient Form PDE",
+        "version": 1
+    },
+    "postprocessor": {
+        "localvariables": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "value1",
+                        "cart": "value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "math_coeff_solution",
+                "name": "Solution",
+                "shortname": "u",
+                "shortname_html": "<i>u</i>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "dr1",
+                        "axi_z": "dz1",
+                        "cart_x": "dx1",
+                        "cart_y": "dy1",
+                        "cart_z": "dz1",
+                        "planar_x": "dx1",
+                        "planar_y": "dy1"
+                    },
+                    "transient": {
+                        "axi_r": "dr1",
+                        "axi_z": "dz1",
+                        "cart_x": "dx1",
+                        "cart_y": "dy1",
+                        "cart_z": "dz1",
+                        "planar_x": "dx1",
+                        "planar_y": "dy1"
+                    }
+                },
+                "id": "math_coeff_gradient",
+                "name": "Gradient",
+                "shortname": "g",
+                "shortname_html": "<i>g</i>",
+                "type": "vector",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi_r": "mc_c * dr1",
+                        "axi_z": "mc_c * dz1",
+                        "cart_x": "mc_c * dx1",
+                        "cart_y": "mc_c * dy1",
+                        "cart_z": "mc_c * dz1",
+                        "planar_x": "mc_c * dx1",
+                        "planar_y": "mc_c * dy1"
+                    },
+                    "transient": {
+                        "axi_r": "mc_c * dr1",
+                        "axi_z": "mc_c * dz1",
+                        "cart_x": "mc_c * dx1",
+                        "cart_y": "mc_c * dy1",
+                        "cart_z": "mc_c * dz1",
+                        "planar_x": "mc_c * dx1",
+                        "planar_y": "mc_c * dy1"
+                    }
+                },
+                "id": "math_coeff_flux",
+                "name": "Flux",
+                "shortname": "f",
+                "shortname_html": "<i>f</i>",
+                "type": "vector",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "transient": {
+                        "axi": "value2",
+                        "cart": "value2",
+                        "planar": "value2"
+                    }
+                },
+                "id": "math_coeff_dudt",
+                "name": "Solution time derivative",
+                "shortname": "dudt",
+                "shortname_html": "<i>dudt</i>",
+                "type": "scalar",
+                "unit": "1/s",
+                "unit_html": "s<sup>-1</sup>"
+            }
+        ],
+        "surfaceintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "math_coeff_length",
+                "name": "Length",
+                "shortname": "l",
+                "shortname_html": "<i>l</i>",
+                "type": "scalar",
+                "unit": "m",
+                "unit_html": "m"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "math_coeff_surface",
+                "name": "Surface",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * (tanz * dr1 - tanr * dz1)",
+                        "cart": "2.0 * PI * r * (tanz * dr1 - tanr * dz1)",
+                        "planar": "(tany * dx1 - tanx * dy1)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * (tanz * dr1 - tanr * dz1)",
+                        "cart": "2.0 * PI * r * (tanz * dr1 - tanr * dz1)",
+                        "planar": "(tany * dx1 - tanx * dy1)"
+                    }
+                },
+                "id": "math_coeff_gradient",
+                "name": "Gradient",
+                "shortname": "g",
+                "shortname_html": "<i>g</i>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * mc_c * (tanz * dr1 - tanr * dz1)",
+                        "cart": "2.0 * PI * r * mc_c * (tanz * dr1 - tanr * dz1)",
+                        "planar": "mc_c * (tany * dx1 - tanx * dy1)"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * mc_c * (tanz * dr1 - tanr * dz1)",
+                        "cart": "2.0 * PI * r * mc_c * (tanz * dr1 - tanr * dz1)",
+                        "planar": "mc_c * (tany * dx1 - tanx * dy1)"
+                    }
+                },
+                "id": "math_coeff_flux",
+                "name": "Flux",
+                "shortname": "f",
+                "shortname_html": "<i>f</i>",
+                "type": "scalar",
+                "unit": "-",
+                "unit_html": "-"
+            }
+        ],
+        "volumeintegrals": [
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r",
+                        "cart": "2.0 * PI * r",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "math_coeff_volume",
+                "name": "Volume",
+                "shortname": "V",
+                "shortname_html": "<i>V</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": "m<sup>3</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    },
+                    "transient": {
+                        "axi": "1.0",
+                        "cart": "1.0",
+                        "planar": "1.0"
+                    }
+                },
+                "id": "math_coeff_cross_section",
+                "name": "Cross section",
+                "shortname": "S",
+                "shortname_html": "<i>S</i>",
+                "type": "scalar",
+                "unit": "m2",
+                "unit_html": "m<sup>2</sup>"
+            },
+            {
+                "expression": {
+                    "steadystate": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    },
+                    "transient": {
+                        "axi": "2.0 * PI * r * value1",
+                        "cart": "2.0 * PI * r * value1",
+                        "planar": "value1"
+                    }
+                },
+                "id": "math_coeff_solution",
+                "name": "Solution",
+                "shortname": "u",
+                "shortname_html": "<i>u</i>",
+                "type": "scalar",
+                "unit": "m3",
+                "unit_html": " m<sup>3</sup>"
+            }
+        ]
+    },
+    "preprocessor": {
+        "gui": {
+            "surface_recipes": [
+                {
+                    "name": "",
+                    "quantities": {
+                        "math_coeff_flux": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "Flux",
+                            "shortname_html": "<i>f</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "math_coeff_solution": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Dirichlet BC",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "u",
+                            "shortname_html": "<i>u</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "math_coeff_solution_time_derivative": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Solution time derivative",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "dut",
+                            "shortname_html": "<i>dut</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                }
+            ],
+            "volume_recipes": [
+                {
+                    "name": "Mass coefficient",
+                    "quantities": {
+                        "math_coeff_ea": {
+                            "condition": "",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Mass coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "ea",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>e</i><sub>a</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Damping coefficient",
+                    "quantities": {
+                        "math_coeff_da": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Damping coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "da",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>d</i><sub>a</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Diffusion coefficient",
+                    "quantities": {
+                        "math_coeff_c": {
+                            "condition": "",
+                            "default_value": 1,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Diffusion coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "c",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>c</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Absorption coefficient",
+                    "quantities": {
+                        "math_coeff_a": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Absorption coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "a",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>a</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Convection coefficient",
+                    "quantities": {
+                        "math_coeff_beta_x": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Convection coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "bx",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>b</i><sub>x</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        },
+                        "math_coeff_beta_y": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Convection coefficient",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "by",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>b</i><sub>y</sub>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                },
+                {
+                    "name": "Source term",
+                    "quantities": {
+                        "math_coeff_f": {
+                            "condition": "",
+                            "default_value": 0,
+                            "is_bool": false,
+                            "is_source": false,
+                            "name": "Source term",
+                            "only_if": "",
+                            "only_if_not": "",
+                            "shortname": "f",
+                            "shortname_dependence": "",
+                            "shortname_dependence_html": "",
+                            "shortname_html": "<i>f</i>",
+                            "unit": "-",
+                            "unit_html": "-"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "processor": {
+        "surface_analyses": [
+            {
+                "math_coeff_flux": {
+                    "analysistype": "steadystate",
+                    "equation": "f_\\mathrm{n} = c \\frac{\\partial u}{\\partial n_0} = f_0",
+                    "id": "math_coeff_flux",
+                    "name": "Flux",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_flux": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "math_coeff_solution": {
+                    "analysistype": "steadystate",
+                    "equation": "u = u_0",
+                    "id": "math_coeff_solution",
+                    "name": "Solution",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "solution": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_solution": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "math_coeff_flux": {
+                    "analysistype": "transient",
+                    "equation": "f_\\mathrm{n} = c \\frac{\\partial u}{\\partial n_0} = f_0",
+                    "id": "math_coeff_flux",
+                    "name": "Flux",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "flux": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_flux": {
+                            "dependency": "time",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                },
+                "math_coeff_solution": {
+                    "analysistype": "transient",
+                    "equation": "u = u_0",
+                    "id": "math_coeff_solution",
+                    "name": "Solution",
+                    "solvers": {
+                        "linear": {
+                            "essentional_forms": {
+                                "solution": {
+                                },
+                                "transient_solution_time": {
+                                }
+                            },
+                            "matrix_forms": {
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_solution": {
+                            "dependency": "time-space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_solution_time_derivative": {
+                            "dependency": "time-space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "surface_recipes": {
+            "essentional_forms": {
+                "solution": {
+                    "axi": "mc_u",
+                    "cart": "mc_u",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "mc_u"
+                },
+                "transient_solution_time": {
+                    "axi": "mc_dut",
+                    "cart": "mc_dut",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "mc_dut"
+                }
+            },
+            "matrix_forms": {
+            },
+            "variables": {
+                "math_coeff_flux": {
+                    "shortname": "mc_uf"
+                },
+                "math_coeff_solution": {
+                    "shortname": "mc_u"
+                },
+                "math_coeff_solution_time_derivative": {
+                    "shortname": "mc_dut"
+                }
+            },
+            "vector_forms": {
+                "flux": {
+                    "axi": "mc_uf * r * vval",
+                    "cart": "mc_uf * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "mc_uf * vval"
+                }
+            }
+        },
+        "volume_analyses": [
+            {
+                "volume": {
+                    "analysistype": "steadystate",
+                    "equation": "-\\, \\div \\left( c\\,\\, \\grad u \\right) + \\vec{b} \\cdot \\grad u + a \\cdot u = f",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "absorption": {
+                                },
+                                "convection": {
+                                },
+                                "diffusion": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_a": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_beta_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_beta_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_c": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_f": {
+                            "dependency": "space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            },
+            {
+                "volume": {
+                    "analysistype": "transient",
+                    "equation": "-\\, \\div \\left( c\\,\\, \\grad u \\right) + \\vec{b} \\cdot \\grad u + a \\cdot u + e_\\mathrm{a} \\frac{\\partial^2 u}{\\partial t^2} + d_\\mathrm{a} \\frac{\\partial u}{\\partial t} = f",
+                    "id": "volume",
+                    "name": "Volume",
+                    "solvers": {
+                        "linear": {
+                            "matrix_forms": {
+                                "absorption": {
+                                },
+                                "convection": {
+                                },
+                                "diffusion": {
+                                },
+                                "transient_1_2": {
+                                },
+                                "transient_2_1": {
+                                },
+                                "transient_2_2": {
+                                },
+                                "transient_time_mat": {
+                                }
+                            },
+                            "matrix_transient_forms": {
+                            },
+                            "vector_forms": {
+                                "rhs": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "transient_rhs_1_2": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "transient_rhs_2_1": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                },
+                                "transient_time_vec": {
+                                    "coefficient": 1,
+                                    "variant": ""
+                                }
+                            }
+                        }
+                    },
+                    "variables": {
+                        "math_coeff_a": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_beta_x": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_beta_y": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_c": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_da": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_ea": {
+                            "dependency": "",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        },
+                        "math_coeff_f": {
+                            "dependency": "time-space",
+                            "nonlinearity_axi": "",
+                            "nonlinearity_cart": "",
+                            "nonlinearity_planar": ""
+                        }
+                    }
+                }
+            }
+        ],
+        "volume_recipes": {
+            "matrix_forms": {
+                "absorption": {
+                    "axi": "mc_a * r * uval * vval",
+                    "cart": "mc_a * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "mc_a * uval * vval"
+                },
+                "convection": {
+                    "axi": "r * (mc_beta_x * udr + mc_beta_y * udz) * vval",
+                    "cart": "(mc_beta_x * udx + mc_beta_y * udy) * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "(mc_beta_x * udx + mc_beta_y * udy) * vval"
+                },
+                "diffusion": {
+                    "axi": "mc_c * r * (udr * vdr + udz * vdz)",
+                    "cart": "mc_c * (udx * vdx + udy * vdy)",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "mc_c * (udx * vdx + udy * vdy)"
+                },
+                "transient_1_2": {
+                    "axi": "mc_ea * r * uval * vval",
+                    "cart": "mc_ea * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 2,
+                    "planar": "mc_ea * uval * vval"
+                },
+                "transient_2_1": {
+                    "axi": "r * uval * vval",
+                    "cart": "uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 1,
+                    "planar": "uval * vval"
+                },
+                "transient_2_2": {
+                    "axi": "- r * uval * vval",
+                    "cart": "- uval * vval",
+                    "condition": "",
+                    "i": 2,
+                    "j": 2,
+                    "planar": "- uval * vval"
+                },
+                "transient_time_mat": {
+                    "axi": "r * mc_da * uval * vval",
+                    "cart": "mc_da * uval * vval",
+                    "condition": "",
+                    "i": 1,
+                    "j": 1,
+                    "planar": "mc_da * uval * vval"
+                }
+            },
+            "variables": {
+                "math_coeff_a": "mc_a",
+                "math_coeff_beta_x": "mc_beta_x",
+                "math_coeff_beta_y": "mc_beta_y",
+                "math_coeff_c": "mc_c",
+                "math_coeff_da": "mc_da",
+                "math_coeff_ea": "mc_ea",
+                "math_coeff_f": "mc_f"
+            },
+            "vector_forms": {
+                "rhs": {
+                    "axi": "r * mc_f * vval",
+                    "cart": "mc_f * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "mc_f * vval"
+                },
+                "transient_rhs_1_2": {
+                    "axi": "mc_ea * r * vval",
+                    "cart": "mc_ea * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "mc_ea * vval"
+                },
+                "transient_rhs_2_1": {
+                    "axi": "r * vval",
+                    "cart": "vval",
+                    "condition": "",
+                    "i": 2,
+                    "planar": "vval"
+                },
+                "transient_time_vec": {
+                    "axi": "r * mc_da * vval",
+                    "cart": "mc_da * vval",
+                    "condition": "",
+                    "i": 1,
+                    "planar": "mc_da * vval"
+                }
+            }
+        }
+    }
+}
