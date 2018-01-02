@@ -162,8 +162,12 @@ void OptiLabWidget::createControls()
     QPushButton *btnApply = new QPushButton(tr("Apply"));
     connect(btnApply, SIGNAL(clicked(bool)), this, SLOT(refresh()));
 
+    QPushButton *btnExport = new QPushButton(tr("Export"));
+    connect(btnExport, SIGNAL(clicked(bool)), this, SLOT(exportData()));
+
     QHBoxLayout *layoutButton = new QHBoxLayout();
     layoutButton->addStretch();
+    layoutButton->addWidget(btnExport);
     layoutButton->addWidget(btnApply);
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -213,6 +217,90 @@ void OptiLabWidget::refresh()
             cmbStudies->setCurrentIndex(0);
 
         studyChanged(cmbStudies->currentIndex());
+    }
+}
+
+void OptiLabWidget::exportData()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastDataDir").toString();
+
+    QString selectedFilter;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("CSV files (*.csv)"), &selectedFilter);
+    if (fileName.isEmpty())
+    {
+        cerr << "Incorrect file name." << endl;
+        return;
+    }
+
+    QFileInfo fileInfo(fileName);
+
+    // open file for write
+    if (fileInfo.suffix().isEmpty())
+        fileName = fileName + ".csv";
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
+        return;
+    }
+
+    settings.setValue("General/LastDataDir", fileInfo.absolutePath());
+
+    QTextStream out(&file);
+
+    // study
+    Study *study = Agros::problem()->studies()->items().at(cmbStudies->currentIndex());
+
+    if (study)
+    {
+        QList<ComputationSet> computationSets = study->computationSets(study->value(Study::View_Filter).toString());
+
+        // headers
+        for (int i = 0; i < computationSets.size(); i++)
+        {
+            foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
+            {
+                QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
+                foreach (Parameter parameter, study->parameters())
+                {
+                    out << parameter.name() + ";";
+                }
+
+                StringToDoubleMap results = computation->results()->items();
+                foreach (QString key, results.keys())
+                {
+                    out << key + ";";
+                }
+
+                out << "\n";
+
+                break;
+            }
+            break;
+        }
+
+        // values
+        for (int i = 0; i < computationSets.size(); i++)
+        {
+            foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
+            {
+                QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
+                foreach (Parameter parameter, study->parameters())
+                {
+                    out << QString::number(parameters[parameter.name()].value()) + ";";
+                }
+
+                StringToDoubleMap results = computation->results()->items();
+                foreach (QString key, results.keys())
+                {
+                    out << QString::number(results[key]) + ";";
+                }
+
+                out << "\n";
+            }
+        }
     }
 }
 

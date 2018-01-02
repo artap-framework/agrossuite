@@ -44,6 +44,7 @@ public:
 
 public slots:
     void refresh();
+    void exportData();
 
 private:
     OptiLab *m_optilab;

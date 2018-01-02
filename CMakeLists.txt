@@ -267,7 +267,7 @@ ADD_SUBDIRECTORY(agros-solver)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)
 # SWIG interface
-ADD_SUBDIRECTORY(agros-swig)
+# ADD_SUBDIRECTORY(agros-swig)
 # GUI
 ADD_SUBDIRECTORY(agros-gui)
 ADD_SUBDIRECTORY(pythonlab-gui)

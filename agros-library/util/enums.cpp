@@ -392,7 +392,8 @@ QString couplingTypeString(CouplingType couplingType)
     case CouplingType_Weak:
         return QObject::tr("Weak");
     default:
-        std::cerr << "Coupling type '" + QString::number(couplingType).toStdString() + "' is not implemented. couplingTypeString(CouplingType couplingType)" << endl;
+        return QObject::tr("Not used");
+        // std::cerr << "Coupling type '" + QString::number(couplingType).toStdString() + "' is not implemented. couplingTypeString(CouplingType couplingType)" << endl;
         throw;
     }
 }
