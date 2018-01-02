@@ -18,7 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "system_utils.h"
-#include "../config.h"
+// #include "../config.h"
 
 #ifdef Q_WS_X11
 #include <csignal>

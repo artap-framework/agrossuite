@@ -116,3 +116,4 @@ agros-library/util/agros_version.h
 projects
 Agros.AppDir/resources/
 3rdparty/bayesopt/Doxyfile
+*_autogen/

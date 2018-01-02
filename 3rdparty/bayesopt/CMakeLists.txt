@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------
 
 PROJECT(${BAYESOPTLIB_LIBRARY} CXX)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} 
 		      ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -69,7 +69,7 @@ else(Boost_FOUND)
 endif()
 
 # NLOPTLIB
-INCLUDE_DIRECTORIES(../nlopt2/api)
+INCLUDE_DIRECTORIES(../nlopt2/src/api)
 
 # INCLUDE(UseDoxygen)
 
