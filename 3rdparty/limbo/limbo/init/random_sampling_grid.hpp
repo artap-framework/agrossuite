@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -82,8 +82,8 @@ namespace limbo {
 
                 tools::rgen_int_t rgen(0, Params::init_randomsamplinggrid::bins());
                 for (int i = 0; i < Params::init_randomsamplinggrid::samples(); i++) {
-                    Eigen::VectorXd new_sample(StateFunction::dim_in);
-                    for (size_t i = 0; i < StateFunction::dim_in; i++)
+                    Eigen::VectorXd new_sample(StateFunction::dim_in());
+                    for (size_t i = 0; i < StateFunction::dim_in(); i++)
                         new_sample[i] = rgen.rand() / double(Params::init_randomsamplinggrid::bins());
                     opt.eval_and_add(seval, new_sample);
                 }

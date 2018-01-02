@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -50,6 +50,8 @@
 #include <algorithm>
 
 #ifdef USE_TBB
+// Quick hack for definition of 'I' in <complex.h>
+#undef I
 #include <tbb/concurrent_vector.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>

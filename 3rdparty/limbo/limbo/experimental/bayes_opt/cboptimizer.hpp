@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -68,7 +68,6 @@
 namespace limbo {
     namespace defaults {
         struct bayes_opt_cboptimizer {
-            BO_PARAM(double, noise, 1e-6);
             BO_PARAM(int, hp_period, -1);
             BO_PARAM(bool, bounded, true);
         };
@@ -149,21 +148,21 @@ namespace limbo {
                 template <typename StateFunction, typename AggregatorFunction = FirstElem>
                 void optimize(const StateFunction& sfun, const AggregatorFunction& afun = AggregatorFunction(), bool reset = true)
                 {
-                    _nb_constraints = StateFunction::nb_constraints;
-                    _dim_out = StateFunction::dim_out;
+                    _nb_constraints = StateFunction::nb_constraints();
+                    _dim_out = StateFunction::dim_out();
 
                     this->_init(sfun, afun, reset);
 
                     if (!this->_observations.empty()) {
                         _split_observations();
-                        _model.compute(this->_samples, _obs[0], Eigen::VectorXd::Constant(_obs[0].size(), Params::bayes_opt_cboptimizer::noise()));
+                        _model.compute(this->_samples, _obs[0]);
                         if (_nb_constraints > 0)
-                            _constraint_model.compute(this->_samples, _obs[1], Eigen::VectorXd::Constant(_obs[1].size(), Params::bayes_opt_cboptimizer::noise()));
+                            _constraint_model.compute(this->_samples, _obs[1]);
                     }
                     else {
-                        _model = model_t(StateFunction::dim_in, StateFunction::dim_out);
+                        _model = model_t(StateFunction::dim_in(), StateFunction::dim_out());
                         if (_nb_constraints > 0)
-                            _constraint_model = constraint_model_t(StateFunction::dim_in, _nb_constraints);
+                            _constraint_model = constraint_model_t(StateFunction::dim_in(), _nb_constraints);
                     }
 
                     acqui_optimizer_t acqui_optimizer;
@@ -173,15 +172,15 @@ namespace limbo {
 
                         auto acqui_optimization =
                             [&](const Eigen::VectorXd& x, bool g) { return acqui(x,afun,g); };
-                        Eigen::VectorXd starting_point = tools::random_vector(StateFunction::dim_in, Params::bayes_opt_cboptimizer::bounded());
+                        Eigen::VectorXd starting_point = tools::random_vector(StateFunction::dim_in(), Params::bayes_opt_cboptimizer::bounded());
                         Eigen::VectorXd new_sample = acqui_optimizer(acqui_optimization, starting_point, Params::bayes_opt_cboptimizer::bounded());
                         this->eval_and_add(sfun, new_sample);
 
                         this->_update_stats(*this, afun);
 
-                        _model.add_sample(this->_samples.back(), _obs[0].back(), Params::bayes_opt_cboptimizer::noise());
+                        _model.add_sample(this->_samples.back(), _obs[0].back());
                         if (_nb_constraints > 0)
-                            _constraint_model.add_sample(this->_samples.back(), _obs[1].back(), Params::bayes_opt_cboptimizer::noise());
+                            _constraint_model.add_sample(this->_samples.back(), _obs[1].back());
 
                         if (Params::bayes_opt_cboptimizer::hp_period() > 0
                             && (this->_current_iteration + 1) % Params::bayes_opt_cboptimizer::hp_period() == 0) {

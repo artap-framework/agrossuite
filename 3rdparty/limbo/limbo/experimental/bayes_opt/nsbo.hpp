@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -74,7 +74,7 @@ namespace limbo {
                     while (this->_samples.size() == 0 || !this->_stop(*this, FirstElem())) {
                         std::cout << "updating pareto model...";
                         std::cout.flush();
-                        this->template update_pareto_model<EvalFunction::dim_in>();
+                        this->template update_pareto_model<EvalFunction::dim_in()>();
                         std::cout << "ok" << std::endl;
                         auto pareto = this->pareto_model();
 

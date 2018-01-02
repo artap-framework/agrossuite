@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -50,9 +50,6 @@
 #include <ctime>
 #include <unistd.h>
 #include <string>
-#ifdef _WIN64
-#include <Winsock2.h>
-#endif
 
 namespace limbo {
     namespace tools {
@@ -71,8 +68,8 @@ namespace limbo {
         /// easy way to get the hostame
         inline std::string hostname()
         {
-            char hostname[30];
-            int res = gethostname(hostname, 30);
+            char hostname[50];
+            int res = gethostname(hostname, 50);
             assert(res == 0);
             res = 0; // avoid a warning in opt mode
             return std::string(hostname);

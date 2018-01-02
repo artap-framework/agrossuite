@@ -74,14 +74,17 @@ struct Params {
     // Default
     // struct opt_gridsearch : public defaults::opt_gridsearch {};
 
+    struct kernel : public defaults::kernel {
+        BO_DYN_PARAM(double, noise)
+        BO_PARAM(bool, optimize_noise, false);
+    };
+
     struct bayes_opt_bobase {
         BO_PARAM(bool, stats_enabled, false)
         BO_PARAM(bool, bounded, true)
     };
 
     struct bayes_opt_boptimizer {
-        BO_DYN_PARAM(double, noise)
-        // BO_DYN_PARAM(int, hp_period, -1)
         BO_DYN_PARAM(int, hp_period)
     };
 
@@ -97,7 +100,7 @@ struct Params {
 // declare dynamic parameters
 BO_DECLARE_DYN_PARAM(int, Params::init_randomsampling, samples);
 BO_DECLARE_DYN_PARAM(int, Params::stop_maxiterations, iterations);
-BO_DECLARE_DYN_PARAM(double, Params::bayes_opt_boptimizer, noise);
+BO_DECLARE_DYN_PARAM(double, Params::kernel, noise);
 BO_DECLARE_DYN_PARAM(int, Params::bayes_opt_boptimizer, hp_period);
 
 /*
@@ -124,22 +127,24 @@ double getOptSigma(const Eigen::VectorXd& x)
 struct StateEval
 {
     // number of input dimension (x.size())
-    static size_t dim_in;
+    static size_t dimIn;
+    static size_t dim_in() { return dimIn; }
     // number of dimenions of the result (res.size())
-    static size_t dim_out;
+    static size_t dimOut;
+    static size_t dim_out() { return dimOut; }
 
     StateEval(StudyLimbo *study)
         : m_study(study), m_steps(0)
     {
         // static variables
         // input
-        StateEval::dim_in = m_study->parameters().count();
+        StateEval::dimIn = m_study->parameters().count();
         // output
-        StateEval::dim_out = 0;
+        StateEval::dimOut = 0;
         foreach(Functional functional, m_study->functionals())
             if (functional.weight() > 0.0)
-                StateEval::dim_out++;
-        if (StateEval::dim_out == 0) StateEval::dim_out = 1;
+                StateEval::dimOut++;
+        if (StateEval::dimOut == 0) StateEval::dimOut = 1;
     }
 
     Eigen::VectorXd operator()(const Eigen::VectorXd& x) const
@@ -154,8 +159,8 @@ struct StateEval
             // max iterations
             Params::stop_maxiterations::set_iterations(Params::stop_maxiterations::iterations());
 
-            Eigen::VectorXd res(StateEval::dim_out);
-            for (int i = 0; i < StateEval::dim_out; i++)
+            Eigen::VectorXd res(StateEval::dimOut);
+            for (int i = 0; i < StateEval::dimOut; i++)
                 res[i] = -numeric_limits<double>::max();
 
             return res;
@@ -231,8 +236,8 @@ struct StateEval
         m_study->addComputation(computation);
         
         // output
-        Eigen::VectorXd res(StateEval::dim_out);
-        if (StateEval::dim_out == 1)
+        Eigen::VectorXd res(StateEval::dimOut);
+        if (StateEval::dimOut == 1)
         {
             // single objective
             double value = m_study->evaluateSingleGoal(computation);
@@ -258,8 +263,8 @@ private:
     mutable int m_steps;
 };
 
-size_t StateEval::dim_in = -1;
-size_t StateEval::dim_out = -1;
+size_t StateEval::dimIn = -1;
+size_t StateEval::dimOut = -1;
 
 struct Average
 {
@@ -360,12 +365,13 @@ void StudyLimbo::solve()
 
     addComputationSet(tr("Initialization"));
 
+    // noise
+    Params::kernel::set_noise(value(LIMBO_bayes_opt_boptimizer_noise).toDouble());
     // init - random sampling
     Params::init_randomsampling::set_samples(value(LIMBO_init_randomsampling_samples).toInt());
     // max iterations
     Params::stop_maxiterations::set_iterations(value(LIMBO_stop_maxiterations_iterations).toInt());
     // Bayes Optimizer
-    Params::bayes_opt_boptimizer::set_noise(value(LIMBO_bayes_opt_boptimizer_noise).toDouble());
     if (gp == "no_opt")
     {
         // no optimizer

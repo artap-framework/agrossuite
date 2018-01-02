@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -71,11 +71,18 @@ namespace limbo {
             BO_PARAM(double, max_fun_evals, -1);
             /// @ingroup opt_defaults
             /// threshold based on the difference in value of a fixed number
-            /// of trials: if different to -1, it enables the tolerance criteria
+            /// of trials: if bigger than 0, it enables the tolerance criteria
             /// for stopping based in the history of rewards.
             BO_PARAM(double, fun_tolerance, -1);
             /// @ingroup opt_defaults
-            /// function value target: if different to -1, enables the function
+            /// tolerance for convergence: stop when an optimization step (or an
+            /// estimate of the optimum) changes all the parameter values by
+            /// less than tol multiplied by the absolute value of the parameter
+            /// value.
+            /// IGNORED if negative
+            BO_PARAM(double, xrel_tolerance, -1);
+            /// @ingroup opt_defaults
+            /// function value target: if bigger than 0, enables the function
             /// target criteria for stopping if the performance is greater than this value.
             BO_PARAM(double, fun_target, -1);
             /// @ingroup opt_defaults
@@ -83,7 +90,7 @@ namespace limbo {
             /// provided starting point (if any).
             BO_PARAM(bool, fun_compute_initial, false);
             /// @ingroup opt_defaults
-            /// sets the version of cmaes to use
+            /// sets the version of cmaes to use (possible values are: CMAES_DEFAULT, IPOP_CMAES, BIPOP_CMAES, aCMAES, aIPOP_CMAES, aBIPOP_CMAES, sepCMAES, sepIPOP_CMAES, sepBIPOP_CMAES, sepaCMAES, sepaIPOP_CMAES, sepaBIPOP_CMAES, VD_CMAES, VD_IPOP_CMAES, VD_BIPOP_CMAES
             BO_PARAM(int, variant, aIPOP_CMAES);
             /// @ingroup opt_defaults
             /// defines elitism strategy:
@@ -122,6 +129,7 @@ namespace limbo {
         ///   - int restarts
         ///   - double max_fun_evals
         ///   - double fun_tolerance
+        ///   - double xrel_tolerance
         ///   - double fun_target
         ///   - bool fun_compute_initial
         ///   - bool handle_uncertainty
@@ -216,7 +224,7 @@ namespace limbo {
                 // max iteration is here only for security
                 cmaparams.set_max_iter(100000);
 
-                if (Params::opt_cmaes::fun_tolerance() == -1) {
+                if (Params::opt_cmaes::fun_tolerance() < 0) {
                     // we do not know if what is the actual maximum / minimum of the function
                     // therefore we deactivate this stopping criterion
                     cmaparams.set_stopping_criteria(FTARGET, false);
@@ -228,7 +236,7 @@ namespace limbo {
                 }
 
                 // we allow to set the ftarget parameter
-                if (Params::opt_cmaes::fun_target() != -1) {
+                if (Params::opt_cmaes::fun_target() > 0) {
                     cmaparams.set_stopping_criteria(FTARGET, true);
                     cmaparams.set_ftarget(-Params::opt_cmaes::fun_target());
                 }
@@ -237,8 +245,12 @@ namespace limbo {
                 cmaparams.set_stopping_criteria(EQUALFUNVALS, true);
                 cmaparams.set_stopping_criteria(MAXFEVALS, true);
 
-                // enable additional criterias to stop
+                // enable additional criteria to stop
                 cmaparams.set_stopping_criteria(TOLX, true);
+                // set different tolerance if available
+                if (Params::opt_cmaes::xrel_tolerance() > 0) {
+                    cmaparams.set_xtolerance(Params::opt_cmaes::xrel_tolerance());
+                }
                 cmaparams.set_stopping_criteria(CONDITIONCOV, true);
 
                 // enable or disable different parameters

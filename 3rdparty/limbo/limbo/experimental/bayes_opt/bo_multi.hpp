@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -48,12 +48,17 @@
 
 #include <Eigen/Core>
 
+#include <limbo/bayes_opt/bo_base.hpp>
+#include <limbo/experimental/tools/pareto.hpp>
+
 #ifndef USE_SFERES
 #warning No sferes
 #else
 #ifndef USE_TBB
 #define NO_PARALLEL
 #endif
+// Quick hack for definition of 'I' in <complex.h>
+#undef I
 #include <sferes/phen/parameters.hpp>
 #include <sferes/gen/evo_float.hpp>
 #ifdef USE_TBB
@@ -62,9 +67,6 @@
 #include <sferes/modif/dummy.hpp>
 #include <sferes/ea/nsga2.hpp>
 #endif
-
-#include <limbo/bayes_opt/bo_base.hpp>
-#include <limbo/experimental/tools/pareto.hpp>
 
 namespace limbo {
     namespace experimental {
@@ -238,7 +240,7 @@ namespace limbo {
                     std::vector<model_t> models(nb_objs(), model_t(dim, 1));
                     _models = models;
                     for (size_t i = 0; i < uni_obs.size(); ++i) {
-                        _models[i].compute(this->_samples, uni_obs[i], Eigen::VectorXd::Constant(this->_samples.size(), 1e-5));
+                        _models[i].compute(this->_samples, uni_obs[i]);
                     }
                 }
             };

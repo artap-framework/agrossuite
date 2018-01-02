@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -60,14 +60,14 @@
 #include <limbo/bayes_opt/bo_base.hpp>
 
 namespace limbo {
+    namespace defaults {
+        struct bayes_opt_imgpo {
+            BO_PARAM(bool, hp_opt, false);
+        };
+    }
+
     namespace bayes_opt {
         namespace experimental {
-            namespace defaults {
-                struct bayes_opt_imgpo {
-                    BO_PARAM(double, noise, 1e-6);
-                };
-            }
-
             struct TreeNode {
                 std::vector<Eigen::VectorXd> x_max, x_min, x, f;
                 std::vector<bool> leaf, samp;
@@ -99,12 +99,12 @@ namespace limbo {
                         _init_tree(h_upper);
 
                     // Init model
-                    _model = model_t(StateFunction::dim_in, StateFunction::dim_out);
+                    _model = model_t(StateFunction::dim_in(), StateFunction::dim_out());
 
                     // Init root
-                    _tree[0].x_max.push_back(Eigen::VectorXd::Ones(StateFunction::dim_in));
-                    _tree[0].x_min.push_back(Eigen::VectorXd::Zero(StateFunction::dim_in));
-                    _tree[0].x.push_back(Eigen::VectorXd::Ones(StateFunction::dim_in) * 0.5);
+                    _tree[0].x_max.push_back(Eigen::VectorXd::Ones(StateFunction::dim_in()));
+                    _tree[0].x_min.push_back(Eigen::VectorXd::Zero(StateFunction::dim_in()));
+                    _tree[0].x.push_back(Eigen::VectorXd::Ones(StateFunction::dim_in()) * 0.5);
                     _tree[0].f.push_back(sfun(_tree[0].x[0]));
                     _tree[0].leaf.push_back(true);
                     _tree[0].samp.push_back(true);
@@ -201,12 +201,12 @@ namespace limbo {
                                             x_d(splitd) = (tmp_tree[h2].x_min[ii](splitd) + 5 * tmp_tree[h2].x_max[ii](splitd)) / 6.0;
 
                                             // TO-DO: Properly handle bl_samples etc
-                                            _model.compute(this->_samples, this->_observations, Eigen::VectorXd::Constant(this->_samples.size(), Params::bayes_opt_imgpo::noise()));
+                                            _model.compute(this->_samples, this->_observations);
                                             acquisition_function_t acqui_g(_model, M2);
                                             z_max = std::max(z_max, acqui_g(x_g, afun));
                                             M2++;
 
-                                            _model.compute(this->_samples, this->_observations, Eigen::VectorXd::Constant(this->_samples.size(), Params::bayes_opt_imgpo::noise()));
+                                            _model.compute(this->_samples, this->_observations);
                                             acquisition_function_t acqui_d(_model, M2);
                                             z_max = std::max(z_max, acqui_d(x_d, afun));
                                             M2++;
@@ -271,7 +271,7 @@ namespace limbo {
                                 // left node
                                 _tree[h + 1].x.push_back(x_g);
                                 // TO-DO: Properly handle bl_samples etc
-                                _model.compute(this->_samples, this->_observations, Eigen::VectorXd::Constant(this->_samples.size(), Params::bayes_opt_imgpo::noise()));
+                                _model.compute(this->_samples, this->_observations);
                                 acquisition_function_t acqui_g(_model, M);
                                 double UCB = acqui_g(x_g, afun);
                                 Eigen::VectorXd fsample_g;
@@ -310,7 +310,7 @@ namespace limbo {
                                 // right node
                                 _tree[h + 1].x.push_back(x_d);
                                 // TO-DO: Properly handle bl_samples etc
-                                _model.compute(this->_samples, this->_observations, Eigen::VectorXd::Constant(this->_samples.size(), Params::bayes_opt_imgpo::noise()));
+                                _model.compute(this->_samples, this->_observations);
                                 acquisition_function_t acqui_d(_model, M);
                                 double UCB2 = acqui_d(x_d, afun);
                                 Eigen::VectorXd fsample_d;
@@ -376,7 +376,8 @@ namespace limbo {
                         LB_old = LB;
                     }
 
-                    _model.optimize_hyperparams();
+                    if (Params::bayes_opt_imgpo::hp_opt())
+                        _model.optimize_hyperparams();
                 }
 
                 template <typename AggregatorFunction = FirstElem>

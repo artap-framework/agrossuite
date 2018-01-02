@@ -6,7 +6,7 @@
 //| Contributor(s):
 //|   - Jean-Baptiste Mouret (jean-baptiste.mouret@inria.fr)
 //|   - Antoine Cully (antoinecully@gmail.com)
-//|   - Kontantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
+//|   - Konstantinos Chatzilygeroudis (konstantinos.chatzilygeroudis@inria.fr)
 //|   - Federico Allocati (fede.allocati@gmail.com)
 //|   - Vaios Papaspyros (b.papaspyros@gmail.com)
 //|   - Roberto Rama (bertoski@gmail.com)
@@ -58,7 +58,7 @@ namespace limbo {
                 {
                     opt.update_pareto_data();
 #ifndef NSBO // this is already done is NSBO
-                    opt.template update_pareto_model<F::dim_in>();
+                    opt.template update_pareto_model<F::dim_in()>();
 #endif
                     auto dir = opt.res_dir() + "/";
                     auto p_model = opt.pareto_model();
