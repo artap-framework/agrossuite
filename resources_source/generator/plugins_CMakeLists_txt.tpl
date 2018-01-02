@@ -1,12 +1,6 @@
 project(plugins)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
-
-# Policy handling
-if(POLICY CMP0020)
- cmake_policy(PUSH)
- cmake_policy(SET CMP0020 OLD)
-endif()
 
 # For Win64
 if(${CMAKE_CL_64})
@@ -153,8 +147,3 @@ FIND_PACKAGE(deal.II HINTS "../dealii/build" REQUIRED)
 # modules
 {{#SOURCE}}
 ADD_SUBDIRECTORY({{ID}}){{/SOURCE}}
-
-# Policy handling
-if(POLICY CMP0020)
- cmake_policy(POP)
-endif()

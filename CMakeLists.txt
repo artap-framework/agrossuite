@@ -1,13 +1,10 @@
 # Set project's name
 PROJECT( agros )
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
 # not fixed - disabled only!
 # Policy handling
-if(POLICY CMP0020)
-  cmake_policy(SET CMP0020 OLD)
-endif()
 if(POLICY CMP0043)
   cmake_policy(SET CMP0043 OLD)
 endif()
