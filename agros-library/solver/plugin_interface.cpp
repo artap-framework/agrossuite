@@ -26,6 +26,7 @@
 // general
 const QString GENERAL = "general";
 const QString VERSION = "version";
+const QString DEFORMED_SHAPE = "deformed_shape";
 const QString ID = "id";
 const QString I = "i";
 const QString J = "j";
@@ -303,6 +304,7 @@ void PluginModule::load(const QString &fileName)
 
     id = generalJson[ID].toString();
     name = generalJson[NAME].toString();
+    deformedShape = generalJson[DEFORMED_SHAPE].toBool();
 
     // constants
     QJsonObject constantsJson = generalJson[CONSTANTS].toObject();
@@ -2256,8 +2258,8 @@ void PluginInterface::convertJson(XMLModule::field *module)
     }
 
     m_moduleJson->save(QString("%1/resources/modules/%2.json").arg(datadir()).arg(this->fieldId()));
-    */
 
     // load
     m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(this->fieldId()));
+    */
 }

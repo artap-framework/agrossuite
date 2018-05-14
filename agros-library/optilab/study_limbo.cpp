@@ -36,6 +36,12 @@
 #include "nlopt.hpp"
 #include <limbo/limbo.hpp>
 
+#include <limbo/experimental/bayes_opt/ehvi.hpp>
+#include <limbo/experimental/bayes_opt/nsbo.hpp>
+#include <limbo/experimental/bayes_opt/parego.hpp>
+#include <limbo/experimental/stat/pareto_front.hpp>
+#include <limbo/experimental/stat/hyper_volume.hpp>
+
 using namespace limbo;
 
 struct Params {
@@ -95,6 +101,22 @@ struct Params {
     struct stop_maxiterations {
         BO_DYN_PARAM(int, iterations)
     };
+
+    /*
+    // ehvi
+    struct bayes_opt_ehvi : public defaults::bayes_opt_ehvi {
+        BO_PARAM(double, x_ref, -11);
+        BO_PARAM(double, y_ref, -11);
+    };
+
+    // parego
+    struct model_gp_parego : public experimental::defaults::model_gp_parego {
+    };
+
+    struct stat_hyper_volume {
+        BO_PARAM_ARRAY(double, ref, 10, 10);
+    };
+    */
 };
 
 // declare dynamic parameters
@@ -410,6 +432,20 @@ void StudyLimbo::solve()
             else if ((mean == "function_ard") && (gp == "no_opt") && (acqui == "ei")) LIMBO_OPTIMIZE_MEAN_ARD(NoLFOpt, EI)
             else assert(0);
 
+    /*
+    using stat_t = boost::fusion::vector<experimental::stat::ParetoFront<Params>,
+    experimental::stat::HyperVolume<Params>, stat::ConsoleSummary<Params>>;
+    */
+    /*
+    using GP_t = model::GP<Params, kernel::SquaredExpARD<Params>, mean::FunctionARD<Params, mean::Constant<Params> >, model::gp::KernelMeanLFOpt<Params> >;
+    experimental::bayes_opt::Parego<Params, GP_t > opt;
+    opt.optimize(StateEval(this), Average());
+    */
+    /*
+    using stat_t = boost::fusion::vector<experimental::stat::ParetoFront<Params>, experimental::stat::HyperVolume<Params>, stat::ConsoleSummary<Params>>;
+    experimental::bayes_opt::Ehvi<Params, statsfun<stat_t>> opt;
+    opt.optimize(StateEval(this));
+    */
     m_isSolving = false;
 }
 

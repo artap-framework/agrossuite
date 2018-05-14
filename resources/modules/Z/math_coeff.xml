@@ -37,16 +37,15 @@
     <module:matrix_form id="absorption" i="1" j="1" planar="mc_a * uval * vval" axi="mc_a * r * uval * vval" />
     <module:vector_form id="rhs" i="1" j="1" planar="mc_f * vval" axi="r * mc_f * vval" />
 
-    <module:matrix_form id="transient_1_2" i="1" j="2" planar="mc_ea * timedermat * uval * vval" axi="mc_ea * timedermat * r * uval * vval"/>
+    <module:matrix_form id="transient_1_2" i="1" j="2" planar="mc_ea * uval * vval" axi="mc_ea * r * uval * vval"/>
     <module:matrix_form id="transient_2_2" i="2" j="2" planar="- uval * vval" axi="- r * uval * vval" symmetric="1"/>
-    <module:matrix_form id="transient_2_1" i="2" j="1" planar="timedermat * uval * vval" axi="timedermat * r * uval * vval"/>
+    <module:matrix_form id="transient_2_1" i="2" j="1" planar="uval * vval" axi="r * uval * vval"/>
 
-    <module:matrix_form id="transient_time_mat" i="1" j="1" planar="mc_da * uval * vval * timedermat" axi="r * mc_da * uval * vval * timedermat"/>
-    <module:vector_form id="transient_time_vec" i="1" j="1" planar="mc_da * timedervec * vval" axi="r * mc_da * timedervec * vval"/>
-    
-    
-    <module:vector_form id="transient_rhs_1_2" i="1" j="2" planar="mc_ea * timedervec * vval" axi="mc_ea * r * timedervec * vval" />
-    <module:vector_form id="transient_rhs_2_1" i="2" j="1" planar="timedervec * vval" axi="timedervec * r * vval" />
+    <module:matrix_form id="transient_time_mat" i="1" j="1" planar="mc_da * uval * vval" axi="r * mc_da * uval * vval"/>
+    <module:vector_form id="transient_time_vec" i="1" j="1" planar="mc_da * vval" axi="r * mc_da * vval"/>
+        
+    <module:vector_form id="transient_rhs_1_2" i="1" j="2" planar="mc_ea * vval" axi="mc_ea * r * vval" />
+    <module:vector_form id="transient_rhs_2_1" i="2" j="1" planar="vval" axi="r * vval" />
     
     <module:weakforms_volume>
       <module:weakform_volume analysistype="steadystate" equation="-\, \div \left( c\,\, \grad u \right) + \vec{b} \cdot \grad u + a \cdot u = f">
@@ -54,7 +53,7 @@
         <module:quantity id="math_coeff_a"/>
         <module:quantity id="math_coeff_beta_x"/>
         <module:quantity id="math_coeff_beta_y"/>
-        <module:quantity id="math_coeff_f"/>
+        <module:quantity dependence="space" id="math_coeff_f"/>
 
         <module:linearity_option type="linear">
           <module:matrix_form id="diffusion" />
@@ -71,7 +70,7 @@
         <module:quantity id="math_coeff_a"/>
         <module:quantity id="math_coeff_beta_x"/>
         <module:quantity id="math_coeff_beta_y"/>
-        <module:quantity id="math_coeff_f"/>
+        <module:quantity dependence="time-space" id="math_coeff_f"/>
 
         <module:linearity_option type="linear">
           <module:matrix_form id="diffusion" />
@@ -103,7 +102,7 @@
       <module:weakforms_surface>
       <module:weakform_surface analysistype="steadystate" default="math_coeff_solution">
         <module:boundary equation="u = u_0" id="math_coeff_solution" name="Solution">
-          <module:quantity id="math_coeff_solution"/>
+          <module:quantity dependence="space" id="math_coeff_solution"/>
           
           <module:linearity_option type="linear">
             <module:essential_form id="solution"/>
@@ -121,8 +120,8 @@
 
       <module:weakform_surface analysistype="transient" default="math_coeff_solution">
         <module:boundary equation="u = u_0" id="math_coeff_solution" name="Solution">
-          <module:quantity dependence="time" id="math_coeff_solution"/>
-          <module:quantity dependence="time" id="math_coeff_solution_time_derivative"/>
+          <module:quantity dependence="time-space" id="math_coeff_solution"/>
+          <module:quantity dependence="time-space" id="math_coeff_solution_time_derivative"/>
 
           <module:linearity_option type="linear">
             <module:essential_form id="transient_solution_time"/>

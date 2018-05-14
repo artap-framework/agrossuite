@@ -38,7 +38,7 @@
 
 {{CLASS}}Interface::{{CLASS}}Interface() : PluginInterface()
 {  
-    /*  
+/*
     // xml module description
     if (!module_module)
     {
@@ -89,9 +89,9 @@
             qDebug() << QString::fromStdString(e.what());
         }
     }
+
+    convertJson(&module_module->field().get());
     */
-    
-    // convertJson(&module_module->field().get());
     m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(fieldId()));   
 }
 

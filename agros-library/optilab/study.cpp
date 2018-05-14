@@ -306,10 +306,13 @@ QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation) 
 
     foreach (Functional functional, m_functionals)
     {
-        QString name = functional.name();
-        double value = computation->results()->value(name);
+        if (functional.weight() > 0)
+        {
+            QString name = functional.name();
+            double value = computation->results()->value(name);
 
-        values.append(((double) functional.weight() / totalWeight) * value);
+            values.append(((double) functional.weight() / totalWeight) * value);
+        }
     }
 
     return values;

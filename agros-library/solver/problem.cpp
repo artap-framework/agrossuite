@@ -1287,6 +1287,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
             throw AgrosException(tr("Node with coordinates (%1, %2) is too close to an existing node.").arg(nodeJson[X].toString()).arg(nodeJson[Y].toString()));
     }
 
+    // qWarning() << "nodes" << m_scene->nodes->count();
+
     // edges
     QJsonArray facesJson = geometryJson[FACES].toArray();
     for (int i = 0; i < facesJson.size(); i++)
@@ -1310,6 +1312,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
     }
 
+    // qWarning() << "faces" << m_scene->faces->count();
+
     // labels
     QJsonArray labelsJson = geometryJson[LABELS].toArray();
     for (int i = 0; i < labelsJson.size(); i++)
@@ -1326,6 +1330,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
 
         m_scene->addLabel(new SceneLabel(m_scene, PointValue(x, y), area));
     }
+
+    // qWarning() << "labels" << m_scene->labels->count();
 
     // fields
     QJsonArray fieldsJson = rootJson[FIELDS].toArray();

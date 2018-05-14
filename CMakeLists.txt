@@ -123,7 +123,6 @@ SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 find_package(XSD 4.0 REQUIRED)
 INCLUDE_DIRECTORIES(${XSD_INCLUDE_DIR})
 # xerces
-# SET(XercesC_LIBRARY ${CMAKE_HOME_DIRECTORY}/3rdparty/xerces-c/libxerces-c.a)
 find_package(XercesC REQUIRED)
 INCLUDE_DIRECTORIES(${XercesC_INCLUDE_DIRS})
 # curl
@@ -306,19 +305,19 @@ MACRO(ADD_INFO_FILES)
    ENDFOREACH()
 ENDMACRO()
 
-set(info resources/modules/acoustic.xml
-         resources/modules/current.xml
-         resources/modules/elasticity.xml
-         resources/modules/electrostatic.xml
-         resources/modules/flow.xml
-         resources/modules/heat.xml
-         resources/modules/magnetic.xml
-         resources/modules/math_coeff.xml
-         resources/modules/rf_te.xml
-         resources/modules/rf_tm.xml
-         resources/couplings/current-heat.xml
-         resources/couplings/heat-elasticity.xml
-         resources/couplings/magnetic-heat.xml
+set(info resources/modules/acoustic.json
+         resources/modules/current.json
+         resources/modules/elasticity.json
+         resources/modules/electrostatic.json
+         resources/modules/flow.json
+         resources/modules/heat.json
+         resources/modules/magnetic.json
+         resources/modules/math_coeff.json
+         resources/modules/rf_te.json
+         resources/modules/rf_tm.json
+         resources/couplings/current-heat.json
+         resources/couplings/heat-elasticity.json
+         resources/couplings/magnetic-heat.json
          #resources/couplings/magnetic-flow.xml
          #resources/couplings/flow-heat.xml
          resources_source/generator/filter_cpp.tpl

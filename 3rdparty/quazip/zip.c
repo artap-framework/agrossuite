@@ -12,6 +12,9 @@
          Modifications for QIODevice support and other QuaZIP fixes
          Copyright (C) 2005-2014 Sergey A. Tachenov
 
+         Fixing static code analysis issues
+         Copyright (C) 2016 Intel Deutschland GmbH
+
          Changes
    Oct-2009 - Mathias Svensson - Remove old C style function prototypes
    Oct-2009 - Mathias Svensson - Added Zip64 Support when creating new file archives
@@ -192,7 +195,7 @@ typedef struct
 
 #ifndef NOCRYPT
 #define INCLUDECRYPTINGCODE_IFCRYPTALLOWED
-#include "crypt.h"
+#include "zcrypt.h"
 #endif
 
 local linkedlist_datablock_internal* allocate_new_datablock()
@@ -527,13 +530,14 @@ local ZPOS64_T zip64local_SearchCentralDir(const zlib_filefunc64_32_def* pzlib_f
     if (ZREAD64(*pzlib_filefunc_def,filestream,buf,uReadSize)!=uReadSize)
       break;
 
-    for (i=(int)uReadSize-3; (i--)>0;)
+    for (i=(int)uReadSize-3; (i--)>0;){
       if (((*(buf+i))==0x50) && ((*(buf+i+1))==0x4b) &&
         ((*(buf+i+2))==0x05) && ((*(buf+i+3))==0x06))
       {
         uPosFound = uReadPos+i;
         break;
       }
+    }
 
       if (uPosFound!=0)
         break;
@@ -1171,6 +1175,9 @@ extern int ZEXPORT zipOpenNewFileInZip4_64 (zipFile file, const char* filename, 
     zi->ci.size_centralExtraFree = 32; /* Extra space we have reserved in case we need to add ZIP64 extra info data */
 
     zi->ci.central_header = (char*)ALLOC((uInt)zi->ci.size_centralheader + zi->ci.size_centralExtraFree);
+    if(!zi->ci.central_header) {
+      return (Z_MEM_ERROR);
+    }
 
     zi->ci.size_centralExtra = size_extrafield_global;
     zip64local_putValue_inmemory(zi->ci.central_header,(uLong)CENTRALHEADERMAGIC,4);
@@ -2025,6 +2032,9 @@ extern int ZEXPORT zipRemoveExtraInfoBlock (char* pData, int* dataLen, short sHe
     return ZIP_PARAMERROR;
 
   pNewHeader = (char*)ALLOC(*dataLen);
+  if(!pNewHeader) {
+    return Z_MEM_ERROR;
+  }
   pTmp = pNewHeader;
 
   while(p < (pData + *dataLen))

@@ -55,8 +55,8 @@ void CouplingsWidget::createContent()
 
     for (int i = 0; i < Module::availableCouplings().count(); i++)
     {
-        QLabel *label = new QLabel(this);
-        label->setVisible(false);
+        QLabel *label = new QLabel(tr("Type"), this);
+        // label->setVisible(false);
 
         QComboBox *combo = new QComboBox(this);
         combo->setVisible(false);

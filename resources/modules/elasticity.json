@@ -23,7 +23,8 @@
         "macros": {
         },
         "name": "Structural analysis",
-        "version": 1
+        "version": 1,
+	"deformed_shape": true
     },
     "postprocessor": {
         "localvariables": [

@@ -554,9 +554,14 @@ QList<Module::Integral> FieldInfo::volumeIntegrals(CoordinateType coordinateType
 // variable by name
 Module::LocalVariable FieldInfo::localVariable(CoordinateType coordinateType, const QString &id) const
 {
-    foreach (Module::LocalVariable var, localPointVariables(coordinateType))
+    QList<Module::LocalVariable> lst = localPointVariables(coordinateType);
+    foreach (Module::LocalVariable var, lst)
         if (var.id() == id)
             return var;
+
+    qDebug() << "Warning: unable to return local variable: " << id;
+    if (lst.size() > 0)
+        return lst.first();
 
     qDebug() << "localVariable: " << id;
     assert(0);

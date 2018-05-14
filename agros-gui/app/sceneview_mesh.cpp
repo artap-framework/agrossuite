@@ -655,9 +655,9 @@ void SceneViewMesh::paintErrorColorBar()
     glColor3d(0.0, 0.0, 0.0);
     for (int i = 1; i < maxError + 1; i++)
     {
-        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(pow10((i*2-15))).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
+        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(pow(10, (i*2-15))).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
                     scaleBorder.y + 10.0 + (i-1)*(2.0 * textHeight) + textHeight / 2.0,
-                    QString::number(pow10((i*2-15))));
+                    QString::number(pow(10, (i*2-15))));
     }
 }
 
