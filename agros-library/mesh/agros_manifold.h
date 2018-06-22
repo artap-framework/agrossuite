@@ -40,6 +40,7 @@ public:
     AgrosManifoldSurface(int marker, Point center, double radius);
 
     virtual dealii::Point<spacedim> project_to_manifold(const std::vector<dealii::Point<spacedim> > &surrounding_points, const dealii::Point<spacedim> &candidate) const;
+    virtual std::unique_ptr<dealii::Manifold<dim, spacedim> > clone() const override;
 private:
     int marker;
     Point center;
@@ -53,6 +54,7 @@ public:
     AgrosManifoldVolume(int element_i, AgrosManifoldSurface<dim, spacedim>* first_manifold);
 
     virtual dealii::Point<spacedim> project_to_manifold(const std::vector<dealii::Point<spacedim> > &surrounding_points, const dealii::Point<spacedim> &candidate) const;
+    virtual std::unique_ptr<dealii::Manifold<dim, spacedim> > clone() const override;
 
     void push_surfManifold(AgrosManifoldSurface<dim, spacedim>* next_manifold);
 private:

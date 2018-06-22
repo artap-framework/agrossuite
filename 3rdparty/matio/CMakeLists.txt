@@ -2,6 +2,8 @@ PROJECT(${MATIO_LIBRARY})
 
 find_package(ZLIB REQUIRED)
 
+set_property(SOURCE matioConfig.h PROPERTY SKIP_AUTOMOC ON)
+
 add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
 IF(MSVC)

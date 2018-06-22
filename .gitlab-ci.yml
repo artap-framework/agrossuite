@@ -63,7 +63,7 @@ build:
     - cd dealii 
     - mkdir -p build 
     - cd build 
-    - cmake ..
+    - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_CXX14="OFF" -DDEAL_II_WITH_CXX17="OFF" ..
     - make -j12 
     - cd ../../
     # - export CC=/usr/bin/clang

@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "mesh/agros_manifold.h"
+#include <deal.II/base/std_cxx14/memory.h>
 
 template <int dim, int spacedim>
 AgrosManifold<dim, spacedim>::AgrosManifold() : dealii::Manifold<dim, spacedim>()
@@ -42,6 +43,12 @@ dealii::Point<spacedim> AgrosManifoldSurface<dim, spacedim>::project_to_manifold
 }
 
 template <int dim, int spacedim>
+std::unique_ptr<dealii::Manifold<dim, spacedim> > AgrosManifoldSurface<dim, spacedim>::clone() const
+{
+    return dealii::std_cxx14::make_unique<AgrosManifoldSurface<dim,spacedim> >(marker, center, radius);
+}
+
+template <int dim, int spacedim>
 AgrosManifoldVolume<dim, spacedim>::AgrosManifoldVolume(int element_i, AgrosManifoldSurface<dim, spacedim>* first_manifold) : element_i(element_i)
 {
     this->surfManifolds.push_back(first_manifold);
@@ -54,6 +61,12 @@ template <int dim, int spacedim>
 void AgrosManifoldVolume<dim, spacedim>::push_surfManifold(AgrosManifoldSurface<dim, spacedim>* next_manifold)
 {
     this->surfManifolds.push_back(next_manifold);
+}
+
+template <int dim, int spacedim>
+std::unique_ptr<dealii::Manifold<dim, spacedim> > AgrosManifoldVolume<dim, spacedim>::clone() const
+{
+    return dealii::std_cxx14::make_unique<AgrosManifoldVolume<dim,spacedim> >(element_i, surfManifolds.front());
 }
 
 template <int dim, int spacedim>

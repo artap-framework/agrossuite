@@ -359,7 +359,7 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
                                              EstimateScratchData &scratch_data,
                                              const EstimateCopyData &)
 {
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(cell.iterators));
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(*cell));
 
     const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
 
@@ -395,7 +395,7 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
         }
     }
 
-    *(std_get<1>(cell.iterators)) = value;
+    *(std_get<1>(*cell)) = value;
     // *(std_get<1>(cell.iterators)) = log(value);
 }
 
