@@ -1235,7 +1235,8 @@ void SolverDeal::solveTransient()
         }
 
         primal->assembleSystem();
-        primal->transientWriteSystemToDisk(solutions);
+        if (Agros::configComputer()->value(Config::Config_MatrixSystemSave).toBool())
+            primal->transientWriteSystemToDisk(solutions);
     }
 
     /*
