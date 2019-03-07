@@ -29,6 +29,97 @@ const QString PARAMETERS = "Parameters";
 const QString NAME = "name";
 const QString VALUE = "value";
 
+template <typename T>
+inline T from_csv(T column, T val)
+{
+    static QList<double> xd;
+    static QList<QList<double> > yd;
+
+    // cache works only with first ags file !!!
+    if (xd.length() == 0)
+    {
+        QFileInfo info = QFileInfo(Agros::problem()->archiveFileName());
+        QString fn =  info.absolutePath() + "/" + info.baseName() + ".csv";
+
+        QFile file(fn);
+        if (!file.exists())
+            return std::numeric_limits<T>::quiet_NaN();
+
+        if (file.open(QIODevice::ReadOnly))
+        {
+            while (!file.atEnd())
+            {
+                QString line = file.readLine();
+                // replace ',' -> '.'
+                line = line.replace(",", ".");
+                QStringList ar = line.split(';');
+                xd.append(ar[0].toDouble());
+
+                // values
+                QList<double> values;
+                for (int j = 1; j < ar.length(); j++)
+                {
+                    values.append(ar[j].toDouble());
+                }
+
+                yd.append(values);
+            }
+        }
+    }
+
+    int col = int(column - 1);
+    if (xd.length() > 0)
+    {
+        if (val <= xd[0])
+            return T(yd[0][col]);
+        else if (val >= xd[xd.length() - 1])
+            return T(yd[yd.length() - 1][col]);
+    }
+
+    for (int i = 0; i < xd.length() - 1; i++)
+    {
+        // linear aproximation
+        if (val >= xd[i] and val <= xd[i+1])
+        {
+            double k = (yd[i+1][col] - yd[i][col]) / (xd[i+1] - xd[i]);
+            double b = yd[i][col] - k * xd[i];
+
+            return T(k * val + b);
+        }
+    }
+
+    return std::numeric_limits<T>::quiet_NaN();
+}
+
+/*
+template <typename T>
+class pokus : public exprtk::igeneric_function<T>
+{
+public:
+
+   typedef typename exprtk::igeneric_function<T> igfun_t;
+   typedef typename igfun_t::parameter_list_t parameter_list_t;
+   typedef typename igfun_t::generic_type::scalar_view scalar_t;
+   typedef typename igfun_t::generic_type::string_view string_t;
+
+   using exprtk::igeneric_function<T>::operator();
+
+   pokus()
+   : igfun_t("ST", igfun_t::e_rtrn_scalar)
+   // : igfun_t("ST", igfun_t::e_rtrn_string)0
+   { exprtk::disable_has_side_effects(*this); }
+
+   inline T operator()(std::string& result,
+                       parameter_list_t parameters)
+   {
+      T val = scalar_t(parameters[0])();
+      std::cout << result << ", value " << QString::number(val).toStdString() << std::endl;
+      return T(val);
+   }
+
+};
+*/
+
 ProblemParameters::ProblemParameters(const QList<ProblemParameter> parameters) : m_parameters(QMap<QString, ProblemParameter>())
 {
     set(parameters);
@@ -118,6 +209,7 @@ void ProblemParameters::set(const QString &key, double val)
         // create new table - invalidate
         m_parametersSymbolTable = exprtk::symbol_table<double>();
         m_parametersSymbolTable.add_constants();
+        m_parametersSymbolTable.add_function("from_csv", from_csv);
 
         foreach (QString k, m_parameters.keys())
         {
@@ -142,6 +234,15 @@ void ProblemParameters::set(const QList<ProblemParameter> parameters)
     // create new table
     m_parametersSymbolTable = exprtk::symbol_table<double>();
     m_parametersSymbolTable.add_constants();
+    m_parametersSymbolTable.add_function("from_csv", from_csv);
+    // FuncApproximationFromCSV *approximation = new FuncApproximationFromCSV();   
+    // pokus<double> *pokus = new ::pokus<double>();
+    // m_parametersSymbolTable.add_function("pokus", *pokus);
+    // pokus2<double> *pokus2 = new ::pokus2<double>();
+    // m_parametersSymbolTable.add_function("pokus2", *pokus2);
+    // write2<double> *write2 = new ::write2<double>();
+    // m_parametersSymbolTable.add_function("write2", *write2);
+
 
     foreach (ProblemParameter parameter, parameters)
         m_parametersSymbolTable.add_constant(parameter.name().toStdString(), parameter.value());
