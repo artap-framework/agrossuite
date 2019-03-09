@@ -161,7 +161,6 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>UMFPACK:</b> unsymmetric multifrontal sparse LU factorization package (<a href=\"http://www.cise.ufl.edu/research/sparse/umfpack/\">UMFPACK</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
                                          "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
-                                         "<b>PARALUTION:</b> Sparse iterative solvers on multi-core CPU and GPU devices (<a href=\"http://www.paralution.com/\">PARALUTION</a>)<br/>"
                                          "<b>BayesOpt:</b> Bayesian optimization library (<a href=\"https://github.com/rmcantin/bayesopt/\">BayesOpt</a>)<br/>"
                                          "<b>NLopt:</b> Free/open-source library for nonlinear optimization (<a href=\"https://nlopt.readthedocs.io/en/latest/\">NLopt</a>)<br/>"
                                          "<b>Limbo:</b> Lightweight framework for Bayesian Optimization, a powerful approach for global optimization of expensive, non-convex functions (<a href=\"http://www.resibots.eu/limbo/\">Limbo</a>)<br/>"
