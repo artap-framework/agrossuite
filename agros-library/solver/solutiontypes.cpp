@@ -71,8 +71,11 @@ void MultiArray::clear()
     // explicit clear
     if (m_triangulation)
     {
-        delete m_triangulation;
-        m_triangulation = nullptr;
+        if (m_triangulation->n_subscriptions() == 0)
+        {
+            delete m_triangulation;
+            m_triangulation = nullptr;
+        }
     }
 
     if (m_doFHandler)

@@ -969,7 +969,7 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << QString("Couldn't open json problem file '%1'.").arg(fileName);
         return;
     }
 
@@ -1243,7 +1243,7 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << QString("Couldn't write json problem file '%1'.").arg(fileName);
         return;
     }
 

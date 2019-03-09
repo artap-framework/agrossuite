@@ -202,7 +202,7 @@ void LibraryMaterial::write(const QString &fileName)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Couldn't open material file.");
+        qWarning() << QString("Couldn't write material file '%1'.").arg(fileName);
         return;
     }
 
