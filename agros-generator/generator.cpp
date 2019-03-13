@@ -437,6 +437,10 @@ void Agros2DGenerator::run()
             }
         }
     }
+    else
+    {
+        generationIsNeeded = true;
+    }
 
     if (generationIsNeeded)
     {
@@ -560,7 +564,6 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
     Agros2DGeneratorModule generator(moduleId);
 
     qWarning() << (QString("Module: %1.").arg(moduleId).toLatin1());
-    /*
     generator.generatePluginProjectFile();
     generator.prepareWeakFormsOutput();
     generator.generatePluginInterfaceFiles();
@@ -577,7 +580,6 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
 
     // generates equations
     generator.generatePluginEquations();
-    */
 }
 
 void Agros2DGenerator::generateDocumentation(const QString &moduleId)
