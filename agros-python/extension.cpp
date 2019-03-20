@@ -9,8 +9,6 @@
 
 #include "util/global.h"
 
-#include <deal.II/base/multithread_info.h>
-
 #ifdef AGROS_BUILD_STATIC
 #include "../plugins/plugins_static.h"
 #endif

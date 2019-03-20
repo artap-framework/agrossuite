@@ -289,10 +289,9 @@ void PluginModule::load(const QString &fileName)
     clear();
 
     QFile file(fileName);
-
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << QString("Couldn't open problem '%1'.").arg(fileName);
         return;
     }
 
@@ -859,7 +858,7 @@ void PluginModule::save(const QString &fileName)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << "Couldn't open problem file.";
         return;
     }
 
@@ -1418,7 +1417,7 @@ void PluginCoupling::load(const QString &fileName)
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << QString("Couldn't open coupling file '%1'.").arg(fileName);
         return;
     }
 
@@ -1595,7 +1594,7 @@ void PluginCoupling::save(const QString &fileName)
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Couldn't open problem file.");
+        qWarning() << QString("Couldn't write coupling file '%1'.").arg(fileName);
         return;
     }
 

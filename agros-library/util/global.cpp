@@ -259,11 +259,11 @@ QString createPythonFromModel()
         str += QString("problem.time_step_method = \"%1\"\n"
                        "problem.time_method_order = %2\n"
                        "problem.time_total = %3\n").
-                arg(timeStepMethodToStringKey((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
+                arg(timeStepMethodToStringKey(static_cast<TimeStepMethod>(Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))).
                 arg(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()).
                 arg(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
 
-        if (((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
+        if ((static_cast<TimeStepMethod>(Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt())) == TimeStepMethod_BDFTolerance)
         {
             str += QString("problem.time_method_tolerance = %1\n").
                     arg(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
@@ -273,7 +273,7 @@ QString createPythonFromModel()
             str += QString("problem.time_steps = %1\n").
                     arg(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
         }
-        if (((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) != TimeStepMethod_Fixed &&
+        if ((static_cast<TimeStepMethod>(Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt())) != TimeStepMethod_Fixed &&
                 (Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0))
             str += QString("problem.time_initial_time_step = %1\n").
                     arg(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
@@ -298,10 +298,10 @@ QString createPythonFromModel()
         {
             str += QString("%1.matrix_solver_parameters[\"dealii_method\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
+                    arg(iterLinearSolverDealIIMethodToStringKey(static_cast<IterSolverDealII>(fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt())));
             str += QString("%1.matrix_solver_parameters[\"dealii_preconditioner\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+                    arg(iterLinearSolverDealIIPreconditionerToStringKey(static_cast<PreconditionerDealII>(fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));
             str += QString("%1.matrix_solver_parameters[\"dealii_tolerance\"] = %2\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
@@ -362,22 +362,22 @@ QString createPythonFromModel()
 
             str += QString("%1.adaptivity_parameters['estimator'] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(adaptivityEstimatorToStringKey((AdaptivityEstimator) fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));
+                    arg(adaptivityEstimatorToStringKey(static_cast<AdaptivityEstimator>(fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())));
 
             str += QString("%1.adaptivity_parameters['strategy'] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(adaptivityStrategyToStringKey((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()));
+                    arg(adaptivityStrategyToStringKey(static_cast<AdaptivityStrategy>(fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())));
 
             if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
             {
                 str += QString("%1.adaptivity_parameters['strategy_hp'] = \"%2\"\n").
                         arg(fieldInfo->fieldId()).
-                        arg(adaptivityStrategyHPToStringKey((AdaptivityStrategyHP) fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt()));
+                        arg(adaptivityStrategyHPToStringKey(static_cast<AdaptivityStrategyHP>(fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt())));
 
             }
 
-            if (((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
-                    ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfTotalError))
+            if (((static_cast<AdaptivityStrategy>(fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())) == AdaptivityStrategy_FixedFractionOfCells) ||
+                    ((static_cast<AdaptivityStrategy>(fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())) == AdaptivityStrategy_FixedFractionOfTotalError))
             {
                 str += QString("%1.adaptivity_parameters['fine_percentage'] = %2\n").
                         arg(fieldInfo->fieldId()).
@@ -416,7 +416,7 @@ QString createPythonFromModel()
 
             str += QString("%1.solver_parameters['damping'] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(dampingTypeToStringKey((DampingType)fieldInfo->value(FieldInfo::NonlinearDampingType).toInt()));
+                    arg(dampingTypeToStringKey(static_cast<DampingType>(fieldInfo->value(FieldInfo::NonlinearDampingType).toInt())));
 
             str += QString("%1.solver_parameters['damping_factor'] = %2\n").
                     arg(fieldInfo->fieldId()).

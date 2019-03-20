@@ -413,43 +413,80 @@ QStringList Agros2DGenerator::availableCouplings()
 
 void Agros2DGenerator::run()
 {
-    // generate structure
-    createStructure();
-
-    if (!m_module.isEmpty())
+    bool generationIsNeeded = false;
+    QString cmakeFile = QString("%1/%2/CMakeLists.txt").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_PLUGINROOT);
+    if (QFile::exists(cmakeFile))
     {
-        // generate one module or coupling
-        QStringList modules = Agros2DGenerator::availableModules();
-        QStringList couplings = Agros2DGenerator::availableCouplings();
+        QFileInfo cmakeFileInfo(cmakeFile);
+        QDateTime createdCMakeList = cmakeFileInfo.lastModified();
+        // qInfo() << "CMakeList = " << createdCMakeList.toString();
 
-        try
+        QString dir = QString("%1/%2/").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT);
+        QDirIterator it(dir, QStringList() << "*.tpl", QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext())
         {
-            if (modules.contains(m_module))
-                generateModule(m_module);
-            else if (couplings.contains(m_module))
-                generateCoupling(m_module);
+            QString file = it.next();
 
-            exit(0);
-        }
-        catch(AgrosGeneratorException& err)
-        {
-            qWarning() << "Generator exception " << err.what();
-            exit(1);
+            QFileInfo fileInfo(file);
+            QDateTime created = fileInfo.lastModified();
+            // qInfo() << file << " = " << created.toString() << (createdCMakeList.toMSecsSinceEpoch() < created.toMSecsSinceEpoch());
+            if (createdCMakeList.toMSecsSinceEpoch() < created.toMSecsSinceEpoch())
+            {
+                generationIsNeeded = true;
+                break;
+            }
         }
     }
     else
     {
-        // generate all sources
-        try
+        generationIsNeeded = true;
+    }
+
+    if (generationIsNeeded)
+    {
+        // generate structure
+        createStructure();
+
+        if (!m_module.isEmpty())
         {
-            generateSources();
-            exit(0);
+            // generate one module or coupling
+            QStringList modules = Agros2DGenerator::availableModules();
+            QStringList couplings = Agros2DGenerator::availableCouplings();
+
+            try
+            {
+                if (modules.contains(m_module))
+                    generateModule(m_module);
+                else if (couplings.contains(m_module))
+                    generateCoupling(m_module);
+
+                exit(0);
+            }
+            catch(AgrosGeneratorException& err)
+            {
+                qWarning() << "Generator exception " << err.what();
+                exit(1);
+            }
         }
-        catch(AgrosGeneratorException& err)
+        else
         {
-            qWarning() << "Generator exception " << err.what();
-            exit(1);
+            // generate all sources
+            try
+            {
+                generateSources();
+                exit(0);
+            }
+            catch(AgrosGeneratorException& err)
+            {
+                qWarning() << "Generator exception " << err.what();
+                exit(1);
+            }
         }
+    }
+    else
+    {
+        qWarning() << "Generator is not needed. All is up to date.";
+        exit(0);
     }
 }
 
@@ -527,7 +564,6 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
     Agros2DGeneratorModule generator(moduleId);
 
     qWarning() << (QString("Module: %1.").arg(moduleId).toLatin1());
-
     generator.generatePluginProjectFile();
     generator.prepareWeakFormsOutput();
     generator.generatePluginInterfaceFiles();

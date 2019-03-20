@@ -89,6 +89,7 @@ void Config::setStringKeys()
     m_settingKey[Config_ShowResults] = "Config_ShowResults";
     m_settingKey[Config_LinearSystemFormat] = "Config_LinearSystemFormat";
     m_settingKey[Config_LinearSystemSave] = "Config_LinearSystemSave";
+    m_settingKey[Config_MatrixSystemSave] = "Config_MatrixSystemSave";
     m_settingKey[Config_CacheSize] = "Config_CacheSize";
     m_settingKey[Config_ShowGrid] = "Config_ShowGrid";
     m_settingKey[Config_ShowRulers] = "Config_ShowRulers";
@@ -109,6 +110,7 @@ void Config::setDefaultValues()
     m_settingDefault[Config_ShowResults] = false;
     m_settingDefault[Config_LinearSystemFormat] = EXPORT_FORMAT_MATLAB_MATIO;
     m_settingDefault[Config_LinearSystemSave] = false;
+    m_settingDefault[Config_MatrixSystemSave] = false;
     m_settingDefault[Config_CacheSize] = 10;
     m_settingDefault[Config_ShowGrid] = true;
     m_settingDefault[Config_ShowRulers] = true;

@@ -217,8 +217,14 @@ QString datadir()
     // python
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/../..";
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
+    else if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/";
+    else if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
+        return QDir::homePath() + QString::fromLatin1("/.local/lib/python3.6/site-packages/agrossuite/");
+    else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
+        return QString::fromLatin1("/usr/local/lib/python3.6/site-packages/agrossuite/");
+    else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
+        return QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/");
 
     // solver DEK
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../agros2d/resources/templates/empty.tpl"))

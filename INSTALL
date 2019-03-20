@@ -75,31 +75,9 @@ make
 Building of the external solvers:
 --------------------------------
 
-- PARALUTION
-cd solver-external-paralution
-cd paralution
-mkdir build
-cd build
-cmake ..
-make
-cd ../..
-cmake .
-make
-
-- ViennaCL
-sudo apt-get install libboost-math-dev
-cd solver-external-viennacl
-cmake .
-make
-
 - MUMPS
 sudo apt-get install libmumps-dev
 sudo apt-get install mpi-default-dev
-cmake .
-make
-
-- UMFPACK
-cd solver-external-umfpack
 cmake .
 make
 

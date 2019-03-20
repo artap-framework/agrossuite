@@ -38,6 +38,7 @@ public:
         Config_ShowResults,
         Config_LinearSystemFormat,
         Config_LinearSystemSave,
+        Config_MatrixSystemSave,
         Config_CacheSize,        
         Config_RulersFontFamily,
         Config_RulersFontPointSize,

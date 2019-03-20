@@ -52,6 +52,10 @@ struct PyOptions
     inline bool getSaveMatrixRHS() const { return Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
     inline void setSaveMatrixRHS(bool save) { Agros::configComputer()->setValue(Config::Config_LinearSystemSave, save); }
 
+    // save system matrix and rhs (mass, stiffness, ...)
+    inline bool getSaveSystem() const { return Agros::configComputer()->value(Config::Config_MatrixSystemSave).toBool(); }
+    inline void setSaveSystem(bool save) { Agros::configComputer()->setValue(Config::Config_MatrixSystemSave, save); }
+
     inline std::string getDumpFormat() const { return dumpFormatToStringKey((MatrixExportFormat) Agros::configComputer()->value(Config::Config_LinearSystemFormat).toInt()).toStdString(); }
     void setDumpFormat(std::string format);
 };
