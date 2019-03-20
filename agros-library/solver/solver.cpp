@@ -287,6 +287,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         return;
     }
 
+    /*
     if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
         QDateTime datetime(QDateTime::currentDateTime());
@@ -300,6 +301,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         writeMatioVector(rhs, rhsName, "rhs");
         writeMatioVector(sln, slnName, "sln");
     }
+    */
 
     // qDebug() << "solved (" << time.elapsed() << "ms )";
 }
@@ -1235,7 +1237,8 @@ void SolverDeal::solveTransient()
         }
 
         primal->assembleSystem();
-        primal->transientWriteSystemToDisk(solutions);
+        if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
+            primal->transientWriteSystemToDisk(solutions);
     }
 
     /*
