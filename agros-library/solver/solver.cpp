@@ -287,6 +287,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         return;
     }
 
+    /*
     if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
         QDateTime datetime(QDateTime::currentDateTime());
@@ -300,6 +301,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         writeMatioVector(rhs, rhsName, "rhs");
         writeMatioVector(sln, slnName, "sln");
     }
+    */
 
     // qDebug() << "solved (" << time.elapsed() << "ms )";
 }
@@ -385,12 +387,57 @@ void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Ve
     QString stiffnessMatrixName = QString("%1/%2/transient_solver-%3_matrix_stiffness.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
     QString rhsName = QString("%1/%2/transient_solver-%3_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
     QString slnsName = QString("%1/%2/transient_solver-%3_solutions.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString otherName = QString("%1/%2/transient_solver-%3_other.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
 
     writeMatioMatrix(transientMassMatrix, massMatrixName, "matrix_mass");
     writeMatioMatrix(systemMatrix, stiffnessMatrixName, "matrix_stiffness");
     writeMatioVector(systemRHS, rhsName, "rhs");
     if (vecs.size() > 0)
         writeMatioMatrix(vecs, slnsName, "slns");
+
+    // save other informations
+    dealii::hp::QCollection<2> quadratureFormulas;
+    quadratureFormulas.push_back(dealii::QGauss<2>(1));
+    // Gauss quadrature
+    for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
+        quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
+
+    dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe(),
+                                         quadratureFormulas,
+                                         dealii::update_values | dealii::update_JxW_values | dealii::update_quadrature_points);
+
+    std::vector<dealii::Vector<double> > pointsVecs;
+    pointsVecs.push_back(dealii::Vector<double>(systemRHS.size()));
+    pointsVecs.push_back(dealii::Vector<double>(systemRHS.size()));
+
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = doFHandler.begin_active(), endc_int = doFHandler.end();
+    for (; cell_int != endc_int; ++cell_int)
+    {
+        // volume integration
+        hp_fe_values.reinit(cell_int);
+
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+        const dealii::FiniteElement<2> &fe = cell_int->get_fe();
+        const unsigned int dofs_per_face = fe.dofs_per_face;
+
+        // boundaries
+        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+        {
+
+            std::vector<dealii::types::global_dof_index> global_face_dof_indices(dofs_per_face);
+            cell_int->face(face)->get_dof_indices(global_face_dof_indices, cell_int->active_fe_index());
+
+            for (unsigned int dof = 0; dof < dofs_per_face; ++dof)
+            {
+                // qInfo() << global_face_dof_indices[dof] << cell_int->face(face)->vertex(dof)[0] << cell_int->face(face)->vertex(dof)[1];
+                pointsVecs[0][global_face_dof_indices[dof]] = cell_int->face(face)->vertex(dof)[0];
+                pointsVecs[1][global_face_dof_indices[dof]] = cell_int->face(face)->vertex(dof)[1];
+            }
+        }
+    }
+    writeMatioMatrix(pointsVecs, otherName, "other");
 }
 
 void SolverDeal::AssembleBase::solve()
@@ -1235,6 +1282,7 @@ void SolverDeal::solveTransient()
         }
 
         primal->assembleSystem();
+        Agros::configComputer()->setValue(Config::Config_MatrixSystemSave, true);
         if (Agros::configComputer()->value(Config::Config_MatrixSystemSave).toBool())
             primal->transientWriteSystemToDisk(solutions);
     }
