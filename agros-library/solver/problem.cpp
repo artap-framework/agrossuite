@@ -46,6 +46,7 @@
 #include "logview.h"
 
 #include "mesh/meshgenerator_triangle.h"
+#include "mesh/meshgenerator_gmsh.h"
 
 #include "optilab/study.h"
 
@@ -880,8 +881,11 @@ bool ProblemBase::mesh()
         QSharedPointer<MeshGenerator> meshGenerator;
         switch (config()->meshType())
         {
-        case MeshType_Triangle:
+        case MeshType_Triangle_QuadFineDivision:
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
+            break;
+        case MeshType_GMSH_Quad:
+            meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH(this));
             break;
         default:
             Agros::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));

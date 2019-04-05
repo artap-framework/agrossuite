@@ -1,33 +1,34 @@
 /*
- * Copyright (C) 2012-2017   Christopher C. Hulbert
- *
+ * Copyright (c) 2012-2019, Christopher C. Hulbert
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <stdlib.h>
 #include <string.h>
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#   define strdup _strdup
+#endif
 #include "matio_private.h"
 
 /** @brief Creates a structure MATLAB variable with the given name and fields
@@ -44,7 +45,8 @@ matvar_t *
 Mat_VarCreateStruct(const char *name,int rank,size_t *dims,const char **fields,
     unsigned nfields)
 {
-    int i, nmemb = 1;
+    size_t nelems = 1;
+    int j;
     matvar_t *matvar;
 
     if ( NULL == dims )
@@ -59,9 +61,9 @@ Mat_VarCreateStruct(const char *name,int rank,size_t *dims,const char **fields,
         matvar->name = strdup(name);
     matvar->rank = rank;
     matvar->dims = (size_t*)malloc(matvar->rank*sizeof(*matvar->dims));
-    for ( i = 0; i < matvar->rank; i++ ) {
-        matvar->dims[i] = dims[i];
-        nmemb *= dims[i];
+    for ( j = 0; j < matvar->rank; j++ ) {
+        matvar->dims[j] = dims[j];
+        nelems *= dims[j];
     }
     matvar->class_type = MAT_C_STRUCT;
     matvar->data_type  = MAT_T_STRUCT;
@@ -76,6 +78,7 @@ Mat_VarCreateStruct(const char *name,int rank,size_t *dims,const char **fields,
             Mat_VarFree(matvar);
             matvar = NULL;
         } else {
+            size_t i;
             for ( i = 0; i < nfields; i++ ) {
                 if ( NULL == fields[i] ) {
                     Mat_VarFree(matvar);
@@ -86,13 +89,11 @@ Mat_VarCreateStruct(const char *name,int rank,size_t *dims,const char **fields,
                 }
             }
         }
-        if ( NULL != matvar && nmemb > 0 && nfields > 0 ) {
-            matvar_t **field_vars;
-            matvar->nbytes = nmemb*nfields*matvar->data_size;
-            matvar->data = malloc(matvar->nbytes);
-            field_vars = (matvar_t**)matvar->data;
-            for ( i = 0; i < nfields*nmemb; i++ )
-                field_vars[i] = NULL;
+        if ( NULL != matvar && nelems > 0 ) {
+            size_t nelems_x_nfields;
+            SafeMul(&nelems_x_nfields, nelems, nfields);
+            SafeMul(&matvar->nbytes, nelems_x_nfields, matvar->data_size);
+            matvar->data = calloc(nelems_x_nfields, matvar->data_size);
         }
     }
 
@@ -112,28 +113,37 @@ Mat_VarCreateStruct(const char *name,int rank,size_t *dims,const char **fields,
 int
 Mat_VarAddStructField(matvar_t *matvar,const char *fieldname)
 {
-    int       i, f, nfields, nmemb, cnt = 0;
+    int cnt = 0;
+    size_t i, nfields, nelems = 1;
     matvar_t **new_data, **old_data;
+    char     **fieldnames;
 
     if ( matvar == NULL || fieldname == NULL )
         return -1;
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields+1;
     matvar->internal->num_fields = nfields;
-    matvar->internal->fieldnames =
-    (char**)realloc(matvar->internal->fieldnames,
-            nfields*sizeof(*matvar->internal->fieldnames));
+    fieldnames = (char**)realloc(matvar->internal->fieldnames,
+        nfields*sizeof(*matvar->internal->fieldnames));
+    if ( NULL == fieldnames )
+        return -1;
+    matvar->internal->fieldnames = fieldnames;
     matvar->internal->fieldnames[nfields-1] = strdup(fieldname);
 
-    new_data = (matvar_t**)malloc(nfields*nmemb*sizeof(*new_data));
-    if ( new_data == NULL )
+    {
+        size_t nelems_x_nfields;
+        SafeMul(&nelems_x_nfields, nelems, nfields);
+        SafeMul(&matvar->nbytes, nelems_x_nfields, sizeof(*new_data));
+    }
+    new_data = (matvar_t**)malloc(matvar->nbytes);
+    if ( new_data == NULL ) {
+        matvar->nbytes = 0;
         return -1;
+    }
 
     old_data = (matvar_t**)matvar->data;
-    for ( i = 0; i < nmemb; i++ ) {
+    for ( i = 0; i < nelems; i++ ) {
+        size_t f;
         for ( f = 0; f < nfields-1; f++ )
             new_data[cnt++] = old_data[i*(nfields-1)+f];
         new_data[cnt++] = NULL;
@@ -141,7 +151,6 @@ Mat_VarAddStructField(matvar_t *matvar,const char *fieldname)
 
     free(matvar->data);
     matvar->data = new_data;
-    matvar->nbytes = nfields*nmemb*sizeof(*new_data);
 
     return 0;
 }
@@ -197,21 +206,17 @@ Mat_VarGetStructFieldnames(const matvar_t *matvar)
 matvar_t *
 Mat_VarGetStructFieldByIndex(matvar_t *matvar,size_t field_index,size_t index)
 {
-    int       i, nfields;
     matvar_t *field = NULL;
-    size_t nmemb;
+    size_t nelems = 1, nfields;
 
-    if ( matvar == NULL || matvar->class_type != MAT_C_STRUCT   ||
+    if ( matvar == NULL || matvar->class_type != MAT_C_STRUCT ||
         matvar->data_size == 0 )
         return field;
 
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields;
 
-    if ( nmemb > 0 && index >= nmemb ) {
+    if ( nelems > 0 && index >= nelems ) {
         Mat_Critical("Mat_VarGetStructField: structure index out of bounds");
     } else if ( nfields > 0 ) {
         if ( field_index > nfields ) {
@@ -239,16 +244,13 @@ Mat_VarGetStructFieldByName(matvar_t *matvar,const char *field_name,
 {
     int       i, nfields, field_index;
     matvar_t *field = NULL;
-    size_t nmemb;
+    size_t nelems = 1;
 
     if ( matvar == NULL || matvar->class_type != MAT_C_STRUCT   ||
         matvar->data_size == 0 )
         return field;
 
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields;
     field_index = -1;
     for ( i = 0; i < nfields; i++ ) {
@@ -258,7 +260,7 @@ Mat_VarGetStructFieldByName(matvar_t *matvar,const char *field_name,
         }
     }
 
-    if ( index >= nmemb ) {
+    if ( index >= nelems ) {
         Mat_Critical("Mat_VarGetStructField: structure index out of bounds");
     } else if ( field_index >= 0 ) {
         field = *((matvar_t **)matvar->data+index*nfields+field_index);
@@ -283,16 +285,13 @@ Mat_VarGetStructFieldByName(matvar_t *matvar,const char *field_name,
 matvar_t *
 Mat_VarGetStructField(matvar_t *matvar,void *name_or_index,int opt,int index)
 {
-    int       i, err = 0, nfields, nmemb;
+    int       err = 0, nfields;
     matvar_t *field = NULL;
+    size_t nelems = 1;
 
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields;
-
-    if ( index < 0 || (nmemb > 0 && index >= nmemb ))
+    if ( index < 0 || (nelems > 0 && index >= nelems ))
         err = 1;
     else if ( nfields < 1 )
         err = 1;
@@ -334,8 +333,9 @@ matvar_t *
 Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,int *edge,
     int copy_fields)
 {
-    size_t i,j,N,I,nfields,field,idx[10] = {0,},cnt[10] = {0,},dimp[10] = {0,};
+    size_t i,N,I,nfields,field,idx[10] = {0,},cnt[10] = {0,},dimp[10] = {0,};
     matvar_t **fields, *struct_slab;
+    int j;
 
     if ( (matvar == NULL) || (start == NULL) || (stride == NULL) ||
          (edge == NULL) ) {
@@ -357,15 +357,15 @@ Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,int *edge,
     I = start[0];
     struct_slab->dims[0] = edge[0];
     idx[0] = start[0];
-    for ( i = 1; i < matvar->rank; i++ ) {
-        idx[i]  = start[i];
-        dimp[i] = dimp[i-1]*matvar->dims[i];
-        N *= edge[i];
-        I += start[i]*dimp[i-1];
-        struct_slab->dims[i] = edge[i];
+    for ( j = 1; j < matvar->rank; j++ ) {
+        idx[j]  = start[j];
+        dimp[j] = dimp[j-1]*matvar->dims[j];
+        N *= edge[j];
+        I += start[j]*dimp[j-1];
+        struct_slab->dims[j] = edge[j];
     }
     I *= nfields;
-    struct_slab->nbytes    = N*nfields*sizeof(matvar_t *);
+    struct_slab->nbytes = N*nfields*sizeof(matvar_t *);
     struct_slab->data = malloc(struct_slab->nbytes);
     if ( struct_slab->data == NULL ) {
         Mat_VarFree(struct_slab);
@@ -383,8 +383,7 @@ Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,int *edge,
                         *((matvar_t **)matvar->data + I);
                 I++;
             }
-            if ( stride != 0 )
-                I += (stride[0]-1)*nfields;
+            I += (stride[0]-1)*nfields;
         }
         idx[0] = start[0];
         I = idx[0];
@@ -394,8 +393,10 @@ Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,int *edge,
             if ( cnt[j] == edge[j] ) {
                 cnt[j] = 0;
                 idx[j] = start[j];
-                cnt[j+1]++;
-                idx[j+1] += stride[j+1];
+                if ( j < matvar->rank - 1 ) {
+                    cnt[j+1]++;
+                    idx[j+1] += stride[j+1];
+                }
             }
             I += idx[j]*dimp[j-1];
         }
@@ -412,7 +413,7 @@ Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,int *edge,
  * freed, but if copy_fields is zero, the indexed structures are pointers to
  * the original, but should still be freed since the mem_conserve flag is set
  * so that the structures are not freed.
- * MAT File version must be 5.
+ * MAT file version must be 5.
  * @ingroup MAT
  * @param matvar Structure matlab variable
  * @param start starting index (0-relative)
@@ -425,13 +426,13 @@ matvar_t *
 Mat_VarGetStructsLinear(matvar_t *matvar,int start,int stride,int edge,
     int copy_fields)
 {
-    int i, I, field, nfields;
-    matvar_t *struct_slab, **fields;
+    matvar_t *struct_slab;
 
-    /* FIXME: Check allocations */
     if ( matvar == NULL || matvar->rank > 10 ) {
        struct_slab = NULL;
     } else {
+        int i, I, field, nfields;
+        matvar_t **fields;
 
         struct_slab = Mat_VarDuplicate(matvar,0);
         if ( !copy_fields )
@@ -439,8 +440,12 @@ Mat_VarGetStructsLinear(matvar_t *matvar,int start,int stride,int edge,
 
         nfields = matvar->internal->num_fields;
 
-        struct_slab->nbytes = edge*nfields*sizeof(matvar_t *);
+        struct_slab->nbytes = (size_t)edge*nfields*sizeof(matvar_t *);
         struct_slab->data = malloc(struct_slab->nbytes);
+        if ( struct_slab->data == NULL ) {
+            Mat_VarFree(struct_slab);
+            return NULL;
+        }
         struct_slab->dims[0] = edge;
         struct_slab->dims[1] = 1;
         fields = (matvar_t**)struct_slab->data;
@@ -480,21 +485,17 @@ matvar_t *
 Mat_VarSetStructFieldByIndex(matvar_t *matvar,size_t field_index,size_t index,
     matvar_t *field)
 {
-    int       i, nfields;
     matvar_t *old_field = NULL;
-    size_t nmemb;
+    size_t nelems = 1, nfields;
 
     if ( matvar == NULL || matvar->class_type != MAT_C_STRUCT ||
         matvar->data == NULL )
         return old_field;
 
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields;
 
-    if ( index < nmemb && field_index < nfields ) {
+    if ( index < nelems && field_index < nfields ) {
         matvar_t **fields = (matvar_t**)matvar->data;
         old_field = fields[index*nfields+field_index];
         fields[index*nfields+field_index] = field;
@@ -524,16 +525,13 @@ Mat_VarSetStructFieldByName(matvar_t *matvar,const char *field_name,
 {
     int       i, nfields, field_index;
     matvar_t *old_field = NULL;
-    size_t nmemb;
+    size_t nelems = 1;
 
     if ( matvar == NULL || matvar->class_type != MAT_C_STRUCT ||
          matvar->data == NULL )
         return old_field;
 
-    nmemb = 1;
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+    SafeMulDims(matvar, &nelems);
     nfields = matvar->internal->num_fields;
     field_index = -1;
     for ( i = 0; i < nfields; i++ ) {
@@ -543,7 +541,7 @@ Mat_VarSetStructFieldByName(matvar_t *matvar,const char *field_name,
         }
     }
 
-    if ( index < nmemb && field_index >= 0 ) {
+    if ( index < nelems && field_index >= 0 ) {
         matvar_t **fields = (matvar_t**)matvar->data;
         old_field = fields[index*nfields+field_index];
         fields[index*nfields+field_index] = field;

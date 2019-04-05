@@ -48,8 +48,7 @@ class TestRFTEHarmonicPlanar(AgrosTestCase):
         
         # labels
         geometry.add_label(0.0359418, 0.0109393, materials = {"rf_te" : "Air"})
-        
-        
+                
         # solve problem
         self.computation = problem.computation()
         self.computation.solve()

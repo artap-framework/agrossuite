@@ -3,31 +3,29 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2017   Christopher C. Hulbert
- *
+ * Copyright (c) 2005-2019, Christopher C. Hulbert
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef MATIO_H
@@ -208,11 +206,11 @@ typedef struct matvar_t {
  */
 typedef struct mat_sparse_t {
     int nzmax;               /**< Maximum number of non-zero elements */
-    int *ir;                 /**< Array of size nzmax where ir[k] is the row of
+    mat_int32_t *ir;         /**< Array of size nzmax where ir[k] is the row of
                                *  data[k].  0 <= k <= nzmax
                                */
     int nir;                 /**< number of elements in ir */
-    int *jc;                 /**< Array size N+1 (N is number of columns) with
+    mat_int32_t *jc;         /**< Array size N+1 (N is number of columns) with
                                *  jc[k] being the index into ir/data of the
                                *  first non-zero element for row k.
                                */
@@ -233,21 +231,21 @@ typedef struct mat_sparse_t {
 EXTERN void Mat_GetLibraryVersion(int *major,int *minor,int *release);
 
 /* io.c */
-EXTERN char  *strdup_vprintf(const char *format, va_list ap);
-EXTERN char  *strdup_printf(const char *format, ...);
-EXTERN int    Mat_SetVerbose( int verb, int s );
-EXTERN int    Mat_SetDebug( int d );
-EXTERN void   Mat_Critical( const char *format, ... );
-EXTERN MATIO_NORETURN void Mat_Error( const char *format, ... ) MATIO_NORETURNATTR;
-EXTERN void   Mat_Help( const char *helpstr[] );
-EXTERN int    Mat_LogInit( const char *progname );
+EXTERN char  *strdup_vprintf(const char *format, va_list ap) MATIO_FORMATATTR_VPRINTF;
+EXTERN char  *strdup_printf(const char *format, ...) MATIO_FORMATATTR_PRINTF1;
+EXTERN int    Mat_SetVerbose(int verb, int s);
+EXTERN int    Mat_SetDebug(int d);
+EXTERN void   Mat_Critical(const char *format, ...) MATIO_FORMATATTR_PRINTF1;
+EXTERN MATIO_NORETURN void Mat_Error(const char *format, ...) MATIO_NORETURNATTR MATIO_FORMATATTR_PRINTF1;
+EXTERN void   Mat_Help(const char *helpstr[]);
+EXTERN int    Mat_LogInit(const char *prog_name);
 EXTERN int    Mat_LogClose(void);
 EXTERN int    Mat_LogInitFunc(const char *prog_name,
-                  void (*log_func)(int log_level, char *message) );
-EXTERN int    Mat_Message( const char *format, ... );
-EXTERN int    Mat_DebugMessage( int level, const char *format, ... );
-EXTERN int    Mat_VerbMessage( int level, const char *format, ... );
-EXTERN void   Mat_Warning( const char *format, ... );
+                  void (*log_func)(int log_level, char *message));
+EXTERN int    Mat_Message(const char *format, ...) MATIO_FORMATATTR_PRINTF1;
+EXTERN int    Mat_DebugMessage(int level, const char *format, ...) MATIO_FORMATATTR_PRINTF2;
+EXTERN int    Mat_VerbMessage(int level, const char *format, ...) MATIO_FORMATATTR_PRINTF2;
+EXTERN void   Mat_Warning(const char *format, ...) MATIO_FORMATATTR_PRINTF1;
 EXTERN size_t Mat_SizeOf(enum matio_types data_type);
 EXTERN size_t Mat_SizeOfClass(int class_type);
 
@@ -259,6 +257,7 @@ EXTERN mat_t      *Mat_CreateVer(const char *matname,const char *hdr_str,
 EXTERN int         Mat_Close(mat_t *mat);
 EXTERN mat_t      *Mat_Open(const char *matname,int mode);
 EXTERN const char *Mat_GetFilename(mat_t *mat);
+EXTERN const char *Mat_GetHeader(mat_t *mat);
 EXTERN enum mat_ft Mat_GetVersion(mat_t *mat);
 EXTERN char      **Mat_GetDir(mat_t *mat, size_t *n);
 EXTERN int         Mat_Rewind(mat_t *mat);
@@ -292,23 +291,25 @@ EXTERN matvar_t  *Mat_VarGetStructs(matvar_t *matvar,int *start,int *stride,
                       int *edge,int copy_fields);
 EXTERN matvar_t  *Mat_VarGetStructsLinear(matvar_t *matvar,int start,int stride,
                       int edge,int copy_fields);
-EXTERN void       Mat_VarPrint( matvar_t *matvar, int printdata );
-EXTERN matvar_t  *Mat_VarRead(mat_t *mat, const char *name );
+EXTERN void       Mat_VarPrint(matvar_t *matvar, int printdata);
+EXTERN matvar_t  *Mat_VarRead(mat_t *mat, const char *name);
 EXTERN int        Mat_VarReadData(mat_t *mat,matvar_t *matvar,void *data,
                       int *start,int *stride,int *edge);
 EXTERN int        Mat_VarReadDataAll(mat_t *mat,matvar_t *matvar);
 EXTERN int        Mat_VarReadDataLinear(mat_t *mat,matvar_t *matvar,void *data,
                       int start,int stride,int edge);
-EXTERN matvar_t  *Mat_VarReadInfo( mat_t *mat, const char *name );
-EXTERN matvar_t  *Mat_VarReadNext( mat_t *mat );
-EXTERN matvar_t  *Mat_VarReadNextInfo( mat_t *mat );
+EXTERN matvar_t  *Mat_VarReadInfo(mat_t *mat, const char *name);
+EXTERN matvar_t  *Mat_VarReadNext(mat_t *mat);
+EXTERN matvar_t  *Mat_VarReadNextInfo(mat_t *mat);
 EXTERN matvar_t  *Mat_VarSetCell(matvar_t *matvar,int index,matvar_t *cell);
 EXTERN matvar_t  *Mat_VarSetStructFieldByIndex(matvar_t *matvar,
                       size_t field_index,size_t index,matvar_t *field);
 EXTERN matvar_t  *Mat_VarSetStructFieldByName(matvar_t *matvar,
                       const char *field_name,size_t index,matvar_t *field);
 EXTERN int        Mat_VarWrite(mat_t *mat,matvar_t *matvar,
-                      enum matio_compression compress );
+                      enum matio_compression compress);
+EXTERN int        Mat_VarWriteAppend(mat_t *mat,matvar_t *matvar,
+                      enum matio_compression compress,int dim);
 EXTERN int        Mat_VarWriteInfo(mat_t *mat,matvar_t *matvar);
 EXTERN int        Mat_VarWriteData(mat_t *mat,matvar_t *matvar,void *data,
                       int *start,int *stride,int *edge);

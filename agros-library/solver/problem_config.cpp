@@ -264,7 +264,7 @@ void ProblemConfig::setDefaultValues()
     m_configDefault[TimeConstantTimeSteps] = 10;
     m_configDefault[TimeTotal] = 10.0;
     m_configDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
-    m_configDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
+    m_configDefault[Mesh] = QVariant::fromValue(MeshType_Triangle_QuadFineDivision);
 
     m_configDefault[GridStep] = 0.05;
     m_configDefault[SnapToGrid] = true;
