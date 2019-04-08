@@ -41,7 +41,7 @@ public:
 
     int addEdge(double x1, double y1, double x2, double y2,
                 const map<std::string, string> &boundaries = map<string, string>(),
-                double angle = 0.0, int segments = 3, int curvilinear = 0);
+                double angle = 0.0, int segments = 3);
     int addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
                 const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries);
     int addEdge(PointValue pointStart, PointValue pointEnd, Value valueAngle, int segments, int curvilinear,

@@ -76,8 +76,8 @@ bool MeshGeneratorGMSH::mesh()
             if (readGmshMeshFile())
             {
                 //  remove gmsh temp files
-                QFile::remove(tempProblemFileName() + ".geo");
-                QFile::remove(tempProblemFileName() + ".msh");
+                // QFile::remove(tempProblemFileName() + ".geo");
+                // QFile::remove(tempProblemFileName() + ".msh");
                 QFile::remove(tempProblemFileName() + ".gmsh.out");
                 QFile::remove(tempProblemFileName() + ".gmsh.err");
             }
@@ -420,6 +420,8 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     }
 
     fileGMSH.close();
+
+    fillNeighborStructures();
 
     writeTodealii();
 

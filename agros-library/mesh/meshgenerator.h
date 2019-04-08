@@ -209,9 +209,6 @@ protected:
     /// Fills MeshEdge::neighElem structures for detecting subdomain boundaries etc.
     void fillNeighborStructures();
 
-    /// Updates vertex nodes coordinates according to curvature on edges.
-    void moveNodesOnCurvedEdges();
-
     /// Calculate the counts of elements, edges for a subdomain.
     void getDataCountsForSingleSubdomain(FieldInfo* fieldInfo, int& element_number_count, int& boundary_edge_number_count, int& inner_edge_number_count);
 

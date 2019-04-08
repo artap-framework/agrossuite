@@ -58,7 +58,6 @@ const QString VERSION = "version";
 const QString LIST = "list";
 const QString ANGLE = "angle";
 const QString SEGMENTS = "segments";
-const QString ISCURVILINEAR = "iscurvilinear";
 const QString X = "x";
 const QString Y = "y";
 const QString Z = "Z";
@@ -1311,9 +1310,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         if (angle.number() < 0.0) angle.setNumber(0.0);
         if (angle.number() > 90.0) angle.setNumber(90.0);
 
-        bool isCurvilinear = faceJson[ISCURVILINEAR].toBool(); // (angle.number() > 0);
-
-        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments));
     }
 
     // qWarning() << "faces" << m_scene->faces->count();
@@ -1512,7 +1509,6 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         edgeJson[ID] = iedge;
         edgeJson[ANGLE] = edge->angleValue().toString();
         edgeJson[SEGMENTS] = edge->segments();
-        edgeJson[ISCURVILINEAR] = edge->isCurvilinear();
 
         QJsonArray listJson;
         listJson.append(m_scene->nodes->items().indexOf(edge->nodeStart()));

@@ -3,11 +3,11 @@ cdef extern from "../../agros-python/pythonlab/pygeometry.h":
         PyGeometry()
 
         int addNode(string x, string y) except +
-        int addEdge(string x1, string y1, string x2, string y2, string angle, int segments, int curvilinear, map[string, int] &refinements, map[string, string] &boundaries) except +
-        int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, string angle, int segments, int curvilinear, map[string, int] &refinements, map[string, string] &boundaries) except +
+        int addEdge(string x1, string y1, string x2, string y2, string angle, int segments, map[string, int] &refinements, map[string, string] &boundaries) except +
+        int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, string angle, int segments, map[string, int] &refinements, map[string, string] &boundaries) except +
         int addLabel(string x, string y, double area, map[string, int] &refinements, map[string, int] &orders, map[string, string] &materials) except +
 
-        void modifyEdge(int index, string angle, int segments, int curvilinear, map[string, int] &refinements, map[string, string] &boundaries) except +
+        void modifyEdge(int index, string angle, int segments, map[string, int] &refinements, map[string, string] &boundaries) except +
         void modifyLabel(int index, double area, map[string, int] &refinements, map[string, int] &orders, map[string, string] &materials) except +
 
         int nodesCount()
@@ -67,10 +67,10 @@ cdef class __Geometry__:
         cdef vector[int] nodes_vector = list_to_int_vector(nodes)
         self.thisptr.removeNodes(nodes_vector)
 
-    def add_edge(self, x1, y1, x2, y2, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
+    def add_edge(self, x1, y1, x2, y2, angle = 0.0, segments = 4, refinements = {}, boundaries = {}):
         """Add a new edge according to coordinates and return its index.
 
-        add_edge(x1, y1, x2, y2, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {})
+        add_edge(x1, y1, x2, y2, angle = 0.0, segments = 4, refinements = {}, boundaries = {})
 
         Keyword arguments:
         x1 -- x or r coordinate of start node
@@ -85,9 +85,9 @@ cdef class __Geometry__:
         cdef map[string, string] boundaries_map = dictionary_to_string_map(boundaries)
 
         return self.thisptr.addEdge(str(x1).encode(), str(y1).encode(), str(x2).encode(), str(y2).encode(), str(angle).encode(),
-            segments, curvilinear, refinements_map, boundaries_map)
+            segments, refinements_map, boundaries_map)
 
-    def add_edge_by_nodes(self, start_node_index, end_node_index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
+    def add_edge_by_nodes(self, start_node_index, end_node_index, angle = 0.0, segments = 4, refinements = {}, boundaries = {}):
         """Add a new edge according to indexes of start and end node and return the index of edge.
 
         add_edge(start_node_index, end_node_index, angle = 0.0, segments = 4, refinements = {}, boundaries = {})
@@ -102,12 +102,12 @@ cdef class __Geometry__:
         cdef map[string, int] refinements_map = dictionary_to_int_map(refinements)
         cdef map[string, string] boundaries_map = dictionary_to_string_map(boundaries)
 
-        return self.thisptr.addEdgeByNodes(start_node_index, end_node_index, str(angle).encode(), segments, curvilinear, refinements_map, boundaries_map)
+        return self.thisptr.addEdgeByNodes(start_node_index, end_node_index, str(angle).encode(), segments, refinements_map, boundaries_map)
 
-    def modify_edge(self, index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
+    def modify_edge(self, index, angle = 0.0, segments = 4, refinements = {}, boundaries = {}):
         """Modify parameters of existing edge.
 
-        modify_edge(index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {})
+        modify_edge(index, angle = 0.0, segments = 4, refinements = {}, boundaries = {})
 
         Keyword arguments:
         index -- edge index
@@ -118,7 +118,7 @@ cdef class __Geometry__:
         cdef map[string, int] refinements_map = dictionary_to_int_map(refinements)
         cdef map[string, string] boundaries_map = dictionary_to_string_map(boundaries)
 
-        self.thisptr.modifyEdge(index, str(angle).encode(), segments, curvilinear, refinements_map, boundaries_map)
+        self.thisptr.modifyEdge(index, str(angle).encode(), segments, refinements_map, boundaries_map)
 
     def remove_edges(self, edges = []):
         """Remove edges according to their indexes.

@@ -604,8 +604,6 @@ QString createPythonFromModel()
 
                 if (edge->segments() > 4)
                     str += ", segments = " + QString::number(edge->segments());
-                if (!edge->isCurvilinear())
-                    str += ", curvilinear = False";
             }
 
             // boundaries

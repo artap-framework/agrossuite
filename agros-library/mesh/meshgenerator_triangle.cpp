@@ -799,7 +799,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         {
             SceneFace* sceneEdge = m_problem->scene()->faces->at(triOut.edgemarkerlist[i] - 1);
 
-            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
+            if (sceneEdge->angle() > 0.0) // TODO: isCurv ?
             {
                 int node_indices[2] = { triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1] };
 
@@ -990,8 +990,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
     free(triOut.edgelist);
     free(triOut.edgemarkerlist);
 
-    this->fillNeighborStructures();
-    // this->moveNodesOnCurvedEdges();
+    fillNeighborStructures();
 
     writeTodealii();
 

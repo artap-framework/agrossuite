@@ -163,8 +163,7 @@ void Scene::copy(const Scene *origin)
 
         addFace(new SceneFace(this, nodeStart, nodeEnd,
                               Value(m_problem, originFace->angleValue().text()),
-                              originFace->segments(),
-                              originFace->isCurvilinear()));
+                              originFace->segments()));
     }
 
     // labels
@@ -212,9 +211,9 @@ SceneFace *Scene::addFace(SceneFace *face)
     return face;
 }
 
-SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear)
+SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments)
 {
-    return faces->get(pointStart, pointEnd, angle, segments, isCurvilinear);
+    return faces->get(pointStart, pointEnd, angle, segments);
 }
 
 SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd)

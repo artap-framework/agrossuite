@@ -31,11 +31,11 @@
 #include "solver/problem_config.h"
 #include "solver/field.h"
 
-SceneFace::SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments, bool isCurvilinear)
+SceneFace::SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments)
     : MarkedSceneBasic<SceneBoundary>(scene),
       m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
       m_angle(angle),
-      m_segments(segments), m_isCurvilinear(isCurvilinear)
+      m_segments(segments)
 {
     foreach (FieldInfo* field, m_scene->parentProblem()->fieldInfos())
     {
@@ -195,11 +195,6 @@ void SceneFace::setSegments(int segments)
         m_segments = 4;
     if (m_segments > 20)
         m_segments = 20;
-}
-
-void SceneFace::setCurvilinear(bool isCurvilinear)
-{
-    m_isCurvilinear = isCurvilinear;
 }
 
 double SceneFace::length() const
@@ -381,8 +376,7 @@ void SceneFaceContainer::removeConnectedToNode(SceneNode *node)
                                                                         edge->nodeEnd()->pointValue(),
                                                                         edge->markersKeys(),
                                                                         edge->angleValue(),
-                                                                        edge->segments(),
-                                                                        edge->isCurvilinear()));
+                                                                        edge->segments()));
             */
         }
     }
@@ -405,12 +399,12 @@ SceneFace* SceneFaceContainer::get(SceneFace* edge) const
     return NULL;
 }
 
-SceneFace* SceneFaceContainer::get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const
+SceneFace* SceneFaceContainer::get(const Point &pointStart, const Point &pointEnd, double angle, int segments) const
 {
     foreach (SceneFace *edgeCheck, m_data)
     {
         if (((edgeCheck->nodeStart()->point() == pointStart) && (edgeCheck->nodeEnd()->point() == pointEnd))
-                && ((edgeCheck->angle() - angle) < EPS_ZERO) && (edgeCheck->segments() == segments) && (edgeCheck->isCurvilinear() == isCurvilinear))
+                && ((edgeCheck->angle() - angle) < EPS_ZERO) && (edgeCheck->segments() == segments))
             return edgeCheck;
     }
 
