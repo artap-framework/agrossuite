@@ -303,8 +303,11 @@ void MeshGenerator::writeTodealii()
     dealii::GridTools::delete_unused_vertices(vertices, cells, subcelldata);
     dealii::GridReordering<2>::invert_all_cells_of_negative_grid(vertices, cells);
     dealii::GridReordering<2>::reorder_cells(cells);
-    m_triangulation.create_triangulation_compatibility(vertices, cells, subcelldata);
-    // m_triangulation.create_triangulation(vertices, cells, subcelldata);
+    // swap 2 and 3 nodes
+    for (unsigned int cell=0; cell<cells.size(); ++cell)
+        std::swap(cells[cell].vertices[2], cells[cell].vertices[3]);
+    // create triangulation
+    m_triangulation.create_triangulation(vertices, cells, subcelldata);
 
     dealii::Triangulation<2>::cell_iterator cell = m_triangulation.begin();
     dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation.end();
@@ -349,17 +352,20 @@ void MeshGenerator::writeTodealii()
     }
 }
 
-bool MeshGenerator::prepare()
+bool MeshGenerator::prepare(bool loops)
 {
-    try
+    if (loops)
     {
-        m_problem->scene()->invalidate();
-        m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
-    }
-    catch (AgrosMeshException& ame)
-    {
-        Agros::log()->printError(tr("Mesh generator"), ame.toString());
-        return false;
+        try
+        {
+            m_problem->scene()->invalidate();
+            m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
+        }
+        catch (AgrosMeshException& ame)
+        {
+            Agros::log()->printError(tr("Mesh generator"), ame.toString());
+            return false;
+        }
     }
 
     QFile::remove(tempProblemFileName() + ".msh");

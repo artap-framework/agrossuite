@@ -534,6 +534,8 @@ MeshGeneratorTriangle::MeshGeneratorTriangle(ProblemBase *problem)
 
 bool MeshGeneratorTriangle::mesh()
 {
+    Agros::log()->printMessage(tr("Mesh generator"), tr("Triangle"));
+
     // create triangle files
     if (prepare() && writeToTriangle())
     {

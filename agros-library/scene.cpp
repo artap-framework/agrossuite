@@ -348,7 +348,7 @@ void Scene::clear()
     m_crossings.clear();
 
     if (!m_loopsInfo.isNull())
-        m_loopsInfo->processPolygonTriangles();
+        m_loopsInfo->processPolygonTriangles(true);
 
     invalidate();
 }
@@ -430,7 +430,7 @@ void Scene::invalidate()
     findNumberOfConnectedNodeEdges();
     findCrossings();
 
-    if (!m_loopsInfo.isNull()) m_loopsInfo->processPolygonTriangles();
+    if (!m_loopsInfo.isNull()) m_loopsInfo->processPolygonTriangles(true);
 }
 
 void Scene::fieldsChange()

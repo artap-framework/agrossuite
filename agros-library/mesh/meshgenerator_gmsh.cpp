@@ -38,18 +38,7 @@
 #include "solver/problem_config.h"
 #include "util/loops.h"
 
-std::string exec(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
-}
+#include <deal.II/grid/grid_in.h>
 
 MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemBase *problem)
     : MeshGenerator(problem), m_isError(false)
@@ -58,8 +47,10 @@ MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemBase *problem)
 
 bool MeshGeneratorGMSH::mesh()
 {
+    Agros::log()->printMessage(tr("Mesh generator"), tr("GMSH"));
+
     // create gmsh files
-    if (prepare() && writeToGmsh())
+    if (prepare(true) && writeToGmsh())
     {
         QString gmshBinary = "gmsh";
         if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
@@ -67,17 +58,29 @@ bool MeshGeneratorGMSH::mesh()
         if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh"))
             gmshBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh";
 
-        QString triangleGMSH = QString("%1 -2 \"%2.geo\"").arg(gmshBinary).arg(tempProblemFileName());
+        QString triangleGMSH = QString("%1 -format msh22 -2 \"%2.geo\"").arg(gmshBinary).arg(tempProblemFileName());
 
-        try
+
+        QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
+        process->setStandardOutputFile(tempProblemFileName() + ".gmsh.out");
+        process->setStandardErrorFile(tempProblemFileName() + ".gmsh.err");
+        process->start(triangleGMSH);
+
+        if (!process->waitForStarted())
         {
-            exec(triangleGMSH.toStdString().c_str());
+            Agros::log()->printError(tr("Mesh generator"), tr("Could not start GMSH"));
+            process->kill();
+            process->close();
 
-            if (readGmshMeshFile())
+            return false;
+        }
+
+        if (process->waitForFinished(-1))
+        {
+            if (process->exitCode() == 0 && readGmshMeshFile())
             {
+
                 //  remove gmsh temp files
-                // QFile::remove(tempProblemFileName() + ".geo");
-                // QFile::remove(tempProblemFileName() + ".msh");
                 QFile::remove(tempProblemFileName() + ".gmsh.out");
                 QFile::remove(tempProblemFileName() + ".gmsh.err");
             }
@@ -92,9 +95,9 @@ bool MeshGeneratorGMSH::mesh()
             }
 
         }
-        catch (std::runtime_error e)
+        else
         {
-            QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out").trimmed();
+            QString solverOutputMessage = readFileContent(tempProblemDir() + "/gmsh.out").trimmed();
             if (!solverOutputMessage.isEmpty())
             {
                 solverOutputMessage.insert(0, "\n");
@@ -102,12 +105,13 @@ bool MeshGeneratorGMSH::mesh()
                 std::cerr << solverOutputMessage.toStdString() << std::endl;
             }
 
-            QString errorMessage = readFileContent(tempProblemDir() + "/solver.err");
+            QString errorMessage = readFileContent(tempProblemDir() + "/gmsh.err");
             errorMessage.insert(0, "\n");
             errorMessage.append("\n");
-            Agros::log()->printError(tr("External solver"), e.what());
+
             Agros::log()->printError(tr("External solver"), errorMessage);
         }
+
     }
 
     return !m_isError;
@@ -195,51 +199,51 @@ bool MeshGeneratorGMSH::writeToGmsh()
     }
 
     /*
-    // holes
-    int holesCount = 0;
-    foreach (SceneLabel *label, Agros::scene()->labels->items())
-        if (label->markersCount() == 0)
-            holesCount++;
+                    // holes
+                    int holesCount = 0;
+                    foreach (SceneLabel *label, Agros::scene()->labels->items())
+                        if (label->markersCount() == 0)
+                            holesCount++;
 
-    QString outHoles = QString("%1\n").arg(holesCount);
-    holesCount = 0;
-    foreach (SceneLabel *label, Agros::scene()->labels->items())
-    {
-        if (label->markersCount() == 0)
-        {
-            outHoles += QString("%1  %2  %3\n").
-                    arg(holesCount).
-                    // arg(Agros::scene()->labels->items().indexOf(label) + 1).
-                    arg(label->point().x, 0, 'f', 10).
-                    arg(label->point().y, 0, 'f', 10);
+                    QString outHoles = QString("%1\n").arg(holesCount);
+                    holesCount = 0;
+                    foreach (SceneLabel *label, Agros::scene()->labels->items())
+                    {
+                        if (label->markersCount() == 0)
+                        {
+                            outHoles += QString("%1  %2  %3\n").
+                                    arg(holesCount).
+                                    // arg(Agros::scene()->labels->items().indexOf(label) + 1).
+                                    arg(label->point().x, 0, 'f', 10).
+                                    arg(label->point().y, 0, 'f', 10);
 
-            holesCount++;
-        }
-    }
+                            holesCount++;
+                        }
+                    }
 
-    // labels
-    QString outLabels;
-    int labelsCount = 0;
-    foreach (SceneLabel *label, Agros::scene()->labels->items())
-    {
-        if (label->markersCount() > 0)
-        {
-            outLabels += QString("%1  %2  %3  %4  %5\n").
-                    arg(labelsCount).
-                    arg(label->point().x, 0, 'f', 10).
-                    arg(label->point().y, 0, 'f', 10).
-                    // arg(labelsCount + 1). // triangle returns zero region number for areas without marker, markers must start from 1
-                    arg(Agros::scene()->labels->items().indexOf(label) + 1).
-                    arg(label->area());
-            labelsCount++;
-        }
-    }
+                    // labels
+                    QString outLabels;
+                    int labelsCount = 0;
+                    foreach (SceneLabel *label, Agros::scene()->labels->items())
+                    {
+                        if (label->markersCount() > 0)
+                        {
+                            outLabels += QString("%1  %2  %3  %4  %5\n").
+                                    arg(labelsCount).
+                                    arg(label->point().x, 0, 'f', 10).
+                                    arg(label->point().y, 0, 'f', 10).
+                                    // arg(labelsCount + 1). // triangle returns zero region number for areas without marker, markers must start from 1
+                                    arg(Agros::scene()->labels->items().indexOf(label) + 1).
+                                    arg(label->area());
+                            labelsCount++;
+                        }
+                    }
 
-    out << outHoles;
-    outLabels.insert(0, QString("%1 1\n").
-                     arg(labelsCount)); // - holes
-    out << outLabels;
-    */
+                    out << outHoles;
+                    outLabels.insert(0, QString("%1 1\n").
+                                     arg(labelsCount)); // - holes
+                    out << outLabels;
+                    */
 
     //    try
     //    {
@@ -360,7 +364,7 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     edgeList.clear();
     elementList.clear();
 
-    int k;
+    int k = -1;
 
     QFile fileGMSH(tempProblemFileName() + ".msh");
     if (!fileGMSH.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -375,41 +379,66 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     inGMSH.readLine();
     inGMSH.readLine();
     inGMSH.readLine();
-    sscanf(inGMSH.readLine().toLatin1().data(), "%i", &k);
+    k = inGMSH.readLine().toInt();
+    // sscanf(inGMSH.readLine().toLatin1().data(), "%i", &k);
     for (int i = 0; i < k; i++)
     {
-        int n;
-        double x, y, z;
+        QString s = inGMSH.readLine();
+        QStringList data = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 
-        sscanf(inGMSH.readLine().toLatin1().data(), "%i %lf %lf %lf", &n, &x, &y, &z);
+        // int n = data[0].toInt();
+        double x = data[1].toDouble();
+        double y = data[2].toDouble();
+        // double z = data[3].toDouble();
+
         nodeList.append(Point(x, y));
     }
 
     // elements
     inGMSH.readLine();
     inGMSH.readLine();
-    sscanf(inGMSH.readLine().toLatin1().data(), "%i", &k);
+    k = inGMSH.readLine().toInt();
     QSet<int> labelMarkersCheck;
     for (int i = 0; i < k; i++)
     {
-        int quad[4];
-        int n, type, phys, part, marker;
+        QString s = inGMSH.readLine();
+        QStringList data = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 
-        if (sscanf(inGMSH.readLine().toLatin1().data(), "%i %i %i %i %i %i %i %i %i",
-                   &n, &type, &phys, &part, &marker, &quad[0], &quad[1], &quad[2], &quad[3]))
+        // int n = data[0].toInt();
+        int type = data[1].toInt();
+        // int phys = data[2].toInt();
+        // int part = data[3].toInt();
+        int marker = data[4].toInt();
+        // edge
+        if (type == 1)
         {
-            // edge
-            if (type == 1)
-                edgeList.append(MeshEdge(quad[0] - 1, quad[1] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
-            // triangle
-            if (type == 2)
-                elementList.append(MeshElement(quad[0] - 1, quad[1] - 1, quad[2] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
-            // quad
-            if (type == 3)
-                elementList.append(MeshElement(quad[0] - 1, quad[1] - 1, quad[2] - 1, quad[3] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
-        }
-        /*
+            int quad0 = data[5].toInt();
+            int quad1 = data[6].toInt();
 
+            edgeList.append(MeshEdge(quad0 - 1, quad1 - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+        }
+        // triangle
+        if (type == 2)
+        {
+            int quad0 = data[5].toInt();
+            int quad1 = data[6].toInt();
+            int quad2 = data[7].toInt();
+
+            elementList.append(MeshElement(quad0 - 1, quad1 - 1, quad2 - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+        }
+        // quad
+        if (type == 3)
+        {
+            int quad0 = data[5].toInt();
+            int quad1 = data[6].toInt();
+            int quad2 = data[7].toInt();
+            int quad3 = data[8].toInt();
+
+            elementList.append(MeshElement(quad0 - 1, quad1 - 1, quad2 - 1, quad3 - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+        }
+
+
+        /*
         if (marker == 0)
         {
             Agros::log()->printError(tr("Mesh generator"), tr("Some areas have no label marker"));
@@ -424,6 +453,92 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     fillNeighborStructures();
 
     writeTodealii();
+    /*
+    QList<QList<QPair<int, int> > > edges_between_elements;
+
+    // elements
+    std::vector<dealii::CellData<2> > cells;
+    for (int element_i = 0; element_i < elementList.count(); element_i++)
+    {
+        edges_between_elements.push_back(QList<QPair<int, int> > ());
+    }
+
+    // boundary markers
+    dealii::SubCellData subcelldata;
+    for (int edge_i = 0; edge_i < edgeList.count(); edge_i++)
+    {
+        if (edgeList[edge_i].marker == -1)
+            continue;
+
+        dealii::CellData<1> cell_data;
+        cell_data.vertices[0] = edgeList[edge_i].node[0];
+        cell_data.vertices[1] = edgeList[edge_i].node[1];
+
+        if (edgeList[edge_i].neighElem[1] != -1)
+        {
+            edges_between_elements[edgeList[edge_i].neighElem[0]].push_back(QPair<int, int>(edgeList[edge_i].neighElem[1], edgeList[edge_i].marker + 1));
+            edges_between_elements[edgeList[edge_i].neighElem[1]].push_back(QPair<int, int>(edgeList[edge_i].neighElem[0], edgeList[edge_i].marker + 1));
+
+            // do not push the boundary line
+            continue;
+        }
+    }
+
+    dealii::GridIn<2> gridin;
+    gridin.attach_triangulation(m_triangulation);
+    std::ifstream f(tempProblemFileName().toStdString() + ".msh");
+    gridin.read_msh(f);
+
+    // m_triangulation.create_triangulation_compatibility(vertices, cells, subcelldata);
+    // m_triangulation.create_triangulation(vertices, cells, subcelldata);
+
+    dealii::Triangulation<2>::cell_iterator cell = m_triangulation.begin();
+    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation.end();
+
+    int cell_idx = 0;
+    for(; cell != end_cell; ++cell)
+    {
+        // todo: probably active is not neccessary
+        if(cell->active())
+        {
+            for(int neigh_i = 0; neigh_i < dealii::GeometryInfo<2>::faces_per_cell; neigh_i++)
+            {
+                if(cell->face(neigh_i)->boundary_id() == dealii::numbers::internal_face_boundary_id)
+                {
+                    cell->face(neigh_i)->set_user_index(0);
+                }
+                else
+                {
+                    cell->face(neigh_i)->set_user_index(cell->face(neigh_i)->boundary_id());
+                    // std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                }
+
+                int neighbor_cell_idx = cell->neighbor_index(neigh_i);
+                if(neighbor_cell_idx != -1)
+                {
+                    assert(cell->face(neigh_i)->user_index() == 0);
+                    QPair<int, int> neighbor_edge_pair;
+                    foreach(neighbor_edge_pair, edges_between_elements[cell_idx])
+                    {
+                        if(neighbor_edge_pair.first == neighbor_cell_idx)
+                        {
+                            cell->face(neigh_i)->set_user_index(neighbor_edge_pair.second);
+                            //std::cout << "cell cell_idx: " << cell_idx << ", face adj to " << neighbor_cell_idx << " set to " << neighbor_edge_pair.second << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                            //dealii::TriaAccessor<1,2,2> line = cell->line(neigh_i);
+                            //cell->neighbor()
+                        }
+                    }
+                }
+            }
+            cell_idx++;
+        }
+    }
+
+
+    */
+
+
+
 
     nodeList.clear();
     edgeList.clear();

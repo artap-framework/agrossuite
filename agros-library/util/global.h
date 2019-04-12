@@ -39,6 +39,7 @@ public:
     Agros(const Agros &);
     Agros & operator = (const Agros &);
     Agros(QSharedPointer<Log> log);
+    ~Agros();
 
     static void createSingleton(QSharedPointer<Log> log);
     static Agros* singleton();

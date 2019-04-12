@@ -213,6 +213,18 @@ QString datadir()
 
     // linux
 #ifdef Q_WS_X11 
+    // solver DEK
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/agros2d/resources/templates/empty.tpl"))
+        return QString::fromLatin1(getenv("PWD")) + "/agros2d";
+
+    // gui and solver
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath();
+
+    // system installation
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath() + "/../share/agros";
+
     // local installation
     // python
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
@@ -225,18 +237,6 @@ QString datadir()
         return QString::fromLatin1("/usr/local/lib/python3.6/site-packages/agrossuite/");
     else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
         return QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/");
-
-    // solver DEK
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../agros2d/resources/templates/empty.tpl"))
-        return QString::fromLatin1(getenv("PWD")) + "/../agros2d";
-
-    // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-
-    // system installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath() + "/../share/agros";
 #endif
 
     qCritical() << "Datadir not found.";

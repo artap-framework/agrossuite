@@ -177,7 +177,9 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 #endif
 }
 
-
+Agros::~Agros()
+{
+}
 
 void Agros::clear()
 {    

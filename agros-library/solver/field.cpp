@@ -41,7 +41,6 @@ FieldInfo::FieldInfo(QString fieldId)
     try
     {
         m_plugin = Agros::loadPlugin(m_fieldId);
-
     }
     catch (AgrosPluginException &e)
     {
