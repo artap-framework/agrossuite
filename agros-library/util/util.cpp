@@ -207,7 +207,7 @@ QString datadir()
 #ifdef Q_WS_WIN
     // local installation
     // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 #endif
 

@@ -58,7 +58,7 @@ QStringList pluginList()
 
     if (isPluginDir(datadir() + "/libs/"))
         pluginPath = datadir() + "/libs/";
-    else if (isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
+    else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
     if (pluginPath.isEmpty())
