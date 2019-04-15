@@ -218,11 +218,11 @@ QString datadir()
         return QString::fromLatin1(getenv("PWD")) + "/agros2d";
 
     // gui and solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 
     // system installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath() + "/../share/agros";
 
     // local installation

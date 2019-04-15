@@ -53,9 +53,9 @@ bool MeshGeneratorGMSH::mesh()
     if (prepare(true) && writeToGmsh())
     {
         QString gmshBinary = "gmsh";
-        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
+        if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
             gmshBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe\"";
-        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh"))
+        if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh"))
             gmshBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh";
 
         QString triangleGMSH = QString("%1 -format msh22 -2 \"%2.geo\"").arg(gmshBinary).arg(tempProblemFileName());
