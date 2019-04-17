@@ -533,7 +533,7 @@ class TestFieldIntegrals(AgrosTestCase):
         computation = self.problem.computation()
         computation.solve()
         solution = computation.solution('electrostatic')
-        self.assertAlmostEqual(solution.volume_integrals([1])['V'], self.volume, 3)
+        self.assertAlmostEqual(solution.volume_integrals([1])['V'], self.volume, 2)
 
 class TestFieldAdaptivityInfo(AgrosTestCase):
     def setUp(self):

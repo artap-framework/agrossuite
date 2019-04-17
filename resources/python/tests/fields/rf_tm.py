@@ -141,23 +141,23 @@ class TestRFTMHarmonicAxisymmetric(AgrosTestCase):
         
         self.value_test("Magnetic field", point["H"], 0.53836)
         self.value_test("Magnetic field - real", point["Hr"], 0.538097)
-        self.value_test("Magnetic field - imag", point["Hi"], 0.016823)
+        self.value_test("Magnetic field - imag", point["Hi"], -0.002103)
         
         self.value_test("Magnetic flux density", point["B"], 6.765228e-7)
         self.value_test("Magnetic flux density - real", point["Br"], 6.761924e-7)
-        self.value_test("Magnetic flux density - imag", point["Bi"], 2.114032e-8)
+        self.value_test("Magnetic flux density - imag", point["Bi"], -2.6432912e-9)
         
         self.value_test("Electric field", point["E"], 274.023386)
-        self.value_test("Electric field r component - real", point["Err"], 122.830044)
+        self.value_test("Electric field r component - real", point["Err"], 128.11464)
         self.value_test("Electric field r component - imag", point["Eir"], 221.565147)
         self.value_test("Electric field z component - real", point["Erz"], -103.385085)
-        self.value_test("Electric field z component - imag", point["Eiz"], -14.899843)
+        self.value_test("Electric field z component - imag", point["Eiz"], -9.8225001)
         
         self.value_test("Electric displacement", point["D"], 2.4447e-9)
-        self.value_test("Electric displacement r component - real", point["Drr"], 1.08756e-9)
+        self.value_test("Electric displacement r component - real", point["Drr"], 1.13432710e-9)
         self.value_test("Electric displacement r component - imag", point["Dir"], 1.961779e-9)
         self.value_test("Electric displacement z component - real", point["Drz"],-9.15391e-10)
-        self.value_test("Electric displacement z component - imag", point["Diz"], -1.31926e-10)
+        self.value_test("Electric displacement z component - imag", point["Diz"], -8.696841e-11)
         
         self.value_test("Poynting vector r component", point["Nr"], 27.940976)
         self.value_test("Poynting vector z component", point["Nz"], 34.895617)    

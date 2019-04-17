@@ -152,7 +152,7 @@ class TestFlowAxisymmetric(AgrosTestCase):
         self.value_test("Pressure force r", surface["Fpx"], 0.282427 + 0.006718)
         self.value_test("Pressure force z", surface["Fpy"], 0.224571 - 0.016407)
         self.value_test("Viscous force r", surface["Fvx"], -0.00737211877987858)
-        self.value_test("Viscous force z", surface["Fvy"], 0.01639255859965609)
+        self.value_test("Viscous force z", surface["Fvy"], 0.015784774172784437)
         self.value_test("Total force r", surface["Fx"], 0.28079171958463456)
         self.value_test("Total force z", surface["Fy"], 0.22369639346087752)
 

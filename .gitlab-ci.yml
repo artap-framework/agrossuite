@@ -62,4 +62,4 @@ build:
     # test
     - cd resources/python
     - cmake .
-    - ctest 
+    - ctest --output-on-failure

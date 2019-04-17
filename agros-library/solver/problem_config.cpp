@@ -43,6 +43,8 @@
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem),
     m_parameters(new ProblemParameters()), m_functions(new ProblemFunctions())
 {
+    // qInfo() << "qRegisterMetaType<StringToDoubleMap>" << qRegisterMetaType<StringToDoubleMap>("ParametersType");
+    // qInfo() << "qRegisterMetaType<Value>" << qRegisterMetaType<Value>("Value");
     qRegisterMetaType<StringToDoubleMap>("ParametersType");
     qRegisterMetaType<Value>("Value");
 
