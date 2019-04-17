@@ -92,12 +92,6 @@ KSPType solver(LinearSystemPETScArgs *linearSystem, std::string solver)
         return KSPPIPECG;
     else if (solver == "cgne")
         return   KSPCGNE;
-    else if (solver == "nash")
-        return KSPNASH;
-    else if (solver == "stcg")
-        return KSPSTCG;
-    else if (solver == "gltr")
-        return KSPGLTR;
     else if (solver == "gmres")
         return KSPGMRES;
     else if (solver == "fgmres")
@@ -224,14 +218,6 @@ PCType preConditioner(LinearSystemPETScArgs *linearSystem, std::string preCondit
         return PCSVD;
     else if (preConditioner == "gamg")
         return PCGAMG;
-    else if (preConditioner == "sacusp")
-        return PCSACUSP; /* these four run on NVIDIA GPUs using CUSP */
-    else if (preConditioner == "sacusppoly")
-        return PCSACUSPPOLY;
-    else if (preConditioner == "bicgstabcusp")
-        return PCBICGSTABCUSP;
-    else if (preConditioner == "ainvcusp")
-        return PCAINVCUSP;
     else if (preConditioner == "bddc")
         return PCBDDC;
     else
