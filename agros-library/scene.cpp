@@ -120,6 +120,7 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 {    
+
 }
 
 Scene::~Scene()

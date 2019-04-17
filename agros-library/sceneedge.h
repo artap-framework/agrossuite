@@ -112,8 +112,6 @@ private:
     int m_rightLabelIdx;
 };
 
-Q_DECLARE_METATYPE(SceneFace *)
-
 // *************************************************************************************************************************************
 
 class SceneFaceContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneFace>

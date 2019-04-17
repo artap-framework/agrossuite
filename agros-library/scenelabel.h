@@ -61,8 +61,6 @@ private:
     double m_area;
 };
 
-Q_DECLARE_METATYPE(SceneLabel *)
-
 class SceneLabelContainer : public MarkedSceneBasicContainer<SceneMaterial, SceneLabel>
 {
 public:
