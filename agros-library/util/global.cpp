@@ -102,7 +102,7 @@ void initSingleton()
 }
 
 void clearAgros2DCache()
-{
+{    
     QFileInfoList listCache = QFileInfo(cacheProblemDir()).absoluteDir().entryInfoList();
     QFileInfoList listTemp = QFileInfo(tempProblemDir()).absoluteDir().entryInfoList();
 
@@ -188,7 +188,7 @@ void Agros::clear()
 
     delete m_singleton.data()->m_configComputer;
 
-    // remove temp and cache plugins
+    // remove temp and cache plugins    
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
 }

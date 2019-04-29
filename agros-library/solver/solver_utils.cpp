@@ -298,7 +298,7 @@ void ProblemSolver::init()
 
 void ProblemSolver::solveProblem()
 {
-    QList<FieldInfo *> fieldInfosSorted = m_computation->fieldInfos().values();
+    QStringList fieldInfosSorted = m_computation->fieldInfos().keys();
 
     // sort fields (very small arrays -> sufficiently fast)
     bool swapped = false;
@@ -309,8 +309,8 @@ void ProblemSolver::solveProblem()
         {
             if (couplingInfo->couplingType() == CouplingType_Weak)
             {
-                int sourceIndex = fieldInfosSorted.indexOf(couplingInfo->sourceField());
-                int targetIndex = fieldInfosSorted.indexOf(couplingInfo->targetField());
+                int sourceIndex = fieldInfosSorted.indexOf(couplingInfo->sourceFieldId());
+                int targetIndex = fieldInfosSorted.indexOf(couplingInfo->targetFieldId());
 
                 if (targetIndex < sourceIndex)
                 {
@@ -322,21 +322,21 @@ void ProblemSolver::solveProblem()
     }
     while (swapped);
 
-    foreach (FieldInfo *targetfieldInfo, fieldInfosSorted)
+    foreach (QString targetfieldId, fieldInfosSorted)
     {
         // frequency
-        SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
+        SolverDeal *solverDeal = m_solverDeal[targetfieldId];
 
         // look for coupling sources
-        foreach (FieldInfo *sourceFieldInfo, fieldInfosSorted)
+        foreach (QString sourceFieldId, fieldInfosSorted)
         {
-            if (m_computation->hasCoupling(sourceFieldInfo, targetfieldInfo))
+            if (m_computation->hasCoupling(sourceFieldId, targetfieldId))
             {
-                FieldSolutionID solutionID(sourceFieldInfo->fieldId(),
-                                           m_computation->solutionStore()->lastTimeStep(sourceFieldInfo),
-                                           m_computation->solutionStore()->lastAdaptiveStep(sourceFieldInfo));
+                FieldSolutionID solutionID(sourceFieldId,
+                                           m_computation->solutionStore()->lastTimeStep(m_computation->fieldInfo(sourceFieldId)),
+                                           m_computation->solutionStore()->lastAdaptiveStep(m_computation->fieldInfo(sourceFieldId)));
 
-                solverDeal->setCouplingSource(sourceFieldInfo->fieldId(),
+                solverDeal->setCouplingSource(sourceFieldId,
                                               m_computation->solutionStore()->multiArray(solutionID));
             }
         }

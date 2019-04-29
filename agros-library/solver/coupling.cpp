@@ -303,80 +303,6 @@ QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
 
     assert(0);
     return "";
-
-    //    foreach (Item item, m_couplings)
-    //    {
-    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
-    //            return item.name;
-    //    }
-}
-
-bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField,
-                                       CouplingType couplingType) const
-{
-    foreach (PluginCoupling *coupling, m_couplingJson)
-    {
-        if (coupling->source == sourceField->fieldId() && coupling->target == targetField->fieldId())
-        {
-            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
-            {
-                foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
-                {
-                    if (item.analysis == targetField->analysisType() && item.analysisSource == sourceField->analysisType() && item.coupling == couplingType)
-                        return true;
-                }
-            }
-        }
-    }
-
-    return false;
-
-    //    foreach (Item item, m_couplings)
-    //    {
-    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
-    //        {
-    //            foreach (Item::Analysis analysis, item.analyses)
-    //            {
-    //                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType()
-    //                        && analysis.couplingType == couplingType)
-    //                    return true;
-    //            }
-    //        }
-    //    }
-}
-
-bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const
-{
-    foreach (PluginCoupling *coupling, m_couplingJson)
-    {
-        if (coupling->source == sourceField->fieldId() && coupling->target == targetField->fieldId())
-        {
-            foreach (PluginWeakFormAnalysis weakFormAnalysisVolume, coupling->weakFormAnalysisVolume)
-            {
-                foreach (PluginWeakFormAnalysis::Item item, weakFormAnalysisVolume.items)
-                {
-                    if (item.analysis == targetField->analysisType() && item.analysisSource == sourceField->analysisType())
-                        return true;
-                }
-            }
-        }
-    }
-
-    return false;
-
-    //    foreach (Item item, m_couplings)
-    //    {
-    //        if (item.source == sourceField->fieldId() && item.target == targetField->fieldId())
-    //        {
-    //            foreach (Item::Analysis analysis, item.analyses)
-    //            {
-    //                if (analysis.sourceAnalysisType == sourceField->analysisType() && analysis.targetAnalysisType == targetField->analysisType())
-    //                    return true;
-    //            }
-    //        }
-    //    }
-
-    //    return false;
 }
 
 bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
@@ -399,21 +325,6 @@ bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceA
     }
 
     return false;
-
-    //    foreach (Item item, m_couplings)
-    //    {
-    //        if (item.source == sourceField && item.target == targetField)
-    //        {
-    //            foreach (Item::Analysis analysis, item.analyses)
-    //            {
-    //                if (analysis.sourceAnalysisType == sourceAnalysis && analysis.targetAnalysisType == targetAnalysis
-    //                        && analysis.couplingType == couplingType)
-    //                    return true;
-    //            }
-    //        }
-    //    }
-
-    //    return false;
 }
 
 bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField,
@@ -435,27 +346,13 @@ bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField,
     }
 
     return false;
-
-    //    foreach (Item item, m_couplings)
-    //    {
-    //        if (item.source == sourceField && item.target == targetField)
-    //        {
-    //            foreach (Item::Analysis analysis, item.analyses)
-    //            {
-    //                if (analysis.couplingType == couplingType)
-    //                    return true;
-    //            }
-    //        }
-    //    }
-
-    //    return false;
 }
 
-CouplingInfo::CouplingInfo(FieldInfo *sourceField,
-                           FieldInfo *targetField,
+CouplingInfo::CouplingInfo(QString sourceId,
+                           QString targetId,
                            CouplingType couplingType) :
-    m_sourceField(sourceField),
-    m_targetField(targetField),
+    m_sourceFieldId(sourceId),
+    m_targetFieldId(targetId),
     m_couplingType(couplingType)
 {    
 
@@ -477,10 +374,7 @@ CouplingType CouplingInfo::couplingType() const
 
 QString CouplingInfo::couplingId() const
 {
-    assert(m_sourceField);
-    assert(m_targetField);
-
-    return m_sourceField->fieldId() + "-" + m_targetField->fieldId();
+    return m_sourceFieldId + "-" + m_targetFieldId;
 }
 
 QString CouplingInfo::name() const
