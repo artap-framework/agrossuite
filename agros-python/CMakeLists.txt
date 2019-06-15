@@ -8,8 +8,8 @@ ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX14)
 
 # Python
-set(Python_ADDITIONAL_VERSIONS 3.4)
-FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
+# set(Python_ADDITIONAL_VERSIONS REQUIRED)
+FIND_PACKAGE(PythonLibs REQUIRED)
 IF(MSVC)
   get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
 ENDIF()
@@ -17,7 +17,7 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 # cython
 # message("Cython files - agros")
-# message("\tcython agros.pyx")
+# message("\tcython3 agros.pyx")
 add_custom_target(CYTHON_AGROS ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.cpp)
 
 IF(WIN32)
