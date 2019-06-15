@@ -28,17 +28,17 @@ extern "C"
 #include "../3rdparty/triangle/triangle.h"
 }
 
-class MeshGeneratorTriangleExternal : public MeshGenerator
-{    
-public:
-    MeshGeneratorTriangleExternal(Computation *computation);
+//class MeshGeneratorTriangleExternal : public MeshGenerator
+//{
+//public:
+//    MeshGeneratorTriangleExternal(Computation *computation);
 
-    virtual bool mesh();
+//    virtual bool mesh();
 
-private:
-    bool writeToTriangle();
-    bool readTriangleMeshFormat();
-};
+//private:
+//    bool writeToTriangle();
+//    bool readTriangleMeshFormat();
+//};
 
 class MeshGeneratorTriangle : public MeshGenerator
 {

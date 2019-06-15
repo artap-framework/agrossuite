@@ -3,31 +3,29 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2017   Christopher C. Hulbert
- *
+ * Copyright (c) 2005-2019, Christopher C. Hulbert
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <stdlib.h>
@@ -54,7 +52,7 @@
 mat_t *
 Mat_Create4(const char* matname)
 {
-    FILE *fp = NULL;
+    FILE *fp;
     mat_t *mat = NULL;
 
     fp = fopen(matname,"w+b");
@@ -78,7 +76,9 @@ Mat_Create4(const char* matname)
     mat->bof           = 0;
     mat->next_index    = 0;
     mat->num_datasets  = 0;
+#if defined(MAT73) && MAT73
     mat->refs_id       = -1;
+#endif
     mat->dir           = NULL;
 
     Mat_Rewind(mat);
@@ -106,7 +106,7 @@ Mat_VarWrite4(mat_t *mat,matvar_t *matvar)
         mat_int32_t namelen;
     } Fmatrix;
 
-    mat_int32_t nmemb = 1, i;
+    mat_int32_t nelems = 1, i;
     Fmatrix x;
 
     if ( NULL == mat || NULL == matvar || NULL == matvar->name || matvar->rank != 2 )
@@ -174,7 +174,7 @@ Mat_VarWrite4(mat_t *mat,matvar_t *matvar)
             for ( i = 0; i < matvar->rank; i++ ) {
                 mat_int32_t dim;
                 dim = (mat_int32_t)matvar->dims[i];
-                nmemb *= dim;
+                nelems *= dim;
             }
 
             x.mrows = (mat_int32_t)matvar->dims[0];
@@ -182,22 +182,22 @@ Mat_VarWrite4(mat_t *mat,matvar_t *matvar)
             x.imagf = matvar->isComplex ? 1 : 0;
             fwrite(&x, sizeof(Fmatrix), 1, (FILE*)mat->fp);
             fwrite(matvar->name, sizeof(char), x.namelen, (FILE*)mat->fp);
-            if (matvar->isComplex) {
+            if ( matvar->isComplex ) {
                 mat_complex_split_t *complex_data;
 
                 complex_data = (mat_complex_split_t*)matvar->data;
-                fwrite(complex_data->Re, matvar->data_size, nmemb, (FILE*)mat->fp);
-                fwrite(complex_data->Im, matvar->data_size, nmemb, (FILE*)mat->fp);
+                fwrite(complex_data->Re, matvar->data_size, nelems, (FILE*)mat->fp);
+                fwrite(complex_data->Im, matvar->data_size, nelems, (FILE*)mat->fp);
             }
             else {
-                fwrite(matvar->data, matvar->data_size, nmemb, (FILE*)mat->fp);
+                fwrite(matvar->data, matvar->data_size, nelems, (FILE*)mat->fp);
             }
             break;
         case MAT_C_SPARSE:
         {
             mat_sparse_t* sparse;
             double tmp;
-            int i, j;
+            int j;
             size_t stride = Mat_SizeOf(matvar->data_type);
 #if !defined(EXTENDED_SPARSE)
             if ( MAT_T_DOUBLE != matvar->data_type )
@@ -280,34 +280,34 @@ Mat_VarWrite4(mat_t *mat,matvar_t *matvar)
  * @endif
  */
 void
-Read4(mat_t *mat,matvar_t *matvar)
+Mat_VarRead4(mat_t *mat,matvar_t *matvar)
 {
-    unsigned int N;
+    size_t nelems = 1;
 
+    SafeMulDims(matvar, &nelems);
     (void)fseek((FILE*)mat->fp,matvar->internal->datapos,SEEK_SET);
 
-    N = matvar->dims[0]*matvar->dims[1];
     switch ( matvar->class_type ) {
         case MAT_C_DOUBLE:
             matvar->data_size = sizeof(double);
-            matvar->nbytes    = N*matvar->data_size;
+            SafeMul(&matvar->nbytes, nelems, matvar->data_size);
             if ( matvar->isComplex ) {
                 mat_complex_split_t *complex_data = ComplexMalloc(matvar->nbytes);
                 if ( NULL != complex_data ) {
                     matvar->data = complex_data;
-                    ReadDoubleData(mat, (double*)complex_data->Re, matvar->data_type, N);
-                    ReadDoubleData(mat, (double*)complex_data->Im, matvar->data_type, N);
+                    ReadDoubleData(mat, (double*)complex_data->Re, matvar->data_type, nelems);
+                    ReadDoubleData(mat, (double*)complex_data->Im, matvar->data_type, nelems);
                 }
                 else {
-                    Mat_Critical("Memory allocation failure");
+                    Mat_Critical("Couldn't allocate memory for the complex data");
                 }
             } else {
                 matvar->data = malloc(matvar->nbytes);
                 if ( NULL != matvar->data ) {
-                    ReadDoubleData(mat, (double*)matvar->data, matvar->data_type, N);
+                    ReadDoubleData(mat, (double*)matvar->data, matvar->data_type, nelems);
                 }
                 else {
-                    Mat_Critical("Memory allocation failure");
+                    Mat_Critical("Couldn't allocate memory for the data");
                 }
             }
             /* Update data type to match format of matvar->data */
@@ -315,13 +315,13 @@ Read4(mat_t *mat,matvar_t *matvar)
             break;
         case MAT_C_CHAR:
             matvar->data_size = 1;
-            matvar->nbytes = N;
+            matvar->nbytes = nelems;
             matvar->data = malloc(matvar->nbytes);
             if ( NULL != matvar->data ) {
-                ReadUInt8Data(mat,(mat_uint8_t*)matvar->data,matvar->data_type,N);
+                ReadUInt8Data(mat, (mat_uint8_t*)matvar->data, matvar->data_type, nelems);
             }
             else {
-                Mat_Critical("Memory allocation failure");
+                Mat_Critical("Couldn't allocate memory for the data");
             }
             matvar->data_type = MAT_T_UINT8;
             break;
@@ -348,11 +348,11 @@ Read4(mat_t *mat,matvar_t *matvar)
                 } else {
                     free(matvar->data);
                     matvar->data = NULL;
-                    Mat_Critical("Memory allocation failure");
+                    Mat_Critical("Couldn't allocate memory for the sparse row array");
                     return;
                 }
                 ReadDoubleData(mat, &tmp, data_type, 1);
-                matvar->dims[0] = tmp;
+                matvar->dims[0] = (size_t)tmp;
 
                 fpos = ftell((FILE*)mat->fp);
                 if ( fpos == -1L ) {
@@ -372,7 +372,7 @@ Read4(mat_t *mat,matvar_t *matvar)
                     Mat_Critical("Invalid column dimension for sparse matrix");
                     return;
                 }
-                matvar->dims[1] = tmp < 0 ? 0 : ( tmp > INT_MAX-1 ? INT_MAX-1 : (size_t)tmp );
+                matvar->dims[1] = (size_t)tmp;
                 (void)fseek((FILE*)mat->fp,fpos,SEEK_SET);
                 if ( matvar->dims[1] > INT_MAX-1 ) {
                     free(sparse->ir);
@@ -403,14 +403,14 @@ Read4(mat_t *mat,matvar_t *matvar)
                         free(sparse->ir);
                         free(matvar->data);
                         matvar->data = NULL;
-                        Mat_Critical("Memory allocation failure");
+                        Mat_Critical("Couldn't allocate memory for the sparse index array");
                         return;
                     }
                 } else {
                     free(sparse->ir);
                     free(matvar->data);
                     matvar->data = NULL;
-                    Mat_Critical("Memory allocation failure");
+                    Mat_Critical("Couldn't allocate memory for the sparse index array");
                     return;
                 }
                 ReadDoubleData(mat, &tmp, data_type, 1);
@@ -494,7 +494,7 @@ Read4(mat_t *mat,matvar_t *matvar)
                                 free(sparse->ir);
                                 free(matvar->data);
                                 matvar->data = NULL;
-                                Mat_Critical("Read4: %d is not a supported data type for ",
+                                Mat_Critical("Mat_VarRead4: %d is not a supported data type for "
                                     "extended sparse", data_type);
                                 return;
                         }
@@ -512,7 +512,7 @@ Read4(mat_t *mat,matvar_t *matvar)
                         free(sparse->ir);
                         free(matvar->data);
                         matvar->data = NULL;
-                        Mat_Critical("Memory allocation failure");
+                        Mat_Critical("Couldn't allocate memory for the complex sparse data");
                         return;
                     }
                 } else {
@@ -571,7 +571,7 @@ Read4(mat_t *mat,matvar_t *matvar)
                                 free(sparse->ir);
                                 free(matvar->data);
                                 matvar->data = NULL;
-                                Mat_Critical("Read4: %d is not a supported data type for ",
+                                Mat_Critical("Mat_VarRead4: %d is not a supported data type for "
                                     "extended sparse", data_type);
                                 return;
                         }
@@ -584,14 +584,15 @@ Read4(mat_t *mat,matvar_t *matvar)
                         free(sparse->ir);
                         free(matvar->data);
                         matvar->data = NULL;
-                        Mat_Critical("Memory allocation failure");
+                        Mat_Critical("Couldn't allocate memory for the sparse data");
                         return;
                     }
                 }
                 break;
             }
             else {
-                Mat_Critical("Memory allocation failure");
+                Mat_Critical("Couldn't allocate memory for the data");
+                return;
             }
         default:
             Mat_Critical("MAT V4 data type error");
@@ -616,7 +617,7 @@ Read4(mat_t *mat,matvar_t *matvar)
  * @endif
  */
 int
-ReadData4(mat_t *mat,matvar_t *matvar,void *data,
+Mat_VarReadData4(mat_t *mat,matvar_t *matvar,void *data,
       int *start,int *stride,int *edge)
 {
     int err = 0;
@@ -636,13 +637,14 @@ ReadData4(mat_t *mat,matvar_t *matvar,void *data,
     }
 
     if ( matvar->rank == 2 ) {
-        if ( stride[0]*(edge[0]-1)+start[0]+1 > matvar->dims[0] )
+        if ( (size_t)stride[0]*(edge[0]-1)+start[0]+1 > matvar->dims[0] )
             err = 1;
-        else if ( stride[1]*(edge[1]-1)+start[1]+1 > matvar->dims[1] )
+        else if ( (size_t)stride[1]*(edge[1]-1)+start[1]+1 > matvar->dims[1] )
             err = 1;
         if ( matvar->isComplex ) {
             mat_complex_split_t *cdata = (mat_complex_split_t*)data;
-            long nbytes = matvar->dims[0]*matvar->dims[1]*Mat_SizeOf(matvar->data_type);
+            size_t nbytes = Mat_SizeOf(matvar->data_type);
+            SafeMulDims(matvar, &nbytes);
 
             ReadDataSlab2(mat,cdata->Re,matvar->class_type,matvar->data_type,
                 matvar->dims,start,stride,edge);
@@ -654,12 +656,9 @@ ReadData4(mat_t *mat,matvar_t *matvar,void *data,
                 matvar->dims,start,stride,edge);
         }
     } else if ( matvar->isComplex ) {
-        int i;
         mat_complex_split_t *cdata = (mat_complex_split_t*)data;
-        long nbytes = Mat_SizeOf(matvar->data_type);
-
-        for ( i = 0; i < matvar->rank; i++ )
-            nbytes *= matvar->dims[i];
+        size_t nbytes = Mat_SizeOf(matvar->data_type);
+        SafeMulDims(matvar, &nbytes);
 
         ReadDataSlabN(mat,cdata->Re,matvar->class_type,matvar->data_type,
             matvar->rank,matvar->dims,start,stride,edge);
@@ -670,6 +669,7 @@ ReadData4(mat_t *mat,matvar_t *matvar,void *data,
         ReadDataSlabN(mat,data,matvar->class_type,matvar->data_type,
             matvar->rank,matvar->dims,start,stride,edge);
     }
+
     return err;
 }
 
@@ -690,22 +690,20 @@ int
 Mat_VarReadDataLinear4(mat_t *mat,matvar_t *matvar,void *data,int start,
                        int stride,int edge)
 {
-    size_t i, nmemb = 1;
     int err = 0;
+    size_t nelems = 1;
 
+    err = SafeMulDims(matvar, &nelems);
     (void)fseek((FILE*)mat->fp,matvar->internal->datapos,SEEK_SET);
 
     matvar->data_size = Mat_SizeOf(matvar->data_type);
 
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
-    if ( stride*(edge-1)+start+1 > nmemb ) {
+    if ( (size_t)stride*(edge-1)+start+1 > nelems ) {
         return 1;
     }
     if ( matvar->isComplex ) {
             mat_complex_split_t *complex_data = (mat_complex_split_t*)data;
-            long nbytes = nmemb*matvar->data_size;
+            long nbytes = nelems*matvar->data_size;
 
             ReadDataSlab1(mat,complex_data->Re,matvar->class_type,
                           matvar->data_type,start,stride,edge);
@@ -731,7 +729,8 @@ Mat_VarReadDataLinear4(mat_t *mat,matvar_t *matvar,void *data,int start,
 matvar_t *
 Mat_VarReadNextInfo4(mat_t *mat)
 {
-    int       tmp,M,O,data_type,class_type;
+    int       M,O,data_type,class_type;
+    mat_int32_t tmp;
     long      nBytes;
     size_t    err;
     matvar_t *matvar = NULL;
@@ -744,14 +743,6 @@ Mat_VarReadNextInfo4(mat_t *mat)
         return NULL;
     else if ( NULL == (matvar = Mat_VarCalloc()) )
         return NULL;
-
-    matvar->internal->fp   = mat;
-    matvar->internal->fpos = ftell((FILE*)mat->fp);
-    if ( matvar->internal->fpos == -1L ) {
-        Mat_VarFree(matvar);
-        Mat_Critical("Couldn't determine file position");
-        return NULL;
-    }
 
     err = fread(&tmp,sizeof(int),1,(FILE*)mat->fp);
     if ( !err ) {
@@ -769,13 +760,13 @@ Mat_VarReadNextInfo4(mat_t *mat)
         }
     }
 
-    M = floor(tmp / 1000.0);
+    M = (int)floor(tmp / 1000.0);
     tmp -= M*1000;
-    O = floor(tmp / 100.0);
+    O = (int)floor(tmp / 100.0);
     tmp -= O*100;
-    data_type = floor(tmp / 10.0);
+    data_type = (int)floor(tmp / 10.0);
     tmp -= data_type*10;
-    class_type = floor(tmp / 1.0);
+    class_type = (int)floor(tmp / 1.0);
 
     switch ( M ) {
         case 0:
@@ -862,6 +853,10 @@ Mat_VarReadNextInfo4(mat_t *mat)
         Mat_VarFree(matvar);
         return NULL;
     }
+    if ( matvar->isComplex && MAT_C_CHAR == matvar->class_type ) {
+        Mat_VarFree(matvar);
+        return NULL;
+    }
     err = fread(&tmp,sizeof(int),1,(FILE*)mat->fp);
     if ( !err ) {
         Mat_VarFree(matvar);
@@ -891,9 +886,13 @@ Mat_VarReadNextInfo4(mat_t *mat)
         Mat_Critical("Couldn't determine file position");
         return NULL;
     }
-    nBytes = matvar->dims[0]*matvar->dims[1]*Mat_SizeOf(matvar->data_type);
-    if ( matvar->isComplex )
-        nBytes *= 2;
+    {
+        size_t tmp2 = Mat_SizeOf(matvar->data_type);
+        if ( matvar->isComplex )
+            tmp2 *= 2;
+        SafeMulDims(matvar, &tmp2);
+        nBytes = (long)tmp2;
+    }
     (void)fseek((FILE*)mat->fp,nBytes,SEEK_CUR);
 
     return matvar;

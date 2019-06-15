@@ -45,13 +45,13 @@
 SceneFaceCommandAdd* getAddCommand(SceneFace *face)
 {
     return new SceneFaceCommandAdd(face->nodeStart()->pointValue(), face->nodeEnd()->pointValue(),
-                                   face->markersKeys(), face->angleValue(), face->segments(), face->isCurvilinear());
+                                   face->markersKeys(), face->angleValue(), face->segments());
 }
 
 SceneFaceCommandRemove* getRemoveCommand(SceneFace *face)
 {
     return new SceneFaceCommandRemove(face->nodeStart()->pointValue(), face->nodeEnd()->pointValue(), face->markersKeys(),
-                                      face->angleValue(), face->segments(), face->isCurvilinear());
+                                      face->angleValue(), face->segments());
 }
 
 SceneLabelCommandAdd* getAddCommand(SceneLabel *label)
@@ -241,7 +241,6 @@ void SceneViewPreprocessor::doDeleteSelected()
     QList<PointValue> selectedEdgePointsEnd;
     QList<Value> selectedEdgeAngles;
     QList<int> selectedEdgeSegments;
-    QList<bool> selectedEdgeIsCurvilinear;
     QList<QMap<QString, QString> > selectedEdgeMarkers;
     foreach (SceneFace *edge, problem()->scene()->faces->selected().items())
     {
@@ -249,12 +248,11 @@ void SceneViewPreprocessor::doDeleteSelected()
         selectedEdgePointsEnd.append(edge->nodeEnd()->pointValue());
         selectedEdgeAngles.append(edge->angleValue());
         selectedEdgeSegments.append(edge->segments());
-        selectedEdgeIsCurvilinear.append(edge->isCurvilinear());
         selectedEdgeMarkers.append(edge->markersKeys());
     }
     if (!selectedEdgePointsStart.isEmpty())
         undoStack()->push(new SceneEdgeCommandRemoveMulti(selectedEdgePointsStart, selectedEdgePointsEnd,
-                                                          selectedEdgeMarkers, selectedEdgeAngles, selectedEdgeSegments, selectedEdgeIsCurvilinear));
+                                                          selectedEdgeMarkers, selectedEdgeAngles, selectedEdgeSegments));
 
     // labels
     QList<PointValue> selectedLabelPointsStart;
@@ -1437,7 +1435,6 @@ bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point poi
     QList<PointValue> edgeEndPointsToAdd;
     QList<Value> edgeAnglesToAdd;
     QList<int> edgeSegmentsToAdd;
-    QList<bool> edgeIsCurvilinearToAdd;
     QList<QMap<QString, QString> > edgeMarkersToAdd;
 
     foreach (SceneFace *edge, selectedEdges)
@@ -1463,8 +1460,7 @@ bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point poi
             edgeStartPointsToAdd.push_back(newPointStart);
             edgeEndPointsToAdd.push_back(newPointEnd);
             edgeAnglesToAdd.push_back(edge->angleValue());
-            edgeSegmentsToAdd.push_back(edge->segments());
-            edgeIsCurvilinearToAdd.push_back(edge->isCurvilinear());
+            edgeSegmentsToAdd.push_back(edge->segments());            
 
             if(withMarkers)
                 edgeMarkersToAdd.append(edge->markersKeys());
@@ -1476,7 +1472,7 @@ bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point poi
     Agros::problem()->scene()->faces->setSelected(false);
 
     undoStack()->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
-                                                   edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd));
+                                                   edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd));
 
     for(int i = 0; i < newEdgeEndPoints.size(); i++)
     {

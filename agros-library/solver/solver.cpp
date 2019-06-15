@@ -387,12 +387,109 @@ void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Ve
     QString stiffnessMatrixName = QString("%1/%2/transient_solver-%3_matrix_stiffness.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
     QString rhsName = QString("%1/%2/transient_solver-%3_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
     QString slnsName = QString("%1/%2/transient_solver-%3_solutions.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString pointsName = QString("%1/%2/transient_solver-%3_points.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
+    QString elementsName = QString("%1/%2/transient_solver-%3_elements.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId());
 
     writeMatioMatrix(transientMassMatrix, massMatrixName, "matrix_mass");
     writeMatioMatrix(systemMatrix, stiffnessMatrixName, "matrix_stiffness");
     writeMatioVector(systemRHS, rhsName, "rhs");
     if (vecs.size() > 0)
         writeMatioMatrix(vecs, slnsName, "slns");
+
+    // save other informations
+    dealii::hp::QCollection<2> quadratureFormulas;
+    quadratureFormulas.push_back(dealii::QGauss<2>(1));
+    // Gauss quadrature
+    for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
+        quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
+
+    dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe_collection(),
+                                         quadratureFormulas,
+                                         dealii::update_values | dealii::update_JxW_values | dealii::update_quadrature_points);
+
+    std::vector<dealii::Vector<double> > pointsVecs;
+    pointsVecs.push_back(dealii::Vector<double>(systemRHS.size()));
+    pointsVecs.push_back(dealii::Vector<double>(systemRHS.size()));
+
+    // active elements count
+    int celln = 0;
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc_int = doFHandler.end();
+    for (; cell != endc_int; ++cell)
+    {
+        if (!cell->active())
+            continue;
+
+        // volume integration
+        hp_fe_values.reinit(cell);
+
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+
+        const dealii::FiniteElement<2> &fe = cell->get_fe();
+        const unsigned int dofs_per_cell = fe.dofs_per_cell;
+
+        // cells
+        if (dofs_per_cell > 0)
+        {
+            celln++;
+        }
+    }
+    std::vector<dealii::Vector<int> > elementsVecs;
+    elementsVecs.push_back(dealii::Vector<int>(celln));
+    elementsVecs.push_back(dealii::Vector<int>(celln));
+    elementsVecs.push_back(dealii::Vector<int>(celln));
+    elementsVecs.push_back(dealii::Vector<int>(celln));
+    celln = 0;
+
+    cell = doFHandler.begin_active(), endc_int = doFHandler.end();
+    for (; cell != endc_int; ++cell)
+    {
+        if (!cell->active())
+            continue;
+
+        // volume integration
+        hp_fe_values.reinit(cell);
+
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+
+        const dealii::FiniteElement<2> &fe = cell->get_fe();
+        const unsigned int dofs_per_face = fe.dofs_per_face;
+        const unsigned int dofs_per_cell = fe.dofs_per_cell;
+        // qInfo() << "dofs_per_cell" << dofs_per_cell << "dofs_per_face" << dofs_per_face;
+
+        // cells
+        if (dofs_per_cell > 0)
+        {
+            for (unsigned int v = 0; v < dealii::GeometryInfo<2>::vertices_per_cell; ++v)
+            {
+                std::vector<dealii::types::global_dof_index> global_cell_dof_indices(dofs_per_cell);
+                cell->get_dof_indices(global_cell_dof_indices);
+
+                for (unsigned int dof = 0; dof < dofs_per_cell; ++dof)
+                {
+                    elementsVecs[dof][celln] = global_cell_dof_indices[dof];
+                }
+            }
+            celln++;
+        }
+
+        // boundaries
+        if (dofs_per_face > 0)
+        {
+            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+            {
+                std::vector<dealii::types::global_dof_index> global_face_dof_indices(dofs_per_face);
+                cell->face(face)->get_dof_indices(global_face_dof_indices, cell->active_fe_index());
+
+                for (unsigned int dof = 0; dof < dofs_per_face; ++dof)
+                {
+                    pointsVecs[0][global_face_dof_indices[dof]] = cell->face(face)->vertex(dof)[0];
+                    pointsVecs[1][global_face_dof_indices[dof]] = cell->face(face)->vertex(dof)[1];
+                }
+            }
+        }
+    }
+    writeMatioMatrix(pointsVecs, pointsName, "points");
+    writeMatioMatrix(elementsVecs, elementsName, "elements");
 }
 
 void SolverDeal::AssembleBase::solve()

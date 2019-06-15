@@ -86,6 +86,9 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
                                  IntegralScratchData &scratch_data,
                                  IntegralCopyData &copy_data)
 {
+    // time
+    double actualTime = m_computation->timeStepToTotalTime(m_timeStep);
+
     // clear copy data
     copy_data.results.clear();
 

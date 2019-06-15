@@ -80,7 +80,7 @@ public:
     SceneNode *getNode(const Point &point);
 
     SceneFace *addFace(SceneFace *face);
-    SceneFace *getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear);
+    SceneFace *getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments);
     SceneFace *getFace(const Point &pointStart, const Point &pointEnd);
 
     SceneLabel *addLabel(SceneLabel *label);

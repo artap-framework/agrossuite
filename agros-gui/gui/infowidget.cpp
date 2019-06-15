@@ -219,9 +219,9 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
             couplingSection->SetValue("COUPLING_LABEL", couplingInfo->name().toStdString());
 
             couplingSection->SetValue("COUPLING_SOURCE_LABEL", tr("Source:").toStdString());
-            couplingSection->SetValue("COUPLING_SOURCE", couplingInfo->sourceField()->name().toStdString());
+            couplingSection->SetValue("COUPLING_SOURCE", couplingInfo->sourceFieldId().toStdString());
             couplingSection->SetValue("COUPLING_TARGET_LABEL", tr("Target:").toStdString());
-            couplingSection->SetValue("COUPLING_TARGET", couplingInfo->targetField()->name().toStdString());
+            couplingSection->SetValue("COUPLING_TARGET", couplingInfo->targetFieldId().toStdString());
             couplingSection->SetValue("COUPLING_TYPE_LABEL", tr("Coupling type:").toStdString());
             couplingSection->SetValue("COUPLING_TYPE", QString("%1").arg(couplingTypeString(couplingInfo->couplingType())).toStdString());
         }

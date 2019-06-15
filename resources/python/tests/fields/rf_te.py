@@ -48,8 +48,7 @@ class TestRFTEHarmonicPlanar(AgrosTestCase):
         
         # labels
         geometry.add_label(0.0359418, 0.0109393, materials = {"rf_te" : "Air"})
-        
-        
+                
         # solve problem
         self.computation = problem.computation()
         self.computation.solve()
@@ -61,16 +60,16 @@ class TestRFTEHarmonicPlanar(AgrosTestCase):
         # point value
         point = solution.local_values(0.019107, 0.016725)
         self.value_test("Electric field", point["E"], 456.810483)
-        self.value_test("Electric field - real", point["Er"], 141.973049)
+        self.value_test("Electric field - real", point["Er"], 146.6280)
         self.value_test("Electric field - imag", point["Ei"], 434.18829)
         self.value_test("Flux density", point["B"], 1.115591e-6)
         self.value_test("Flux density - x - real", point["Brx"], 6.483596e-7)
-        self.value_test("Flux density - x - imag", point["Bix"], -2.301715e-7)
+        self.value_test("Flux density - x - imag", point["Bix"], -2.41665e-7)
         self.value_test("Flux density - y - real", point["Bry"], -4.300969e-7)
         self.value_test("Flux density - y - imag", point["Biy"], -7.656443e-7)
         self.value_test("Magnetic field", point["H"], 0.887759)
         self.value_test("Magnetic field - x - real", point["Hrx"], 0.515948)
-        self.value_test("Magnetic field - x - imag", point["Hix"], -0.183165)
+        self.value_test("Magnetic field - x - imag", point["Hix"], -0.19231)
         self.value_test("Magnetic field - y - real", point["Hry"], -0.34226)
         self.value_test("Magnetic field - y - imag", point["Hiy"], -0.60928)
         self.value_test("Poynting vector - x", point["Nx"], 156.567066)
@@ -143,28 +142,28 @@ class TestRFTEHarmonicAxisymmetric(AgrosTestCase):
         point1 = solution.local_values(1.729e-01, -1.289e-01)
         
         self.value_test("Electric field", point1["E"], 1.6461)
-        self.value_test("Electric field - real", point1["Er"], 0.49426)
+        self.value_test("Electric field - real", point1["Er"], 0.545821056506917)
         self.value_test("Electric field - imag", point1["Ei"], 1.5701)
 
         self.value_test("Displacement", point1["D"], 1.4575E-11)
-        self.value_test("Displacement - real", point1["Dr"], 4.3762E-12)
+        self.value_test("Displacement - real", point1["Dr"], 4.8326E-12)
         self.value_test("Displacement - imag", point1["Di"], 1.3902E-11)
 
         point2 = solution.local_values(0.05574473738670349, -0.17109256982803345)
         
         self.value_test("Magnetic field", point2["H"], 0.010094494526820486)
-        self.value_test("Magnetic field r component - real", point2["Hrr"], -6.373444608076603E-4)
+        self.value_test("Magnetic field r component - real", point2["Hrr"], -7.315569466E-4)
         self.value_test("Magnetic field r component - imag", point2["Hir"], -0.0036385133316168745)
         self.value_test("Magnetic field z component - real", point2["Hrz"], -0.00929280413705027)
-        self.value_test("Magnetic field z component - imag", point2["Hiz"], -0.001377358847510671)
+        self.value_test("Magnetic field z component - imag", point2["Hiz"], -0.001177586316666147)
         
         self.value_test("Magnetic flux density", point2["B"], 1.2685115938864646E-8)
-        self.value_test("Magnetic flux density r component - real", point2["Brr"], -8.009106703517974E-10)
+        self.value_test("Magnetic flux density r component - real", point2["Brr"], -9.193037214595E-10)
         self.value_test("Magnetic flux density r component - imag", point2["Bir"], -4.572290701038439E-9)
         self.value_test("Magnetic flux density z component - real", point2["Brz"], -1.1677682083282389E-8)
-        self.value_test("Magnetic flux density z component - imag", point2["Biz"], -1.730840174678571E-9)
+        self.value_test("Magnetic flux density z component - imag", point2["Biz"], -1.47980206571E-9)
 
-        self.value_test("Poynting vector r component", point2["Nr"], -1.986494011280842E-4)
+        self.value_test("Poynting vector r component", point2["Nr"], -2.0790401117E-4)
         self.value_test("Poynting vector z component", point2["Nz"], 0.00424470406639853)
         
 if __name__ == '__main__':        

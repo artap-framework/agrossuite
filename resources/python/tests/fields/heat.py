@@ -141,7 +141,7 @@ class TestHeatNonlinPlanarNewton(AgrosTestCase):
         self.heat.polynomial_order = 2
 
         self.heat.solver = "newton"
-        self.heat.solver_parameters['residual'] = 0.0001
+        self.heat.solver_parameters['residual'] = 0.00001
         self.heat.solver_parameters['damping'] = 'fixed'
         self.heat.solver_parameters['damping_factor'] = 0.9
         self.heat.solver_parameters['jacobian_reuse'] = False

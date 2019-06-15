@@ -36,8 +36,7 @@ public:
     virtual ~CouplingList();
 
     QString name(FieldInfo *sourceField, FieldInfo *targetField) const;
-    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const;
-    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const;
+
     bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const;
     bool isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType) const;
 
@@ -51,8 +50,8 @@ AGROS_LIBRARY_API CouplingList *couplingList();
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {
 public:
-    CouplingInfo(FieldInfo *sourceField,
-                 FieldInfo *targetField,
+    CouplingInfo(QString sourceId,
+                 QString targetId,
                  CouplingType couplingType = CouplingType_Weak);
     ~CouplingInfo();
 
@@ -61,16 +60,16 @@ public:
     CouplingType couplingType() const;
     void setCouplingType(CouplingType couplingType);
 
-    inline FieldInfo *sourceField() {return m_sourceField; }
-    inline FieldInfo *targetField() {return m_targetField; }
+    inline QString sourceFieldId() {return m_sourceFieldId; }
+    inline QString targetFieldId() {return m_targetFieldId; }
 
     // name
     QString name() const;
 
 private:
     // pointers to problem infos
-    FieldInfo *m_sourceField;
-    FieldInfo *m_targetField;
+    QString m_sourceFieldId;
+    QString m_targetFieldId;
 
     // coupling type
     CouplingType m_couplingType;

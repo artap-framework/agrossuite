@@ -58,7 +58,7 @@ QStringList pluginList()
 
     if (isPluginDir(datadir() + "/libs/"))
         pluginPath = datadir() + "/libs/";
-    else if (isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
+    else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
     if (pluginPath.isEmpty())
@@ -102,7 +102,7 @@ void initSingleton()
 }
 
 void clearAgros2DCache()
-{
+{    
     QFileInfoList listCache = QFileInfo(cacheProblemDir()).absoluteDir().entryInfoList();
     QFileInfoList listTemp = QFileInfo(tempProblemDir()).absoluteDir().entryInfoList();
 
@@ -177,7 +177,9 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 #endif
 }
 
-
+Agros::~Agros()
+{
+}
 
 void Agros::clear()
 {    
@@ -186,7 +188,7 @@ void Agros::clear()
 
     delete m_singleton.data()->m_configComputer;
 
-    // remove temp and cache plugins
+    // remove temp and cache plugins    
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
 }
@@ -604,8 +606,6 @@ QString createPythonFromModel()
 
                 if (edge->segments() > 4)
                     str += ", segments = " + QString::number(edge->segments());
-                if (!edge->isCurvilinear())
-                    str += ", curvilinear = False";
             }
 
             // boundaries

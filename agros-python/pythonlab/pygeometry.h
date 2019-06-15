@@ -36,9 +36,9 @@ class PyGeometry
 
         // add operations
         int addNode(std::string x, std::string y);
-        int addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
+        int addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments,
                     const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries);
-        int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
+        int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments,
                            const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries);
         int addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
                      const map<std::string, int> &orders, const map<std::string, std::string> &materials);
@@ -48,7 +48,7 @@ class PyGeometry
         int labelsCount() const;
 
         // modify operations
-        void modifyEdge(int index, std::string angle, int segments, int isCurvilinear, const map<std::string, int> &refinements,
+        void modifyEdge(int index, std::string angle, int segments, const map<std::string, int> &refinements,
                         const map<std::string, std::string> &boundaries);
         void modifyLabel(int index, double area, const map<std::string, int> &refinements,
                          const map<std::string, int> &orders, const map<std::string, std::string> &materials);

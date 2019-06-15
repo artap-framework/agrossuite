@@ -1,30 +1,28 @@
 /* src/matioConfig.h.  Generated from matioConfig.h.in by configure.  */
 /*
- * Copyright (C) 2012-2017   Christopher C. Hulbert
- *
+ * Copyright (c) 2012-2019, Christopher C. Hulbert
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /* Debug enabled */
@@ -181,7 +179,7 @@
 /* #undef MAT73 */
 
 /* Platform */
-#define MATIO_PLATFORM "x86_64-unknown-linux-gnu"
+#define MATIO_PLATFORM "x86_64-pc-linux-gnu"
 
 /* Debug disabled */
 #define NODEBUG /**/
@@ -190,22 +188,22 @@
 #define PACKAGE "matio"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "chulbe2lsu@users.sourceforge.net"
+#define PACKAGE_BUGREPORT "t-beu@users.sourceforge.net"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "MATIO"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "MATIO 1.5.10"
+#define PACKAGE_STRING "MATIO 1.5.15"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "matio"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "http://sourceforge.net/projects/matio"
+#define PACKAGE_URL "https://sourceforge.net/projects/matio"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.5.10"
+#define PACKAGE_VERSION "1.5.15"
 
 /* The size of `char', as computed by sizeof. */
 #define SIZEOF_CHAR 1
@@ -241,10 +239,7 @@
 /* #undef SUN */
 
 /* Version number of package */
-#define VERSION "1.5.10"
-
-/* OS is CygWin */
-/* #undef WINNT */
+#define VERSION "1.5.15"
 
 /* Z prefix */
 /* #undef Z_PREFIX */

@@ -120,6 +120,7 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 {    
+
 }
 
 Scene::~Scene()
@@ -163,8 +164,7 @@ void Scene::copy(const Scene *origin)
 
         addFace(new SceneFace(this, nodeStart, nodeEnd,
                               Value(m_problem, originFace->angleValue().text()),
-                              originFace->segments(),
-                              originFace->isCurvilinear()));
+                              originFace->segments()));
     }
 
     // labels
@@ -212,9 +212,9 @@ SceneFace *Scene::addFace(SceneFace *face)
     return face;
 }
 
-SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear)
+SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments)
 {
-    return faces->get(pointStart, pointEnd, angle, segments, isCurvilinear);
+    return faces->get(pointStart, pointEnd, angle, segments);
 }
 
 SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd)
@@ -349,7 +349,7 @@ void Scene::clear()
     m_crossings.clear();
 
     if (!m_loopsInfo.isNull())
-        m_loopsInfo->processPolygonTriangles();
+        m_loopsInfo->processPolygonTriangles(true);
 
     invalidate();
 }
@@ -431,7 +431,7 @@ void Scene::invalidate()
     findNumberOfConnectedNodeEdges();
     findCrossings();
 
-    if (!m_loopsInfo.isNull()) m_loopsInfo->processPolygonTriangles();
+    if (!m_loopsInfo.isNull()) m_loopsInfo->processPolygonTriangles(true);
 }
 
 void Scene::fieldsChange()

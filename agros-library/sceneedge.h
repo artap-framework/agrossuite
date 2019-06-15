@@ -29,7 +29,7 @@ class Scene;
 class AGROS_LIBRARY_API SceneFace : public MarkedSceneBasic<SceneBoundary>
 {
 public:
-    SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 3, bool isCurvilinear = true);
+    SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 4);
 
     inline SceneNode *nodeStart() const { return m_nodeStart; }
     inline void setNodeStart(SceneNode *nodeStart) { m_nodeStart = nodeStart; computeCenterAndRadius(); }
@@ -59,8 +59,6 @@ public:
     // needed by mesh generator
     inline int segments() const { return m_segments; }
     void setSegments(int segments);
-    inline bool isCurvilinear() const { return m_isCurvilinear; }
-    void setCurvilinear(bool isCurvilinear);
 
     static SceneFace *findClosestFace(Scene *scene, const Point &point);
 
@@ -100,7 +98,6 @@ private:
     SceneNode *m_nodeEnd;
     Value m_angle;
     int m_segments;
-    bool m_isCurvilinear;
 
     // cache
     Point m_centerCache;
@@ -115,8 +112,6 @@ private:
     int m_rightLabelIdx;
 };
 
-Q_DECLARE_METATYPE(SceneFace *)
-
 // *************************************************************************************************************************************
 
 class SceneFaceContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneFace>
@@ -128,7 +123,7 @@ public:
     SceneFace* get(SceneFace* edge) const;
 
     /// returns corresponding edge or NULL
-    SceneFace* get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const;
+    SceneFace* get(const Point &pointStart, const Point &pointEnd, double angle, int segments) const;
 
     /// returns corresponding edge or NULL
     SceneFace* get(const Point &pointStart, const Point &pointEnd) const;

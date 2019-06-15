@@ -108,8 +108,8 @@ public:
     inline QList<PostTriangle> &vectorYValues() { return m_vectorYValues; }
 
     void viewScalarFilter(Module::LocalVariable physicFieldVariable,
-                                                  PhysicFieldVariableComp physicFieldVariableComp,
-                                                  QList<PostTriangle> &list, bool deform);
+                          PhysicFieldVariableComp physicFieldVariableComp,
+                          QList<PostTriangle> &list, bool deform);
 
     // view
     inline FieldInfo* activeViewField() const { return m_activeViewField; }
@@ -178,7 +178,7 @@ public:
 
     // field
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
-    inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));                                                          return m_fieldInfos[fieldId]; }
+    inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId)); return m_fieldInfos[fieldId]; }
     inline FieldInfo *fieldInfo(const std::string &name) { return fieldInfo(QString::fromStdString(name)); }
     inline FieldInfo *fieldInfo(const char* name) { return fieldInfo(QString::fromLatin1(name)); }
     inline bool hasField(const QString &fieldId) const { return m_fieldInfos.contains(fieldId); }
@@ -186,19 +186,17 @@ public:
     virtual void removeField(FieldInfo *field);
 
     void synchronizeCouplings();
-    inline QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
-    inline CouplingInfo *couplingInfo(FieldInfo *sourceField, FieldInfo *targetField) { assert (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField)));
-                                                                                        return m_couplingInfos[QPair<FieldInfo*, FieldInfo* >(sourceField, targetField)]; }
-    inline CouplingInfo *couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { return couplingInfo(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
-    inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
-    inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
+    inline QMap<QPair<QString, QString>, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
+    inline CouplingInfo *couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { assert (m_couplingInfos.contains(QPair<QString, QString>(sourceField, targetField)));
+                                                                                                    return m_couplingInfos[QPair<QString, QString>(sourceFieldId, targetFieldId)]; }
+    inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return (m_couplingInfos.contains(QPair<QString, QString>(sourceFieldId, targetFieldId))); }
 
     inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
 
     bool isMeshed() const;
     bool isMeshing() const { return m_isMeshing; }
 
-    bool mesh();    
+    bool mesh();
 
     virtual QString problemFileName() const = 0;
 
@@ -216,7 +214,7 @@ protected:
     ProblemConfig *m_config;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
-    QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;
+    QMap<QPair<QString, QString>, CouplingInfo *> m_couplingInfos;
 
     // determined in create structure to speed up the calculation
     bool m_isNonlinear;
@@ -344,7 +342,7 @@ public:
     virtual void clearFieldsAndConfig();
 
     void abortSolving();
-/*
+    /*
 signals:
     void solved();
     void cleared();

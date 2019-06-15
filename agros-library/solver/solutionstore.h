@@ -43,7 +43,6 @@ public:
         };
 
         SolutionRunTimeDetails();
-        ~SolutionRunTimeDetails() {}
 
         void clear();
 

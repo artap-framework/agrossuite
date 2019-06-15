@@ -1,29 +1,27 @@
 /*
- * Copyright (C) 2012-2017   Christopher C. Hulbert
- *
+ * Copyright (c) 2012-2019, Christopher C. Hulbert
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY CHRISTOPHER C. HULBERT ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL CHRISTOPHER C. HULBERT OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <stdlib.h>
@@ -42,16 +40,15 @@
 matvar_t *
 Mat_VarGetCell(matvar_t *matvar,int index)
 {
-    int       nmemb = 1, i;
+    size_t nelems = 1;
     matvar_t *cell = NULL;
 
     if ( matvar == NULL )
         return NULL;
 
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
+    SafeMulDims(matvar, &nelems);
 
-    if ( index < nmemb )
+    if ( 0 <= index && index < nelems )
         cell = *((matvar_t **)matvar->data + index);
 
     return cell;
@@ -114,8 +111,10 @@ Mat_VarGetCells(matvar_t *matvar,int *start,int *stride,int *edge)
             if ( cnt[j] == edge[j] ) {
                 cnt[j] = 0;
                 idx[j] = start[j];
-                cnt[j+1]++;
-                idx[j+1] += stride[j+1];
+                if ( j < matvar->rank - 1 ) {
+                    cnt[j+1]++;
+                    idx[j+1] += stride[j+1];
+                }
             }
             I += idx[j]*dimp[j-1];
         }
@@ -140,10 +139,10 @@ Mat_VarGetCells(matvar_t *matvar,int *start,int *stride,int *edge)
 matvar_t **
 Mat_VarGetCellsLinear(matvar_t *matvar,int start,int stride,int edge)
 {
-    int i, I;
     matvar_t **cells = NULL;
 
     if ( matvar != NULL ) {
+        int i, I;
         cells = (matvar_t**)malloc(edge*sizeof(matvar_t *));
         I = start;
         for ( i = 0; i < edge; i++ ) {
@@ -167,17 +166,15 @@ Mat_VarGetCellsLinear(matvar_t *matvar,int start,int stride,int edge)
 matvar_t *
 Mat_VarSetCell(matvar_t *matvar,int index,matvar_t *cell)
 {
-    int nmemb = 1, i;
+    size_t nelems = 1;
     matvar_t **cells, *old_cell = NULL;
 
     if ( matvar == NULL || matvar->rank < 1 )
         return NULL;
 
-    for ( i = 0; i < matvar->rank; i++ )
-        nmemb *= matvar->dims[i];
-
+   SafeMulDims(matvar, &nelems);
     cells = (matvar_t**)matvar->data;
-    if ( index < nmemb ) {
+    if ( 0 <= index && index < nelems ) {
         old_cell = cells[index];
         cells[index] = cell;
     }

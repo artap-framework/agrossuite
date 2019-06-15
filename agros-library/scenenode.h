@@ -54,8 +54,6 @@ private:
     PointValue m_point;
 };
 
-Q_DECLARE_METATYPE(SceneNode *)
-
 class SceneNodeContainer : public SceneBasicContainer<SceneNode>
 {
 public:

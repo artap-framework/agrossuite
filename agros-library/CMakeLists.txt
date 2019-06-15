@@ -60,9 +60,9 @@ SET(SOURCES
     # ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
     datatable.cpp
     logview.cpp
-    mesh/agros_manifold.cpp
     mesh/meshgenerator.cpp
     mesh/meshgenerator_triangle.cpp
+    mesh/meshgenerator_gmsh.cpp
     parser/lex.cpp
     optilab/doe.cpp
     optilab/study.cpp
@@ -123,9 +123,9 @@ SOURCE_GROUP(
 
 SOURCE_GROUP(
   "Source Files\\Mesh" FILES 
-  mesh/agros_manifold.cpp
   mesh/meshgenerator.cpp
   mesh/meshgenerator_triangle.cpp
+  mesh/meshgenerator_gmsh.cpp
 )
 
 SOURCE_GROUP(
@@ -177,9 +177,9 @@ SET(HEADERS
   # sceneview_vtk2d.h  
   datatable.h
   logview.h
-  mesh/agros_manifold.h
   mesh/meshgenerator.h
   mesh/meshgenerator_triangle.h
+  mesh/meshgenerator_gmsh.h
   parser/lex.h
   optilab/doe.h
   optilab/study.h
@@ -242,7 +242,6 @@ SOURCE_GROUP(
 
 SOURCE_GROUP(
   "Header Files\\Mesh" FILES 
-  mesh/agros_manifold.h
   mesh/meshgenerator.h
   mesh/meshgenerator_triangle.h
 )

@@ -2,8 +2,8 @@ build_mumps:
   tags:
     - linux
   script: 
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++    
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++    
     - cd solver-external-mumps
     - cmake .
     - make 
@@ -13,8 +13,8 @@ build_trilinos:
   tags:
     - linux
   script: 
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++    
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++    
     - cd solver-external-trilinos
     - cmake .
     - make 
@@ -62,4 +62,4 @@ build:
     # test
     - cd resources/python
     - cmake .
-    - ctest 
+    - ctest --output-on-failure

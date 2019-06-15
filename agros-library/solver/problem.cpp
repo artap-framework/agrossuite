@@ -46,6 +46,7 @@
 #include "logview.h"
 
 #include "mesh/meshgenerator_triangle.h"
+#include "mesh/meshgenerator_gmsh.h"
 
 #include "optilab/study.h"
 
@@ -57,7 +58,6 @@ const QString VERSION = "version";
 const QString LIST = "list";
 const QString ANGLE = "angle";
 const QString SEGMENTS = "segments";
-const QString ISCURVILINEAR = "iscurvilinear";
 const QString X = "x";
 const QString Y = "y";
 const QString Z = "Z";
@@ -819,13 +819,15 @@ void ProblemBase::synchronizeCouplings()
             if (sourceField == targetField)
                 continue;
 
-            if (couplingList()->isCouplingAvailable(sourceField, targetField))
+            if (couplingList()->isCouplingAvailable(sourceField->fieldId(), sourceField->analysisType(),
+                                                    targetField->fieldId(), targetField->analysisType(),
+                                                    CouplingType_Weak))
             {
-                QPair<FieldInfo*, FieldInfo*> fieldInfosPair(sourceField, targetField);
+                QPair<QString, QString> fieldInfosPair(sourceField->fieldId(), targetField->fieldId());
 
                 if (!m_couplingInfos.keys().contains(fieldInfosPair))
                 {
-                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField, targetField);
+                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField->fieldId(), targetField->fieldId());
                     changed = true;
                 }
             }
@@ -835,11 +837,13 @@ void ProblemBase::synchronizeCouplings()
     // remove extra
     foreach (CouplingInfo *couplingInfo, m_couplingInfos)
     {
-        if (!(m_fieldInfos.contains(couplingInfo->sourceField()->fieldId()) &&
-              m_fieldInfos.contains(couplingInfo->targetField()->fieldId()) &&
-              couplingList()->isCouplingAvailable(couplingInfo->sourceField(), couplingInfo->targetField())))
+        if (!(m_fieldInfos.contains(couplingInfo->sourceFieldId()) &&
+              m_fieldInfos.contains(couplingInfo->targetFieldId()) &&
+              couplingList()->isCouplingAvailable(couplingInfo->sourceFieldId(), m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
+                                                  couplingInfo->targetFieldId(), m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
+                                                  CouplingType_Weak)))
         {
-            QPair<FieldInfo *, FieldInfo *> key = QPair<FieldInfo *, FieldInfo *>(couplingInfo->sourceField(), couplingInfo->targetField());
+            QPair<QString, QString> key = QPair<QString, QString>(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId());
             m_couplingInfos.remove(key);
 
             changed = true;
@@ -880,8 +884,11 @@ bool ProblemBase::mesh()
         QSharedPointer<MeshGenerator> meshGenerator;
         switch (config()->meshType())
         {
-        case MeshType_Triangle:
+        case MeshType_Triangle_QuadFineDivision:
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
+            break;
+        case MeshType_GMSH_Quad:
+            meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH(this));
             break;
         default:
             Agros::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
@@ -982,256 +989,256 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
 
 void ProblemBase::importProblemFromA2D(const QString &fileName)
 {
-//    try
-//    {
-//        std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
-//        XMLProblem::document *doc = document_xsd.get();
+    //    try
+    //    {
+    //        std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+    //        XMLProblem::document *doc = document_xsd.get();
 
-//        // clear scene
-//        clearFieldsAndConfig();
+    //        // clear scene
+    //        clearFieldsAndConfig();
 
-//        // problem config
-//        m_config->load(&doc->problem().problem_config());
+    //        // problem config
+    //        m_config->load(&doc->problem().problem_config());
 
-//        // coordinate type
-//        m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
-//        // mesh type
-//        m_config->setMeshType(meshTypeFromStringKey(QString::fromStdString(doc->problem().mesh_type())));
+    //        // coordinate type
+    //        m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
+    //        // mesh type
+    //        m_config->setMeshType(meshTypeFromStringKey(QString::fromStdString(doc->problem().mesh_type())));
 
-//        // nodes
-//        for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
-//        {
-//            XMLProblem::node node = doc->geometry().nodes().node().at(i);
+    //        // nodes
+    //        for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
+    //        {
+    //            XMLProblem::node node = doc->geometry().nodes().node().at(i);
 
-//            if (node.valuex().present() && node.valuey().present())
-//            {
-//                Value x = Value(this, QString::fromStdString(node.valuex().get()));
-//                if (!x.isEvaluated()) throw AgrosException(x.error());
+    //            if (node.valuex().present() && node.valuey().present())
+    //            {
+    //                Value x = Value(this, QString::fromStdString(node.valuex().get()));
+    //                if (!x.isEvaluated()) throw AgrosException(x.error());
 
-//                Value y = Value(this, QString::fromStdString(node.valuey().get()));
-//                if (!y.isEvaluated()) throw AgrosException(y.error());
+    //                Value y = Value(this, QString::fromStdString(node.valuey().get()));
+    //                if (!y.isEvaluated()) throw AgrosException(y.error());
 
-//                m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
-//            }
-//            else
-//            {
-//                Point point = Point(node.x(), node.y());
+    //                m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
+    //            }
+    //            else
+    //            {
+    //                Point point = Point(node.x(), node.y());
 
-//                m_scene->addNode(new SceneNode(m_scene, point));
-//            }
-//        }
+    //                m_scene->addNode(new SceneNode(m_scene, point));
+    //            }
+    //        }
 
-//        // edges
-//        for (unsigned int i = 0; i < doc->geometry().edges().edge().size(); i++)
-//        {
-//            XMLProblem::edge edge = doc->geometry().edges().edge().at(i);
+    //        // edges
+    //        for (unsigned int i = 0; i < doc->geometry().edges().edge().size(); i++)
+    //        {
+    //            XMLProblem::edge edge = doc->geometry().edges().edge().at(i);
 
-//            SceneNode *nodeFrom = m_scene->nodes->at(edge.start());
-//            SceneNode *nodeTo = m_scene->nodes->at(edge.end());
+    //            SceneNode *nodeFrom = m_scene->nodes->at(edge.start());
+    //            SceneNode *nodeTo = m_scene->nodes->at(edge.end());
 
-//            int segments = 3;
-//            int isCurvilinear = 1;
-//            if (edge.segments().present())
-//                segments = edge.segments().get();
-//            if (edge.is_curvilinear().present())
-//                isCurvilinear = edge.is_curvilinear().get();
+    //            int segments = 3;
+    //            int isCurvilinear = 1;
+    //            if (edge.segments().present())
+    //                segments = edge.segments().get();
+    //            if (edge.is_curvilinear().present())
+    //                isCurvilinear = edge.is_curvilinear().get();
 
-//            if (edge.valueangle().present())
-//            {
-//                Value angle = Value(this, QString::fromStdString(edge.valueangle().get()));
-//                if (!angle.isEvaluated()) throw AgrosException(angle.error());
+    //            if (edge.valueangle().present())
+    //            {
+    //                Value angle = Value(this, QString::fromStdString(edge.valueangle().get()));
+    //                if (!angle.isEvaluated()) throw AgrosException(angle.error());
 
-//                if (angle.number() < 0.0) angle.setNumber(0.0);
-//                if (angle.number() > 90.0) angle.setNumber(90.0);
+    //                if (angle.number() < 0.0) angle.setNumber(0.0);
+    //                if (angle.number() > 90.0) angle.setNumber(90.0);
 
-//                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
-//            }
-//            else
-//            {
-//                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, Value(this, edge.angle()), segments, isCurvilinear));
-//            }
-//        }
+    //                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+    //            }
+    //            else
+    //            {
+    //                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, Value(this, edge.angle()), segments, isCurvilinear));
+    //            }
+    //        }
 
-//        // labels
-//        for (unsigned int i = 0; i < doc->geometry().labels().label().size(); i++)
-//        {
-//            XMLProblem::label label = doc->geometry().labels().label().at(i);
+    //        // labels
+    //        for (unsigned int i = 0; i < doc->geometry().labels().label().size(); i++)
+    //        {
+    //            XMLProblem::label label = doc->geometry().labels().label().at(i);
 
-//            if (label.valuex().present() && label.valuey().present())
-//            {
-//                Value x = Value(this, QString::fromStdString(label.valuex().get()));
-//                if (!x.isEvaluated()) throw AgrosException(x.error());
+    //            if (label.valuex().present() && label.valuey().present())
+    //            {
+    //                Value x = Value(this, QString::fromStdString(label.valuex().get()));
+    //                if (!x.isEvaluated()) throw AgrosException(x.error());
 
-//                Value y = Value(this, QString::fromStdString(label.valuey().get()));
-//                if (!y.isEvaluated()) throw AgrosException(y.error());
+    //                Value y = Value(this, QString::fromStdString(label.valuey().get()));
+    //                if (!y.isEvaluated()) throw AgrosException(y.error());
 
-//                m_scene->addLabel(new SceneLabel(m_scene,
-//                                                 PointValue(x, y),
-//                                                 label.area()));
-//            }
-//            else
-//            {
-//                Point point = Point(label.x(),
-//                                    label.y());
+    //                m_scene->addLabel(new SceneLabel(m_scene,
+    //                                                 PointValue(x, y),
+    //                                                 label.area()));
+    //            }
+    //            else
+    //            {
+    //                Point point = Point(label.x(),
+    //                                    label.y());
 
-//                m_scene->addLabel(new SceneLabel(m_scene,
-//                                                 point,
-//                                                 label.area()));
-//            }
-//        }
+    //                m_scene->addLabel(new SceneLabel(m_scene,
+    //                                                 point,
+    //                                                 label.area()));
+    //            }
+    //        }
 
-//        // fields
-//        for (unsigned int i = 0; i < doc->problem().fields().field().size(); i++)
-//        {
-//            XMLProblem::field field = doc->problem().fields().field().at(i);
+    //        // fields
+    //        for (unsigned int i = 0; i < doc->problem().fields().field().size(); i++)
+    //        {
+    //            XMLProblem::field field = doc->problem().fields().field().at(i);
 
-//            FieldInfo *fieldInfo = new FieldInfo(QString::fromStdString(field.field_id()));
+    //            FieldInfo *fieldInfo = new FieldInfo(QString::fromStdString(field.field_id()));
 
-//            // field config
-//            fieldInfo->load(&field.field_config());
+    //            // field config
+    //            fieldInfo->load(&field.field_config());
 
-//            // analysis type
-//            fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type())));
-//            // adaptivity
-//            fieldInfo->setAdaptivityType(adaptivityTypeFromStringKey(QString::fromStdString(field.adaptivity_type())));
-//            // linearity
-//            fieldInfo->setLinearityType(linearityTypeFromStringKey(QString::fromStdString(field.linearity_type())));
-//            // matrix solver
-//            if (field.matrix_solver().present())
-//                fieldInfo->setMatrixSolver(matrixSolverTypeFromStringKey(QString::fromStdString(field.matrix_solver().get())));
+    //            // analysis type
+    //            fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type())));
+    //            // adaptivity
+    //            fieldInfo->setAdaptivityType(adaptivityTypeFromStringKey(QString::fromStdString(field.adaptivity_type())));
+    //            // linearity
+    //            fieldInfo->setLinearityType(linearityTypeFromStringKey(QString::fromStdString(field.linearity_type())));
+    //            // matrix solver
+    //            if (field.matrix_solver().present())
+    //                fieldInfo->setMatrixSolver(matrixSolverTypeFromStringKey(QString::fromStdString(field.matrix_solver().get())));
 
-//            // label refinement
-//            for (unsigned int j = 0; j < field.refinement_labels().refinement_label().size(); j++)
-//            {
-//                XMLProblem::refinement_label label = field.refinement_labels().refinement_label().at(j);
+    //            // label refinement
+    //            for (unsigned int j = 0; j < field.refinement_labels().refinement_label().size(); j++)
+    //            {
+    //                XMLProblem::refinement_label label = field.refinement_labels().refinement_label().at(j);
 
-//                if (label.refinement_label_id() != -1)
-//                    fieldInfo->setLabelRefinement(m_scene->labels->items().at(label.refinement_label_id()), label.refinement_label_number());
-//            }
+    //                if (label.refinement_label_id() != -1)
+    //                    fieldInfo->setLabelRefinement(m_scene->labels->items().at(label.refinement_label_id()), label.refinement_label_number());
+    //            }
 
-//            // polynomial order
-//            for (unsigned int j = 0; j < field.polynomial_orders().polynomial_order().size(); j++)
-//            {
-//                XMLProblem::polynomial_order order = field.polynomial_orders().polynomial_order().at(j);
+    //            // polynomial order
+    //            for (unsigned int j = 0; j < field.polynomial_orders().polynomial_order().size(); j++)
+    //            {
+    //                XMLProblem::polynomial_order order = field.polynomial_orders().polynomial_order().at(j);
 
-//                fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order.polynomial_order_id()), order.polynomial_order_number());
-//            }
+    //                fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order.polynomial_order_id()), order.polynomial_order_number());
+    //            }
 
-//            // boundary conditions
-//            for (unsigned int j = 0; j < field.boundaries().boundary().size(); j++)
-//            {
-//                XMLProblem::boundary boundary = field.boundaries().boundary().at(j);
+    //            // boundary conditions
+    //            for (unsigned int j = 0; j < field.boundaries().boundary().size(); j++)
+    //            {
+    //                XMLProblem::boundary boundary = field.boundaries().boundary().at(j);
 
-//                // read marker
-//                SceneBoundary *bound = new SceneBoundary(m_scene,
-//                                                         fieldInfo,
-//                                                         QString::fromStdString(boundary.name()),
-//                                                         QString::fromStdString(boundary.type()));
+    //                // read marker
+    //                SceneBoundary *bound = new SceneBoundary(m_scene,
+    //                                                         fieldInfo,
+    //                                                         QString::fromStdString(boundary.name()),
+    //                                                         QString::fromStdString(boundary.type()));
 
-//                // default values
-//                Module::BoundaryType boundaryType = fieldInfo->boundaryType(QString::fromStdString(boundary.type()));
-//                foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-//                    bound->setValue(variable.id(), Value(this));
+    //                // default values
+    //                Module::BoundaryType boundaryType = fieldInfo->boundaryType(QString::fromStdString(boundary.type()));
+    //                foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+    //                    bound->setValue(variable.id(), Value(this));
 
-//                for (unsigned int k = 0; k < boundary.boundary_types().boundary_type().size(); k++)
-//                {
-//                    XMLProblem::boundary_type type = boundary.boundary_types().boundary_type().at(k);
+    //                for (unsigned int k = 0; k < boundary.boundary_types().boundary_type().size(); k++)
+    //                {
+    //                    XMLProblem::boundary_type type = boundary.boundary_types().boundary_type().at(k);
 
-//                    Value b = Value(this, QString::fromStdString(type.value()));
-//                    if (!b.isEvaluated()) throw AgrosException(b.error());
+    //                    Value b = Value(this, QString::fromStdString(type.value()));
+    //                    if (!b.isEvaluated()) throw AgrosException(b.error());
 
-//                    bound->setValue(QString::fromStdString(type.key()), b);
-//                }
+    //                    bound->setValue(QString::fromStdString(type.key()), b);
+    //                }
 
-//                m_scene->addBoundary(bound);
+    //                m_scene->addBoundary(bound);
 
-//                // add boundary to the edge marker
-//                for (unsigned int k = 0; k < boundary.boundary_edges().boundary_edge().size(); k++)
-//                {
-//                    XMLProblem::boundary_edge edge = boundary.boundary_edges().boundary_edge().at(k);
+    //                // add boundary to the edge marker
+    //                for (unsigned int k = 0; k < boundary.boundary_edges().boundary_edge().size(); k++)
+    //                {
+    //                    XMLProblem::boundary_edge edge = boundary.boundary_edges().boundary_edge().at(k);
 
-//                    m_scene->faces->at(edge.id())->addMarker(bound);
-//                }
-//            }
+    //                    m_scene->faces->at(edge.id())->addMarker(bound);
+    //                }
+    //            }
 
-//            // materials
-//            for (unsigned int j = 0; j < field.materials().material().size(); j++)
-//            {
-//                XMLProblem::material material = field.materials().material().at(j);
+    //            // materials
+    //            for (unsigned int j = 0; j < field.materials().material().size(); j++)
+    //            {
+    //                XMLProblem::material material = field.materials().material().at(j);
 
-//                // read marker
-//                SceneMaterial *mat = new SceneMaterial(m_scene,
-//                                                       fieldInfo,
-//                                                       QString::fromStdString(material.name()));
+    //                // read marker
+    //                SceneMaterial *mat = new SceneMaterial(m_scene,
+    //                                                       fieldInfo,
+    //                                                       QString::fromStdString(material.name()));
 
-//                // default values
-//                foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
-//                    mat->setValue(variable.id(), Value(this));
+    //                // default values
+    //                foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+    //                    mat->setValue(variable.id(), Value(this));
 
-//                for (unsigned int k = 0; k < material.material_types().material_type().size(); k++)
-//                {
-//                    XMLProblem::material_type type = material.material_types().material_type().at(k);
+    //                for (unsigned int k = 0; k < material.material_types().material_type().size(); k++)
+    //                {
+    //                    XMLProblem::material_type type = material.material_types().material_type().at(k);
 
-//                    Value m = Value(this, QString::fromStdString(type.value()));
-//                    if (!m.isEvaluated()) throw AgrosException(m.error());
+    //                    Value m = Value(this, QString::fromStdString(type.value()));
+    //                    if (!m.isEvaluated()) throw AgrosException(m.error());
 
-//                    mat->setValue(QString::fromStdString(type.key()), m);
-//                }
+    //                    mat->setValue(QString::fromStdString(type.key()), m);
+    //                }
 
-//                m_scene->addMaterial(mat);
+    //                m_scene->addMaterial(mat);
 
-//                // add boundary to the edge marker
-//                for (unsigned int k = 0; k < material.material_labels().material_label().size(); k++)
-//                {
-//                    XMLProblem::material_label label = material.material_labels().material_label().at(k);
+    //                // add boundary to the edge marker
+    //                for (unsigned int k = 0; k < material.material_labels().material_label().size(); k++)
+    //                {
+    //                    XMLProblem::material_label label = material.material_labels().material_label().at(k);
 
-//                    m_scene->labels->at(label.id())->addMarker(mat);
-//                }
-//            }
+    //                    m_scene->labels->at(label.id())->addMarker(mat);
+    //                }
+    //            }
 
-//            // add missing none markers
-//            m_scene->faces->addMissingFieldMarkers(fieldInfo);
-//            m_scene->labels->addMissingFieldMarkers(fieldInfo);
+    //            // add missing none markers
+    //            m_scene->faces->addMissingFieldMarkers(fieldInfo);
+    //            m_scene->labels->addMissingFieldMarkers(fieldInfo);
 
-//            // add field
-//            addField(fieldInfo);
-//        }
+    //            // add field
+    //            addField(fieldInfo);
+    //        }
 
-//        // couplings
-//        synchronizeCouplings();
+    //        // couplings
+    //        synchronizeCouplings();
 
-//        for (unsigned int i = 0; i < doc->problem().couplings().coupling().size(); i++)
-//        {
-//            XMLProblem::coupling coupling = doc->problem().couplings().coupling().at(i);
+    //        for (unsigned int i = 0; i < doc->problem().couplings().coupling().size(); i++)
+    //        {
+    //            XMLProblem::coupling coupling = doc->problem().couplings().coupling().at(i);
 
-//            if (hasCoupling(QString::fromStdString(coupling.source_fieldid()),
-//                            QString::fromStdString(coupling.target_fieldid())))
-//            {
-//                CouplingInfo *cpl = couplingInfo(QString::fromStdString(coupling.source_fieldid()),
-//                                                 QString::fromStdString(coupling.target_fieldid()));
-//                cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
-//            }
-//        }
+    //            if (hasCoupling(QString::fromStdString(coupling.source_fieldid()),
+    //                            QString::fromStdString(coupling.target_fieldid())))
+    //            {
+    //                CouplingInfo *cpl = couplingInfo(QString::fromStdString(coupling.source_fieldid()),
+    //                                                 QString::fromStdString(coupling.target_fieldid()));
+    //                cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
+    //            }
+    //        }
 
-//        // invalidate scene (parameter update)
-//        m_scene->invalidate();
-//    }
-//    catch (const xml_schema::expected_element& e)
-//    {
-//        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
-//    }
-//    catch (const xml_schema::expected_attribute& e)
-//    {
-//        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
-//    }
-//    catch (const xml_schema::exception& e)
-//    {
-//        throw AgrosException(QString::fromStdString(e.what()));
-//    }
-//    catch (AgrosException e)
-//    {
-//        throw e;
-//    }
+    //        // invalidate scene (parameter update)
+    //        m_scene->invalidate();
+    //    }
+    //    catch (const xml_schema::expected_element& e)
+    //    {
+    //        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
+    //    }
+    //    catch (const xml_schema::expected_attribute& e)
+    //    {
+    //        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
+    //    }
+    //    catch (const xml_schema::exception& e)
+    //    {
+    //        throw AgrosException(QString::fromStdString(e.what()));
+    //    }
+    //    catch (AgrosException e)
+    //    {
+    //        throw e;
+    //    }
 }
 
 void ProblemBase::writeProblemToJson(const QString &fileName)
@@ -1307,9 +1314,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         if (angle.number() < 0.0) angle.setNumber(0.0);
         if (angle.number() > 90.0) angle.setNumber(90.0);
 
-        bool isCurvilinear = faceJson[ISCURVILINEAR].toBool(); // (angle.number() > 0);
-
-        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments));
     }
 
     // qWarning() << "faces" << m_scene->faces->count();
@@ -1508,7 +1513,6 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         edgeJson[ID] = iedge;
         edgeJson[ANGLE] = edge->angleValue().toString();
         edgeJson[SEGMENTS] = edge->segments();
-        edgeJson[ISCURVILINEAR] = edge->isCurvilinear();
 
         QJsonArray listJson;
         listJson.append(m_scene->nodes->items().indexOf(edge->nodeStart()));
@@ -1669,8 +1673,8 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
 
         couplingJson[ID] = couplingInfo->couplingId();
         couplingJson[TYPE] = couplingTypeToStringKey(couplingInfo->couplingType());
-        couplingJson[SOURCE_FIELDID] = couplingInfo->sourceField()->fieldId();
-        couplingJson[TARGET_FIELDID] = couplingInfo->targetField()->fieldId();
+        couplingJson[SOURCE_FIELDID] = couplingInfo->sourceFieldId();
+        couplingJson[TARGET_FIELDID] = couplingInfo->targetFieldId();
 
         couplingsJson.append(couplingJson);
     }
@@ -1833,8 +1837,7 @@ void Computation::readFromProblem()
     // couplings
     foreach (CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
     {
-        m_couplingInfos[QPair<FieldInfo *, FieldInfo *>(fieldInfo(couplingInfo->sourceField()->fieldId()),
-                                                        fieldInfo(couplingInfo->targetField()->fieldId()))]->setCouplingType(couplingInfo->couplingType());
+        m_couplingInfos[qMakePair(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId())]->setCouplingType(couplingInfo->couplingType());
     }
 
     // default values

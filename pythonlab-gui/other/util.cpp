@@ -143,7 +143,7 @@ QString datadir()
 #ifdef Q_WS_WIN
     // local installation
     // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 #endif
 
@@ -151,7 +151,7 @@ QString datadir()
 #ifdef Q_WS_X11
     // local installation
     // solver
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath();
 
     // python
@@ -159,7 +159,7 @@ QString datadir()
         return QString::fromLatin1(getenv("PWD")) + "/../..";
 
     // system installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
         return QCoreApplication::applicationDirPath() + "/../share/agros";
 #endif
 

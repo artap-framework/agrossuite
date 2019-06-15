@@ -245,7 +245,6 @@ private:
     QLabel *lblEquation;
     ValueLineEdit *txtAngle;
     QSpinBox *txtSegments;
-    QCheckBox *chkIsCurvilinear;
     QLabel *lblLength;
 
     QComboBox *cmbNodeStart;
@@ -289,7 +288,7 @@ class SceneFaceCommandAdd : public QUndoCommand
 {
 public:
     SceneFaceCommandAdd(const PointValue &pointStart, const PointValue &pointEnd, const QMap<QString, QString> &markers,
-                        const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
+                        const Value &angle, int segments, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
@@ -299,14 +298,13 @@ private:
     QMap<QString, QString> m_markers;
     Value m_angle;
     int m_segments;
-    bool m_isCurvilinear;
 };
 
 class SceneEdgeCommandAddOrRemoveMulti : public QUndoCommand
 {
 public:
     SceneEdgeCommandAddOrRemoveMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
-                        QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0);
+                        QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QUndoCommand *parent = 0);
     void add();
     void remove();
 
@@ -314,8 +312,7 @@ private:
     QList<PointValue> m_pointStarts;
     QList<PointValue> m_pointEnds;
     QList<Value> m_angles;
-    QList<int> m_segments;
-    QList<bool> m_isCurvilinear;
+    QList<int> m_segments;    
     QList<QMap<QString, QString> > m_markers;
 };
 
@@ -323,8 +320,8 @@ class SceneEdgeCommandRemoveMulti : public SceneEdgeCommandAddOrRemoveMulti
 {
 public:
     SceneEdgeCommandRemoveMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
-                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0)
-        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, isCurvilinear, parent) {}
+                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QUndoCommand *parent = 0)
+        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, parent) {}
 
     void undo() { add(); }
     void redo() { remove(); }
@@ -334,8 +331,8 @@ class SceneEdgeCommandAddMulti : public SceneEdgeCommandAddOrRemoveMulti
 {
 public:
     SceneEdgeCommandAddMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
-                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0)
-        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, isCurvilinear, parent) {}
+                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QUndoCommand *parent = 0)
+        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, parent) {}
 
     void undo() { remove(); }
     void redo() { add(); }
@@ -345,7 +342,7 @@ class SceneFaceCommandRemove : public QUndoCommand
 {
 public:
     SceneFaceCommandRemove(const PointValue &pointStart, const PointValue &pointEnd, const QMap<QString, QString> &markers,
-                           const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
+                           const Value &angle, int segments, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
@@ -355,14 +352,13 @@ private:
     QMap<QString, QString> m_markers;
     Value m_angle;
     int m_segments;
-    bool m_isCurvilinear;
 };
 
 class SceneEdgeCommandEdit : public QUndoCommand
 {
 public:
     SceneEdgeCommandEdit(const PointValue &pointStart, const PointValue &pointEnd, const PointValue &pointStartNew, const PointValue &pointEndNew,
-                         const Value &angle, const Value &angleNew, int segments, int segmentsNew, bool isCurvilinear, bool isCurvilinearNew, QUndoCommand *parent = 0);
+                         const Value &angle, const Value &angleNew, int segments, int segmentsNew, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
@@ -375,8 +371,6 @@ private:
     Value m_angleNew;
     int m_segments;
     int m_segmentsNew;
-    bool m_isCurvilinear;
-    bool m_isCurvilinearNew;
 };
 
 // label *********************************************************************************************************************

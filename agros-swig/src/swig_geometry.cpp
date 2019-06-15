@@ -67,7 +67,7 @@ int SwigGeometry::addNode(PointValue point)
 
 int SwigGeometry::addEdge(double x1, double y1, double x2, double y2,
                           const map<string, string> &boundaries,
-                          double angle, int segments, int curvilinear)
+                          double angle, int segments)
 {
     qInfo() << "addEdge" << boundaries.size();
 
@@ -79,7 +79,7 @@ int SwigGeometry::addEdge(double x1, double y1, double x2, double y2,
 
     qInfo() << "addEdge" << boundaries.size() << " ok";
 
-    return addEdge(pointStart, pointEnd, valueAngle, segments, curvilinear, map<std::string, int>(), map<string, string>());
+    return addEdge(pointStart, pointEnd, valueAngle, segments, map<std::string, int>(), map<string, string>());
 }
 
 int SwigGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,

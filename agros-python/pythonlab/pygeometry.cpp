@@ -56,7 +56,7 @@ int PyGeometry::addNode(std::string x, std::string y)
     return Agros::problem()->scene()->nodes->items().indexOf(node);
 }
 
-int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
+int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments,
                         const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     PointValue pointStart = PointValue(Value(Agros::problem(), QString::fromStdString(x1)),
@@ -85,7 +85,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     nodeStart = Agros::problem()->scene()->addNode(nodeStart);
     SceneNode *nodeEnd = new SceneNode(Agros::problem()->scene(), pointEnd);
     nodeEnd = Agros::problem()->scene()->addNode(nodeEnd);
-    SceneFace *edge = new SceneFace(Agros::problem()->scene(), nodeStart, nodeEnd, valueAngle, segments, curvilinear);
+    SceneFace *edge = new SceneFace(Agros::problem()->scene(), nodeStart, nodeEnd, valueAngle, segments);
 
     try
     {
@@ -102,7 +102,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     return Agros::problem()->scene()->faces->items().indexOf(edge);
 }
 
-int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
+int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments,
                                const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
@@ -131,7 +131,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
     SceneFace *edge = new SceneFace(Agros::problem()->scene(),
                                     Agros::problem()->scene()->nodes->at(nodeStartIndex),
                                     Agros::problem()->scene()->nodes->at(nodeEndIndex),
-                                    valueAngle, segments, curvilinear);
+                                    valueAngle, segments);
 
     try
     {
@@ -148,7 +148,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
     return Agros::problem()->scene()->faces->items().indexOf(edge);
 }
 
-void PyGeometry::modifyEdge(int index, std::string angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+void PyGeometry::modifyEdge(int index, std::string angle, int segments, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
@@ -165,7 +165,6 @@ void PyGeometry::modifyEdge(int index, std::string angle, int segments, int isCu
 
     edge->setAngleValue(valueAngle);
     edge->setSegments(segments);
-    edge->setCurvilinear(isCurvilinear);
 
     setBoundaries(edge, boundaries);
 

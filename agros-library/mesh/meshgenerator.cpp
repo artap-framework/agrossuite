@@ -78,7 +78,6 @@
 #include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
-#include "mesh/agros_manifold.h"
 
 MeshGenerator::MeshGenerator(ProblemBase *problem)
     : QObject(),
@@ -203,106 +202,6 @@ void MeshGenerator::moveNode(MeshElement* element, Point* node, QList<Point*>& a
     }
 }
 
-void MeshGenerator::moveNodesOnCurvedEdges()
-{
-    // First move the boundary elements - they are easy, they can not distort any element that lies between the boundary and themselves.
-    for (int i = 0; i < edgeList.count(); i++)
-    {
-        MeshEdge edge = edgeList[i];
-
-        if (edge.marker == -1)
-            continue;
-
-        if (!(m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 && m_problem->scene()->faces->at(edge.marker)->isCurvilinear()))
-            continue;
-
-        // Only boundary now.
-        if (edge.neighElem[0] == -1 || edge.neighElem[1] == -1)
-        {
-            // assert(edge.marker >= 0); // markers changed to marker - 1, check...
-            if (edge.marker != -1)
-            {
-                // curve
-                if (m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 &&
-                        m_problem->scene()->faces->at(edge.marker)->isCurvilinear())
-                {
-                    // Nodes.
-                    Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
-                    // Center
-                    Point center = m_problem->scene()->faces->at(edge.marker)->center();
-                    // Radius
-                    double radius = m_problem->scene()->faces->at(edge.marker)->radius();
-
-                    // First node handling
-                    double pointAngle1 = atan2(center.y - node[0]->y, center.x - node[0]->x) - M_PI;
-                    node[0]->x = center.x + radius * cos(pointAngle1);
-                    node[0]->y = center.y + radius * sin(pointAngle1);
-
-                    // Second node handling
-                    double pointAngle2 = atan2(center.y - node[1]->y, center.x - node[1]->x) - M_PI;
-                    node[1]->x = center.x + radius * cos(pointAngle2);
-                    node[1]->y = center.y + radius * sin(pointAngle2);
-                }
-            }
-        }
-    }
-
-    // Now move the problematic ones
-    for (int i = 0; i < edgeList.count(); i++)
-    {
-        MeshEdge edge = edgeList[i];
-
-        if (edge.marker == -1)
-            continue;
-
-        if (!(m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 && m_problem->scene()->faces->at(edge.marker)->isCurvilinear()))
-            continue;
-
-        // Boundary has been taken care of.
-        if (edge.neighElem[0] == -1 || edge.neighElem[1] == -1)
-            continue;
-
-        // assert(edge.marker >= 0); // markers changed to marker - 1, check...
-        if (edge.marker != -1)
-        {
-            // curve
-            if (m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 &&
-                    m_problem->scene()->faces->at(edge.marker)->isCurvilinear())
-            {
-                // Nodes.
-                Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
-                // Center
-                Point center = m_problem->scene()->faces->at(edge.marker)->center();
-                // Radius
-                double radius = m_problem->scene()->faces->at(edge.marker)->radius();
-
-                // Handle the nodes recursively using moveNode()
-                for (int inode = 0; inode < 2; inode++)
-                {
-                    double pointAngle = atan2(center.y - node[inode]->y, center.x - node[inode]->x) - M_PI;
-                    double x_displacement = center.x + radius * cos(pointAngle) - node[inode]->x;
-                    double y_displacement = center.y + radius * sin(pointAngle) - node[inode]->y;
-
-                    // Initialization for the one node algorithm
-                    QList<Point*> already_moved_nodes;
-                    QList<MeshElement*> elements_to_pass;
-                    QList<std::pair<MeshElement*, bool> > determinants_to_pass;
-
-                    // Find elements sharing this node
-                    elementsSharingNode(&this->elementList[edge.neighElem[0]], node[inode], elements_to_pass);
-
-                    // Calculate determinants for them
-                    for (int ifound_elems = 0; ifound_elems < elements_to_pass.count(); ifound_elems++)
-                        determinants_to_pass.append(std::pair<MeshElement*, bool>(elements_to_pass[ifound_elems], getDeterminant(elements_to_pass[ifound_elems])));
-
-                    // Start the algorithm
-                    moveNode(&this->elementList[edge.neighElem[0]], node[inode], already_moved_nodes, x_displacement, y_displacement, 1.0, determinants_to_pass);
-                }
-            }
-        }
-    }
-}
-
 void MeshGenerator::fillNeighborStructures()
 {
     QList<QSet<int> > vertexElements;
@@ -344,55 +243,6 @@ void MeshGenerator::writeTodealii()
 
     QList<QList<QPair<int, int> > > edges_between_elements;
 
-    // Curves //
-    // we have to do this here, because the manifold Ids we create here are used for elements and edges in the following.
-    std::map<dealii::types::manifold_id, AgrosManifoldSurface<2>*> surfManifolds;
-    std::map<dealii::types::manifold_id, AgrosManifoldVolume<2>*> volManifolds;
-
-    // it is important that we know what is the largest edge marker, so that the manifold_ids for elements (volumetric) do not coincide with the surface ones.
-    unsigned int maxEdgeMarker = edgeList.count() + 1;
-
-    for (int edge_i = 0; edge_i < edgeList.count(); edge_i++)
-    {
-        MeshEdge edge = edgeList[edge_i];
-        if (edge.marker != -1)
-        {
-            SceneFace* sceneFace = m_problem->scene()->faces->at(edge.marker);
-            if (sceneFace->angle() > 0.0 && sceneFace->isCurvilinear())
-            {
-                double lengthPoints = (sceneFace->nodeEnd()->point()
-                                       - sceneFace->nodeStart()->point())
-                        .magnitude();
-                double relDiff = (sceneFace->length() - lengthPoints) / sceneFace->length();
-                // qDebug() << "length = " << sceneEdge->length() << ", points = " << lengthPoints << ", diff " << relDiff;
-                if (relDiff < 0.01)
-                    continue;
-
-                dealii::types::manifold_id edgeManifoldId = edge_i + 1;
-                dealii::types::manifold_id elementManifoldId[2] = { maxEdgeMarker + edge.neighElem[0], maxEdgeMarker + edge.neighElem[1] };
-
-                if (surfManifolds.find(edgeManifoldId) == surfManifolds.end())
-                    surfManifolds.insert(std::pair<dealii::types::manifold_id, AgrosManifoldSurface<2>*>(edgeManifoldId,
-                                                                                                         new AgrosManifoldSurface<2>(edgeManifoldId,
-                                                                                                                                     sceneFace->center(), sceneFace->radius())));
-
-                for (int neighElem_i = 0; neighElem_i < 2; neighElem_i++)
-                {
-                    if (edge.neighElem[neighElem_i] != -1)
-                    {
-                        if (volManifolds.find(elementManifoldId[neighElem_i]) == volManifolds.end())
-                            volManifolds.insert(std::pair<dealii::types::manifold_id, AgrosManifoldVolume<2>*>(elementManifoldId[neighElem_i],
-                                                                                                               new AgrosManifoldVolume<2>(elementManifoldId[neighElem_i],
-                                                                                                                                          surfManifolds.find(edgeManifoldId)->second)));
-                        else
-                            volManifolds.find(elementManifoldId[neighElem_i])->second->push_surfManifold(surfManifolds.find(edgeManifoldId)->second);
-                    }
-                }
-            }
-        }
-    }
-
-
     // elements
     std::vector<dealii::CellData<2> > cells;
     for (int element_i = 0; element_i < elementList.count(); element_i++)
@@ -400,7 +250,7 @@ void MeshGenerator::writeTodealii()
         MeshElement element = elementList[element_i];
         if (element.isUsed && (!m_problem->scene()->labels->at(element.marker)->isHole()))
         {
-            dealii::types::manifold_id elementManifoldId = maxEdgeMarker + element_i;
+            // dealii::types::manifold_id elementManifoldId = maxEdgeMarker + element_i;
             if (element.isTriangle())
             {
                 assert("triangle");
@@ -413,10 +263,6 @@ void MeshGenerator::writeTodealii()
                 cell.vertices[2] = element.node[2];
                 cell.vertices[3] = element.node[3];
                 cell.material_id = element.marker + 1;
-                if (volManifolds.find(elementManifoldId) == volManifolds.end())
-                    cell.manifold_id = 0;
-                else
-                    cell.manifold_id = elementManifoldId;
 
                 cells.push_back(cell);
             }
@@ -424,7 +270,6 @@ void MeshGenerator::writeTodealii()
 
         edges_between_elements.push_back(QList<QPair<int, int> > ());
     }
-
 
     // boundary markers
     dealii::SubCellData subcelldata;
@@ -452,47 +297,17 @@ void MeshGenerator::writeTodealii()
             cell_data.boundary_id = edgeList[edge_i].marker + 1;
             // std::cout << "marker: " << edgeList[edge_i].marker + 1 << std::endl;
         }
-        // todo: co je hranice?
-        // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...
-        //            if (Agros::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
-        //                continue;
-
-        //            if (Agros::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(Agros::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros::problem()->fieldInfo("current")))
-        //                continue;
-
-
-        //cell_data.boundary_id = dealii::numbers::internal_face_boundary_id;
-        // todo: (Pavel Kus) I do not know how exactly this works, whether internal_face_boundary_id is determined apriori or not
-        // todo: but it seems to be potentially dangerous, when there would be many boundaries
-        //assert(cell_data.boundary_id != dealii::numbers::internal_face_boundary_id);
-
-        if (surfManifolds.find(edge_i + 1) == surfManifolds.end())
-            cell_data.manifold_id = 0;
-        else
-            cell_data.manifold_id = edge_i + 1;
-
         subcelldata.boundary_lines.push_back(cell_data);
     }
 
     dealii::GridTools::delete_unused_vertices(vertices, cells, subcelldata);
     dealii::GridReordering<2>::invert_all_cells_of_negative_grid(vertices, cells);
     dealii::GridReordering<2>::reorder_cells(cells);
-    m_triangulation.create_triangulation_compatibility(vertices, cells, subcelldata);
-    // m_triangulation.create_triangulation(vertices, cells, subcelldata);
-
-    // Fix of dealII automatic marking of sub-objects with the same manifoldIds (quads -> lines).
-    for (dealii::Triangulation<2>::face_iterator line = m_triangulation.begin_face(); line != m_triangulation.end_face(); ++line) {
-        if (line->manifold_id() >= maxEdgeMarker)
-            line->set_manifold_id(0);
-    }
-
-    for (std::map<dealii::types::manifold_id, AgrosManifoldVolume<2>*>::iterator iterator = volManifolds.begin(); iterator != volManifolds.end(); iterator++) {
-        m_triangulation.set_manifold(iterator->first, *iterator->second);
-    }
-
-    for (std::map<dealii::types::manifold_id, AgrosManifoldSurface<2>*>::iterator iterator = surfManifolds.begin(); iterator != surfManifolds.end(); iterator++) {
-        m_triangulation.set_manifold(iterator->first, *iterator->second);
-    }
+    // swap 2 and 3 nodes
+    for (unsigned int cell=0; cell<cells.size(); ++cell)
+        std::swap(cells[cell].vertices[2], cells[cell].vertices[3]);
+    // create triangulation
+    m_triangulation.create_triangulation(vertices, cells, subcelldata);
 
     dealii::Triangulation<2>::cell_iterator cell = m_triangulation.begin();
     dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation.end();
@@ -537,17 +352,20 @@ void MeshGenerator::writeTodealii()
     }
 }
 
-bool MeshGenerator::prepare()
+bool MeshGenerator::prepare(bool loops)
 {
-    try
+    if (loops)
     {
-        m_problem->scene()->invalidate();
-        m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
-    }
-    catch (AgrosMeshException& ame)
-    {
-        Agros::log()->printError(tr("Mesh generator"), ame.toString());
-        return false;
+        try
+        {
+            m_problem->scene()->invalidate();
+            m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
+        }
+        catch (AgrosMeshException& ame)
+        {
+            Agros::log()->printError(tr("Mesh generator"), ame.toString());
+            return false;
+        }
     }
 
     QFile::remove(tempProblemFileName() + ".msh");
