@@ -19,7 +19,8 @@ cdef extern from "../../agros-python/pythonlab/pyproblem.h":
 
         void adaptivityInfo(int timeStep, vector[double] &error, vector[int] &dofs) except +
 
-        string solution(int timeStep, int adaptivityStep, vector[double] &sln) except +
+        void setSolution(int timeStep, int adaptivityStep, vector[double] &sln) except +
+        void getSolution(int timeStep, int adaptivityStep, vector[double] &sln) except +
 
         void exportVTK(string &fileName, int timeStep, int adaptivityStep, const string &variable, string physicFieldVariableComp)
 
@@ -221,7 +222,7 @@ cdef class __Solution__:
     # solution
     def solution(self, time_step = None, adaptivity_step = None):
         cdef vector[double] sln_vector
-        self._solution.solution(int(-1 if time_step is None else time_step),
+        self._solution.getSolution(int(-1 if time_step is None else time_step),
                                 int(-1 if adaptivity_step is None else adaptivity_step), 
                                 sln_vector)
                                 
@@ -230,3 +231,10 @@ cdef class __Solution__:
             sln.append(sln_vector[i])
         
         return sln
+
+    def setSolution(self, sln, time_step = None, adaptivity_step = None):
+        cdef vector[double] sln_vector = sln
+
+        self._solution.setSolution(int(-1 if time_step is None else time_step),
+                                int(-1 if adaptivity_step is None else adaptivity_step),
+                                sln_vector)

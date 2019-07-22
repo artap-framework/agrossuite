@@ -164,7 +164,8 @@ public:
     void adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const;
 
     // solution (internal)
-    void solution(int timeStep, int adaptivityStep, vector<double> &sln) const;
+    void getSolution(int timeStep, int adaptivityStep, vector<double> &sln) const;
+    void setSolution(int timeStep, int adaptivityStep, vector<double> &sln);
 
     // export vtk
     void exportVTK(const std::string &fileName, int timeStep, int adaptivityStep, const std::string &variable, std::string physicFieldVariableComp);

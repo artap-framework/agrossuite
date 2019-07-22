@@ -53,6 +53,7 @@ public:
     inline dealii::hp::DoFHandler<2> &doFHandler() const { return *m_doFHandler; }
     inline dealii::Vector<double> &solution() { return m_solution; }
     inline dealii::Vector<double> solution() const { return m_solution; }
+    inline void setSolution(dealii::Vector<double> &solution) { m_solution = solution; }
 
     bool isNull();
 

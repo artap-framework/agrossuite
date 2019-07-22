@@ -583,7 +583,7 @@ void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int>
     }
 }
 
-void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln) const
+void PySolution::getSolution(int timeStep, int adaptivityStep, vector<double> &sln) const
 {
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
@@ -601,6 +601,31 @@ void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln)
 
     sln = std::vector<double>();
     throw logic_error(QObject::tr("Solution does not exist.").toStdString());
+}
+
+void PySolution::setSolution(int timeStep, int adaptivityStep, vector<double> &sln)
+{
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    FieldSolutionID fsid(m_fieldInfo->fieldId(), timeStep, adaptivityStep);
+    if (m_computation->solutionStore()->contains(fsid))
+    {
+        MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
+
+        qInfo() << "OK 1";
+        dealii::Vector<double> solution = ma.solution();
+        for (unsigned int i = 0; i < sln.size(); i++)
+            solution[i] = sln[i];
+
+        // set solution
+        ma.setSolution(solution);
+
+        qInfo() << "OK 2";
+        return;
+    }
+
+    throw logic_error(QObject::tr("Solution cannot be modified.").toStdString());
 }
 
 void PySolution::exportVTK(const std::string &fileName, int timeStep, int adaptivityStep, const std::string &variable, std::string physicFieldVariableComp)
