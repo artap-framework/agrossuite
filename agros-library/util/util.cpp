@@ -364,7 +364,7 @@ QString cacheProblemDir()
     if (!dirc.exists())
         cch = tempProblemDir();
 
-    static QString str = QString("%1/%2").
+    QString str = QString("%1/%2").
             arg(cch).
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif

@@ -73,6 +73,7 @@ public:
     MultiArray &multiArray(FieldSolutionID solutionID);
 
     void addSolution(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution, SolutionRunTimeDetails runTime);
+    void replaceSolution(FieldSolutionID solutionID, MultiArray &ma);
     void removeSolution(FieldSolutionID solutionID, bool saveRunTime = true);
 
     // last adaptive step for given time step. If time step not given, last time step used implicitly

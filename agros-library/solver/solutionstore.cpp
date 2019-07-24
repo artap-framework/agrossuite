@@ -283,6 +283,26 @@ void SolutionStore::addSolution(FieldSolutionID solutionID,
     saveRunTimeDetails();
 }
 
+void SolutionStore::replaceSolution(FieldSolutionID solutionID, MultiArray &ma)
+{
+    // save solotion
+    QString baseFN = baseStoreFileName(solutionID);
+
+    QString fnDoF = QString("%1.dof").arg(baseFN);
+    std::ofstream ofsDoF(fnDoF.toStdString());
+    boost::archive::binary_oarchive sbDoF(ofsDoF);
+    ma.doFHandler().save(sbDoF, 0);
+
+    QString fnSol = QString("%1.sol").arg(baseFN);
+    std::ofstream ofsSol(fnSol.toStdString());
+    boost::archive::binary_oarchive sbSol(ofsSol);
+    ma.solution().save(sbSol, 0);
+
+    // replace the cache
+    m_multiSolutionDealCache.remove(solutionID);
+    insertMultiSolutionToCache(solutionID, ma.doFHandler(), ma.solution());
+}
+
 void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
 {
     assert(m_multiSolutions.contains(solutionID));
