@@ -178,6 +178,12 @@ def appimage_package():
 def callgrind():
     call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  
 
+def python_pack():
+    call(['python3', 'setup.py', 'sdist', 'bdist_wheel'])	  
+
+def python_upload():
+    call(['python3', '-m', 'twine', 'upload', 'dist/agrossuite*'])	  
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
@@ -221,7 +227,11 @@ if __name__ == "__main__":
     # equations
     eqs = subparsers.add_parser('eqs', help='generate equations from modules')
 
-     # callgrind
+    # python package
+    py_pack = subparsers.add_parser('python_pack', help='Prepare agrossuite package')
+    py_upload = subparsers.add_parser('python_upload', help='Upload agrossuite package - pypi')
+
+    # callgrind
     cgrind = subparsers.add_parser('callgrind', help='call callgrind')
 
     args = parser.parse_args()
@@ -252,6 +262,13 @@ if __name__ == "__main__":
 
     if (args.command == 'eqs'):
         equations()
-        
+    
     if (args.command == 'callgrind'):
         callgrind()
+
+    if (args.command == 'python_pack'):
+        python_pack()
+
+    if (args.command == 'python_upload'):
+        python_upload()
+
