@@ -313,18 +313,18 @@ QString datadir()
         return QString::fromLatin1(getenv("PWD")) + "/../..";
     else if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
         return QString::fromLatin1(getenv("PWD")) + "/";
-    else if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QDir::homePath() + QString::fromLatin1("/.local/lib/python3.6/site-packages/agrossuite/");
-    else if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.7/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QDir::homePath() + QString::fromLatin1("/.local/lib/python3.7/site-packages/agrossuite/");
-    else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QString::fromLatin1("/usr/local/lib/python3.6/site-packages/agrossuite/");
-    else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.7/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QString::fromLatin1("/usr/local/lib/python3.7/site-packages/agrossuite/");
-    else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QString::fromLatin1("/usr/lib/python3.6/site-packages/agrossuite/");
-    else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.7/site-packages/agrossuite/resources/templates/empty.tpl")))
-        return QString::fromLatin1("/usr/lib/python3.7/site-packages/agrossuite/");
+    else
+    {
+        for (int i = 9; i > 5; i--)
+        {
+            if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                return QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/").arg(i);
+            else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                return QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/").arg(i);
+            else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                return QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/").arg(i);
+        }
+    }
 #endif
 
     qCritical() << "Datadir not found.";

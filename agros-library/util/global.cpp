@@ -144,7 +144,7 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 
     // plugins
     // read plugins
-#ifdef AGROS_BUILD_STATIC
+#ifdef AGROS_BUILD_PLUGIN_STATIC
     foreach (QObject *obj, QPluginLoader::staticInstances())
     {
         PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
