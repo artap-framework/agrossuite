@@ -30,7 +30,7 @@ static integer c__0 = 0;
 /* | n	   -- the dimension of the problem                                  | */
 /* |                                                                       | */
 /* +-----------------------------------------------------------------------+ */
-integer direct_dirgetlevel_(integer *pos, integer *length, integer *maxfunc, integer 
+integer direct_dirgetlevel_(integer *pos, integer *length, integer *maxfunc, integer
 	*n, integer jones)
 {
     /* System generated locals */
@@ -38,6 +38,8 @@ integer direct_dirgetlevel_(integer *pos, integer *length, integer *maxfunc, int
 
     /* Local variables */
     integer i__, k, p, help;
+
+    (void) maxfunc;
 
 /* JG 09/15/00 Added variable JONES (see above) */
     /* Parameter adjustments */
@@ -94,7 +96,7 @@ integer direct_dirgetlevel_(integer *pos, integer *length, integer *maxfunc, int
 /* |         Added Ifeasiblef to call to keep track if a feasible point has| */
 /* |         been found.                                                   | */
 /* |    Changed 07/16/01 JG                                                | */
-/* |         Changed if statement to prevent run-time errors.              |                                  
+/* |         Changed if statement to prevent run-time errors.              |
                  | */
 /* +-----------------------------------------------------------------------+ */
 /* Subroutine */ void direct_dirchoose_(integer *anchor, integer *s, integer *actdeep,
@@ -159,7 +161,7 @@ L12:
     novalue = 0;
     if (anchor[-1] > 0) {
 	novalue = anchor[-1];
-	novaluedeep = direct_dirgetlevel_(&novalue, &length[length_offset], maxfunc, 
+	novaluedeep = direct_dirgetlevel_(&novalue, &length[length_offset], maxfunc,
 		n, jones);
     }
     *maxpos = k - 1;
@@ -233,7 +235,7 @@ L12:
 		helplower = *kmax;
 	    }
 	    if (f[(j___ << 1) + 1] - helplower * thirds[s[j + (s_dim1 << 1)]] >
-		     MIN(*minf - epsrel * fabs(*minf), 
+		     MIN(*minf - epsrel * fabs(*minf),
 			 *minf - epsabs)) {
 		if (logfile)
 		     fprintf(logfile, "> minf - epslminfl\n");
@@ -278,6 +280,8 @@ L40:
 
     /* Local variables */
     integer i__, oldmaxpos, pos, help, iflag, actdeep;
+
+    (void)  maxdeep; (void) maxfunc;
 
 /* +-----------------------------------------------------------------------+ */
 /* | JG 07/16/01 Added flag to prevent run time-errors on some systems.    | */
@@ -341,7 +345,7 @@ L40:
 /* | n	   -- the dimension of the problem                                  | */
 /* |                                                                       | */
 /* +-----------------------------------------------------------------------+ */
-integer direct_dirgetmaxdeep_(integer *pos, integer *length, integer *maxfunc, 
+integer direct_dirgetmaxdeep_(integer *pos, integer *length, integer *maxfunc,
 	integer *n)
 {
     /* System generated locals */
@@ -349,6 +353,8 @@ integer direct_dirgetmaxdeep_(integer *pos, integer *length, integer *maxfunc,
 
     /* Local variables */
     integer i__, help;
+
+    (void) maxfunc;
 
     /* Parameter adjustments */
     length_dim1 = *n;
@@ -367,7 +373,7 @@ integer direct_dirgetmaxdeep_(integer *pos, integer *length, integer *maxfunc,
     return help;
 } /* dirgetmaxdeep_ */
 
-static integer isinbox_(doublereal *x, doublereal *a, doublereal *b, integer *n, 
+static integer isinbox_(doublereal *x, doublereal *a, doublereal *b, integer *n,
 	integer *lmaxdim)
 {
     /* System generated locals */
@@ -376,15 +382,12 @@ static integer isinbox_(doublereal *x, doublereal *a, doublereal *b, integer *n,
     /* Local variables */
     integer outofbox, i__;
 
-    /* Parameter adjustments */
-    --b;
-    --a;
-    --x;
+    (void) lmaxdim;
 
     /* Function Body */
     outofbox = 1;
     i__1 = *n;
-    for (i__ = 1; i__ <= i__1; ++i__) {
+    for (i__ = 0; i__ < i__1; ++i__) {
 	if (a[i__] > x[i__] || b[i__] < x[i__]) {
 	    outofbox = 0;
 	    goto L1010;
@@ -404,7 +407,7 @@ L1010:
 /* | Resort the list so that the infeasible point is in the list with the  | */
 /* | replaced value.                                                       | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ static void dirresortlist_(integer *replace, integer *anchor, 
+/* Subroutine */ static void dirresortlist_(integer *replace, integer *anchor,
 	doublereal *f, integer *point, integer *length, integer *n, integer *
 	maxfunc, integer *maxdim, const integer *maxdeep, FILE *logfile,
 					    integer jones)
@@ -415,6 +418,8 @@ L1010:
     /* Local variables */
     integer i__, l, pos;
     integer start;
+
+    (void) maxdim; (void) maxdeep;
 
 /* +-----------------------------------------------------------------------+ */
 /* | Get the length of the hyper rectangle with infeasible mid point and   | */
@@ -502,7 +507,7 @@ L20:
 /* L30: */
 	    }
 L40:
-	    pos = pos;
+	    ;
 	}
     }
 } /* dirresortlist_ */
@@ -515,10 +520,10 @@ L40:
 /* | If this is the case, replace the function value at the center of the  | */
 /* | hyper rectangle by the lowest function value of a nearby function.    | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirreplaceinf_(integer *free, integer *freeold, 
-	doublereal *f, doublereal *c__, doublereal *thirds, integer *length, 
-	integer *anchor, integer *point, doublereal *c1, doublereal *c2, 
-	integer *maxfunc, const integer *maxdeep, integer *maxdim, integer *n, 
+/* Subroutine */ void direct_dirreplaceinf_(integer *free, integer *freeold,
+	doublereal *f, doublereal *c__, doublereal *thirds, integer *length,
+	integer *anchor, integer *point, doublereal *c1, doublereal *c2,
+	integer *maxfunc, const integer *maxdeep, integer *maxdim, integer *n,
 	FILE *logfile, doublereal *fmax, integer jones)
 {
     /* System generated locals */
@@ -530,6 +535,8 @@ L40:
     integer i__, j, k, l;
     doublereal x[32], sidelength;
     integer help;
+
+    (void) freeold;
 
 /* +-----------------------------------------------------------------------+ */
 /* | JG 01/22/01 Added variable to keep track of the maximum value found.  | */
@@ -600,7 +607,7 @@ L40:
 /* Computing MIN */
 			 d__1 = f[(i__ << 1) + 1], d__2 = f[(k << 1) + 1];
 			 f[(i__ << 1) + 1] = MIN(d__1,d__2);
-			 f[(i__ << 1) + 2] = 1.; 
+			 f[(i__ << 1) + 2] = 1.;
 		    }
 		}
 /* L30: */
@@ -614,8 +621,8 @@ L40:
 			    c_dim1] * c2[l];
 /* L200: */
 		}
-		dirresortlist_(&i__, &anchor[-1], &f[3], &point[1], 
-			       &length[length_offset], n, 
+		dirresortlist_(&i__, &anchor[-1], &f[3], &point[1],
+			       &length[length_offset], n,
 			       maxfunc, maxdim, maxdeep, logfile, jones);
 	    } else {
 /* +-----------------------------------------------------------------------+ */
@@ -638,7 +645,7 @@ L40:
 /* +-----------------------------------------------------------------------+ */
 /* |    SUBROUTINE DIRInsert                                               | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ static void dirinsert_(integer *start, integer *ins, integer *point, 
+/* Subroutine */ static void dirinsert_(integer *start, integer *ins, integer *point,
 	doublereal *f, integer *maxfunc)
 {
     /* System generated locals */
@@ -705,6 +712,8 @@ L40:
     integer j;
     integer pos;
     integer pos1, pos2, deep;
+
+    (void) maxdeep;
 
 /* JG 09/24/00 Changed this to Getlevel */
     /* Parameter adjustments */
@@ -858,11 +867,11 @@ L50:
 /* |    SUBROUTINE DIRSamplepoints                                         | */
 /* |    Subroutine to sample the new points.                               | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirsamplepoints_(doublereal *c__, integer *arrayi, 
-	doublereal *delta, integer *sample, integer *start, integer *length, 
-	FILE *logfile, doublereal *f, integer *free, 
+/* Subroutine */ void direct_dirsamplepoints_(doublereal *c__, integer *arrayi,
+	doublereal *delta, integer *sample, integer *start, integer *length,
+	FILE *logfile, doublereal *f, integer *free,
 	integer *maxi, integer *point, doublereal *x, doublereal *l,
-	 doublereal *minf, integer *minpos, doublereal *u, integer *n, 
+	 doublereal *minf, integer *minpos, doublereal *u, integer *n,
 	integer *maxfunc, const integer *maxdeep, integer *oops)
 {
     /* System generated locals */
@@ -871,6 +880,7 @@ L50:
     /* Local variables */
     integer j, k, pos;
 
+    (void) minf; (void) minpos; (void) maxfunc; (void) maxdeep; (void) oops;
 
     /* Parameter adjustments */
     --u;
@@ -931,8 +941,8 @@ L50:
 /* |    Changed 02-24-2000                                                 | */
 /* |      Replaced if statement by min (line 367)                          | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirdivide_(integer *new__, integer *currentlength, 
-	integer *length, integer *point, integer *arrayi, integer *sample, 
+/* Subroutine */ void direct_dirdivide_(integer *new__, integer *currentlength,
+	integer *length, integer *point, integer *arrayi, integer *sample,
 	integer *list2, doublereal *w, integer *maxi, doublereal *f, integer *
 	maxfunc, const integer *maxdeep, integer *n)
 {
@@ -944,6 +954,7 @@ L50:
     integer i__, j, k, pos, pos2;
     integer start;
 
+    (void) maxfunc; (void) maxdeep;
 
     /* Parameter adjustments */
     f -= 3;
@@ -970,7 +981,7 @@ L50:
 	d__1 = f[(pos << 1) + 1], d__2 = w[j];
 	w[j] = MIN(d__1,d__2);
 	pos = point[pos];
-	dirinsertlist_2__(&start, &j, &k, &list2[list2_offset], &w[1], maxi, 
+	dirinsertlist_2__(&start, &j, &k, &list2[list2_offset], &w[1], maxi,
 		n);
 /* L10: */
     }
@@ -979,10 +990,10 @@ L50:
     for (j = 1; j <= i__1; ++j) {
 	dirsearchmin_(&start, &list2[list2_offset], &pos, &k, n);
 	pos2 = start;
-	length[k + *sample * length_dim1] = *currentlength + 1; 
+	length[k + *sample * length_dim1] = *currentlength + 1;
 	i__2 = *maxi - j + 1;
 	for (i__ = 1; i__ <= i__2; ++i__) {
-	    length[k + pos * length_dim1] = *currentlength + 1; 
+	    length[k + pos * length_dim1] = *currentlength + 1;
 	    pos = point[pos];
 	    length[k + pos * length_dim1] = *currentlength + 1;
 /* JG 07/10/01 pos2 = 0 at the end of the 30-loop. Since we end */
@@ -1034,8 +1045,8 @@ L50:
 /* | The subroutine whose name is passed through the argument fcn.         | */
 /* |                                                                       | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirinfcn_(fp fcn, doublereal *x, doublereal *c1, 
-	doublereal *c2, integer *n, doublereal *f, integer *flag__, 
+/* Subroutine */ void direct_dirinfcn_(fp fcn, doublereal *x, doublereal *c1,
+	doublereal *c2, integer *n, doublereal *f, integer *flag__,
 				       void *fcn_data)
 {
     /* System generated locals */
@@ -1088,6 +1099,8 @@ L50:
     /* Local variables */
     integer i__, j, help;
 
+    (void) maxfunc;
+
     /* Parameter adjustments */
     --arrayi;
     length_dim1 = *n;
@@ -1136,25 +1149,24 @@ L50:
 /* |    Changed 01/23/01                                                   | */
 /* |       Added variable Ierror to keep track of errors.                  | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirinit_(doublereal *f, fp fcn, doublereal *c__, 
-	integer *length, integer *actdeep, integer *point, integer *anchor, 
-	integer *free, FILE *logfile, integer *arrayi, 
-	integer *maxi, integer *list2, doublereal *w, doublereal *x, 
-	doublereal *l, doublereal *u, doublereal *minf, integer *minpos, 
+/* Subroutine */ void direct_dirinit_(doublereal *f, fp fcn, doublereal *c__,
+	integer *length, integer *actdeep, integer *point, integer *anchor,
+	integer *free, FILE *logfile, integer *arrayi,
+	integer *maxi, integer *list2, doublereal *w, doublereal *x,
+	doublereal *l, doublereal *u, doublereal *minf, integer *minpos,
 	doublereal *thirds, doublereal *levels, integer *maxfunc, const integer *
 	maxdeep, integer *n, integer *maxor, doublereal *fmax, integer *
 	ifeasiblef, integer *iinfeasible, integer *ierror, void *fcndata,
 	integer jones, double starttime, double maxtime, int *force_stop)
 {
     /* System generated locals */
-    integer c_dim1, c_offset, length_dim1, length_offset, list2_dim1, 
+    integer c_dim1, c_offset, length_dim1, length_offset, list2_dim1,
 	    list2_offset, i__1, i__2;
 
     /* Local variables */
     integer i__, j;
     integer new__, help, oops;
     doublereal help2, delta;
-    doublereal costmin;
 
 /* +-----------------------------------------------------------------------+ */
 /* | JG 01/22/01 Added variable to keep track of the maximum value found.  | */
@@ -1191,7 +1203,6 @@ L50:
 
     /* Function Body */
     *minf = HUGE_VAL;
-    costmin = *minf;
 /* JG 09/15/00 If Jones way of characterising rectangles is used, */
 /*             initialise thirds to reflect this. */
     if (jones == 0) {
@@ -1256,7 +1267,6 @@ L50:
     }
 /* JG 09/25/00 Remove IF */
     *minf = f[3];
-    costmin = f[3];
     *minpos = 1;
     *actdeep = 2;
     point[1] = 0;
@@ -1270,7 +1280,7 @@ L50:
     new__ = *free;
     direct_dirsamplepoints_(&c__[c_offset], &arrayi[1], &delta, &c__1, &new__, &
 	    length[length_offset], logfile, &f[3], free, maxi, &
-	    point[1], &x[1], &l[1], minf, minpos, &u[1], n, 
+	    point[1], &x[1], &l[1], minf, minpos, &u[1], n,
 	    maxfunc, maxdeep, &oops);
 /* +-----------------------------------------------------------------------+ */
 /* | JG 01/23/01 Added error checking.                                     | */
@@ -1285,7 +1295,7 @@ L50:
 /* +-----------------------------------------------------------------------+ */
     direct_dirsamplef_(&c__[c_offset], &arrayi[1], &delta, &c__1, &new__, &length[
 	    length_offset], logfile, &f[3], free, maxi, &point[
-	    1], fcn, &x[1], &l[1], minf, minpos, &u[1], n, maxfunc, 
+	    1], fcn, &x[1], &l[1], minf, minpos, &u[1], n, maxfunc,
 	    maxdeep, &oops, fmax, ifeasiblef, iinfeasible, fcndata,
 	    force_stop);
     if (force_stop && *force_stop) {
@@ -1304,7 +1314,7 @@ L50:
 	return;
     }
     direct_dirdivide_(&new__, &c__0, &length[length_offset], &point[1], &arrayi[1], &
-	    c__1, &list2[list2_offset], &w[1], maxi, &f[3], maxfunc, 
+	    c__1, &list2[list2_offset], &w[1], maxi, &f[3], maxfunc,
 	    maxdeep, n);
     direct_dirinsertlist_(&new__, &anchor[-1], &point[1], &f[3], maxi, &
 	    length[length_offset], maxfunc, maxdeep, n, &c__1, jones);
@@ -1390,7 +1400,7 @@ L50:
 /* |               hyper-box oops is set to 1 and iffco terminates.        | */
 /* |                                                                       | */
 /* +-----------------------------------------------------------------------+ */
-/* Subroutine */ void direct_dirpreprc_(doublereal *u, doublereal *l, integer *n, 
+/* Subroutine */ void direct_dirpreprc_(doublereal *u, doublereal *l, integer *n,
 	doublereal *xs1, doublereal *xs2, integer *oops)
 {
     /* System generated locals */
@@ -1431,10 +1441,10 @@ L50:
     }
 } /* dirpreprc_ */
 
-/* Subroutine */ void direct_dirheader_(FILE *logfile, integer *version, 
+/* Subroutine */ void direct_dirheader_(FILE *logfile, integer *version,
 	doublereal *x, integer *n, doublereal *eps, integer *maxf, integer *
 	maxt, doublereal *l, doublereal *u, integer *algmethod, integer *
-	maxfunc, const integer *maxdeep, doublereal *fglobal, doublereal *fglper, 
+	maxfunc, const integer *maxdeep, doublereal *fglobal, doublereal *fglper,
 	integer *ierror, doublereal *epsfix, integer *iepschange, doublereal *
 	volper, doublereal *sigmaper)
 {
@@ -1444,6 +1454,7 @@ L50:
     /* Local variables */
     integer imainver, i__, numerrors, isubsubver, ihelp, isubver;
 
+    (void) maxdeep; (void) ierror;
 
 /* +-----------------------------------------------------------------------+ */
 /* | Variables to pass user defined data to the function to be optimized.  | */
@@ -1496,8 +1507,8 @@ L50:
 		 " Measure percentage wanted: %e\n",
 		 imainver, isubver, isubsubver, *n, *eps, *maxf, *maxt,
 		 *fglobal, *fglper, *volper, *sigmaper);
-	 fprintf(logfile, *iepschange == 1 
-		 ? "Epsilon is changed using the Jones formula.\n" 
+	 fprintf(logfile, *iepschange == 1
+		 ? "Epsilon is changed using the Jones formula.\n"
 		 : "Epsilon is constant.\n");
 	 fprintf(logfile, *algmethod == 0
 		 ? "Jones original DIRECT algorithm is used.\n"
@@ -1537,10 +1548,10 @@ L50:
     if (*ierror < 0) {
 	if (logfile) fprintf(logfile, "----------------------------------\n");
 	if (numerrors == 1) {
-	     if (logfile) 
+	     if (logfile)
 		  fprintf(logfile, "WARNING: One error in the input!\n");
 	} else {
-	     if (logfile) 
+	     if (logfile)
 		  fprintf(logfile, "WARNING: %d errors in the input!\n",
 			  numerrors);
 	}
@@ -1554,7 +1565,7 @@ L50:
 } /* dirheader_ */
 
 /* Subroutine */ void direct_dirsummary_(FILE *logfile, doublereal *x, doublereal *
-	l, doublereal *u, integer *n, doublereal *minf, doublereal *fglobal, 
+	l, doublereal *u, integer *n, doublereal *minf, doublereal *fglobal,
 	integer *numfunc, integer *ierror)
 {
     /* Local variables */
@@ -1565,6 +1576,8 @@ L50:
     --l;
     --x;
 
+    (void) ierror;
+
     /* Function Body */
     if (logfile) {
 	 fprintf(logfile, "-----------------------Summary------------------\n"
@@ -1574,9 +1587,9 @@ L50:
 	      fprintf(logfile, "Final function value is within %g%% of global optimum\n", 100*(*minf - *fglobal) / MAX(1.0, fabs(*fglobal)));
 	 fprintf(logfile, "Index, final solution, x(i)-l(i), u(i)-x(i)\n");
 	 for (i__ = 1; i__ <= *n; ++i__)
-	      fprintf(logfile, "%d, %g, %g, %g\n", i__, x[i__], 
+	      fprintf(logfile, "%d, %g, %g, %g\n", i__, x[i__],
 		      x[i__]-l[i__], u[i__] - x[i__]);
 	 fprintf(logfile, "-----------------------------------------------\n");
-	      
+
     }
 } /* dirsummary_ */

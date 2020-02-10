@@ -10,7 +10,7 @@ NLopt
 
 **NLopt** is a free/open-source library for **nonlinear optimization**, providing a common interface for a number of different free optimization routines available online as well as original implementations of various other algorithms. Its features include:
 
--   Callable from [C](NLopt_Reference.md), [C++](NLopt_C-plus-plus_Reference.md), [Fortran](NLopt_Fortran_Reference.md), [Matlab or GNU Octave](NLopt_Matlab_Reference.md), [Python](NLopt_Python_Reference.md), [GNU Guile](NLopt_Guile_Reference.md), [Julia](https://github.com/stevengj/NLopt.jl), [GNU R](NLopt_R_Reference.md), [Lua](https://github.com/rochus-keller/LuaNLopt), and [OCaml](https://bitbucket.org/mkur/nlopt-ocaml).
+-   Callable from [C](NLopt_Reference.md), [C++](NLopt_C-plus-plus_Reference.md), [Fortran](NLopt_Fortran_Reference.md), [Matlab or GNU Octave](NLopt_Matlab_Reference.md), [Python](NLopt_Python_Reference.md), [GNU Guile](NLopt_Guile_Reference.md), [Julia](https://github.com/stevengj/NLopt.jl), [GNU R](NLopt_R_Reference.md), [Lua](https://github.com/rochus-keller/LuaNLopt), [OCaml](https://bitbucket.org/mkur/nlopt-ocaml) and [Rust](https://github.com/jesskfullwood/rust-nlopt).
 -   A common interface for [many different algorithms](NLopt_Algorithms.md)—try a different algorithm just by changing one parameter.
 -   Support for large-scale optimization (some algorithms scalable to millions of parameters and thousands of constraints).
 -   Both global and local optimization algorithms.
@@ -23,14 +23,14 @@ See the [NLopt Introduction](NLopt_Introduction.md) for a further overview of th
 Download and installation
 -------------------------
 
-Version 2.4.2 of NLopt is the latest version available from our web site:
+Version 2.6.1 of NLopt is the latest version available from GitHub:
 
--   [nlopt-2.4.2.tar.gz](http://ab-initio.mit.edu/nlopt/nlopt-2.4.2.tar.gz)
+-   [v2.6.1.tar.gz](https://github.com/stevengj/nlopt/archive/v2.6.1.tar.gz)
 
-See the [NLopt release notes](NLopt_release_notes.md) for the release history. NLopt is designed to be installed on any Unix-like system (GNU/Linux is fine) with a C compiler, using the standard
+See the [NLopt release notes](https://github.com/stevengj/nlopt/blob/master/NEWS.md) for the release history. NLopt is designed to be installed on any Unix-like system (GNU/Linux is fine) with a C compiler, using the standard
 
 ```
-./configure && make && sudo make install
+cmake . && make && sudo make install
 ```
 
 
@@ -65,8 +65,6 @@ We are grateful to the many authors who have published useful optimization algor
 Contact and Feedback
 --------------------
 
+For bug reports and feature requests, please [file a github issue](https://github.com/stevengj/nlopt/issues).
+
 If you have questions or problems regarding NLopt, you are encouraged query the [nlopt-discuss mailing list](http://ab-initio.mit.edu/cgi-bin/mailman/listinfo/nlopt-discuss) (see above). As your first resort, please look at the [nlopt-discuss archives](http://ab-initio.mit.edu/pipermail/nlopt-discuss/).
-
-Alternatively, you may directly contact [Steven G. Johnson](http://math.mit.edu/~stevenj) at <stevenj@alum.mit.edu>.
-
-[—Steven G. Johnson](User:Stevenj.md) 18:13, 1 September 2008 (EDT)

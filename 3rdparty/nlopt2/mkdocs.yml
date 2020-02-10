@@ -1,11 +1,11 @@
 site_name: NLopt Documentation
 site_author: S. G. Johnson et al.
-repo_url: https://github.com/stevengj/NLopt/
+repo_url: https://github.com/stevengj/nlopt/
+edit_uri: edit/master/doc/docs
 
 docs_dir: 'doc/docs'
 site_dir: 'doc/site'
 
-theme_dir: 'doc/nlopt-mkdocs-theme'
 theme: readthedocs
 
 python:
@@ -26,7 +26,6 @@ extra_javascript: ['https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX
 pages:
  - NLopt:
     - Overview: index.md
-    - Release Notes: NLopt_release_notes.md
     - FAQ: NLopt_FAQ.md
  - NLopt manual:
     - NLopt manual: NLopt_manual.md

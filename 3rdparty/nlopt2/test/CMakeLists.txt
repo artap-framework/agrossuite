@@ -32,8 +32,8 @@ foreach (algo_index RANGE 29)# 43
       set (enable_ FALSE)
     endif ()
     if (enable_)
-      add_test (NAME testopt_algo${algo_index}_obj${obj_index} COMMAND testopt -a ${algo_index} -o ${obj_index})
-      if (WIN32)
+      add_test (NAME testopt_algo${algo_index}_obj${obj_index} COMMAND testopt -r 0 -a ${algo_index} -o ${obj_index})
+      if (CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
         set_tests_properties (testopt_algo${algo_index}_obj${obj_index} PROPERTIES ENVIRONMENT "PATH=${PROJECT_BINARY_DIR}\\${CMAKE_BUILD_TYPE};$ENV{PATH}")  # to load dll
       endif ()
     endif ()
@@ -58,4 +58,10 @@ if (GUILE_FOUND AND ((SWIG_FOUND AND SWIG_VERSION VERSION_GREATER 2.0.9) OR (EXI
     )
   add_test (NAME test_guile COMMAND ${GUILE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/t_guile.scm)
   set_tests_properties (test_guile PROPERTIES ENVIRONMENT "${GUILECHECK_ENVIRONMENT}")
+endif ()
+
+if (NLOPT_FORTRAN)
+  add_executable (t_fortran t_fortran.f90)
+  target_link_libraries (t_fortran ${nlopt_lib})
+  add_test (NAME test_fortran COMMAND t_fortran)
 endif ()
