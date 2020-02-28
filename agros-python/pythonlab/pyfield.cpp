@@ -143,7 +143,7 @@ void PyField::setLinearSolverDealIIPreconditioner(const std::string &linearSolve
 void PyField::setExternalMatrixSolver(const std::string &solver)
 {
     QStringList solvers;
-    QDirIterator itDir(QString("%1/libs/").arg(datadir()), QStringList() << "*.ext", QDir::Files);
+    QDirIterator itDir(QString("%1/libs/").arg(Agros::dataDir()), QStringList() << "*.ext", QDir::Files);
     while (itDir.hasNext())
         solvers << QFileInfo(itDir.next()).fileName();
 

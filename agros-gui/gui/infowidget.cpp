@@ -69,7 +69,7 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
     stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::Agros::dataDir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
@@ -97,10 +97,10 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
 
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
 
     problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
 
@@ -256,14 +256,14 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
                 // replace current path in index.html
                 QString detail = readFileContent(detailsFilename);
                 detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-                detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
+                detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(Agros::dataDir()).absolutePath())).toString());
 
                 problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
             }
         }
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     // setHtml(...) doesn't work
     // webView->setHtml(QString::fromStdString(info));
@@ -279,9 +279,9 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
 
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
     problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     // python
     if (QFile::exists(fileName))
@@ -293,7 +293,7 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
         problemInfo.SetValue("PROBLEM_PYTHON", python.toStdString());
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/python.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/python.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     writeStringContent(tempProblemDir() + "/info.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/info.html"));
@@ -320,10 +320,10 @@ void InfoWidget::welcome()
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");
 
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
+    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));

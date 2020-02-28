@@ -39,7 +39,8 @@ public:
 {{CLASS}}Interface();
 virtual ~{{CLASS}}Interface();
 
-inline virtual QString fieldId() { return "{{ID}}"; }
+inline virtual QString fieldId() const { return "{{ID}}"; }
+virtual QStringList couplings() const;
 
 // solver deal
 virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo);

@@ -37,8 +37,6 @@
 
 #include "util/constants.h"
 
-// #include "../../resources_source/classes/module_xml.h"
-
 QMap<QString, QString> Module::availableModules()
 {  
     QMap<QString, QString> modules;
@@ -53,15 +51,14 @@ QStringList Module::availableCouplings()
 {
     QStringList list;
 
-    // read images
-    QStringList filters;
-    filters << "*.json";
+    foreach (PluginInterface *plugin, Agros::plugins().values())
+        foreach (QString coupling, plugin->couplings())
+            list.append(QString("%1-%2").arg(coupling).arg(plugin->fieldId()));
 
-    QDir dir(QString("resources/couplings/"));
-    dir.setNameFilters(filters);
+    list.removeDuplicates();
 
-    foreach (QString id, dir.entryList())
-        list.append(id.left(id.count() - 4));
+    // foreach (QString name, list)
+    //     qInfo() << name;
 
     return list;
 }

@@ -17,19 +17,19 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 # cython
 # message("Cython files - agros")
-# message("\tcython3 agros.pyx")
-add_custom_target(CYTHON_AGROS ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.cpp)
+# message("\tcython3 _agros.pyx")
+add_custom_target(CYTHON_AGROS ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 
 IF(WIN32)
   ADD_CUSTOM_COMMAND(
-    COMMAND C:/Python36/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.cpp)
+    COMMAND C:/Python36/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 ELSE()
   ADD_CUSTOM_COMMAND(
-    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros.cpp)
+    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/agros-library)
@@ -43,11 +43,6 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/bayesopt/include)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nlopt2/src/api)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga2)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga3)
-
-# set static build
-IF (AGROS_BUILD_STATIC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
-ENDIF (AGROS_BUILD_STATIC)
 
 SET(SOURCES extension.cpp
     pythonlab/pyfield.cpp
@@ -91,10 +86,10 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )
 ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${AGROS_LIBRARY} ${PYTHON_LIBRARIES} Qt5::Core Qt5::Network)
 
-SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "" OUTPUT_NAME agros)
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "" OUTPUT_NAME _agros)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 add_custom_command(
     TARGET ${AGROS_PYTHON} POST_BUILD 
-    COMMAND ${CMAKE_COMMAND} -E copy "../libs/agros.so" "../agros.so"
+    COMMAND ${CMAKE_COMMAND} -E copy "../libs/_agros.so" "../agrossuite/_agros.so"
 )

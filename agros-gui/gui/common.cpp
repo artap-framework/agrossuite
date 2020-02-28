@@ -67,7 +67,7 @@ void fillComboBoxFonts(QComboBox *cmbFonts)
     // store variable
     QString fnt = cmbFonts->itemData(cmbFonts->currentIndex(), Qt::UserRole).toString();
 
-    QDir dir(datadir() + "/resources/fonts");
+    QDir dir(Agros::dataDir() + "/resources/fonts");
 
     QStringList filter;
     filter << "*.ttf";

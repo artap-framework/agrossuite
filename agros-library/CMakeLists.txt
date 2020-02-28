@@ -6,13 +6,6 @@ ELSE()
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DAGROS_LIBRARY_DLL")
 ENDIF()
 
-# set static build
-IF (AGROS_BUILD_STATIC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
-ELSE(AGROS_BUILD_STATIC)
-
-ENDIF (AGROS_BUILD_STATIC)
-
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty)
 IF(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate)
@@ -30,28 +23,18 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga2)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga3)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/limbo)
 
-# modules
-# message("Modules")
-FILE(GLOB module_files "${CMAKE_HOME_DIRECTORY}/resources/modules/*.xml")
-foreach(MODULEFILE ${module_files})
-  GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
-  # add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources/lang/${basefile}.qm)
-
-  # message("${basefile}")
-endforeach()
-
 # languages
-# message("Translations")
+message("Translations")
 FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")
 foreach(LANGFILE ${lang_files})
   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
-  add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources/lang/${basefile}.qm)
+  add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
 
   # message("\tlrelease ${basefile}")
 
   ADD_CUSTOM_COMMAND(
-        COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources/lang/${basefile}.qm
-        OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources/lang/${basefile}.qm)
+        COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm
+        OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
 endforeach()
 
 SET(SOURCES
@@ -289,11 +272,7 @@ SOURCE_GROUP(
   util/loops.h
 )
 
-IF (AGROS_BUILD_STATIC)
-    ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
-ELSE (AGROS_BUILD_STATIC)
-    ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-ENDIF (AGROS_BUILD_STATIC)
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
 foreach(LANGFILE ${lang_files})
   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)

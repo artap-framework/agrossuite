@@ -242,7 +242,7 @@ void SceneViewCommon::printAt(int penX, int penY, const QString &text, stbtt_bak
 void SceneViewCommon::initFont(GLuint &textureID, stbtt_bakedchar *fnt, const QString fontName, int pointSize)
 {
     // load font
-    QString fntx = QFileInfo(QString("%1/resources/fonts/%2.ttf").arg(datadir()).arg(fontName)).absoluteFilePath();
+    QString fntx = QFileInfo(QString("%1/resources/fonts/%2.ttf").arg(Agros::dataDir()).arg(fontName)).absoluteFilePath();
     if (!QFile::exists(fntx)) return;
 
     FILE* fp = fopen(fntx.toStdString().c_str(), "rb");

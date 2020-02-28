@@ -211,7 +211,7 @@ private slots:
     void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
     void linkClicked(const QUrl &url);
-    void doNew();
+    // void doNew();
     void doEdit();
     void doDelete();
 };

@@ -114,15 +114,9 @@ AGROS_LIBRARY_API QString defaultLocale();
 // windows short name
 AGROS_LIBRARY_API QString compatibleFilename(const QString &fileName);
 
-// get datadir
-AGROS_LIBRARY_API QString datadir();
-
 // get temp dir
 AGROS_LIBRARY_API QString tempProblemDir();
 AGROS_LIBRARY_API QString cacheProblemDir();
-
-// get user dir
-AGROS_LIBRARY_API QString userDataDir();
 
 // get temp filename
 AGROS_LIBRARY_API QString tempProblemFileName();

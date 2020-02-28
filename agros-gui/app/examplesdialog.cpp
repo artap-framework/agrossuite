@@ -239,7 +239,7 @@ void ExamplesWidget::readExamples()
     // clear listview
     trvExamples->clear();
 
-    QDir dir(QString("%1/resources/examples").arg(datadir()));
+    QDir dir(QString("%1/resources/examples").arg(Agros::dataDir()));
     dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
 
     readExamples(dir, trvExamples->invisibleRootItem());
@@ -402,7 +402,7 @@ void ExamplesWidget::problemInfo(const QString &fileName)
             // replace current path in index.html
             QString detail = readFileContent(detailsFilename);
             detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
+            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(Agros::dataDir()).absolutePath())).toString());
 
             problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
         }

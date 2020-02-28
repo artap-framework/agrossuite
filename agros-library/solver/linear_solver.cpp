@@ -100,7 +100,7 @@ void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
                                        dealii::Vector<double> &sln)
 {
     // read command parameters
-    QFile f(QString("%1/libs/%2").arg(datadir()).arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
+    QFile f(QString("%1/libs/%2").arg(Agros::dataDir()).arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
     if (!f.open(QFile::ReadOnly | QFile::Text))
         throw AgrosSolverException(QObject::tr("Cannot not open external command file."));
     QTextStream in(&f);

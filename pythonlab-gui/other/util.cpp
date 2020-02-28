@@ -32,6 +32,39 @@
 
 const QString LANGUAGEROOT = QString("%1/resources%1lang").arg(QDir::separator());
 
+
+QString datadir()
+{
+    // TODO: deprecate (XML -> JSON)
+
+    // windows
+#ifdef Q_WS_WIN
+    // local installation
+    // solver
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath();
+#endif
+
+    // linux
+#ifdef Q_WS_X11
+    // local installation
+    // solver
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath();
+
+    // python
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../..//resources/templates/empty.tpl"))
+        return QString::fromLatin1(getenv("PWD")) + "/../..";
+
+    // system installation
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+        return QCoreApplication::applicationDirPath() + "/../share/agros";
+#endif
+
+    qCritical() << "Datadir not found.";
+    exit(1);
+}
+
 QStringList availableLanguages()
 {
     QDir dir;
@@ -135,38 +168,6 @@ QString compatibleFilename(const QString &fileName)
     return out;
 }
 
-QString datadir()
-{
-    // TODO: deprecate (XML -> JSON)
-
-    // windows
-#ifdef Q_WS_WIN
-    // local installation
-    // solver
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-#endif
-
-    // linux
-#ifdef Q_WS_X11
-    // local installation
-    // solver
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-
-    // python
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../..//resources/templates/empty.tpl"))
-        return QString::fromLatin1(getenv("PWD")) + "/../..";
-
-    // system installation
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath() + "/../share/agros";
-#endif
-
-    qCritical() << "Datadir not found.";
-    exit(1);
-}
-
 QString tempProblemDir()
 {
 #ifdef Q_WS_WIN
@@ -209,18 +210,6 @@ QString cacheProblemDir()
             arg(QDir::temp().absolutePath()).
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
-
-    QDir dir(str);
-    if (!dir.exists() && !str.isEmpty())
-        dir.mkpath(str);
-
-    return str;
-}
-
-QString userDataDir()
-{
-    static QString str = QString("%1/agros2d/").
-            arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
 
     QDir dir(str);
     if (!dir.exists() && !str.isEmpty())

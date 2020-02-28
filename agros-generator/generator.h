@@ -43,6 +43,8 @@ QList<FormInfo> wfMatrixSurfaceModule(XMLModule::surface *surface, XMLModule::bo
 QList<FormInfo> wfVectorSurfaceModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
 QList<FormInfo> essentialModule(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
 
+QList<FormInfo> wfVectorVolumeCouplingSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
+
 class Agros2DGenerator : public QCoreApplication
 {
     Q_OBJECT
@@ -62,7 +64,6 @@ public slots:
     void createStructure();
     void generateSources();
     void generateModule(const QString &moduleId);
-    void generateCoupling(const QString &couplingId);
     void generateDocumentation(const QString &couplingId);
 
 private:

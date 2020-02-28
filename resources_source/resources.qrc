@@ -269,5 +269,20 @@
         <file alias="alphabet/yellow/y.png">images/alphabet/yellow/y.png</file>
         <file alias="alphabet/yellow/z.png">images/alphabet/yellow/z.png</file>                
         <file alias="alphabet/yellow/imageback.png">images/alphabet/imageback_yellow.png</file>                                
+        <file alias="lang/cs_CZ.qm">lang/cs_CZ.qm</file>                
+        <file alias="lang/en_US.qm">lang/en_US.qm</file>                
+        <file alias="lang/ru_RU.qm">lang/ru_RU.qm</file>                
+        <file alias="lang/fr_FR.qm">lang/fr_FR.qm</file>                
+        <file alias="lang/pl_PL.qm">lang/pl_PL.qm</file>                
+        <file alias="lang/plugin_cs_CZ.qm">lang/cs_CZ.qm</file>                
+        <file alias="lang/plugin_en_US.qm">lang/plugin_en_US.qm</file>                
+        <file alias="lang/plugin_fr_FR.qm">lang/plugin_fr_FR.qm</file>                
+        <file alias="lang/plugin_pl_PL.qm">lang/plugin_pl_PL.qm</file>                
+        <file alias="lang/plugin_ru_RU.qm">lang/plugin_ru_RU.qm</file>                
+        <file alias="lang/qt_cs.qm">lang/cs_CZ.qm</file>                
+        <file alias="lang/qt_en.qm">lang/qt_en.qm</file>                
+        <file alias="lang/qt_fr.qm">lang/qt_fr.qm</file>                
+        <file alias="lang/qt_pl.qm">lang/qt_pl.qm</file>                
+        <file alias="lang/qt_ru.qm">lang/qt_ru.qm</file>                
     </qresource>
 </RCC>

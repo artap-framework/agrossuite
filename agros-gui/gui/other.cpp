@@ -111,9 +111,9 @@ QIcon iconAlphabet(const QChar &letter, AlphabetColor color)
 void showPage(const QString &str)
 {
     if (str.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(datadir() + "/resources/help/index.html"));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(Agros::dataDir() + "/resources/help/index.html"));
     else
-        QDesktopServices::openUrl(QUrl::fromLocalFile(datadir() + "/resources/help/" + str));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(Agros::dataDir() + "/resources/help/" + str));
 }
 
 // ************************************************************************************************************************

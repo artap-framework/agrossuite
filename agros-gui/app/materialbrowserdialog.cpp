@@ -803,7 +803,7 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
     stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
     
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
     
     trvMaterial = new QTreeWidget(this);
@@ -816,10 +816,10 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     connect(trvMaterial, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvMaterial, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     
-    btnNew = new QPushButton();
-    btnNew->setText(tr("New"));
-    btnNew->setDefault(false);
-    connect(btnNew, SIGNAL(clicked()), this, SLOT(doNew()));
+    // btnNew = new QPushButton();
+    // btnNew->setText(tr("New"));
+    // btnNew->setDefault(false);
+    // connect(btnNew, SIGNAL(clicked()), this, SLOT(doNew()));
     
     btnEdit = new QPushButton();
     btnEdit->setText(tr("Edit"));
@@ -835,7 +835,7 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     
     QGridLayout *layoutProperties = new QGridLayout();
     layoutProperties->addWidget(trvMaterial, 0, 0, 1, 3);
-    layoutProperties->addWidget(btnNew, 2, 0);
+    // layoutProperties->addWidget(btnNew, 2, 0);
     layoutProperties->addWidget(btnEdit, 2, 1);
     layoutProperties->addWidget(btnDelete, 2, 2);
     
@@ -915,24 +915,9 @@ void MaterialBrowserDialog::readMaterials()
     trvMaterial->clear();
     
     // read materials
-    QDir dirSystem(QString("%1/resources/materials").arg(datadir()));
+    QDir dirSystem(QString("%1/resources/materials").arg(Agros::dataDir()));
     dirSystem.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
     readMaterials(dirSystem, trvMaterial->invisibleRootItem());
-    
-    // user materials
-    QFont fnt = trvMaterial->font();
-    fnt.setBold(true);
-    
-    QTreeWidgetItem *customMaterialsItem = new QTreeWidgetItem(trvMaterial->invisibleRootItem());
-    customMaterialsItem->setText(0, tr("Custom materials"));
-    customMaterialsItem->setFont(0, fnt);
-    customMaterialsItem->setExpanded(true);
-    
-    QDir dirUser(QString("%1/materials").arg(userDataDir()));
-    if (!dirUser.exists())
-        QDir(userDataDir()).mkpath(dirUser.absolutePath());
-    dirUser.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
-    readMaterials(dirUser, customMaterialsItem);
     
     if (!m_selectedFilename.isEmpty())
     {
@@ -990,7 +975,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
         material.read(fileName);
         
         materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-        materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
+        materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
         
         materialInfo.SetValue("NAME", material.name.toStdString());
         materialInfo.SetValue("DESCRIPTION", material.description.toStdString());
@@ -1076,7 +1061,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
         }
     }
 
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
+    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
 
     // setHtml(...) doesn't work
     // webView->setHtml(QString::fromStdString(info));
@@ -1115,31 +1100,31 @@ void MaterialBrowserDialog::linkClicked(const QUrl &url)
     }
 }
 
-void MaterialBrowserDialog::doNew()
-{
-    bool ok = false;
-    QString name = QInputDialog::getText(this, tr("Add custom material"),
-                                         tr("Name:"), QLineEdit::Normal, "", &ok);
-    if (ok && !name.isEmpty())
-    {
-        QString fileName = QString("%1/materials/%2.json").arg(userDataDir()).arg(name);
-        if (QFile::exists(fileName))
-        {
-            QMessageBox::warning(this, tr("Material"), tr("Material already exists."));
-            return;
-        }
+//void MaterialBrowserDialog::doNew()
+//{
+//    bool ok = false;
+//    QString name = QInputDialog::getText(this, tr("Add custom material"),
+//                                         tr("Name:"), QLineEdit::Normal, "", &ok);
+//    if (ok && !name.isEmpty())
+//    {
+//        QString fileName = QString("%1/materials/%2.json").arg(userDataDir()).arg(name);
+//        if (QFile::exists(fileName))
+//        {
+//            QMessageBox::warning(this, tr("Material"), tr("Material already exists."));
+//            return;
+//        }
 
-        LibraryMaterial material;
-        material.name = name;
-        material.write(fileName);
+//        LibraryMaterial material;
+//        material.name = name;
+//        material.write(fileName);
 
-        // select item and edit
-        m_selectedFilename = fileName;
-        readMaterials();
+//        // select item and edit
+//        m_selectedFilename = fileName;
+//        readMaterials();
 
-        doEdit();
-    }
-}
+//        doEdit();
+//    }
+//}
 
 void MaterialBrowserDialog::doEdit()
 {

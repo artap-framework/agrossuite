@@ -57,9 +57,15 @@ public:
     static inline QMap<QString, PluginInterface *> plugins()  { return Agros::singleton()->m_plugins; }
     static PluginInterface *loadPlugin(const QString &pluginName);
 
+    static void setDataDir(const QString &dir);
+    static inline QString dataDir() { return Agros::singleton()->m_dataDir; }
+
     static void clear();
+    static void readPlugins();
 
 private:    
+    // datadir
+    QString m_dataDir;
     // computer config
     Config *m_configComputer;
     // problem

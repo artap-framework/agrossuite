@@ -438,6 +438,7 @@ public:
 
     void load(const QString &fileName);
     void save(const QString &fileName);
+    void read(const QByteArray &content);
     void clear();
 };
 
@@ -457,6 +458,7 @@ public:
 
     void load(const QString &fileName);
     void save(const QString &fileName);
+    void read(const QByteArray &content);
     void clear();
 };
 
@@ -467,10 +469,11 @@ public:
     PluginInterface();
     virtual ~PluginInterface();
 
-    virtual QString fieldId() = 0;
+    virtual QString fieldId() const = 0;
+    virtual QStringList couplings() const = 0;
 
     PluginModule *moduleJson() { return m_moduleJson; }
-    void convertJson(XMLModule::field *module);
+    inline PluginCoupling *couplingJson(const QString &fieldId) { return m_couplingsJson[fieldId]; }
 
     // weak forms
     virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo) = 0;
@@ -514,6 +517,7 @@ public:
 
 protected:    
     PluginModule *m_moduleJson;
+    QMap<QString, PluginCoupling *> m_couplingsJson;
 };
 
 QT_BEGIN_NAMESPACE

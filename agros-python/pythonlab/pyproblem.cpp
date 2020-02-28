@@ -59,7 +59,11 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
 
     checkExistingFields(source, target);
 
-    if (m_problem->hasCoupling(source, target))
+    // couplings
+    QStringList couplings = m_problem->fieldInfo(target)->plugin()->couplings();
+
+    // if (m_problem->hasxCoupling(source, target))
+    if (couplings.contains(source))
     {
         CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
         return couplingTypeToStringKey(couplingInfo->couplingType()).toStdString();
@@ -75,7 +79,11 @@ void PyProblemBase::setCouplingType(const std::string &sourceField, const std::s
 
     checkExistingFields(source, target);
 
-    if (m_problem->hasCoupling(source, target))
+    // couplings
+    QStringList couplings = m_problem->fieldInfo(target)->plugin()->couplings();
+
+    // if (m_problem->hasxCoupling(source, target))
+    if (couplings.contains(source))
     {
         CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
         if (couplingTypeStringKeys().contains(QString::fromStdString(type)))

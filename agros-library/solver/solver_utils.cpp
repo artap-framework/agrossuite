@@ -324,13 +324,16 @@ void ProblemSolver::solveProblem()
 
     foreach (QString targetfieldId, fieldInfosSorted)
     {
-        // frequency
+        // solver deal.II
         SolverDeal *solverDeal = m_solverDeal[targetfieldId];
+
+        // couplings
+        QStringList couplings = m_computation->fieldInfo(targetfieldId)->plugin()->couplings();
 
         // look for coupling sources
         foreach (QString sourceFieldId, fieldInfosSorted)
-        {
-            if (m_computation->hasCoupling(sourceFieldId, targetfieldId))
+        {            
+            if (couplings.contains(sourceFieldId))
             {
                 FieldSolutionID solutionID(sourceFieldId,
                                            m_computation->solutionStore()->lastTimeStep(m_computation->fieldInfo(sourceFieldId)),

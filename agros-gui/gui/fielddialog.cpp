@@ -538,13 +538,13 @@ void FieldWidget::fillComboBox()
 
     // read from files
     cmbExternalLinearSolverCommand->clear();
-    QDirIterator itDir(QString("%1/libs/").arg(datadir()), QStringList() << "*.ext", QDir::Files);
+    QDirIterator itDir(QString("%1/libs/").arg(Agros::dataDir()), QStringList() << "*.ext", QDir::Files);
     while (itDir.hasNext())
     {
         QString fileName = QFileInfo(itDir.next()).fileName();
 
         // read command parameters
-        QFile f(QString("%1/libs/%2").arg(datadir()).arg(fileName));
+        QFile f(QString("%1/libs/%2").arg(Agros::dataDir()).arg(fileName));
         if (f.open(QFile::ReadOnly | QFile::Text))
         {
             QTextStream in(&f);
@@ -718,7 +718,7 @@ void FieldWidget::doShowEquation()
 {
     // equationLaTeX->setLatex(m_fieldInfo->equation());
     QPixmap pixmap(QString("%1/resources/images/equations/%2_equation_%3.png").
-                   arg(datadir()).
+                   arg(Agros::dataDir()).
                    arg(m_fieldInfo->fieldId()).
                    arg(analysisTypeToStringKey((AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt())));
 
@@ -839,7 +839,7 @@ void FieldWidget::doExternalSolverChanged(int index)
         QString fileName = QFileInfo(cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString()).fileName();
 
         // read command parameters
-        QFile f(QString("%1/libs/%2").arg(datadir()).arg(fileName));
+        QFile f(QString("%1/libs/%2").arg(Agros::Agros::dataDir()).arg(fileName));
         if (f.open(QFile::ReadOnly | QFile::Text))
         {
             QTextStream in(&f);

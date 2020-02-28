@@ -33,10 +33,6 @@
 #include <deal.II/base/exceptions.h>
 #include <deal.II/base/multithread_info.h>
 
-#ifdef AGROS_BUILD_STATIC
-#include "../plugins/plugins_static.h"
-#endif
-
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
 public:
@@ -72,6 +68,7 @@ public:
 
         // init singleton
         Agros::createSingleton(QSharedPointer<Log>(new LogGui));
+        Agros::readPlugins();
     }
 
     virtual ~AgrosApplication() {}

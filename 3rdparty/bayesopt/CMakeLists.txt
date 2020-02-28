@@ -49,11 +49,7 @@ set(BAYESOPT_BUILD_TESTS OFF) # "Build tests?"
 set(BAYESOPT_PYTHON_INTERFACE OFF) # "Build Python interface?"
 set(BAYESOPT_MATLAB_COMPATIBLE OFF) # "Build library compatible with Matlab?"
 set(BAYESOPT_BUILD_SOBOL ON) # "Build support for Sobol sequences?"
-IF (AGROS_BUILD_STATIC)
-    set(BAYESOPT_BUILD_SHARED OFF) # "Build BayesOpt as a shared library?"
-ELSE()
-    set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
-ENDIF()
+set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 
 #  experimental - testing Win compilation
 set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.62.0)

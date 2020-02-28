@@ -32,71 +32,30 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-// #include "../../resources_source/classes/module_xml.h"
-
-// static XMLModule::module *module_module = NULL;
-
 {{CLASS}}Interface::{{CLASS}}Interface() : PluginInterface()
 {  
-/*
-    // xml module description
-    if (!module_module)
-    {
-        try
-        {
-            std::unique_ptr<XMLModule::module> module_xsd = XMLModule::module_((datadir() + MODULEROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
-                                                                               xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
-            module_module = module_xsd.release();
-        }
-        catch (const xml_schema::expected_element& e)
-        {
-            QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name()));
-            qDebug() << str;
-        }
-        catch (const xml_schema::expected_attribute& e)
-        {
-            QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name()));
-            qDebug() << str;
-        }
-        catch (const xml_schema::unexpected_element& e)
-        {
-            QString str = QString("%1: %2 instead of %3").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.encountered_name())).arg(QString::fromStdString(e.expected_name()));
-            qDebug() << str;
-        }
-        catch (const xml_schema::unexpected_enumerator& e)
-        {
-            QString str = QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.enumerator()));
-            qDebug() << str;
-        }
-        catch (const xml_schema::expected_text_content& e)
-        {
-            QString str = QString("%1").arg(QString::fromStdString(e.what()));
-            qDebug() << str;
-        }
-        catch (const xml_schema::parsing& e)
-        {
-            QString str = QString("%1").arg(QString::fromStdString(e.what()));
-            qDebug() << str;
-            xml_schema::diagnostics diagnostic = e.diagnostics();
-            for(int i = 0; i < diagnostic.size(); i++)
-            {
-                xml_schema::error err = diagnostic.at(i);
-                qDebug() << QString("%1, position %2:%3, %4").arg(QString::fromStdString(err.id())).arg(err.line()).arg(err.column()).arg(QString::fromStdString(err.message()));
-            }
-        }
-        catch (const xml_schema::exception& e)
-        {
-            qDebug() << QString::fromStdString(e.what());
-        }
-    }
+    QByteArray content = QByteArray::fromBase64("{{JSON_CONTENT}}");
+    m_moduleJson->read(content);
 
-    convertJson(&module_module->field().get());
-    */
-    m_moduleJson->load(QString("%1/resources/modules/%2.json").arg(datadir()).arg(fieldId()));   
+    // coupling sources{{#COUPLING_SOURCE}}
+    QByteArray content_{{COUPLING_SOURCE_ID}} = QByteArray::fromBase64("{{JSON_COUPLING_CONTENT}}"); 
+    PluginCoupling *plugin_{{COUPLING_SOURCE_ID}} = new PluginCoupling();
+    plugin_{{COUPLING_SOURCE_ID}}->read(content_{{COUPLING_SOURCE_ID}});
+    m_couplingsJson["{{COUPLING_SOURCE_ID}}"] = plugin_{{COUPLING_SOURCE_ID}};
+    {{/COUPLING_SOURCE}}   
 }
 
 {{CLASS}}Interface::~{{CLASS}}Interface()
 {
+}
+
+QStringList {{CLASS}}Interface::couplings() const
+{
+    QStringList out;
+    // coupling sources{{#COUPLING_SOURCE}}
+    out.append("{{COUPLING_SOURCE_ID}}");{{/COUPLING_SOURCE}}
+
+    return out;
 }
 
 SolverDeal *{{CLASS}}Interface::solverDeal(Computation *computation, const FieldInfo *fieldInfo)
@@ -114,7 +73,7 @@ dealii::DataPostprocessorScalar<2> *{{CLASS}}Interface::filter(Computation *comp
     return new {{CLASS}}ViewScalarFilter(computation, fieldInfo, timeStep, adaptivityStep, variable, physicFieldVariableComp);
 }
 
-std::shared_ptr<LocalValue>{{CLASS}}Interface::localValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
+std::shared_ptr<LocalValue> {{CLASS}}Interface::localValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
 {
     return std::shared_ptr<LocalValue>(new {{CLASS}}LocalValue(computation, fieldInfo, timeStep, adaptivityStep, point));
 }

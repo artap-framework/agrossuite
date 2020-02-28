@@ -1,4 +1,4 @@
-#include "../resources_source/python/agros.cpp"
+#include "../resources_source/python/_agros.cpp"
 
 #include <QCoreApplication>
 
@@ -9,10 +9,6 @@
 
 #include "util/global.h"
 
-#ifdef AGROS_BUILD_STATIC
-#include "../plugins/plugins_static.h"
-#endif
-
 class LibInstance
 {
 public:
@@ -22,8 +18,7 @@ public:
     }
 
     ~LibInstance()
-    {
-        // qInfo() << __FILE__ << "has been unloaded";
+    {        
     }
 };
 

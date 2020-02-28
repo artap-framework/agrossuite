@@ -38,18 +38,18 @@ INCLUDE(CMake.vars OPTIONAL)
 
 # set static build
 SET(PLUGINS)
-IF (AGROS_BUILD_STATIC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
+#IF (AGROS_BUILD_STATIC)
+#    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
 
-    FILE(GLOB module_files "${CMAKE_HOME_DIRECTORY}/resources/modules/*.xml")
-    foreach(MODULEFILE ${module_files})
-      GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
+#    FILE(GLOB module_files "${CMAKE_HOME_DIRECTORY}/resources/modules/*.xml")
+#    foreach(MODULEFILE ${module_files})
+#      GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
 
-      FIND_LIBRARY(plugin_${basefile} libagros_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
+#      FIND_LIBRARY(plugin_${basefile} libagros_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
 
-      SET(PLUGINS ${PLUGINS}  ${plugin_${basefile}})
-    endforeach()
-ENDIF (AGROS_BUILD_STATIC)
+#      SET(PLUGINS ${PLUGINS}  ${plugin_${basefile}})
+#    endforeach()
+#ENDIF (AGROS_BUILD_STATIC)
 
 # Handle OpenMP should it be included in DealII.
 IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))

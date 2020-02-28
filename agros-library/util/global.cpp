@@ -41,6 +41,26 @@
 
 #include "boost/archive/archive_exception.hpp"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#ifndef __USE_GNU
+#define __USE_GNU
+#endif
+
+#include <execinfo.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ucontext.h>
+#include <unistd.h>
+
+#ifdef Q_WS_WIN
+#include "Windows.h"
+#pragma comment(lib, "psapi.lib")
+#endif
+
 bool isPluginDir(const QString &path)
 {
     QDir dir(path);
@@ -52,12 +72,12 @@ bool isPluginDir(const QString &path)
     return (list.size() > 0);
 }
 
-QStringList pluginList()
+QStringList pluginList(const QString &data)
 {
     QString pluginPath = "";
 
-    if (isPluginDir(datadir() + "/libs/"))
-        pluginPath = datadir() + "/libs/";
+    if (isPluginDir(data + "/libs/"))
+        pluginPath = data + "/libs/";
     else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
@@ -79,8 +99,75 @@ QStringList pluginList()
     return list;
 }
 
+/* This structure mirrors the one found in /usr/include/asm/ucontext.h */
+typedef struct _sig_ucontext {
+    unsigned long     uc_flags;
+    struct ucontext   *uc_link;
+    stack_t           uc_stack;
+    struct sigcontext uc_mcontext;
+    sigset_t          uc_sigmask;
+} sig_ucontext_t;
+
+void crit_err_hdlr(int sig_num, siginfo_t * info, void * ucontext) {
+    void *             array[50];
+    void *             caller_address;
+    char **            messages;
+    int                size, i;
+    sig_ucontext_t *   uc;
+
+    uc = (sig_ucontext_t *)ucontext;
+
+    /* Get the address at the time the signal was raised */
+#if defined(__i386__) // gcc specific
+    caller_address = (void *) uc->uc_mcontext.eip; // EIP: x86 specific
+#elif defined(__x86_64__) // gcc specific
+    caller_address = (void *) uc->uc_mcontext.rip; // RIP: x86_64 specific
+#else
+#error Unsupported architecture. // TODO: Add support for other arch.
+#endif
+
+    fprintf(stderr, "\n");
+    FILE * backtraceFile;
+
+    // In this example we write the stacktrace to a file. However, we can also just fprintf to stderr (or do both).
+    QString backtraceFilePath = "/tmp/stacktrace.txt;";
+    backtraceFile = fopen(backtraceFilePath.toUtf8().data(),"w");
+
+    if (sig_num == SIGSEGV)
+        fprintf(backtraceFile, "signal %d (%s), address is %p from %p\n",sig_num, strsignal(sig_num), info->si_addr,(void *)caller_address);
+    else
+        fprintf(backtraceFile, "signal %d (%s)\n",sig_num, strsignal(sig_num));
+
+    size = backtrace(array, 50);
+    /* overwrite sigaction with caller's address */
+    array[1] = caller_address;
+    messages = backtrace_symbols(array, size);
+    /* skip first stack frame (points here) */
+    for (i = 1; i < size && messages != NULL; ++i) {
+        fprintf(backtraceFile, "[bt]: (%d) %s\n", i, messages[i]);
+    }
+
+    fclose(backtraceFile);
+    free(messages);
+
+    exit(EXIT_FAILURE);
+}
+
+void installSignal(int __sig) {
+    struct sigaction sigact;
+    sigact.sa_sigaction = crit_err_hdlr;
+    sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+    if (sigaction(__sig, &sigact, (struct sigaction *)NULL) != 0) {
+        fprintf(stderr, "error setting signal handler for %d (%s)\n",__sig, strsignal(__sig));
+        exit(EXIT_FAILURE);
+    }
+}
+
 void initSingleton()
 {
+    // For crashes, SIGSEV should be enough.
+    installSignal(SIGSEGV);
+
     setlocale(LC_NUMERIC, "C");
 
     char *argv[] = {(char *) QString("%1/agros_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
@@ -124,6 +211,57 @@ void clearAgros2DCache()
 
 }
 
+QString findDataDir()
+{
+    // data dir
+    // windows
+#ifdef Q_WS_WIN
+    // local installation
+    // solver
+    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return(QCoreApplication::applicationDirPath());
+#endif
+
+    // linux
+#ifdef Q_WS_X11
+    // solver DEK
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/agros2d/resources/templates/empty.tpl"))
+        return(QString::fromLatin1(getenv("PWD")) + "/agros2d");
+
+    // gui and solver
+    else if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
+        return(QCoreApplication::applicationDirPath());
+
+    // system installation
+    else if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
+        return(QCoreApplication::applicationDirPath() + "/../share/agros");
+
+    // local installation
+    // python
+    else
+    {
+        if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
+            Agros::setDataDir(QString::fromLatin1(getenv("PWD")) + "/../..");
+        else if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
+            Agros::setDataDir(QString::fromLatin1(getenv("PWD")) + "/");
+        else
+        {
+            for (int i = 9; i > 5; i--)
+            {
+                if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                    return(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/").arg(i));
+                else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                    return(QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/").arg(i));
+                else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
+                    return(QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/").arg(i));
+            }
+        }
+    }
+#endif
+
+    return "";
+}
+
 static QSharedPointer<Agros> m_singleton;
 
 Agros::Agros(QSharedPointer<Log> log) : m_log(log)
@@ -141,17 +279,24 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 
     m_configComputer = new Config();
     // qInfo() << "Agros::Agros(QSharedPointer<Log> log) - m_configComputer = new Config();";
+}
+
+void Agros::readPlugins()
+{
+    // set default datadir
+    if (m_singleton.data()->dataDir().isEmpty())
+         m_singleton.data()->setDataDir(findDataDir());
 
     // plugins
     // read plugins
-#ifdef AGROS_BUILD_PLUGIN_STATIC
+    #ifdef AGROS_BUILD_PLUGIN_STATIC
     foreach (QObject *obj, QPluginLoader::staticInstances())
     {
         PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
         m_plugins[plugin->fieldId()] = plugin;
     }
-#else
-    foreach (QString pluginPath, pluginList())
+    #else
+    foreach (QString pluginPath, pluginList(m_singleton.data()->dataDir()))
     {
         // load new plugin
         QPluginLoader *loader = new QPluginLoader(pluginPath);
@@ -170,11 +315,11 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 
         assert(loader->instance());
         PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
-        m_plugins[plugin->fieldId()] = plugin;
+        m_singleton.data()->m_plugins[plugin->fieldId()] = plugin;
 
         delete loader;
     }
-#endif
+    #endif
 }
 
 Agros::~Agros()
@@ -229,6 +374,12 @@ PluginInterface *Agros::loadPlugin(const QString &pluginName)
         return Agros::singleton()->m_plugins[pluginName];
 
     assert(0);
+    return nullptr;
+}
+
+void Agros::setDataDir(const QString &dir)
+{
+    m_singleton.data()->m_dataDir = dir;
 }
 
 // create script from model
@@ -237,7 +388,7 @@ QString createPythonFromModel()
     QString str;
 
     // import modules
-    str += "import agros\n\n";
+    str += "from agrossuite import agros\n\n";
 
     // model
     str += "# problem\n";

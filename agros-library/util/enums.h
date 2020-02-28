@@ -103,8 +103,7 @@ enum CouplingType
 {
     CouplingType_Undefined = -1,
     CouplingType_None = 0,
-    CouplingType_Weak = 1,
-    CouplingType_Hard = 2
+    CouplingType_Weak = 1
 };
 
 enum MeshType

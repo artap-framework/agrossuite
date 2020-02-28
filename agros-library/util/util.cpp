@@ -18,35 +18,14 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "util/util.h"
+#include "util/global.h"
 #include "agros_version.h"
-
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#ifndef __USE_GNU
-#define __USE_GNU
-#endif
-
-#include <execinfo.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ucontext.h>
-#include <unistd.h>
-
-#ifdef Q_WS_WIN
-#include "Windows.h"
-#pragma comment(lib, "psapi.lib")
-#endif
 
 #ifndef M_PI_2
 #define M_PI_2 1.57079632679489661923	/* pi/2 */
 #endif
 
 #include <QStandardPaths>
-
-const QString LANGUAGEROOT = QString("%1/resources%1lang").arg(QDir::separator());
 
 bool almostEqualRelAndAbs(double A, double B, double maxDiff, double maxRelDiff)
 {
@@ -111,92 +90,20 @@ double fastcos(double angle)
     return fastsin(M_PI_2 - angle);
 }
 
-/* This structure mirrors the one found in /usr/include/asm/ucontext.h */
-typedef struct _sig_ucontext {
-    unsigned long     uc_flags;
-    struct ucontext   *uc_link;
-    stack_t           uc_stack;
-    struct sigcontext uc_mcontext;
-    sigset_t          uc_sigmask;
-} sig_ucontext_t;
-
-void crit_err_hdlr(int sig_num, siginfo_t * info, void * ucontext) {
-    void *             array[50];
-    void *             caller_address;
-    char **            messages;
-    int                size, i;
-    sig_ucontext_t *   uc;
-
-    uc = (sig_ucontext_t *)ucontext;
-
-    /* Get the address at the time the signal was raised */
-#if defined(__i386__) // gcc specific
-    caller_address = (void *) uc->uc_mcontext.eip; // EIP: x86 specific
-#elif defined(__x86_64__) // gcc specific
-    caller_address = (void *) uc->uc_mcontext.rip; // RIP: x86_64 specific
-#else
-#error Unsupported architecture. // TODO: Add support for other arch.
-#endif
-
-    fprintf(stderr, "\n");
-    FILE * backtraceFile;
-
-    // In this example we write the stacktrace to a file. However, we can also just fprintf to stderr (or do both).
-    QString backtraceFilePath = "/tmp/stacktrace.txt;";
-    backtraceFile = fopen(backtraceFilePath.toUtf8().data(),"w");
-
-    if (sig_num == SIGSEGV)
-        fprintf(backtraceFile, "signal %d (%s), address is %p from %p\n",sig_num, strsignal(sig_num), info->si_addr,(void *)caller_address);
-    else
-        fprintf(backtraceFile, "signal %d (%s)\n",sig_num, strsignal(sig_num));
-
-    size = backtrace(array, 50);
-    /* overwrite sigaction with caller's address */
-    array[1] = caller_address;
-    messages = backtrace_symbols(array, size);
-    /* skip first stack frame (points here) */
-    for (i = 1; i < size && messages != NULL; ++i) {
-        fprintf(backtraceFile, "[bt]: (%d) %s\n", i, messages[i]);
-    }
-
-    fclose(backtraceFile);
-    free(messages);
-
-    exit(EXIT_FAILURE);
-}
-
-void installSignal(int __sig) {
-    struct sigaction sigact;
-    sigact.sa_sigaction = crit_err_hdlr;
-    sigact.sa_flags = SA_RESTART | SA_SIGINFO;
-    if (sigaction(__sig, &sigact, (struct sigaction *)NULL) != 0) {
-        fprintf(stderr, "error setting signal handler for %d (%s)\n",__sig, strsignal(__sig));
-        exit(EXIT_FAILURE);
-    }
-}
-
 QStringList availableLanguages()
 {
-    QDir dir;
-    dir.setPath(datadir() + LANGUAGEROOT);
-
-    // add all translations
-    QStringList filters;
-    filters << "*.qm";
-    dir.setNameFilters(filters);
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-
-    // remove extension
-    QStringList list = dir.entryList();
-    list.replaceInStrings(".qm", "");
-
-    // remove system translations
-    foreach (QString str, list)
+    QDirIterator it(":/lang", QDirIterator::Subdirectories);
+    QStringList list;
+    while (it.hasNext())
     {
-        if (str.startsWith("qt_"))
-            list.removeOne(str);
-        if (str.startsWith("plugin_"))
-            list.removeOne(str);
+        QString str = it.next().replace(":/lang/", "");
+        if (str.startsWith("qt_") or str.startsWith("plugin_"))
+            continue;
+        else
+        {
+            str = str.replace(".qm", "");
+            list.append(str.replace(".qm", ""));
+        }
     }
 
     return list;
@@ -221,22 +128,22 @@ void setLocale(const QString &locale)
     QString country = locale.section('_',0,0);
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))
         qtTranslator->load(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm");
-    else if (QFile::exists(datadir() + LANGUAGEROOT + "/qt_" + country + ".qm"))
-        qtTranslator->load(datadir() + LANGUAGEROOT + "/qt_" + country + ".qm");
+    else if (QFile::exists(":/lang/qt_" + country + ".qm"))
+        qtTranslator->load(":/lang/qt_" + country + ".qm");
     else
         qDebug() << "Qt locale file not found.";
 
-    if (QFile::exists(datadir() + LANGUAGEROOT + QDir::separator() + locale + ".qm"))
-        appTranslator->load(datadir() + LANGUAGEROOT + QDir::separator() + locale + ".qm");
-    else if (QFile::exists(datadir() + LANGUAGEROOT + "/en_US.qm"))
-        appTranslator->load(datadir() + LANGUAGEROOT + "/en_US.qm");
+    if (QFile::exists(":/lang/" + locale + ".qm"))
+        appTranslator->load(":/lang/" + locale + ".qm");
+    else if (QFile::exists(":/lang/en_US.qm"))
+        appTranslator->load(":/lang/en_US.qm");
     else
         qDebug() << "Locale file not found.";
 
-    if (QFile::exists(datadir() + LANGUAGEROOT + QDir::separator() + "plugin_" + locale + ".qm"))
-        pluginTranslator->load(datadir() + LANGUAGEROOT + QDir::separator() + "plugin_" + locale + ".qm");
-    else if (QFile::exists(datadir() + LANGUAGEROOT + "/plugin_en_US.qm"))
-        pluginTranslator->load(datadir() + LANGUAGEROOT + "/plugin_en_US.qm");
+    if (QFile::exists(":/lang/plugin_" + locale + ".qm"))
+        pluginTranslator->load(":/lang/plugin_" + locale + ".qm");
+    else if (QFile::exists(":/lang/plugin_en_US.qm"))
+        pluginTranslator->load(":/lang/plugin_en_US.qm");
     else
         qDebug() << "Plugin locale file not found.";
 
@@ -276,59 +183,6 @@ QString compatibleFilename(const QString &fileName)
 #endif
 
     return out;
-}
-
-QString datadir()
-{
-    // For crashes, SIGSEV should be enough.
-    installSignal(SIGSEGV);
-
-    // return QString("%1/../../../").arg(getenv("PWD"));
-
-    // windows
-#ifdef Q_WS_WIN
-    // local installation
-    // solver
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-#endif
-
-    // linux
-#ifdef Q_WS_X11 
-    // solver DEK
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/agros2d/resources/templates/empty.tpl"))
-        return QString::fromLatin1(getenv("PWD")) + "/agros2d";
-
-    // gui and solver
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath();
-
-    // system installation
-    if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros/resources/templates/empty.tpl"))
-        return QCoreApplication::applicationDirPath() + "/../share/agros";
-
-    // local installation
-    // python
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../resources/templates/empty.tpl"))
-        return QString::fromLatin1(getenv("PWD")) + "/../..";
-    else if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/resources/templates/empty.tpl"))
-        return QString::fromLatin1(getenv("PWD")) + "/";
-    else
-    {
-        for (int i = 9; i > 5; i--)
-        {
-            if (QFile::exists(QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
-                return QDir::homePath() + QString::fromLatin1("/.local/lib/python3.%1/site-packages/agrossuite/").arg(i);
-            else if (QFile::exists(QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
-                return QString::fromLatin1("/usr/local/lib/python3.%1/site-packages/agrossuite/").arg(i);
-            else if (QFile::exists(QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/resources/templates/empty.tpl").arg(i)))
-                return QString::fromLatin1("/usr/lib/python3.%1/site-packages/agrossuite/").arg(i);
-        }
-    }
-#endif
-
-    qCritical() << "Datadir not found.";
-    exit(1);
 }
 
 QString tempProblemDir()
@@ -373,18 +227,6 @@ QString cacheProblemDir()
             arg(QDir::temp().absolutePath()).
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
-
-    QDir dir(str);
-    if (!dir.exists() && !str.isEmpty())
-        dir.mkpath(str);
-
-    return str;
-}
-
-QString userDataDir()
-{
-    static QString str = QString("%1/agros2d/").
-            arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
 
     QDir dir(str);
     if (!dir.exists() && !str.isEmpty())

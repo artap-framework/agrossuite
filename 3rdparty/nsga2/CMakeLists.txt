@@ -5,7 +5,7 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.62.0/include/")
 SET(HEADERS random.h exception.h global.h NSGA2.h)
 SET(SOURCES random.cpp  global.cpp NSGA2.cpp)
 
-IF (AGROS_BUILD_STATIC)
+IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 ELSE()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

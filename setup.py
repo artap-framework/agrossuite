@@ -20,12 +20,9 @@ try:
 except:
     pass
     
-
-
 # copy files
-distutils.file_util.copy_file("agros.so", "agrossuite/agros.so")
+# distutils.file_util.copy_file("libs/_agros.so", "agrossuite/_agros.so")
 distutils.dir_util.copy_tree("resources", "agrossuite/resources")
-shutil.rmtree('agrossuite/resources/python')
 
 # libs
 if not os.path.exists("agrossuite/libs"):
@@ -42,7 +39,7 @@ os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 # strip libraries
 os.system("strip " + base_dir + "/agrossuite/libs/*")
-os.system("strip " + base_dir + "/agrossuite/agros.so")
+os.system("strip " + base_dir + "/agrossuite/_agros.so")
    
 # long description
 with open(base_dir + "/README", "r") as fh:
@@ -50,7 +47,7 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.2.9.2",
+    version="2020.2.28.1",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",

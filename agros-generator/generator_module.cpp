@@ -31,7 +31,7 @@ Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_outp
     root.mkpath(QString("%1/%2").arg(GENERATOR_PLUGINROOT).arg(moduleId));
 
     // read module
-    module_xsd = XMLModule::module_(compatibleFilename(datadir() + MODULEROOT + "/" + moduleId + ".xml").toStdString(), xml_schema::flags::dont_validate);
+    module_xsd = XMLModule::module_(compatibleFilename(QCoreApplication::applicationDirPath() + MODULEROOT + "/" + moduleId + ".xml").toStdString(), xml_schema::flags::dont_validate);
     XMLModule::module *mod = module_xsd.get();
     assert(mod->field().present());
     m_module = &mod->field().get();
@@ -109,6 +109,19 @@ void Agros2DGeneratorModule::prepareWeakFormsOutput()
 
     m_output->SetValue("ID", m_module->general_field().id());
     m_output->SetValue("CLASS", (id.left(1).toUpper() + id.right(id.length() - 1)).toStdString());
+
+    // JSON
+    QString fileName = QString("%1/resources/modules/%2.json").arg(QCoreApplication::applicationDirPath()).arg(QString::fromStdString(m_module->general_field().id()));
+    QFile file(fileName);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        m_output->SetValue("JSON_CONTENT", file.readAll().toBase64().toStdString());
+    }
+    else
+    {
+        qWarning() << QString("Couldn't open problem '%1'.").arg(fileName);
+        exit(1);
+    }
 
     //comment on beginning of weakform.cpp, may be removed
     ctemplate::TemplateDictionary *field;
@@ -251,7 +264,7 @@ void Agros2DGeneratorModule::generatePluginEquations()
 
 void Agros2DGeneratorModule::getNames(const QString &moduleId)
 {
-    QFile * file = new QFile((datadir().toStdString() + MODULEROOT.toStdString() + "/" + moduleId.toStdString() + ".xml").c_str());
+    QFile * file = new QFile((QCoreApplication::applicationDirPath().toStdString() + MODULEROOT.toStdString() + "/" + moduleId.toStdString() + ".xml").c_str());
     file->open(QIODevice::ReadOnly | QIODevice::Text);
     QXmlStreamReader xml(file);
     QStringList names;

@@ -29,23 +29,9 @@ class FieldInfo;
 class ProblemConfig;
 class PluginCoupling;
 
-class AGROS_LIBRARY_API CouplingList
-{
-public:
-    CouplingList();
-    virtual ~CouplingList();
-
-    QString name(FieldInfo *sourceField, FieldInfo *targetField) const;
-
-    bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const;
-    bool isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType) const;
-
-private:
-    QList<PluginCoupling *> m_couplingJson;
-};
-
-// cached coupling list
-AGROS_LIBRARY_API CouplingList *couplingList();
+bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
+                         QString targetField, AnalysisType targetAnalysis,
+                         CouplingType couplingType);
 
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {

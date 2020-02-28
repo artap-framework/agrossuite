@@ -42,8 +42,6 @@ CouplingsWidget::CouplingsWidget(QWidget *parent) : QWidget(parent)
     Agros::problem()->synchronizeCouplings();
 
     createContent();
-
-    connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
 }
 
 void CouplingsWidget::createContent()
@@ -228,7 +226,6 @@ void ProblemWidget::createControls()
 
     // couplings
     couplingsWidget = new CouplingsWidget(this);
-    connect(Agros::problem(), SIGNAL(couplingsChanged()), couplingsWidget, SLOT(refresh()));
     connect(couplingsWidget, SIGNAL(changed()), couplingsWidget, SLOT(save()));
 
     QVBoxLayout *layoutCouplings = new QVBoxLayout();

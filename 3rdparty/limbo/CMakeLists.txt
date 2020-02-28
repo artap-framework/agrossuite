@@ -11,7 +11,7 @@ SET(SOURCES ehvi/ehvi_calculations.cc
     ehvi/helper.cc
     hv/hypervol.c)
 
-IF (AGROS_BUILD_STATIC OR MSVC)
+IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 ELSE()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

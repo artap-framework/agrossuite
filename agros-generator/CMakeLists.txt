@@ -12,7 +12,6 @@ ENDIF(WIN32)
 SET(SOURCES main.cpp 
     generator.cpp 
     generator_module.cpp 
-    generator_coupling.cpp
     generator_weakforms.cpp
     generator_postprocessor.cpp
     generator_documentation.cpp
@@ -25,7 +24,6 @@ SET(SOURCES main.cpp
 
 SET(HEADERS generator.h
     generator_module.h
-    generator_coupling.h
     parser.h
 )
     

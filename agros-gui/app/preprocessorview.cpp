@@ -79,9 +79,7 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 
     // boundary conditions, materials and geometry information
     createControls();
-
     // connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    // connect(Agros::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));

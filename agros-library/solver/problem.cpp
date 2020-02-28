@@ -356,9 +356,14 @@ MultiArray PostDeal::activeMultiSolutionArray()
 {
     FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
     if (m_computation->solutionStore()->contains(fsid))
+    {
         return m_computation->solutionStore()->multiArray(fsid);
+    }
     else
+    {
         assert(0);
+        return MultiArray();
+    }
 }
 
 // ************************************************************************************************
@@ -780,8 +785,6 @@ void ProblemBase::addField(FieldInfo *field)
     // couplings
     synchronizeCouplings();
     m_scene->fieldsChange();
-
-    // emit fieldsChanged();
 }
 
 void ProblemBase::removeField(FieldInfo *field)
@@ -799,29 +802,23 @@ void ProblemBase::removeField(FieldInfo *field)
 
     synchronizeCouplings();
     m_scene->fieldsChange();
-
-    // emit fieldsChanged();
 }
 
 void ProblemBase::synchronizeCouplings()
 {
-    // zero or one field
-    // if (m_fieldInfos.count() <= 1)
-    //     return;
-
     bool changed = false;
 
     // add missing
-    foreach (FieldInfo* sourceField, m_fieldInfos)
+    foreach (FieldInfo* targetField, m_fieldInfos)
     {
-        foreach (FieldInfo* targetField, m_fieldInfos)
+        QStringList couplings = targetField->plugin()->couplings();
+
+        foreach (FieldInfo* sourceField, m_fieldInfos)
         {
             if (sourceField == targetField)
                 continue;
 
-            if (couplingList()->isCouplingAvailable(sourceField->fieldId(), sourceField->analysisType(),
-                                                    targetField->fieldId(), targetField->analysisType(),
-                                                    CouplingType_Weak))
+            if (couplings.contains(sourceField->fieldId()))
             {
                 QPair<QString, QString> fieldInfosPair(sourceField->fieldId(), targetField->fieldId());
 
@@ -839,7 +836,7 @@ void ProblemBase::synchronizeCouplings()
     {
         if (!(m_fieldInfos.contains(couplingInfo->sourceFieldId()) &&
               m_fieldInfos.contains(couplingInfo->targetFieldId()) &&
-              couplingList()->isCouplingAvailable(couplingInfo->sourceFieldId(), m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
+              isCouplingAvailable(couplingInfo->sourceFieldId(), m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
                                                   couplingInfo->targetFieldId(), m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
                                                   CouplingType_Weak)))
         {
@@ -1463,8 +1460,13 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
     {
         QJsonObject couplingJson = couplingsJson[i].toObject();
 
-        if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
-                        couplingJson[TARGET_FIELDID].toString()))
+        // couplings
+        FieldInfo *fieldInfo = new FieldInfo(couplingJson[TARGET_FIELDID].toString());
+        QStringList couplings = fieldInfo->plugin()->couplings();
+
+        if (couplings.contains(couplingJson[SOURCE_FIELDID].toString()))
+        // if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
+        //                 couplingJson[TARGET_FIELDID].toString()))
         {
             CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
                                              couplingJson[TARGET_FIELDID].toString());

@@ -72,10 +72,20 @@ std::string pyVersion()
     return const_cast<char*>(QCoreApplication::applicationVersion().toStdString().c_str());
 }
 
-std::string pyDatadir(std::string str)
+std::string dataDir()
 {
-    QString path = QFileInfo(datadir() + "/" + QString::fromStdString(str)).absoluteFilePath();
+    QString path = QFileInfo(Agros::dataDir()).absoluteFilePath();
     return compatibleFilename(path).toStdString();
+}
+
+void setDataDir(std::string str)
+{    
+    Agros::setDataDir(QString::fromStdString(str));    
+}
+
+void readPlugins()
+{
+    Agros::readPlugins();
 }
 
 // ************************************************************************************

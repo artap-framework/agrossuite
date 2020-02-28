@@ -40,7 +40,9 @@ inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
 // functions
 std::string pyVersion();
 
-std::string pyDatadir(std::string str = "");
+std::string dataDir();
+void setDataDir(std::string str);
+void readPlugins();
 
 struct PyOptions
 {

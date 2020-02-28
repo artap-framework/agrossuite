@@ -5,7 +5,7 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/limbo)
 SET(HEADERS alg_comparator.h  alg_crossover.h  alg_environmental_selection.h  alg_individual.h  alg_initialization.h  alg_mutation.h  alg_nondominated_sort.h  alg_nsgaiii.h  alg_population.h  alg_reference_point.h aux_math.h aux_misc.h problem_base.h)
 SET(SOURCES alg_comparator.cpp  alg_crossover.cpp  alg_environmental_selection.cpp  alg_individual.cpp  alg_initialization.cpp  alg_mutation.cpp  alg_nondominated_sort.cpp  alg_nsgaiii.cpp  alg_reference_point.cpp aux_math.cpp aux_misc.cpp)
 
-IF (AGROS_BUILD_STATIC)
+IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 ELSE()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

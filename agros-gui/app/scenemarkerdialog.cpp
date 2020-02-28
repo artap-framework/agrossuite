@@ -209,7 +209,7 @@ void SceneFieldWidgetMaterial::refresh()
 void SceneFieldWidgetMaterial::readEquation()
 {
     QPixmap pixmap(QString("%1/resources/images/equations/%2_equation_%3.png").
-                   arg(datadir()).
+                   arg(Agros::dataDir()).
                    arg(m_material->fieldInfo()->fieldId()).
                    arg(analysisTypeToStringKey(m_material->fieldInfo()->analysisType())));
 
@@ -319,7 +319,7 @@ bool SceneFieldWidgetBoundary::save()
 void SceneFieldWidgetBoundary::readEquation()
 {
     QPixmap pixmap(QString("%1/resources/images/equations/%2_equation_%3_%4.png").
-                   arg(datadir()).
+                   arg(Agros::dataDir()).
                    arg(m_boundary->fieldInfo()->fieldId()).
                    arg(analysisTypeToStringKey(m_boundary->fieldInfo()->analysisType())).
                    arg(comboBox->itemData(comboBox->currentIndex()).toString()));

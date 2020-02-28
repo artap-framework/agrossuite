@@ -7,7 +7,7 @@ SET(SOURCES common/shapes.cc
     sweep/sweep_context.cc
   )
 
-IF (AGROS_BUILD_STATIC)
+IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
 ELSE()
     ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
