@@ -4,10 +4,10 @@ from tests.scenario import AgrosTestCase
 from tests.scenario import AgrosTestResult
 
 
-class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
-    def setUpGeneral(self, curr_heat, heat_elast):   
+class TestCoupledProblemsManyDomains(AgrosTestCase):
+    def setUp(self):
         # problem
-        problem = agros.problem(clear = True)
+        problem = agros.problem(clear=True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"       
 
@@ -28,10 +28,7 @@ class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
         self.current.add_material("Cond 1", {"current_conductivity" : 3.3e+07})
         self.current.add_material("Cond 2", {"current_conductivity" : 5.7e+07})
 
-        if (curr_heat == "hard"):
-            self.current.solver = "newton"
-        else:
-            self.current.solver = "linear"
+        self.current.solver = "linear"
                 
         # heat
         self.heat = problem.field("heat")
@@ -48,10 +45,7 @@ class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
         self.heat.add_material("heat", {"heat_conductivity" : 385, "heat_volume_heat" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_density" : 0, "heat_specific_heat" : 0})
         self.heat.add_material("heat2", {"heat_conductivity" : 38500, "heat_volume_heat" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_density" : 0, "heat_specific_heat" : 0})
         
-        if (curr_heat == "hard"):
-            self.heat.solver = "newton"
-        else:
-            self.heat.solver = "linear"
+        self.heat.solver = "linear"
             
         # elasticity
         self.elasticity = problem.field("elasticity")
@@ -67,10 +61,7 @@ class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
         # materials
         self.elasticity.add_material("structural", {"elasticity_young_modulus" : 1e+11, "elasticity_poisson_ratio" : 0.3, "elasticity_volume_force_x" : 0, "elasticity_volume_force_y" : 0, "elasticity_alpha" : 1e-05, "elasticity_temperature_difference" : 0, "elasticity_temperature_reference" : 0})
         
-        if ((heat_elast == "hard") and (self.heat.solver == "newton")):
-            self.elasticity.solver = "newton"
-        else:
-            self.elasticity.solver = "linear"
+        self.elasticity.solver = "linear"
 
         # electrostatic
         self.electrostatic = problem.field("electrostatic")
@@ -89,8 +80,8 @@ class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
         self.electrostatic.add_material("electrostatic", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
         
         # coupling
-        problem.set_coupling_type("current", "heat", curr_heat)
-        problem.set_coupling_type("heat", "elasticity", heat_elast)        
+        problem.set_coupling_type("current", "heat", "weak")
+        problem.set_coupling_type("heat", "elasticity", "weak")
 
         # geometry
         geometry = problem.geometry()
@@ -251,33 +242,12 @@ class TestCoupledProblemsManyDomainsGeneral(AgrosTestCase):
         point1_electrostatic = solution_electrostatic.local_values(1.169e-01, 2.757e-02)
         self.value_test("Electric field", point1_electrostatic["E"], 1.785e+04)        
 
-
-class TestCoupledProblemsManyDomainsWeakWeak(TestCoupledProblemsManyDomainsGeneral):
-    def setUp(self):  
-        self.setUpGeneral("weak", "weak")
-
-class TestCoupledProblemsManyDomainsHardWeak(TestCoupledProblemsManyDomainsGeneral):
-    def setUp(self):  
-        self.setUpGeneral("hard", "weak")
-
-class TestCoupledProblemsManyDomainsWeakHard(TestCoupledProblemsManyDomainsGeneral):
-    def setUp(self):  
-        self.setUpGeneral("weak", "hard")
-
-class TestCoupledProblemsManyDomainsHardHard(TestCoupledProblemsManyDomainsGeneral):
-    def setUp(self):  
-        self.setUpGeneral("hard", "hard")
-
-
-        
         
 if __name__ == '__main__':        
     import unittest as ut
     
     suite = ut.TestSuite()
     result = AgrosTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakWeak))
-#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakHard))
-#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardWeak))
-#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardHard))
+
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomains))
     suite.run(result)
