@@ -111,7 +111,7 @@ void Agros2DGeneratorModule::prepareWeakFormsOutput()
     m_output->SetValue("CLASS", (id.left(1).toUpper() + id.right(id.length() - 1)).toStdString());
 
     // JSON
-    QString fileName = QString("%1/resources/modules/%2.json").arg(QCoreApplication::applicationDirPath()).arg(QString::fromStdString(m_module->general_field().id()));
+    QString fileName = QString("%1/resources_source/modules/%2.json").arg(QCoreApplication::applicationDirPath()).arg(QString::fromStdString(m_module->general_field().id()));
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly))
     {

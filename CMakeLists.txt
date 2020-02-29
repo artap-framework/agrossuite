@@ -38,18 +38,6 @@ INCLUDE(CMake.vars OPTIONAL)
 
 # set static build
 SET(PLUGINS)
-#IF (AGROS_BUILD_STATIC)
-#    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DAGROS_BUILD_STATIC=${AGROS_BUILD_STATIC}")
-
-#    FILE(GLOB module_files "${CMAKE_HOME_DIRECTORY}/resources/modules/*.xml")
-#    foreach(MODULEFILE ${module_files})
-#      GET_FILENAME_COMPONENT(basefile ${MODULEFILE} NAME_WE)
-
-#      FIND_LIBRARY(plugin_${basefile} libagros_plugin_${basefile}.a PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
-
-#      SET(PLUGINS ${PLUGINS}  ${plugin_${basefile}})
-#    endforeach()
-#ENDIF (AGROS_BUILD_STATIC)
 
 # Handle OpenMP should it be included in DealII.
 IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
@@ -306,21 +294,21 @@ MACRO(ADD_INFO_FILES)
    ENDFOREACH()
 ENDMACRO()
 
-set(info resources/modules/acoustic.json
-         resources/modules/current.json
-         resources/modules/elasticity.json
-         resources/modules/electrostatic.json
-         resources/modules/flow.json
-         resources/modules/heat.json
-         resources/modules/magnetic.json
-         resources/modules/math_coeff.json
-         resources/modules/rf_te.json
-         resources/modules/rf_tm.json
-         resources/couplings/current-heat.json
-         resources/couplings/heat-elasticity.json
-         resources/couplings/magnetic-heat.json
-         #resources/couplings/magnetic-flow.xml
-         #resources/couplings/flow-heat.xml
+set(info resources_source/modules/acoustic.json
+         resources_source/modules/current.json
+         resources_source/modules/elasticity.json
+         resources_source/modules/electrostatic.json
+         resources_source/modules/flow.json
+         resources_source/modules/heat.json
+         resources_source/modules/magnetic.json
+         resources_source/modules/math_coeff.json
+         resources_source/modules/rf_te.json
+         resources_source/modules/rf_tm.json
+         resources_source/couplings/current-heat.json
+         resources_source/couplings/heat-elasticity.json
+         resources_source/couplings/magnetic-heat.json
+         #resources_source/couplings/magnetic-flow.xml
+         #resources_source/couplings/flow-heat.xml
          resources_source/generator/filter_cpp.tpl
          resources_source/generator/filter_h.tpl
          resources_source/generator/force_cpp.tpl

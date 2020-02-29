@@ -517,7 +517,7 @@ QStringList Agros2DGenerator::availableModules()
     QStringList filters;
     filters << "*.xml";
 
-    QDir dir(QString("resources/modules/"));
+    QDir dir(QString("resources_source/modules/"));
     dir.setNameFilters(filters);
 
     foreach (QString id, dir.entryList())
@@ -534,7 +534,7 @@ QStringList Agros2DGenerator::availableCouplings()
     QStringList filters;
     filters << "*.xml";
 
-    QDir dir(QString("resources/couplings/"));
+    QDir dir(QString("resources_source/couplings/"));
     dir.setNameFilters(filters);
 
     foreach (QString id, dir.entryList())

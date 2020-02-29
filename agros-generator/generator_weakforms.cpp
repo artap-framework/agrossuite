@@ -75,7 +75,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             // qInfo() << "COUPLING" << QCoreApplication::applicationDirPath() + COUPLINGROOT + "/" + sourceField + "-" + this->m_id + ".xml";
 
             // JSON
-            QString fileName = QString("%1/resources/couplings/%2.json").arg(QCoreApplication::applicationDirPath()).arg(sourceField + "-" + this->m_id);
+            QString fileName = QString("%1/resources_source/couplings/%2.json").arg(QCoreApplication::applicationDirPath()).arg(sourceField + "-" + this->m_id);
             QFile file(fileName);
             if (file.open(QIODevice::ReadOnly))
             {

@@ -12,6 +12,10 @@ try:
 except:
     pass
 try:
+    shutil.rmtree('build')
+except:
+    pass
+try:
     shutil.rmtree('agrossuite/resources')
 except:
     pass
@@ -19,23 +23,29 @@ try:
     shutil.rmtree('agrossuite/libs')
 except:
     pass
+try:
+    shutil.rmtree('agrossuite/__pycache__')
+except:
+    pass
     
 # copy files
 # distutils.file_util.copy_file("libs/_agros.so", "agrossuite/_agros.so")
-distutils.dir_util.copy_tree("resources", "agrossuite/resources")
+# distutils.dir_util.copy_tree("resources", "agrossuite/resources")
 
 # libs
 if not os.path.exists("agrossuite/libs"):
     os.makedirs("agrossuite/libs")
 for (dirpath, dirnames, filenames) in os.walk("libs"):
     for file in filenames:
+        if file == "_agros.so":
+            continue
         ext = os.path.splitext(file)[-1].lower()
         if ext == ".so":
             distutils.file_util.copy_file("libs/" + file, "agrossuite/libs/" + file)
 
 # deal
 distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so.9.0.1")
-os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
+# os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 # strip libraries
 os.system("strip " + base_dir + "/agrossuite/libs/*")
@@ -47,7 +57,7 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.2.28.1",
+    version="2020.2.29.1",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
