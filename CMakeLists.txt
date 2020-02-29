@@ -135,7 +135,7 @@ ENDIF(MSVC)
 
 # Set global compiler parameters.
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type")
   INCLUDE_DIRECTORIES(/usr/include/google)
 ENDIF()
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
