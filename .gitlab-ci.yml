@@ -2,8 +2,6 @@ build_mumps:
   tags:
     - linux
   script: 
-    # - export CC=/usr/bin/clang
-    # - export CXX=/usr/bin/clang++    
     - cd solver-external-mumps
     - cmake .
     - make 
@@ -12,9 +10,7 @@ build_mumps:
 build_trilinos:
   tags:
     - linux
-  script: 
-    # - export CC=/usr/bin/clang
-    # - export CXX=/usr/bin/clang++    
+  script:       
     - cd solver-external-trilinos
     - cmake .
     - make 
@@ -38,7 +34,7 @@ build:
     - mkdir -p build 
     - cd build 
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_CXX14="OFF" -DDEAL_II_WITH_CXX17="OFF" ..
-    - make -j20
+    - make -j12
     - cd ../../
     # - export CC=/usr/bin/clang
     # - export CXX=/usr/bin/clang++     
@@ -48,7 +44,8 @@ build:
     - ./agros_generator
     - cd plugins
     - cmake .
-    - make -j20
+    - make -j12
+    - cd ..
     # appimage 
     # - cd ..
     # - strip libs/*.so
