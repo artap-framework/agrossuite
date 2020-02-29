@@ -60,7 +60,8 @@ build:
     - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
     # - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:hjS888jj9888jhhg7g;@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
     # test
-    - ln -sfn agrossuite/libs libs
+    - ln -sfn ../libs agrossuite/libs
+    - ln -sfn ../dealii/build/lib/libdeal_II.so.9.0.1 agrossuite/libs/libdeal_II.so.9.0.1
     - cd tests
     - cmake .
     - ctest --output-on-failure
