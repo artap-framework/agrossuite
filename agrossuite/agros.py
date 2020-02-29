@@ -1,8 +1,27 @@
+import os
+import ctypes
+
+# import libs
+path = os.path.dirname(os.path.realpath(__file__))
+
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_triangle.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_dxflib.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_poly2tri.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_quazip.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_matio.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nlopt2.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_bayesopt.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga2.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga3.so")
+#ctypes.cdll.LoadLibrary(path + "/libs/")
+#ctypes.cdll.LoadLibrary(path + "/libs/")
+ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.0.1")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
+
 from . import _agros
 
-import os 
 # set datadir
-_agros._set_datadir(os.path.dirname(os.path.realpath(__file__)))
+_agros._set_datadir(path)
 # read plugins
 _agros._read_plugins()
 
@@ -20,4 +39,3 @@ tempdir = _agros.tempdir
 value_in_list = _agros.value_in_list
 value_in_range = _agros.value_in_range
 version = _agros.version
-
