@@ -574,7 +574,7 @@ void Agros2DGenerator::run()
         generationIsNeeded = true;
     }
 
-    generationIsNeeded = true;
+    // generationIsNeeded = true;
     if (generationIsNeeded)
     {
         // generate structure
@@ -675,8 +675,6 @@ void Agros2DGenerator::generateSources()
 {
     QStringList modules = Agros2DGenerator::availableModules();
     QStringList couplings = Agros2DGenerator::availableCouplings();
-
-    qWarning() << couplings;
 
     foreach (QString moduleId, modules)
     {

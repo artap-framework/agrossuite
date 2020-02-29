@@ -30,8 +30,8 @@ const int DEALII_MAX_ORDER = 10;
 // constants
 const QString IMAGEROOT = QString("..%1resources_source%1images").arg(QDir::separator());
 const QString XSDROOT = QString("%1resources%1xsd").arg(QDir::separator());
-const QString MODULEROOT = QString("%1resources%1modules").arg(QDir::separator());
-const QString COUPLINGROOT = QString("%1resources%1couplings").arg(QDir::separator());
+const QString MODULEROOT = QString("%1resources_source%1modules").arg(QDir::separator());
+const QString COUPLINGROOT = QString("%1resources_source%1couplings").arg(QDir::separator());
 const QString TEMPLATEROOT = QString("%1resources%1templates").arg(QDir::separator());
 
 // discrete saving
