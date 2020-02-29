@@ -70,7 +70,8 @@ class TestCurrentPlanar(AgrosTestCase):
         # surface integral
         surface = solution.surface_integrals([0])
         self.value_test("Current", surface["Ir"], 3629.425713)
-        
+
+
 class TestCurrentAxisymmetric(AgrosTestCase):
     def setUp(self):  
         # model
