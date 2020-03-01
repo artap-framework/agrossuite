@@ -44,7 +44,7 @@ for (dirpath, dirnames, filenames) in os.walk("libs"):
             distutils.file_util.copy_file("libs/" + file, "agrossuite/libs/" + file)
 
 # deal
-distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so.9.0.1")
+distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.1.1", "agrossuite/libs/libdeal_II.so.9.1.1")
 # os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 # strip libraries
@@ -57,7 +57,7 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.2.29.2",
+    version="2020.3.1.1",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
@@ -66,7 +66,7 @@ setuptools.setup(
     url="http://www.agros2d.org/",
     python_requires='>3.7',
     license="License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["tests"]),
     include_package_data=True,
     # data_files=local_data_files,
     # install_requires=requirements,    
