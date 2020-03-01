@@ -57,7 +57,7 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.3.1.1",
+    version="2020.3.1.2",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
@@ -66,7 +66,7 @@ setuptools.setup(
     url="http://www.agros2d.org/",
     python_requires='>3.7',
     license="License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
-    packages=setuptools.find_packages(exclude=["tests"]),
+    packages=setuptools.find_packages(),
     include_package_data=True,
     # data_files=local_data_files,
     # install_requires=requirements,    
