@@ -1,5 +1,6 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  GIT_STRATEGY: fetch
 
 build_mumps:
   tags:
