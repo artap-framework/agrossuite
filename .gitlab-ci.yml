@@ -40,6 +40,11 @@ build:
     - linux
   cache:
     untracked: true
+    paths:
+    - dealii/build/
+    - CMakeFiles/
+    - agros-library/CMakeFiles/
+
   script: 
     - git submodule update --init 
     - cd dealii 
