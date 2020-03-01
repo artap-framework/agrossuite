@@ -1,6 +1,8 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_STRATEGY: fetch
+  # GIT_CLEAN_FLAGS: -ffdx -e dealii/build
+  GIT_CLEAN_FLAGS: none
 
 build_mumps:
   tags:
@@ -40,10 +42,6 @@ build:
     - linux
   cache:
     untracked: true
-    paths:
-    - dealii/build/
-    - CMakeFiles/
-    - agros-library/CMakeFiles/
 
   script: 
     - git submodule update --init 
