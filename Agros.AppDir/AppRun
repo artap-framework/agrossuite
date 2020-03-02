@@ -17,10 +17,6 @@ elif [ $1 = "agros" ]; then
     # shift args and run agros
     shift
     ./agros "$@"    
-elif [ $1 = "agros_solver" ]; then
-    # shift args and run solver
-    shift
-    ./agros_solver "$@"
 elif [ $1 = "pythonlab" ]; then
     # shift args and run pythonlab
     shift

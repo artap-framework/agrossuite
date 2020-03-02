@@ -326,7 +326,7 @@ void appendToFile(const QString &fileName, const QString &str)
 
 QString versionString()
 {
-    return versionString(VERSION_MAJOR, VERSION_MINOR, VERSION_SUB, VERSION_YEAR, VERSION_MONTH, VERSION_DAY);
+    return versionString(VERSION_YEAR, VERSION_MONTH, VERSION_DAY);
 }
 
 bool version64bit()

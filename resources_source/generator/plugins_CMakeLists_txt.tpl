@@ -9,10 +9,6 @@ if(${CMAKE_CL_64})
   SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
 endif(${CMAKE_CL_64})
 
-# Debug yes / no.
-SET(AGROS_DEBUG NO)
-SET(AGROS_PLUGINS_DEBUG NO)
-
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/../")
 
 # Allow to override the default values in CMake.vars:
@@ -38,13 +34,8 @@ FIND_PACKAGE(Qt5XmlPatterns REQUIRED)
 
 # Build type.
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
-IF(AGROS_DEBUG)
-SET(DEAL_II_BUILD_TYPE "Debug")
-SET(CMAKE_BUILD_TYPE "Debug")
-ELSE()
 SET(DEAL_II_BUILD_TYPE "Release")
 SET(CMAKE_BUILD_TYPE "Release")
-ENDIF()
 
 IF(WIN32)
   # Naming of libraries to link to.
@@ -103,22 +94,11 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # Enable debugging symbols for all files all the time:
-IF(AGROS_PLUGINS_DEBUG)
-  IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Disable all warnings and turn on only important ones:
-    # SET(CMAKE_CXX_FLAGS "-w ${CMAKE_CXX_FLAGS} -fPIC")
-    # SET(CMAKE_CXX_FLAGS "-Wuninitialized -Wvla -Wsign-compare ${CMAKE_CXX_FLAGS}")
-    # SET(DEBUG_FLAGS "-g")
-    SET(CMAKE_BUILD_TYPE Debug)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
-  ENDIF()
-ElSE(AGROS_PLUGINS_DEBUG)
-  IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    SET(CMAKE_BUILD_TYPE Release)
-    SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations")
-  ENDIF()
-ENDIF(AGROS_PLUGINS_DEBUG)
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_BUILD_TYPE Release)
+  SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations")
+ENDIF()
 
 # This overrides CXX flags for MSVC
 IF(MSVC)

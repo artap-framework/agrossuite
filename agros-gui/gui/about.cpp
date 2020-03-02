@@ -163,7 +163,6 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
                                          "<b>BayesOpt:</b> Bayesian optimization library (<a href=\"https://github.com/rmcantin/bayesopt/\">BayesOpt</a>)<br/>"
                                          "<b>NLopt:</b> Free/open-source library for nonlinear optimization (<a href=\"https://nlopt.readthedocs.io/en/latest/\">NLopt</a>)<br/>"
-                                         "<b>Limbo:</b> Lightweight framework for Bayesian Optimization, a powerful approach for global optimization of expensive, non-convex functions (<a href=\"http://www.resibots.eu/limbo/\">Limbo</a>)<br/>"
                                          "<b>exprtk:</b> Mathematical Expression Toolkit Library (<a href=\"https://github.com/ArashPartow/exprtk/\">exprtk</a>)<br/>"
                                          ));
     labelContent->setWordWrap(true);

@@ -824,7 +824,9 @@ void ProblemBase::synchronizeCouplings()
 
                 if (!m_couplingInfos.keys().contains(fieldInfosPair))
                 {
-                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField->fieldId(), targetField->fieldId());
+                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField->fieldId(),
+                                                                       targetField->fieldId(),
+                                                                       targetField->plugin()->couplingJson(sourceField->fieldId())->name);
                     changed = true;
                 }
             }
@@ -1465,8 +1467,6 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         QStringList couplings = fieldInfo->plugin()->couplings();
 
         if (couplings.contains(couplingJson[SOURCE_FIELDID].toString()))
-        // if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
-        //                 couplingJson[TARGET_FIELDID].toString()))
         {
             CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
                                              couplingJson[TARGET_FIELDID].toString());

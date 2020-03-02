@@ -20,8 +20,6 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/poly2tri)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/bayesopt/include)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nlopt2/src/api)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga2)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga3)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/limbo)
 
 # languages
 message("Translations")
@@ -51,10 +49,8 @@ SET(SOURCES
     optilab/study.cpp
     optilab/study_sweep.cpp
     optilab/study_nsga2.cpp
-    optilab/study_nsga3.cpp
     optilab/study_bayesopt.cpp
     optilab/study_nlopt.cpp
-    optilab/study_limbo.cpp
     optilab/parameter.cpp
     optilab/functional.cpp
     particle/particle_tracing.cpp
@@ -168,10 +164,8 @@ SET(HEADERS
   optilab/study.h
   optilab/study_sweep.h
   optilab/study_nsga2.h
-  optilab/study_nsga3.h
   optilab/study_bayesopt.h
   optilab/study_nlopt.h
-  optilab/study_limbo.h
   optilab/parameter.h
   optilab/functional.h
   particle/particle_tracing.h
@@ -285,5 +279,5 @@ endforeach()
 #endforeach()
 
 # ${XSD_LIBRARY} ${XercesC_LIBRARIES} 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${TRIANGLE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${CURL_LIBRARIES} ${DEAL_II_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${LIMBO_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${NSGA3_LIBRARY} ${CTEMPLATE_LIBRARY} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${TRIANGLE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${CURL_LIBRARIES} ${DEAL_II_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${CTEMPLATE_LIBRARY} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

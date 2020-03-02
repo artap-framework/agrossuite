@@ -25,7 +25,6 @@ IF(MSVC)
 ENDIF(MSVC)
 
 # Debug yes / no.
-SET(AGROS_DEBUG NO)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
@@ -65,11 +64,6 @@ FIND_PACKAGE(Qt5Network REQUIRED)
 FIND_PACKAGE(Qt5Xml REQUIRED)
 FIND_PACKAGE(Qt5XmlPatterns REQUIRED)
 
-# versions
-SET(VERSION_MAJOR 4)
-SET(VERSION_MINOR 0)
-SET(VERSION_SUB 0)
-
 # git revision
 #execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)
 #STRING(REGEX REPLACE "(\r?\n)+$" "" VERSION_GIT "${NUMBER_OF_COMMITS}")
@@ -85,7 +79,6 @@ SET(VERSION_DAY ${DAY})
 
 # Naming of projects built.
 SET(AGROS_LIBRARY agros_library)
-SET(AGROS_SOLVER agros_solver)
 SET(AGROS_GENERATOR agros_generator)
 SET(AGROS_GUI agros_gui)
 SET(AGROS_PYTHON agros_python)
@@ -102,8 +95,6 @@ SET(TRIANGLE_LIBRARY agros_3rdparty_triangle)
 SET(NLOPTLIB_LIBRARY agros_3rdparty_nlopt2)
 SET(BAYESOPTLIB_LIBRARY agros_3rdparty_bayesopt)
 SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
-SET(NSGA3_LIBRARY agros_3rdparty_nsga3)
-SET(LIMBO_LIBRARY agros_3rdparty_limbo)
 SET(QTAWESOME_LIBRARY agros_3rdparty_qtawesome)
 SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 
@@ -162,23 +153,12 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
-IF(AGROS_DEBUG)
-  IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Disable all warnings and turn on only important ones:
-    # SET(CMAKE_CXX_FLAGS "-w ${CMAKE_CXX_FLAGS} -fPIC")
-    # SET(CMAKE_CXX_FLAGS "-Wuninitialized -Wvla -Wsign-compare ${CMAKE_CXX_FLAGS}")
-    # SET(DEBUG_FLAGS "-g -O0")
-    SET(CMAKE_BUILD_TYPE RelWithDebInfo)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
-  ENDIF()
-ElSE(AGROS_DEBUG)
-  IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    SET(CMAKE_BUILD_TYPE Release)
-    SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
-    ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
-  ENDIF()
-ENDIF(AGROS_DEBUG)
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo)
+  SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+  ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
+ENDIF()
 
 # This overrides CXX flags for MSVC
 IF(MSVC)
@@ -209,12 +189,9 @@ ADD_SUBDIRECTORY(3rdparty)
 # deal.ii
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX14)
-#IF(AGROS_DEBUG)
-#SET(DEAL_II_BUILD_TYPE "Debug")
-#SET(CMAKE_BUILD_TYPE "Debug")
-#ELSE()
+
 SET(DEAL_II_BUILD_TYPE "Release")
-SET(CMAKE_BUILD_TYPE "RelWithDebInfo")
+
 #ENDIF()
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
@@ -247,12 +224,8 @@ message("CMake: Start agros")
 message("=====================")
 ADD_SUBDIRECTORY(agros-library)
 ADD_SUBDIRECTORY(agros-generator)
-# solver
-ADD_SUBDIRECTORY(agros-solver)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)
-# SWIG interface
-# ADD_SUBDIRECTORY(agros-swig)
 # GUI
 ADD_SUBDIRECTORY(agros-gui)
 ADD_SUBDIRECTORY(pythonlab-gui)
@@ -261,11 +234,7 @@ message("\nagros Configuration results")
 message("---------------------")
 message(" Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUB}")
 
-IF(AGROS_DEBUG)
-  message(" Build version: Debug")
-ELSE(AGROS_DEBUG)
-    message(" Build version: Release")
-ENDIF(AGROS_DEBUG)
+message(" Build version: Release")
 message("---------------------")
 message("\n")
 

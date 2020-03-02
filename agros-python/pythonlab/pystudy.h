@@ -28,10 +28,8 @@
 #include "optilab/study.h"
 #include "optilab/study_bayesopt.h"
 #include "optilab/study_nsga2.h"
-#include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_sweep.h"
-#include "optilab/study_limbo.h"
 
 #include "nlopt.hpp"
 
@@ -108,25 +106,6 @@ public:
     void setLearningType(const std::string &learningType);
 };
 
-class PyStudyLimbo : public PyStudy
-{
-public:
-    PyStudyLimbo(int index = -1);
-    virtual ~PyStudyLimbo() {}
-
-    virtual StudyLimbo *study() { return static_cast<StudyLimbo *>(m_study); }
-    virtual StudyLimbo *study() const { return static_cast<StudyLimbo *>(m_study); }
-
-    inline std::string getMeanType() const { return m_study->value(Study::LIMBO_mean).toString().toStdString(); }
-    void setMeanType(const std::string &meanType);
-
-    inline std::string getGPType() const { return m_study->value(Study::LIMBO_gp).toString().toStdString(); }
-    void setGPType(const std::string &gpType);
-
-    inline std::string getAcquiType() const { return m_study->value(Study::LIMBO_acqui).toString().toStdString(); }
-    void setAcquiType(const std::string &acquiType);
-};
-
 class PyStudyNLopt : public PyStudy
 {
 public:
@@ -148,16 +127,6 @@ public:
 
     virtual StudyNSGA2 *study() { return static_cast<StudyNSGA2 *>(m_study); }
     virtual StudyNSGA2 *study() const { return static_cast<StudyNSGA2 *>(m_study); }
-};
-
-class PyStudyNSGA3 : public PyStudy
-{
-public:
-    PyStudyNSGA3(int index = -1);
-    virtual ~PyStudyNSGA3() {}
-
-    virtual StudyNSGA3 *study() { return static_cast<StudyNSGA3 *>(m_study); }
-    virtual StudyNSGA3 *study() const { return static_cast<StudyNSGA3 *>(m_study); }
 };
 
 class PyStudySweep : public PyStudy

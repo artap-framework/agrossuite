@@ -61,11 +61,13 @@ bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
     return false;
 }
 
-CouplingInfo::CouplingInfo(QString sourceId,
-                           QString targetId,
+CouplingInfo::CouplingInfo(const QString &sourceId,
+                           const QString &targetId,
+                           const QString &name,
                            CouplingType couplingType) :
     m_sourceFieldId(sourceId),
     m_targetFieldId(targetId),
+    m_name(name),
     m_couplingType(couplingType)
 {    
 

@@ -224,14 +224,10 @@ cdef class __Problem__:
 
         if (type == "bayesopt"):
             return __StudyBayesOpt__()
-        elif (type == "limbo"):
-            return __StudyLimbo__()
         elif (type == "nlopt"):
             return __StudyNLopt__()
         elif (type == "nsga2"):
             return __StudyNSGA2__()
-        elif (type == "nsga3"):
-            return __StudyNSGA3__()
         elif (type == "sweep"):
             return __StudySweep__()
 
@@ -250,14 +246,10 @@ cdef class __Problem__:
 
         if (type == "bayesopt"):
             return __StudyBayesOpt__(index)
-        elif (type == "limbo"):
-            return __StudyLimbo__(index)
         elif (type == "nlopt"):
             return __StudyNLopt__(index)
         elif (type == "nsga2"):
             return __StudyNSGA2__(index)
-        elif (type == "nsga3"):
-            return __StudyNSGA3__(index)
         elif (type == "sweep"):
             return __StudySweep__(index)
 

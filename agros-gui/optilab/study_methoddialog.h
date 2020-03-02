@@ -28,10 +28,8 @@
 
 #include "optilab/study_sweep.h"
 #include "optilab/study_nsga2.h"
-#include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
-#include "optilab/study_limbo.h"
 
 class AGROS_LIBRARY_API StudySweepDialog : public StudyDialog
 {
@@ -49,29 +47,6 @@ protected:
 private:
     QSpinBox *txtNumSamples;
     QComboBox *cmbInitMethod;
-};
-
-class AGROS_LIBRARY_API StudyNSGA3Dialog : public StudyDialog
-{
-public:
-    StudyNSGA3Dialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyNSGA3 *study() { return dynamic_cast<StudyNSGA3 *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtPopSize;
-    QSpinBox *txtNGen;
-    LineEditDouble *txtPCross;
-    // LineEditDouble *txtPMut;
-    LineEditDouble *txtEtaC;
-    LineEditDouble *txtEtaM;
-    QCheckBox *chkUseSurrogateFunction;
 };
 
 class AGROS_LIBRARY_API StudyNSGA2Dialog : public StudyDialog
@@ -144,34 +119,5 @@ private:
     QComboBox *cmbHPScoreFunction;
 };
 
-class AGROS_LIBRARY_API StudyLimboDialog : public StudyDialog
-{
-    Q_OBJECT
-
-public:
-    StudyLimboDialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyLimbo *study() { return dynamic_cast<StudyLimbo *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtNInitSamples;
-    QSpinBox *txtNIterations;
-    QSpinBox *txtHPIterRelearn;
-    LineEditDouble *txtHPNoise;
-
-    QComboBox *cmbMean;
-    QComboBox *cmbGP;
-    QComboBox *cmbAcqui;
-    QLabel *lblError;
-
-private slots:
-    void currentIndexChanged(int index);
-};
 
 #endif // STUDY_METHODDIALOG_H

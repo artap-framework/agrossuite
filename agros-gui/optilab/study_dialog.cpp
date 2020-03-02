@@ -26,10 +26,8 @@
 
 #include "optilab/study_sweep.h"
 #include "optilab/study_nsga2.h"
-#include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
-#include "optilab/study_limbo.h"
 #include "optilab/study_methoddialog.h"
 
 #include "qcustomplot/qcustomplot.h"
@@ -426,16 +424,12 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
 {    
     if (study->type() == StudyType_NSGA2)
         return new StudyNSGA2Dialog(study, parent);
-    else if (study->type() == StudyType_NSGA3)
-        return new StudyNSGA3Dialog(study, parent);
     else if (study->type() == StudyType_BayesOpt)
         return new StudyBayesOptDialog(study, parent);
     else if (study->type() == StudyType_NLopt)
         return new StudyNLoptDialog(study, parent);
     else if (study->type() == StudyType_Sweep)
         return new StudySweepDialog(study, parent);
-    else if (study->type() == StudyType_Limbo)
-        return new StudyLimboDialog(study, parent);
     else
         assert(0);
     

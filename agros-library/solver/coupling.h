@@ -36,8 +36,9 @@ bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis,
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {
 public:
-    CouplingInfo(QString sourceId,
-                 QString targetId,
+    CouplingInfo(const QString &sourceId,
+                 const QString &targetId,
+                 const QString &name,
                  CouplingType couplingType = CouplingType_Weak);
     ~CouplingInfo();
 

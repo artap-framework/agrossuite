@@ -37,36 +37,6 @@ class TestBayesOptBooth(AgrosTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-3)
 
-
-class TestLimboSphere(AgrosTestCase):
-    def setUp(self):  
-        # problem
-        problem = agros.problem(clear = True)
-        problem.parameters["px"] = 0
-        problem.parameters["py"] = 0
-        
-        # studies
-        study_limbo = problem.add_study("limbo")
-        study_limbo.add_parameter("px", -10, 10)
-        study_limbo.add_parameter("py", -10, 10)
-        study_limbo.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
-        
-        study_limbo.clear_solution = True
-        study_limbo.solve_problem = False
-        
-        study_limbo.settings["init_randomsampling_samples"] = 10
-        study_limbo.settings["stop_maxiterations_iterations"] = 60
-        study_limbo.settings["bayes_opt_boptimizer_noise"] = 0
-        study_limbo.settings["bayes_opt_boptimizer_hp_period"] = 10
-        
-        study_limbo.solve()
-        
-        self.computation = study_limbo.find_extreme("functional", "OF", True)
-        
-    def test_values(self):    
-        self.value_test("px", self.computation.parameters["px"], 1.0)
-        self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
         
 class TestNLoptBooth(AgrosTestCase):
     def setUp(self):  
@@ -100,6 +70,7 @@ class TestNLoptBooth(AgrosTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-10)
 
+
 class TestNSGA2Sphere(AgrosTestCase):
     def setUp(self):  
         # problem
@@ -132,33 +103,7 @@ class TestNSGA2Sphere(AgrosTestCase):
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 5e-2)
-                                       
-class TestNSGA3Sphere(AgrosTestCase):
-    def setUp(self):  
-        # problem
-        problem = agros.problem(clear = True)
-        problem.parameters["px"] = 0
-        problem.parameters["py"] = 0
-        
-        # studies
-        study_nsga3 = problem.add_study("nsga3")
-        study_nsga3.add_parameter("px", -10, 10)
-        study_nsga3.add_parameter("py", -10, 10)
-        study_nsga3.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
 
-        study_nsga3.clear_solution = True
-        study_nsga3.solve_problem = False
-        
-        study_nsga3.settings["popsize"] = 16
-        study_nsga3.settings["ngen"] = 160
-        study_nsga3.settings["pcross"] = 0.6
-        study_nsga3.settings["eta_c"] = 10
-        study_nsga3.settings["eta_m"] = 20
-
-        study_nsga3.solve()
-        
-        self.computation = study_nsga3.find_extreme("functional", "OF", True)
-       
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)

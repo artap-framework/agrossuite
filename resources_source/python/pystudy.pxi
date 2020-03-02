@@ -38,18 +38,6 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
         string getLearningType()
         void setLearningType(string &learningType) except +
 
-    cdef cppclass PyStudyLimbo(PyStudy):
-        PyStudyLimbo(int index)
-
-        string getMeanType()
-        void setMeanType(string &meanType) except +
-
-        string getGPType()
-        void setGPType(string &gpType) except +
-
-        string getAcquiType()
-        void setAcquiType(string &acquiType) except +
-
     cdef cppclass PyStudyNLopt(PyStudy):
         PyStudyNLopt(int index)
 
@@ -58,9 +46,6 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
 
     cdef cppclass PyStudyNSGA2(PyStudy):
         PyStudyNSGA2(int index)
-
-    cdef cppclass PyStudyNSGA3(PyStudy):
-        PyStudyNSGA3(int index)
 
     cdef cppclass PyStudySweep(PyStudy):
         PyStudySweep(int index)
@@ -186,39 +171,6 @@ cdef class __StudyBayesOpt__(__Study__):
         (<PyStudyBayesOpt*> self.thisptr).setScoreType(<string> settings['sc_type'].encode())
         (<PyStudyBayesOpt*> self.thisptr).setLearningType(<string> settings['l_type'].encode())
 
-cdef class __StudyLimbo__(__Study__):
-    def __cinit__(self, index = -1):
-        self.thisptr = new PyStudyLimbo(index)
-
-        self.settings = __Parameters__(self.__get_settings__,
-                                       self.__set_settings__)
-
-    def __get_settings__(self):
-        return {'init_randomsampling_samples' : self.thisptr.getIntParameter(b'LIMBO_init_randomsampling_samples'),
-                'stop_maxiterations_iterations' : self.thisptr.getIntParameter(b'LIMBO_stop_maxiterations_iterations'),
-                'bayes_opt_boptimizer_hp_period' : self.thisptr.getIntParameter(b'LIMBO_bayes_opt_boptimizer_hp_period'),
-                'bayes_opt_boptimizer_noise' : self.thisptr.getDoubleParameter(b'LIMBO_bayes_opt_boptimizer_noise'),
-                'mean' : (<PyStudyLimbo*> self.thisptr).getMeanType().decode(),
-                'gp' : (<PyStudyLimbo*> self.thisptr).getGPType().decode(),
-                'acqui' : (<PyStudyLimbo*> self.thisptr).getAcquiType().decode()}
-
-    def __set_settings__(self, settings):
-        positive_value(settings['init_randomsampling_samples'], 'init_randomsampling_samples')
-        self.thisptr.setParameter(string(b'LIMBO_init_randomsampling_samples'), <int> settings['init_randomsampling_samples'])
-
-        positive_value(settings['stop_maxiterations_iterations'], 'stop_maxiterations_iterations')
-        self.thisptr.setParameter(string(b'LIMBO_stop_maxiterations_iterations'), <int> settings['stop_maxiterations_iterations'])
-
-        positive_value(settings['bayes_opt_boptimizer_hp_period'], 'bayes_opt_boptimizer_hp_period')
-        self.thisptr.setParameter(string(b'LIMBO_bayes_opt_boptimizer_hp_period'), <int> settings['bayes_opt_boptimizer_hp_period'])
-
-        positive_value(settings['bayes_opt_boptimizer_noise'], 'bayes_opt_boptimizer_noise')
-        self.thisptr.setParameter(string(b'LIMBO_bayes_opt_boptimizer_noise'), <double> settings['bayes_opt_boptimizer_noise'])
-
-        (<PyStudyLimbo*> self.thisptr).setMeanType(<string> settings['mean'].encode())
-        (<PyStudyLimbo*> self.thisptr).setGPType(<string> settings['gp'].encode())
-        (<PyStudyLimbo*> self.thisptr).setAcquiType (<string> settings['acqui'].encode())
-
 cdef class __StudyNLopt__(__Study__):
     def __cinit__(self, index = -1):
         self.thisptr = new PyStudyNLopt(index)
@@ -289,40 +241,6 @@ cdef class __StudyNSGA2__(__Study__):
 
         positive_value(settings['crowdobj'], 'crowdobj')
         self.thisptr.setParameter(string(b'NSGA2_crowdobj'), <bool> settings['crowdobj'])
-
-cdef class __StudyNSGA3__(__Study__):
-    def __cinit__(self, index = -1):
-        self.thisptr = new PyStudyNSGA3(index)
-
-        self.settings = __Parameters__(self.__get_settings__,
-                                       self.__set_settings__)
-
-    def __get_settings__(self):
-        return {'popsize' : self.thisptr.getIntParameter(b'NSGA3_popsize'),
-                'ngen' : self.thisptr.getIntParameter(b'NSGA3_ngen'),
-                'pcross' : self.thisptr.getDoubleParameter(b'NSGA3_pcross'),
-                # 'pmut' : self.thisptr.getDoubleParameter(b'NSGA3_pmut'),
-                'eta_c' : self.thisptr.getDoubleParameter(b'NSGA3_eta_c'),
-                'eta_m' : self.thisptr.getDoubleParameter(b'NSGA3_eta_m')}
-
-    def __set_settings__(self, settings):
-        positive_value(settings['popsize'], 'popsize')
-        self.thisptr.setParameter(string(b'NSGA3_popsize'), <int> settings['popsize'])
-
-        positive_value(settings['ngen'], 'ngen')
-        self.thisptr.setParameter(string(b'NSGA3_ngen'), <int> settings['ngen'])
-
-        positive_value(settings['pcross'], 'pcross')
-        self.thisptr.setParameter(string(b'NSGA3_pcross'), <double> settings['pcross'])
-
-        # positive_value(settings['pmut'], 'pmut')
-        # self.thisptr.setParameter(string(b'NSGA3_pmut'), <double> settings['pmut'])
-
-        positive_value(settings['eta_c'], 'eta_c')
-        self.thisptr.setParameter(string(b'NSGA3_eta_c'), <double> settings['eta_c'])
-
-        positive_value(settings['eta_m'], 'eta_m')
-        self.thisptr.setParameter(string(b'NSGA3_eta_m'), <double> settings['eta_m'])
 
 cdef class __StudySweep__(__Study__):
     def __cinit__(self, index = -1):

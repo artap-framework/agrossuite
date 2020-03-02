@@ -180,64 +180,6 @@ void PyStudyBayesOpt::setLearningType(const std::string &learningType)
     }
 }
 
-// Limbo **************************************************************
-
-PyStudyLimbo::PyStudyLimbo(int index) : PyStudy()
-{
-    // add study
-    if (index == -1)
-    {
-        m_study = Study::factory(StudyType_Limbo);
-        Agros::problem()->studies()->addStudy(m_study);
-    }
-    else
-    {
-        if (index < Agros::problem()->studies()->items().count())
-            m_study = Agros::problem()->studies()->items().at(index);
-    }
-}
-
-void PyStudyLimbo::setMeanType(const std::string &meanType)
-{
-    if (study()->meanStringKeys().contains(QString::fromStdString(meanType)))
-        m_study->setValue(Study::LIMBO_mean, QString::fromStdString(meanType));
-    else
-    {
-        QStringList list;
-        foreach (QString key, study()->meanStringKeys())
-            list.append(study()->meanToStringKey(key));
-
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
-    }
-}
-
-void PyStudyLimbo::setGPType(const std::string &gpType)
-{
-    if (study()->gpStringKeys().contains(QString::fromStdString(gpType)))
-        m_study->setValue(Study::LIMBO_gp, QString::fromStdString(gpType));
-    else
-    {
-        QStringList list;
-        foreach (QString key, study()->gpStringKeys())
-            list.append(study()->gpToStringKey(key));
-
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
-    }
-}
-
-void PyStudyLimbo::setAcquiType(const std::string &acquiType)
-{
-    if (study()->acquiStringKeys().contains(QString::fromStdString(acquiType)))
-        m_study->setValue(Study::LIMBO_acqui, QString::fromStdString(acquiType));
-    else
-    {
-        QStringList list;
-        foreach (QString key, study()->acquiStringKeys())
-            list.append(study()->acquiToStringKey(key));
-
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
-    }
-}
 
 // NLopt **************************************************************
 
@@ -278,23 +220,6 @@ PyStudyNSGA2::PyStudyNSGA2(int index) : PyStudy()
     if (index == -1)
     {
         m_study = Study::factory(StudyType_NSGA2);
-        Agros::problem()->studies()->addStudy(m_study);
-    }
-    else
-    {
-        if (index < Agros::problem()->studies()->items().count())
-            m_study = Agros::problem()->studies()->items().at(index);
-    }
-}
-
-// NSGA3 **************************************************************
-
-PyStudyNSGA3::PyStudyNSGA3(int index) : PyStudy()
-{
-    // add study
-    if (index == -1)
-    {
-        m_study = Study::factory(StudyType_NSGA3);
         Agros::problem()->studies()->addStudy(m_study);
     }
     else
