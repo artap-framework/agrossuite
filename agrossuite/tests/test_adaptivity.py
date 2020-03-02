@@ -171,6 +171,7 @@ class TestAdaptivityElasticityBracket(AgrosTestCase):
         point1 = solution.local_values(2.042e-1, -3e-2)
         self.value_test("Displacement", point1["d"], 1.161e-7)
         
+
 class TestAdaptivityMagneticProfileConductor(AgrosTestCase):
     def setUp(self):  
         # problem
@@ -226,7 +227,7 @@ class TestAdaptivityMagneticProfileConductor(AgrosTestCase):
         point = solution.local_values(6.106e-04, 2.378e-04)
         self.value_test("Magnetic potential - real", point["Ar"], 2.7584856899647945E-9)
         self.value_test("Magnetic potential - imag", point["Ai"], -1.0598108775564893E-8)        
-        self.value_test("Flux density", point["B"], 1.3839318132148589E-5)
+        self.value_test("Flux density", point["B"], 1.3839318132148589E-5, 0.1)
 
 class TestAdaptivityRF_TE(AgrosTestCase):
     # TODO: add more adaptivity types
