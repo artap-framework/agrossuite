@@ -3,15 +3,6 @@ PROJECT( agros )
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
-# not fixed - disabled only!
-# Policy handling
-if(POLICY CMP0043)
-  cmake_policy(SET CMP0043 OLD)
-endif()
-if(POLICY CMP0050)
-  cmake_policy(SET CMP0050 OLD)
-endif()
-
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
 IF(MSVC)
   SET (CMAKE_EXE_LINKER_FLAGS "/machine:X64")
@@ -24,7 +15,6 @@ IF(MSVC)
   ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 ENDIF(MSVC)
 
-# Debug yes / no.
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
@@ -45,11 +35,10 @@ IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 ENDIF()
 
-# OpenGL
-# FIND_PACKAGE(OpenGLCustom REQUIRED)
-
 # Handle Qt.
-SET(CMAKE_AUTOMOC TRUE)
+SET(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+# set(CMAKE_AUTOUIC ON)
 
 # Link OpenGL and Zlib when needed.
 IF(MSVC)
@@ -58,11 +47,11 @@ IF(MSVC)
         INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 ENDIF()
 
-FIND_PACKAGE(Qt5Core REQUIRED)
-FIND_PACKAGE(Qt5Svg REQUIRED)
-FIND_PACKAGE(Qt5Network REQUIRED)
-FIND_PACKAGE(Qt5Xml REQUIRED)
-FIND_PACKAGE(Qt5XmlPatterns REQUIRED)
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
+find_package(Qt5 COMPONENTS Svg REQUIRED)
+find_package(Qt5 COMPONENTS Xml REQUIRED)
+find_package(Qt5 COMPONENTS XmlPatterns REQUIRED)
 
 # git revision
 #execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)
@@ -249,7 +238,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.0.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.9.1.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)
@@ -276,8 +265,6 @@ set(info resources_source/modules/acoustic.json
          resources_source/couplings/current-heat.json
          resources_source/couplings/heat-elasticity.json
          resources_source/couplings/magnetic-heat.json
-         #resources_source/couplings/magnetic-flow.xml
-         #resources_source/couplings/flow-heat.xml
          resources_source/generator/filter_cpp.tpl
          resources_source/generator/filter_h.tpl
          resources_source/generator/force_cpp.tpl

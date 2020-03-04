@@ -3,26 +3,19 @@ PROJECT(${MATIO_LIBRARY})
 find_package(ZLIB REQUIRED)
 
 set_property(SOURCE matioConfig.h PROPERTY SKIP_AUTOMOC ON)
-
 add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
 IF(MSVC)
   ADD_CUSTOM_COMMAND(
-        SOURCE    matioConfigWin.h
         COMMAND   copy ARGS matioConfigWin.h matioConfig.h OUTPUT matioConfig.h
-        TARGET    MATIO_CONFIG
+        DEPENDS    matioConfigWin.h
         OUTPUTS   matioConfig.h)
 ELSE()
   ADD_CUSTOM_COMMAND(
-        SOURCE    matioConfigLinux.h
         COMMAND   cp ARGS matioConfigLinux.h matioConfig.h OUTPUT matioConfig.h
-        TARGET    MATIO_CONFIG
+        DEPENDS    matioConfigLinux.h
         OUTPUTS   matioConfig.h)
 ENDIF()
-ADD_CUSTOM_COMMAND(
-      SOURCE    MATIO_CONFIG
-      TARGET    MATIO_CONFIG
-      DEPENDS   matioConfig.h)
 
 SET(SOURCES endian.c
     inflate.c

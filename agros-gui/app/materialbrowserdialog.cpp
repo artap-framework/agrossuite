@@ -785,26 +785,12 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
 {
     setWindowTitle(tr("Material Browser"));
     setModal(true);
-    
-    // problem information
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-    webView = new QWebEngineView();
-    connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-#else
-    webView = new QWebView(this);
-    webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-#endif
 
-    // stylesheet
-    std::string style;
-    ctemplate::TemplateDictionary stylesheet("style");
-    stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
-    stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
-    
-    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
-    m_cascadeStyleSheet = QString::fromStdString(style);
+    webEdit = new QTextBrowser();
+    webEdit->setReadOnly(true);
+    webEdit->setOpenLinks(false);
+    webEdit->setOpenExternalLinks(false);
+    QObject::connect(webEdit, SIGNAL(anchorClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
     
     trvMaterial = new QTreeWidget(this);
     trvMaterial->setMouseTracking(true);
@@ -841,7 +827,7 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     
     QHBoxLayout *layoutSurface = new QHBoxLayout();
     layoutSurface->addLayout(layoutProperties);
-    layoutSurface->addWidget(webView, 1);
+    layoutSurface->addWidget(webEdit, 1);
     
     QWidget *widget = new QWidget();
     widget->setLayout(layoutSurface);
@@ -882,7 +868,7 @@ int MaterialBrowserDialog::showDialog(bool select)
 
 void MaterialBrowserDialog::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    webView->setHtml("");
+    webEdit->setHtml("");
     btnEdit->setEnabled(false);
     btnDelete->setEnabled(false);
     
@@ -894,8 +880,8 @@ void MaterialBrowserDialog::doItemChanged(QTreeWidgetItem *current, QTreeWidgetI
             materialInfo(m_selectedFilename);
             if (QFileInfo(m_selectedFilename).isWritable())
             {
-                btnEdit->setEnabled(true);
-                btnDelete->setEnabled(true);
+                // btnEdit->setEnabled(true);
+                // btnDelete->setEnabled(true);
             }
         }
     }
@@ -974,7 +960,6 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
         LibraryMaterial material;
         material.read(fileName);
         
-        materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
         materialInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
         
         materialInfo.SetValue("NAME", material.name.toStdString());
@@ -1030,31 +1015,42 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
             assert(keys.size() == values.size());
             if (keys.size() > 0)
             {
-                QString keysString;
-                QString valuesString;
-
-                QString chart = "[";
+                double minKey = numeric_limits<double>::max();
+                double maxKey = -numeric_limits<double>::max();
+                double minValue = numeric_limits<double>::max();
+                double maxValue = -numeric_limits<double>::max();
                 for (int i = 0; i < keys.size(); i++)
                 {
-                    chart += QString("[%1, %2], ").arg(keys[i]).arg(values[i]);
-                    keysString += QString("%1").arg(keys[i]) + ((i < keys.size() - 1) ? "," : "");
-                    valuesString += QString("%1").arg(values[i]) + ((i < values.size() - 1) ? "," : "");
+                    minKey = fmin(minKey, keys[i]);
+                    maxKey = fmax(maxKey, keys[i]);
+                    minValue = fmin(minValue, values[i]);
+                    maxValue = fmax(maxValue, values[i]);
                 }
-                chart += "]";
 
-                QString id = QUuid::createUuid().toString().remove("{").remove("}");
+                QPen pen;
+                pen.setColor(Qt::darkGray);
+                pen.setWidth(2);
 
-                propSection->SetValue("PROPERTY_CHART", QString("chart_%1").arg(id).toStdString());
-                propSection->SetValue("PROPERTY_CHART_SCRIPT", QString("<script type=\"text/javascript\">$(function () { $.plot($(\"#chart_%1\"), [ { data: %2, color: \"rgb(61, 61, 251)\", lines: { show: true }, points: { show: false } } ], { grid: { hoverable : false }, xaxes: [ { axisLabel: '%3 (%4)' } ], yaxes: [ { axisLabel: '%5 (%6)' } ] });});</script>")
-                                      .arg(id)
-                                      .arg(chart)
-                                      .arg(prop.independent_shortname)
-                                      .arg(prop.independent_unit)
-                                      .arg(prop.shortname)
-                                      .arg(prop.unit).toStdString());
+                QCustomPlot customPlot;
+                // create graph and assign data to it:
+                customPlot.addGraph();
+                customPlot.graph(0)->setData(keys, values);
+                customPlot.graph(0)->setLineStyle(QCPGraph::lsLine);
+                customPlot.graph(0)->setPen(pen);
+                customPlot.graph(0)->setBrush(QBrush(QColor(255, 0, 0, 20)));
+                // give the axes some labels:
+                customPlot.xAxis->setLabel(QString("%0 (%1)").arg(prop.independent_shortname).arg(prop.independent_unit));
+                customPlot.yAxis->setLabel(QString("%0 (%1)").arg(prop.shortname).arg(prop.unit));
+                // set axes ranges, so we see all data:
+                customPlot.xAxis->setRange(minKey, maxKey);
+                customPlot.yAxis->setRange(minValue, maxValue);
+                customPlot.graph(0)->rescaleAxes();
+                customPlot.replot();
 
-                propSection->SetValue("PROPERTY_X", keysString.toStdString());
-                propSection->SetValue("PROPERTY_Y", valuesString.toStdString());
+                QDateTime currentTime(QDateTime::currentDateTime());
+                QString fn = QString("%1/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+                customPlot.savePng(fn, 500, 180);
+                propSection->SetValue("PROPERTY_NONLINEAR_PNG", fn.toStdString());
 
                 propSection->ShowSection("PROPERTY_NONLINEAR");
             }
@@ -1063,32 +1059,21 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
 
     ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/material.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &materialInfo, &info);
 
-    // setHtml(...) doesn't work
-    // webView->setHtml(QString::fromStdString(info));
-
-    // load(...) works
-    writeStringContent(tempProblemDir() + "/material.html", QString::fromStdString(info));
-    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/material.html"));
+    webEdit->setHtml(QString::fromStdString(info));
 }
 
 void MaterialBrowserDialog::linkClicked(const QUrl &url)
 {
-    QString search = "/property?";
+    QString search = "property?";
     if (url.toString().contains(search))
     {
         m_selected_x.clear();
         m_selected_y.clear();
         m_selected_constant = 0.0;
 
-#if QT_VERSION < 0x050000
-        QStringList keysString = url.queryItemValue("x").split(",");
-        QStringList valuesString = url.queryItemValue("y").split(",");
-        m_selected_constant = url.queryItemValue("constant").toDouble();
-#else
         QStringList keysString = QUrlQuery(url).queryItemValue("x").split(",");
         QStringList valuesString = QUrlQuery(url).queryItemValue("y").split(",");
         m_selected_constant = QUrlQuery(url).queryItemValue("constant").toDouble();
-#endif
 
         for (int j = 0; j < keysString.size(); j++)
         {

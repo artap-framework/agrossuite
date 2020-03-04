@@ -57,7 +57,7 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.3.1.2",
+    version="2020.3.3.1",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",

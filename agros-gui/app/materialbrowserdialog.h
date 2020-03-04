@@ -23,12 +23,6 @@
 #include "util/util.h"
 #include "gui/other.h"
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-#include <QtWebEngineWidgets/QtWebEngineWidgets>
-#else
-#include <QWebView>
-#endif
-
 class LineEditDouble;
 class QCustomPlot;
 
@@ -188,17 +182,12 @@ protected:
     void materialInfo(const QString &fileName);    
 
 private:
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-    QWebEngineView *webView;
-#else
-    QWebView *webView;
-#endif
+    QTextBrowser *webEdit;
     QTreeWidget *trvMaterial;
     QPushButton *btnNew;
     QPushButton *btnEdit;
     QPushButton *btnDelete;
     QString m_selectedFilename;
-    QString m_cascadeStyleSheet;
 
     QList<double> m_selected_x;
     QList<double> m_selected_y;

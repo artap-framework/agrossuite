@@ -383,30 +383,6 @@ void ExamplesWidget::problemInfo(const QString &fileName)
 
             return;
         }
-        else if (fileInfo.suffix() == "py")
-        {
-            m_infoWidget->showPythonInfo(fileName);
-
-            return;
-        }
-        else if (fileInfo.suffix() == "ui")
-        {
-            // templateName = "example_form.tpl";
-        }
-
-        // details
-        /*
-        QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
-        if (QFile::exists(detailsFilename))
-        {
-            // replace current path in index.html
-            QString detail = readFileContent(detailsFilename);
-            detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(Agros::dataDir()).absolutePath())).toString());
-
-            problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
-        }
-        */
     }
     else
     {

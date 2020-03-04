@@ -3,9 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="generator" content="Agros Suite" />
-	<style type="text/css">
-		{{STYLESHEET}}
-	</style>
 </head>
 <body>
 <h1>{{LABEL}}</h1>

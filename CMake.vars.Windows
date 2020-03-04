@@ -3,10 +3,8 @@
 # experimetal for deal.ii slah instead /
 SET(DEPENDENCIES_DIR "C:/agros_dependencies")
 
-SET(AGROS_DEBUG YES)
-SET(AGROS_PLUGINS_DEBUG YES)
 SET(DEAL_II_BUILD_TYPE "Release")
-SET(CMAKE_BUILD_TYPE "Debug")
+# SET(CMAKE_BUILD_TYPE "Debug")
 
 SET(WITH_QT5 YES)
 SET(CMAKE_PREFIX_PATH "c:/Qt/5.8/msvc2015_64")

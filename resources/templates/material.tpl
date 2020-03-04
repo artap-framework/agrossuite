@@ -3,12 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="generator" content="Agros Suite" />
-	<style type="text/css">
-		{{STYLESHEET}}
-	</style>
-    <script language="javascript" type="text/javascript" src="{{PANELS_DIRECTORY}}/js/jquery.js"></script>
-    <script language="javascript" type="text/javascript" src="{{PANELS_DIRECTORY}}/js/jquery.flot.js"></script>
-    <script language="javascript" type="text/javascript" src="{{PANELS_DIRECTORY}}/js/jquery.flot.axislabels.js"></script>
 </head>
 <body>
 
@@ -25,18 +19,16 @@
 <div class="section">
 <h2>{{PROPERTY_LABEL}}</h2>
 <hr/>
-<table>
+<table width="95%">
 	<p>{{PROPERTY_SOURCE}}</p>
-	<tr>
-		<td><b>{{PROPERTY_SHORTNAME_LABEL}}</b></td><td>{{PROPERTY_SHORTNAME}}</td>
-		{{#PROPERTY_NONLINEAR}}<td rowspan="7"><div id="{{PROPERTY_CHART}}" style="width:400px;height:155px;"></div></td>{{/PROPERTY_NONLINEAR}}
-	</tr>
+	<tr><td width="200"><b>{{PROPERTY_SHORTNAME_LABEL}}</b></td><td>{{PROPERTY_SHORTNAME}}</td></tr>
 	<tr><td><b>{{PROPERTY_UNIT_LABEL}}</b></td><td>{{PROPERTY_UNIT}}</td></tr>
 	<tr><td><b>{{PROPERTY_CONSTANT_LABEL}}</b></td><td>{{PROPERTY_CONSTANT}} {{PROPERTY_UNIT}}</td></tr>
 	{{#PROPERTY_NONLINEAR}}
-	<tr><td><b>&nbsp;</b></td><td>&nbsp;</td></tr>
+	<tr><td colspan="2"><img src="{{PROPERTY_NONLINEAR_PNG}}"/></td></tr>
 	<tr><td><b>{{PROPERTY_INDEPENDENT_SHORTNAME_LABEL}}</b></td><td>{{PROPERTY_INDEPENDENT_SHORTNAME}}</td></tr>
 	<tr><td><b>{{PROPERTY_INDEPENDENT_UNIT_LABEL}}</b></td><td>{{PROPERTY_INDEPENDENT_UNIT}}</td></tr>
+	<tr><td><b>&nbsp;</b></td><td>&nbsp;</td></tr>
 	{{/PROPERTY_NONLINEAR}}
 </table>
 {{#PROPERTY_SELECTABLE}}

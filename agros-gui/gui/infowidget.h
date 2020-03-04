@@ -23,12 +23,6 @@
 #include "util/util.h"
 #include "app/sceneview_common.h"
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-#include <QtWebEngineWidgets/QtWebEngineWidgets>
-#else
-#include <QWebView>
-#endif
-
 class SceneViewPreprocessor;
 
 class InfoWidgetGeneral : public QWidget
@@ -39,19 +33,12 @@ public:
     InfoWidgetGeneral(QWidget *parent = 0);
     ~InfoWidgetGeneral();
 
-protected:
-    QString m_cascadeStyleSheet;
-
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-    QWebEngineView *webView;
-#else
-    QWebView *webView;
-#endif
+protected:    
+    QTextEdit *webEdit;
 
 public slots:
     void clear();
     void showProblemInfo(ProblemBase *problem, const QString &name = "");
-    void showPythonInfo(const QString &fileName);
 };
 
 class InfoWidget : public InfoWidgetGeneral
@@ -64,16 +51,11 @@ public:
 
 signals:
     void open(const QString &fileName);
-    void openForm(const QString &fileName, const QString &formName);
     void examples(const QString &groupName);
 
 public slots:
     void welcome();
 
-private:
-
-private slots:
-    void linkClicked(const QUrl &url);
 };
 
 #endif // SCENEINFOVIEW_H

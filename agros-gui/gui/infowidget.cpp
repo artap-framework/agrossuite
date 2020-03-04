@@ -52,29 +52,12 @@
 InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     : QWidget(parent)
 {
-    // problem information
-#if QT_VERSION > QT_VERSION_CHECK(5, 7, 0)
-    webView = new QWebEngineView();
-    webView->setMinimumSize(200, 200);
-#else
-    webView = new QWebView();
-    webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    webView->setMinimumSize(200, 200);
-#endif
-
-    // stylesheet
-    std::string style;
-    ctemplate::TemplateDictionary stylesheet("style");
-    stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
-    stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
-
-    ctemplate::ExpandTemplate(compatibleFilename(Agros::Agros::dataDir() + TEMPLATEROOT + "/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
-    m_cascadeStyleSheet = QString::fromStdString(style);
+    webEdit = new QTextEdit();
+    webEdit->setReadOnly(true);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 2);
-    layoutMain->addWidget(webView);
+    layoutMain->addWidget(webEdit);
 
     setLayout(layoutMain);
 }
@@ -85,8 +68,8 @@ InfoWidgetGeneral::~InfoWidgetGeneral()
 }
 
 void InfoWidgetGeneral::clear()
-{
-    webView->setHtml("");
+{    
+    webEdit->setHtml("");
 }
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &name)
@@ -99,7 +82,6 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
 
     problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
 
-    problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
@@ -148,7 +130,31 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
 
     // geometry
     problemInfo.SetValue("GEOMETRY_LABEL", tr("Geometry").toStdString());
-    problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
+
+    // Load your SVG
+    QSvgRenderer renderer(generateSvgGeometry(problem->scene()->faces->items()).toUtf8());
+
+    // Prepare a QImage with desired characteritisc
+    RectPoint boundingBox = SceneFaceContainer::boundingBox(problem->scene()->faces->items());
+
+    double width = 340;
+    double height = 340;
+    if (boundingBox.width() >= boundingBox.height())
+        height = height * boundingBox.height() / boundingBox.width();
+    else
+        width = width * boundingBox.width() / boundingBox.height();
+
+    QImage image(width, height, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    // Get QPainter that paints to the image
+    QPainter painter(&image);
+    renderer.render(&painter);
+
+    // Save, image format based on file extension
+    image.save(tempProblemDir() + "/geometry.png");
+
+    problemInfo.SetValue("GEOMETRY_PNG", QString(tempProblemDir() + "/geometry.png").toStdString());
 
     // parameters
     QMap<QString, ProblemParameter> parameters = problem->config()->parameters()->items();
@@ -265,38 +271,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
 
     ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
-    // setHtml(...) doesn't work
-    // webView->setHtml(QString::fromStdString(info));
-
-    // load(...) works
-    writeStringContent(tempProblemDir() + "/info.html", QString::fromStdString(info));
-    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/info.html"));
-}
-
-void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
-{
-    // template
-    std::string info;
-    ctemplate::TemplateDictionary problemInfo("info");
-
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
-    problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
-
-    // python
-    if (QFile::exists(fileName))
-    {
-        problemInfo.SetValue("NAME", QFileInfo(fileName).baseName().toStdString());
-
-        // replace current path in index.html
-        QString python = readFileContent(fileName);
-        problemInfo.SetValue("PROBLEM_PYTHON", python.toStdString());
-    }
-
-    ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/python.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
-
-    writeStringContent(tempProblemDir() + "/info.html", QString::fromStdString(info));
-    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/info.html"));
+    webEdit->setHtml(QString::fromStdString(info));
 }
 
 // info
@@ -325,41 +300,6 @@ void InfoWidget::welcome()
 
     ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
-    writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
-    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));
+    webEdit->setHtml(QString::fromStdString(info));
 }
 
-void InfoWidget::linkClicked(const QUrl &url)
-{
-    if (url.toString().contains("/example?"))
-    {
-#if QT_VERSION < 0x050000
-        QString group = url.queryItemValue("group");
-#else
-        QString group = QUrlQuery(url).queryItemValue("group");
-#endif
-        emit examples(group);
-    }
-    else if (url.toString().contains("/open?"))
-    {
-#if QT_VERSION < 0x050000
-        QString fileName = url.queryItemValue("filename");
-        QString formName = url.queryItemValue("form");
-#else
-        QString fileName = QUrlQuery(url).queryItemValue("filename");
-        QString formName = QUrlQuery(url).queryItemValue("form");
-#endif
-        fileName = QUrl(fileName).toLocalFile();
-        formName = QUrl(formName).toLocalFile();
-
-        if (QFile::exists(fileName) && formName.isEmpty())
-            emit open(fileName);
-        else if (QFile::exists(fileName))
-            if (QFile::exists(formName))
-                emit openForm(fileName, formName);
-    }
-    else
-    {
-        QDesktopServices::openUrl(url.toString());
-    }
-}
