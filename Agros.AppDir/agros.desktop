@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Agros Suite
-Comment=hp-FEM multiphysics solver with optimization suite
-Exec=agros
-Icon=agros
-Categories=Education;Science;Math;
-MimeType=application/x-agros;
-Name[en_US]=agros.desktop
