@@ -287,8 +287,7 @@ set(info resources_source/modules/acoustic.json
          resources/templates/empty.tpl
          resources/templates/material.tpl
          resources/templates/problem.tpl
-         resources/templates/welcome.tpl
-         resources/templates/style_common.css
+         resources/templates/welcome.tpl         
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})
