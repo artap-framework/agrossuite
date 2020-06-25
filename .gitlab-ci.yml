@@ -40,9 +40,7 @@ build_petsc:
 build:
   tags:
     - linux
-  cache:
-    untracked: true
-
+  
   script: 
     - git submodule update --init 
     - cd dealii 

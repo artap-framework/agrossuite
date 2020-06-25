@@ -1,12 +1,12 @@
 import setuptools
 import distutils
 import os
+import datetime
 from glob import glob
 import shutil
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
-import shutil
 try:
     shutil.rmtree('dist')
 except:
@@ -44,7 +44,7 @@ for (dirpath, dirnames, filenames) in os.walk("libs"):
             distutils.file_util.copy_file("libs/" + file, "agrossuite/libs/" + file)
 
 # deal
-distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.1.1", "agrossuite/libs/libdeal_II.so.9.1.1")
+distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.2.0", "agrossuite/libs/libdeal_II.so.9.2.0")
 # os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 # strip libraries
@@ -56,9 +56,11 @@ os.system("strip " + base_dir + "/agrossuite/_agros.so")
 with open(base_dir + "/README", "r") as fh:
     long_description = fh.read()
 
+dt = datetime.datetime.now()
+
 setuptools.setup(
     name="agrossuite",
-    version="2020.5.13.1",
+    version="{}.{}".format(dt.strftime('%Y.%m.%d'), dt.hour*60+dt.minute*60+dt.second),
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
