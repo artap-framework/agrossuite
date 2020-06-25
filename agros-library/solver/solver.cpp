@@ -699,7 +699,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
-                    if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
+                    if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size())
                     {
                         // increase order
                         if (cell->active_fe_index() < DEALII_MAX_ORDER - 1)
@@ -763,7 +763,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
                     if (cell->refine_flag_set() && (smoothnessIndicators(cell->active_cell_index()) > threshold_smoothness)
-                            && (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size()))
+                            && (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size()))
                     {
                         if (cell->active_fe_index() < DEALII_MAX_ORDER)
                         {
@@ -806,7 +806,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                             (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                             ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                     {
-                        if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
+                        if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size())
                         {
                             // increase order
                             if (cell->active_fe_index() < DEALII_MAX_ORDER)

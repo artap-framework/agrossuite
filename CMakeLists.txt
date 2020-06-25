@@ -184,12 +184,15 @@ SET(DEAL_II_BUILD_TYPE "Release")
 #ENDIF()
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.62.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/UMFPACK/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
-#INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/muparser_v2_2_3/include/")
+
 FIND_PACKAGE(deal.II HINTS "dealii/build" REQUIRED)
+message("xxxxxxxxxxxxxxxxxxxxx")
+message(${DEAL_II_LIBRARIES})
+
 # Include external directories.
 INCLUDE_DIRECTORIES(${AMESOS_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${AZTECOO_INCLUDE_PATH})
@@ -238,7 +241,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.1.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.9.2.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)

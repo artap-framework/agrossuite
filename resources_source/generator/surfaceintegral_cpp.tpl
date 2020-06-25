@@ -75,7 +75,7 @@
                                 *this,
                                 &{{CLASS}}SurfaceIntegral::localAssembleSystem,
                                 &{{CLASS}}SurfaceIntegral::copyLocalToGlobal,
-                                IntegralScratchData(ma.doFHandler().get_fe(),
+                                IntegralScratchData(ma.doFHandler().get_fe_collection(),
                                                     quadratureFormulas,
                                                     faceQuadratureFormulas),
                                 IntegralCopyData());

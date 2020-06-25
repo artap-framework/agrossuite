@@ -131,7 +131,7 @@ protected:
 
         bool contains(int node)
         {
-            for(int i = 0; i < isTriangle() ? 3 : 4; i++)
+            for(int i = 0; i < (isTriangle() ? 3 : 4); i++)
                 if(this->node[i] == node)
                     return true;
             return false;

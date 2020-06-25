@@ -52,8 +52,8 @@ set(BAYESOPT_BUILD_SOBOL ON) # "Build support for Sobol sequences?"
 set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 
 #  experimental - testing Win compilation
-set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.62.0)
-set (BOOST_INCLUDEDIR ..\\..\\dealii\\bundled\\boost-1.62.0\\include)
+set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.70.0)
+set (BOOST_INCLUDEDIR ..\\..\\dealii\\bundled\\boost-1.70.0\\include)
 #  -------------------------------------  
 
 find_package( Boost REQUIRED )

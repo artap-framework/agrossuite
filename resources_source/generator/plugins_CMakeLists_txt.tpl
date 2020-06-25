@@ -116,13 +116,15 @@ include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
 # deal.II
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/build/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.62.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
-#INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb-2018_U2/include/")
 
-FIND_PACKAGE(deal.II HINTS "../dealii/build" REQUIRED)
+FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
+# HACK
+string(REPLACE "/lib/lib" "/lib" DEAL_II_LIBRARIES ${DEAL_II_LIBRARIES})
+# message(${DEAL_II_LIBRARIES})
 
 # modules
 {{#SOURCE}}

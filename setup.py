@@ -49,6 +49,7 @@ distutils.file_util.copy_file("dealii/build/lib/libdeal_II.so.9.1.1", "agrossuit
 
 # strip libraries
 os.system("strip " + base_dir + "/agrossuite/libs/*")
+#os.remove(base_dir + "/agrossuite/libs/libagros_plugin_dek.so")
 os.system("strip " + base_dir + "/agrossuite/_agros.so")
    
 # long description
@@ -57,14 +58,14 @@ with open(base_dir + "/README", "r") as fh:
 
 setuptools.setup(
     name="agrossuite",
-    version="2020.3.3.1",
+    version="2020.5.13.1",
     author=u"Agros Suite",
     author_email="karban@kte.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://www.agros2d.org/",
-    python_requires='>3.7',
+    python_requires='>3.8',
     license="License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
     packages=setuptools.find_packages(),
     include_package_data=True,
@@ -74,7 +75,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "Operating System :: POSIX :: Linux",
         "Topic :: Scientific/Engineering",
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
         "Operating System :: OS Independent",
     ],

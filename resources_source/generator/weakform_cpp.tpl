@@ -478,7 +478,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
     CoordinateType coordinateType = m_computation->config()->coordinateType();
 
     // prepare QCollection
-    dealii::hp::FECollection<2> feCollection(doFHandler.get_fe());
+    dealii::hp::FECollection<2> feCollection(doFHandler.get_fe_collection());
     dealii::hp::QCollection<2-1> qCollection;
     for (unsigned int f = 0; f<feCollection.size(); ++f)
     {

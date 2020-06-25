@@ -163,11 +163,12 @@ def appimage_package():
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
-    shutil.copy('dealii/build/lib/libdeal_II.so.9.1.1', dest + '/libs/libdeal_II.so.9.1.1')
+    shutil.copy('dealii/build/lib/libdeal_II.so.9.2.0', dest + '/libs/libdeal_II.so.9.2.0')
      
     # strip
     os.system("strip " + dest + "/*")
     os.system("strip " + dest + "/libs/*")
+    # os.remove(dest + "/libs/libagros_plugin_dek.so")
 
     # create AppImage
     from subprocess import call

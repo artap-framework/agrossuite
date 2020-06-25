@@ -102,7 +102,7 @@
                                 *this,
                                 &{{CLASS}}VolumeIntegral::localAssembleSystem,
                                 &{{CLASS}}VolumeIntegral::copyLocalToGlobal,
-                                IntegralScratchData(ma.doFHandler().get_fe(),
+                                IntegralScratchData(ma.doFHandler().get_fe_collection(),
                                                     quadratureFormulas,
                                                     faceQuadratureFormulas),
                                 IntegralCopyData());

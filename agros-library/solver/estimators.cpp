@@ -48,7 +48,7 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2
                                                   const dealii::Vector<double> &solution,
                                                   dealii::Vector<float> &smoothness_indicators)
 {
-    dealii::FESeries::Fourier<2> fourier(m_N, doFHandler.get_fe(), quadratureFormulas);
+    dealii::FESeries::Fourier<2> fourier(m_N, doFHandler.get_fe_collection(), quadratureFormulas);
 
     // local DoF values:
     dealii::Vector<double> local_dof_values;
@@ -250,14 +250,14 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
                                                       const dealii::Vector<double> &sln1,
                                                       const dealii::Vector<double> &sln2)
 {
-    int numberOfSolutions = doFHandler.get_fe().n_components();
+    int numberOfSolutions = doFHandler.get_fe_collection().n_components();
 
     double normCurrentL2 = 0.0;
     double normCurrentH1Semi = 0.0;
     double normPrevious = 0.0;
     double normDifference = 0.0;
 
-    dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe(), quadratureFormulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
+    dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe_collection(), quadratureFormulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = doFHandler.begin_active(), endc_int = doFHandler.end();
     for (; cell_int != endc_int; ++cell_int)
@@ -351,7 +351,7 @@ void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_
                             end_sync_it,
                             &DifferenceErrorEstimator::estimate_cell,
                             std::function<void (const EstimateCopyData &)> (),
-                            EstimateScratchData(primal_dof.get_fe(), primal_solution, dual_solution),
+                            EstimateScratchData(primal_dof.get_fe_collection(), primal_solution, dual_solution),
                             EstimateCopyData());
 }
 
