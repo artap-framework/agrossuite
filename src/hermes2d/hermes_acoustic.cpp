@@ -87,7 +87,7 @@ public:
                     {
                         add_matrix_form_surf(new WeakFormsH1::SurfaceMatrixForms::DefaultMatrixFormSurf(0, 1,
                                                                                                         QString::number(i + 1).toStdString(),
-                                                                                                        - 2 * M_PI * Util::scene()->problemInfo()->frequency / boundary->value_real.number,
+                                                                                                        - 2 * M_PI * Util::scene()->problemInfo()->frequency / boundary->value_imag.number,
                                                                                                         convertProblemType(Util::scene()->problemInfo()->problemType)));
                         add_matrix_form_surf(new WeakFormsH1::SurfaceMatrixForms::DefaultMatrixFormSurf(1, 0,
                                                                                                         QString::number(i + 1).toStdString(),
@@ -368,17 +368,20 @@ void HermesAcoustic::readBoundaryFromDomElement(QDomElement *element)
     case PhysicFieldBC_Acoustic_Pressure:
         Util::scene()->addBoundary(new SceneBoundaryAcoustic(element->attribute("name"),
                                                              type,
-                                                             Value(element->attribute("pressure", "0"))));
+                                                             Value(element->attribute("pressure", "0")),
+                                                             Value("0")));
         break;
     case PhysicFieldBC_Acoustic_NormalAcceleration:
         Util::scene()->addBoundary(new SceneBoundaryAcoustic(element->attribute("name"),
                                                              type,
-                                                             Value(element->attribute("acceleration", "0"))));
+                                                             Value(element->attribute("acceleration", "0")),
+                                                             Value("0")));
         break;
     case PhysicFieldBC_Acoustic_Impedance:
         Util::scene()->addBoundary(new SceneBoundaryAcoustic(element->attribute("name"),
                                                              type,
-                                                             Value(element->attribute("impedance", "0"))));
+                                                             Value(element->attribute("impedance_real", "0")),
+                                                             Value(element->attribute("impedance_imag", "0"))));
         break;
     case PhysicFieldBC_Acoustic_MatchedBoundary:
         Util::scene()->addBoundary(new SceneBoundaryAcoustic(element->attribute("name"),
@@ -405,7 +408,8 @@ void HermesAcoustic::writeBoundaryToDomElement(QDomElement *element, SceneBounda
         element->setAttribute("acceleration", boundary->value_real.text);
         break;
     case PhysicFieldBC_Acoustic_Impedance:
-        element->setAttribute("impedance", boundary->value_real.text);
+        element->setAttribute("impedance_real", boundary->value_real.text);
+        element->setAttribute("impedance_imag", boundary->value_imag.text);
         break;
     case PhysicFieldBC_Acoustic_MatchedBoundary:
         break;
@@ -471,14 +475,16 @@ SceneBoundary *HermesAcoustic::newBoundary()
 {
     return new SceneBoundaryAcoustic(tr("new boundary"),
                                      PhysicFieldBC_Acoustic_Pressure,
+                                     Value("0"),
                                      Value("0"));
 }
 
 SceneBoundary *HermesAcoustic::newBoundary(PyObject *self, PyObject *args)
 {
     double pressure;
+    double impedance_imag;
     char *name, *type;
-    if (PyArg_ParseTuple(args, "ss|d", &name, &type, &pressure))
+    if (PyArg_ParseTuple(args, "ss|dd", &name, &type, &pressure, &impedance_imag))
     {
         // check name
         if (Util::scene()->getBoundary(name)) return NULL;
@@ -486,10 +492,16 @@ SceneBoundary *HermesAcoustic::newBoundary(PyObject *self, PyObject *args)
         if (physicFieldBCFromStringKey(type) == PhysicFieldBC_Acoustic_MatchedBoundary)
             return new SceneBoundaryAcoustic(name,
                                              physicFieldBCFromStringKey(type));
+        else if (physicFieldBCFromStringKey(type) == PhysicFieldBC_Acoustic_Impedance)
+            return new SceneBoundaryAcoustic(name,
+                                             physicFieldBCFromStringKey(type),
+                                             Value(QString::number(pressure)),
+                                             Value(QString::number(impedance_imag)));
         else
             return new SceneBoundaryAcoustic(name,
                                              physicFieldBCFromStringKey(type),
-                                             Value(QString::number(pressure)));
+                                             Value(QString::number(pressure)),
+                                             Value("0"));
     }
 
     return NULL;
@@ -1143,9 +1155,10 @@ void ViewScalarFilterAcoustic::calculateVariable(int i)
 
 // *************************************************************************************************************************************
 
-SceneBoundaryAcoustic::SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type, Value value_real) : SceneBoundary(name, type)
+SceneBoundaryAcoustic::SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type, Value value_real, Value value_imag) : SceneBoundary(name, type)
 {
     this->value_real = value_real;
+    this->value_imag = value_imag;
 }
 
 SceneBoundaryAcoustic::SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type) : SceneBoundary(name, type)
@@ -1154,10 +1167,11 @@ SceneBoundaryAcoustic::SceneBoundaryAcoustic(const QString &name, PhysicFieldBC 
 
 QString SceneBoundaryAcoustic::script()
 {
-    return QString("addboundary(\"%1\", \"%2\", %3)").
+    return QString("addboundary(\"%1\", \"%2\", %3, %4)").
             arg(name).
             arg(physicFieldBCToStringKey(type)).
-            arg(value_real.text);
+            arg(value_real.text).
+            arg(value_imag.text);
 }
 
 QMap<QString, QString> SceneBoundaryAcoustic::data()
@@ -1172,7 +1186,8 @@ QMap<QString, QString> SceneBoundaryAcoustic::data()
         out["Normal acceleration (m/s2)"] = value_real.text;
         break;
     case PhysicFieldBC_Acoustic_Impedance:
-        out["Input impedance (Pa.s/m)"] = value_real.text;
+        out["Input impedance - real (Pa.s/m)"] = value_real.text;
+        out["Input impedance - imag (Pa.s/m)"] = value_imag.text;
         break;
     case PhysicFieldBC_Acoustic_MatchedBoundary:
         break;
@@ -1240,9 +1255,11 @@ void SceneBoundaryAcousticDialog::createContent()
     cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_Impedance), PhysicFieldBC_Acoustic_Impedance);
     connect(cmbType, SIGNAL(currentIndexChanged(int)), this, SLOT(doTypeChanged(int)));
 
-    txtValue = new ValueLineEdit(this, true);
+    txtValueReal = new ValueLineEdit(this, true);
+    txtValueImag = new ValueLineEdit(this, true);
 
-    connect(txtValue, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtValueReal, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtValueImag, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
 
     // set active marker
     doTypeChanged(cmbType->currentIndex());
@@ -1250,7 +1267,8 @@ void SceneBoundaryAcousticDialog::createContent()
     layout->addWidget(new QLabel(tr("BC type:")), 4, 0);
     layout->addWidget(cmbType, 4, 2);
     layout->addWidget(lblValueUnit, 11, 0);
-    layout->addWidget(txtValue, 11, 2);
+    layout->addWidget(txtValueReal, 11, 2);
+    layout->addWidget(txtValueImag, 12, 2);
 }
 
 void SceneBoundaryAcousticDialog::load()
@@ -1260,7 +1278,8 @@ void SceneBoundaryAcousticDialog::load()
     SceneBoundaryAcoustic *boundary = dynamic_cast<SceneBoundaryAcoustic *>(m_boundary);
 
     cmbType->setCurrentIndex(cmbType->findData(boundary->type));
-    txtValue->setValue(boundary->value_real);
+    txtValueReal->setValue(boundary->value_real);
+    txtValueImag->setValue(boundary->value_imag);
 }
 
 bool SceneBoundaryAcousticDialog::save() {
@@ -1270,17 +1289,23 @@ bool SceneBoundaryAcousticDialog::save() {
 
     boundary->type = (PhysicFieldBC) cmbType->itemData(cmbType->currentIndex()).toInt();
 
-    if (txtValue->evaluate())
-        boundary->value_real = txtValue->value();
+    if (txtValueReal->evaluate())
+        boundary->value_real = txtValueReal->value();
     else
         return false;
 
+    if (txtValueImag->evaluate())
+        boundary->value_imag = txtValueImag->value();
+    else
+        return false;
+    
     return true;
 }
 
 void SceneBoundaryAcousticDialog::doTypeChanged(int index)
 {
-    txtValue->setEnabled(false);
+    txtValueReal->setEnabled(false);
+    txtValueImag->setEnabled(false);
 
     // read equation
     readEquation(lblEquationImage, (PhysicFieldBC) cmbType->itemData(index).toInt());
@@ -1290,21 +1315,22 @@ void SceneBoundaryAcousticDialog::doTypeChanged(int index)
     {
     case PhysicFieldBC_Acoustic_Pressure:
     {
-        txtValue->setEnabled(true);
+        txtValueReal->setEnabled(true);
         lblValueUnit->setText(tr("<i>p</i><sub>0</sub> (Pa)"));
         lblValueUnit->setToolTip(cmbType->itemText(index));
     }
         break;
     case PhysicFieldBC_Acoustic_NormalAcceleration:
     {
-        txtValue->setEnabled(true);
+        txtValueReal->setEnabled(true);
         lblValueUnit->setText(tr("<i>a</i><sub>0</sub> (m/s<sup>2</sup>)"));
         lblValueUnit->setToolTip(cmbType->itemText(index));
     }
         break;
     case PhysicFieldBC_Acoustic_Impedance:
     {
-        txtValue->setEnabled(true);
+        txtValueReal->setEnabled(true);
+        txtValueImag->setEnabled(true);
         lblValueUnit->setText(tr("<i>Z</i><sub>0</sub> (Pa·s/m)"));
         lblValueUnit->setToolTip(cmbType->itemText(index));
     }

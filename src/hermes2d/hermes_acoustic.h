@@ -153,8 +153,9 @@ class SceneBoundaryAcoustic : public SceneBoundary
 {
 public:
     Value value_real;
+    Value value_imag;
 
-    SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type, Value value_real);
+    SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type, Value value_real, Value value_imag);
     SceneBoundaryAcoustic(const QString &name, PhysicFieldBC type);
 
     QString script();
@@ -191,7 +192,8 @@ protected:
 private:
     QLabel *lblValueUnit;
     QComboBox *cmbType;
-    ValueLineEdit *txtValue;
+    ValueLineEdit *txtValueReal;
+    ValueLineEdit *txtValueImag;
 
 private slots:
     void doTypeChanged(int index);

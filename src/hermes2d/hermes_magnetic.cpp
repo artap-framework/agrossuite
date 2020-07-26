@@ -941,7 +941,7 @@ QMap<QString, QString> SceneBoundaryMagnetic::data()
     {
     case PhysicFieldBC_Magnetic_VectorPotential:
         out["Vector potential - real (Wb/m)"] = value_real.text;
-        out["Vector potential - real (Wb/m)"] = value_imag.text;
+        out["Vector potential - imag (Wb/m)"] = value_imag.text;
         break;
     case PhysicFieldBC_Magnetic_SurfaceCurrent:
         out["Surface current - real (A/m)"] = value_real.text;
