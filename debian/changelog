@@ -1,3 +1,15 @@
+agros2d (3.2-ubuntu295-focal) focal; urgency=low
+
+  * ubuntu 20.04
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 22 Jul 2020 12:00:00 +0200
+
+agros2d (3.2-ubuntu280-eoan) eoan; urgency=low
+
+  * ubuntu 19.10
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 1 Mar 2020 12:00:00 +0200
+
 agros2d (3.2-ubuntu270-bionic) bionic; urgency=low
 
   * backport
