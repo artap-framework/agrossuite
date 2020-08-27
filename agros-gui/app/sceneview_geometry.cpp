@@ -445,10 +445,39 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                 if (str.length() > 0)
                     str = str.left(str.length() - 2);
 
+                QList<LoopsInfo::Triangle> triangles = Agros::problem()->scene()->loopsInfo()->polygonTriangles()[label];
+
+                RectPoint boundingBox(Point(numeric_limits<double>::max(),  numeric_limits<double>::max()),
+                                      Point(-numeric_limits<double>::max(), -numeric_limits<double>::max()));
+                double area = 0.0;
+                foreach (LoopsInfo::Triangle triangle, triangles)
+                {
+                    boundingBox.start.x = qMin(boundingBox.start.x, triangle.a.x);
+                    boundingBox.end.x = qMax(boundingBox.end.x, triangle.a.x);
+                    boundingBox.start.y = qMin(boundingBox.start.y, triangle.a.y);
+                    boundingBox.end.y = qMax(boundingBox.end.y, triangle.a.y);
+
+                    boundingBox.start.x = qMin(boundingBox.start.x, triangle.b.x);
+                    boundingBox.end.x = qMax(boundingBox.end.x, triangle.b.x);
+                    boundingBox.start.y = qMin(boundingBox.start.y, triangle.b.y);
+                    boundingBox.end.y = qMax(boundingBox.end.y, triangle.b.y);
+
+                    boundingBox.start.x = qMin(boundingBox.start.x, triangle.c.x);
+                    boundingBox.end.x = qMax(boundingBox.end.x, triangle.c.x);
+                    boundingBox.start.y = qMin(boundingBox.start.y, triangle.c.y);
+                    boundingBox.end.y = qMax(boundingBox.end.y, triangle.c.y);
+
+                    area += (triangle.a.x * (triangle.b.y - triangle.c.y) +
+                             triangle.b.x * (triangle.c.y - triangle.a.y) +
+                             triangle.c.x * (triangle.a.y - triangle.b.y)) / 2.0;
+
+                }
+
                 label->setHighlighted(true);
-                setToolTip(tr("<h3>Label</h3><b>Point:</b> [%1; %2]<br/><b>Material:</b> %3<br/><b>Area refinement:</b> %4<br/><b>Polynomial order:</b> %5<br/><b>Index:</b> %6").
+                setToolTip(tr("<h3>Label</h3><b>Point:</b> [%1; %2]<br/><b>Area:</b> %3<br/><b>Material:</b> %4<br/><b>Area refinement:</b> %5<br/><b>Polynomial order:</b> %6<br/><b>Index:</b> %7").
                            arg(label->point().x, 0, 'g', 3).
                            arg(label->point().y, 0, 'g', 3).
+                           arg(QString("[%1; %2], [%3; %4], %5").arg(boundingBox.start.x).arg(boundingBox.start.y).arg(boundingBox.end.x).arg(boundingBox.end.y).arg(area)).
                            arg(str).
                            arg(area_refinement).
                            arg(polynomial_order).
