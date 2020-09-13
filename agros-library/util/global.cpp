@@ -327,7 +327,6 @@ void Agros::readPlugins()
     // plugins
     foreach (QString pluginPath, pluginList(m_singleton.data()->dataDir()))
     {
-
         // load new plugin
         QPluginLoader *loader = new QPluginLoader(pluginPath);
 
@@ -349,6 +348,7 @@ void Agros::readPlugins()
 
         delete loader;
     }
+
     // solvers
     foreach (QString pluginPath, solverList(m_singleton.data()->dataDir()))
     {
@@ -363,6 +363,7 @@ void Agros::readPlugins()
         if (!loader->load())
         {
             QString error = loader->errorString();
+            qInfo() << error;
             delete loader;
             throw AgrosPluginException(QObject::tr("Could not load 'solver_plugin_%1' (%2)").arg(pluginPath).arg(error));
         }

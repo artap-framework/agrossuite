@@ -181,8 +181,6 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
 
 FIND_PACKAGE(deal.II HINTS "dealii/build" REQUIRED)
-message("xxxxxxxxxxxxxxxxxxxxx")
-message(${DEAL_II_LIBRARIES})
 
 # Include external directories.
 INCLUDE_DIRECTORIES(${AMESOS_INCLUDE_PATH})
@@ -198,7 +196,7 @@ INCLUDE_DIRECTORIES(${LOCA_EPETRA_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${NOX_EPETRA_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${EPETRAEXT_INCLUDE_PATH})
 
-if(WITH_MPI)
+if (WITH_MPI)
   find_package(MPI REQUIRED)
   include_directories(${MPI_INCLUDE_PATH})
 endif(WITH_MPI)
@@ -207,7 +205,9 @@ message("CMake: Start agros")
 message("=====================")
 ADD_SUBDIRECTORY(agros-library)
 ADD_SUBDIRECTORY(solver-plugin-umfpack)
-# ADD_SUBDIRECTORY(solver-plugin-mumps)
+IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    ADD_SUBDIRECTORY(solver-plugin-mumps)
+ENDIF()
 # ADD_SUBDIRECTORY(solver-plugin-petsc)
 ADD_SUBDIRECTORY(agros-generator)
 # Python interface
