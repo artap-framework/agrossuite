@@ -102,8 +102,8 @@ class PyField
         // external matrix solver
         inline std::string getExternalMatrixSolver() const { return m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString().toStdString(); }
         void setExternalMatrixSolver(const std::string &solver);
-        inline std::string getExternalMatrixSolverEnviroment() const { return m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString().toStdString(); }
-        inline std::string getExternalMatrixSolverParameters() const { return m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString().toStdString(); }
+        inline std::string getExternalMatrixSolverMethod() const { return m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString().toStdString(); }
+        inline std::string getExternalMatrixSolverParameters() const { return m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString().toStdString(); }
 
         // number of refinements
         inline int getNumberOfRefinements() const { return m_fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt(); }

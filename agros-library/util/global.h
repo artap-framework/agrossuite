@@ -29,6 +29,7 @@ class Config;
 class SolutionStore;
 class Log;
 class PluginInterface;
+class PluginSolverInterface;
 
 
 AGROS_LIBRARY_API void initSingleton();
@@ -57,6 +58,9 @@ public:
     static inline QMap<QString, PluginInterface *> plugins()  { return Agros::singleton()->m_plugins; }
     static PluginInterface *loadPlugin(const QString &pluginName);
 
+    static inline QMap<QString, PluginSolverInterface *> solvers()  { return Agros::singleton()->m_solvers; }
+    static PluginSolverInterface *loadSolver(const QString &solverName);
+
     static void setDataDir(const QString &dir);
     static inline QString dataDir() { return Agros::singleton()->m_dataDir; }
 
@@ -76,6 +80,8 @@ private:
     QSharedPointer<Log> m_log;
     // plugins
     QMap<QString, PluginInterface *> m_plugins;
+    // solvers
+    QMap<QString, PluginSolverInterface *> m_solvers;
 };
 
 // create script from model

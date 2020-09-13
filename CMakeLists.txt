@@ -87,12 +87,6 @@ SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
 SET(QTAWESOME_LIBRARY agros_3rdparty_qtawesome)
 SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 
-# XSD
-find_package(XSD 4.0 REQUIRED)
-INCLUDE_DIRECTORIES(${XSD_INCLUDE_DIR})
-# xerces
-find_package(XercesC REQUIRED)
-INCLUDE_DIRECTORIES(${XercesC_INCLUDE_DIRS})
 # curl
 find_package(CURL REQUIRED)
 
@@ -185,8 +179,6 @@ SET(DEAL_II_BUILD_TYPE "Release")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/UMFPACK/Include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
 
 FIND_PACKAGE(deal.II HINTS "dealii/build" REQUIRED)
@@ -215,6 +207,9 @@ endif(WITH_MPI)
 message("CMake: Start agros")
 message("=====================")
 ADD_SUBDIRECTORY(agros-library)
+ADD_SUBDIRECTORY(solver-plugin-umfpack)
+# ADD_SUBDIRECTORY(solver-plugin-mumps)
+# ADD_SUBDIRECTORY(solver-plugin-petsc)
 ADD_SUBDIRECTORY(agros-generator)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)

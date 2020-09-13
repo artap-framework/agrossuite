@@ -249,7 +249,7 @@ void initLists()
     // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
     matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
     matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
-    matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
+    matrixSolverTypeList.insert(SOLVER_EXTERNAL_PLUGIN, "external_plugin");
 
     // dump format
     dumpFormatList.insert(EXPORT_FORMAT_PLAIN_ASCII, "plain_ascii");
@@ -648,10 +648,10 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
         return QObject::tr("EMPTY");
     case SOLVER_UMFPACK:
         return QObject::tr("UMFPACK");
+    case SOLVER_EXTERNAL_PLUGIN:
+        return QObject::tr("External (plugin)");
     case SOLVER_DEALII:
         return QObject::tr("deal.II (iter.)");
-    case SOLVER_EXTERNAL:
-        return QObject::tr("External (out of core)");
     default:
         std::cerr << "Matrix solver type '" + QString::number(matrixSolverType).toStdString() + "' is not implemented. matrixSolverTypeString(MatrixSolverType matrixSolverType)" << endl;
         throw;

@@ -233,8 +233,8 @@ enum TimeStepMethod
 
 enum MatrixSolverType
 {
-    SOLVER_UMFPACK = 0,    
-    SOLVER_EXTERNAL = 8,
+    SOLVER_UMFPACK = 0,        
+    SOLVER_EXTERNAL_PLUGIN = 9,
     SOLVER_DEALII,
     SOLVER_EMPTY = 100
 };

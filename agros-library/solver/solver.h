@@ -65,10 +65,10 @@ public:
         // current solution
         dealii::hp::DoFHandler<2> doFHandler;
 
-        dealii::ConstraintMatrix constraintsHangingNodes;
-        dealii::ConstraintMatrix constraintsDirichlet;
-        dealii::ConstraintMatrix constraintsZeroDirichlet;
-        dealii::ConstraintMatrix constraintsAll;
+        dealii::AffineConstraints<double> constraintsHangingNodes;
+        dealii::AffineConstraints<double> constraintsDirichlet;
+        dealii::AffineConstraints<double> constraintsZeroDirichlet;
+        dealii::AffineConstraints<double> constraintsAll;
         dealii::SparsityPattern sparsityPattern;
 
         // matrix, rhs and solution

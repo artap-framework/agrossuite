@@ -1,6 +1,6 @@
 FIND_LIBRARY(MUMPS_COMMON_LIBRARY
     NAMES
-    mumps_common
+    mumps_common_seq
     PATHS
     $ENV{PETSC_DIR}/lib
     $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib
@@ -9,7 +9,7 @@ FIND_LIBRARY(MUMPS_COMMON_LIBRARY
 
 FIND_LIBRARY(DMUMPS_LIBRARY
     NAMES
-    dmumps
+    dmumps_seq
     PATHS
     $ENV{PETSC_DIR}/lib
     $ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib

@@ -574,7 +574,7 @@ void Agros2DGenerator::run()
         generationIsNeeded = true;
     }
 
-    // generationIsNeeded = true;
+    generationIsNeeded = true;
     if (generationIsNeeded)
     {
         // generate structure

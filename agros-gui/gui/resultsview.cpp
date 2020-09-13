@@ -37,8 +37,6 @@
 #include "app/sceneview_post2d.h"
 #include "app/postprocessorview.h"
 
-#include <ctemplate/template.h>
-
 ResultsView::ResultsView(SceneViewPost2D *post2D) : QWidget(post2D),
     m_sceneModePostprocessor(SceneModePostprocessor_Empty), m_post2D(post2D)
 {

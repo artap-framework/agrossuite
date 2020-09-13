@@ -100,70 +100,6 @@ double ProblemConfig::initialTimeStepLength()
     return constantTimeStepLength();
 }
 
-//void ProblemConfig::load(XMLProblem::problem_config *configxsd)
-//{
-//    // default
-//    m_config = m_configDefault;
-
-//    for (int i = 0; i < configxsd->problem_item().size(); i ++)
-//    {
-//        Type key = stringKeyToType(QString::fromStdString(configxsd->problem_item().at(i).problem_key()));
-
-//        if (m_configDefault.keys().contains(key))
-//        {
-//            if (m_configDefault[key].type() == QVariant::Double)
-//                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toDouble();
-//            else if (m_configDefault[key].type() == QVariant::Int)
-//                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toInt();
-//            else if (m_configDefault[key].type() == QVariant::Bool)
-//                m_config[key] = (QString::fromStdString(configxsd->problem_item().at(i).problem_value()) == "1");
-//            else if (m_configDefault[key].type() == QVariant::String)
-//                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
-//            else if (m_configDefault[key].type() == QVariant::StringList)
-//                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).split("|");
-//            else
-//            {
-//                if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
-//                    m_config[key] = QVariant::fromValue(coordinateTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-//                else if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
-//                    m_config[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-//                else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
-//                    m_config[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-//                else
-//                    qDebug() << "Key not found (XML)" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
-//            }
-//        }
-//    }
-//}
-
-//void ProblemConfig::save(XMLProblem::problem_config *configxsd)
-//{
-//    foreach (Type key, m_config.keys())
-//    {
-//        if (m_configDefault[key].type() == QVariant::StringList)
-//            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].toStringList().join("|").toStdString()));
-//        else if (m_configDefault[key].type() == QVariant::Bool)
-//            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toInt()).toStdString()));
-//        else if (m_configDefault[key].type() == QVariant::String)
-//            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].toString().toStdString()));
-//        else if (m_configDefault[key].type() == QVariant::Int)
-//            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toInt()).toStdString()));
-//        else if (m_configDefault[key].type() == QVariant::Double)
-//            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toDouble()).toStdString()));
-//        else
-//        {
-//            if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
-//                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), coordinateTypeToStringKey(m_config[key].value<CoordinateType>()).toStdString()));
-//            else if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
-//                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_config[key].value<MeshType>()).toStdString()));
-//            else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
-//                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].value<Value>().toString().toStdString()));
-//            else
-//                assert(0);
-//        }
-//    }
-//}
-
 void ProblemConfig::load(QJsonObject &object)
 {
     // default
@@ -514,46 +450,6 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[ChartMode] = ChartMode_Geometry;
     m_settingDefault[SolidViewHide] = QStringList();
 }
-
-//void PostprocessorSetting::load(XMLProblem::config *configxsd)
-//{
-//    // default
-//    m_setting = m_settingDefault;
-
-//    for (int i = 0; i < configxsd->item().size(); i ++)
-//    {
-//        Type key = stringKeyToType(QString::fromStdString(configxsd->item().at(i).key()));
-
-//        if (m_settingDefault.keys().contains(key))
-//        {
-//            if (m_settingDefault[key].type() == QVariant::Double)
-//                m_setting[key] = QString::fromStdString(configxsd->item().at(i).value()).toDouble();
-//            else if (m_settingDefault[key].type() == QVariant::Int)
-//                m_setting[key] = QString::fromStdString(configxsd->item().at(i).value()).toInt();
-//            else if (m_settingDefault[key].type() == QVariant::Bool)
-//                m_setting[key] = (QString::fromStdString(configxsd->item().at(i).value()) == "1");
-//            else if (m_settingDefault[key].type() == QVariant::String)
-//                m_setting[key] = QString::fromStdString(configxsd->item().at(i).value());
-//            else if (m_settingDefault[key].type() == QVariant::StringList)
-//                m_setting[key] = QString::fromStdString(configxsd->item().at(i).value()).split("|");
-//            else
-//                qDebug() << "Key not found" << QString::fromStdString(configxsd->item().at(i).key()) << QString::fromStdString(configxsd->item().at(i).value());
-//        }
-//    }
-//}
-
-//void PostprocessorSetting::save(XMLProblem::config *configxsd)
-//{
-//    foreach (Type key, m_setting.keys())
-//    {
-//        if (m_settingDefault[key].type() == QVariant::StringList)
-//            configxsd->item().push_back(XMLProblem::item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
-//        else if (m_settingDefault[key].type() == QVariant::Bool)
-//            configxsd->item().push_back(XMLProblem::item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-//        else
-//            configxsd->item().push_back(XMLProblem::item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
-//    }
-//}
 
 void PostprocessorSetting::load(QJsonObject &object)
 {

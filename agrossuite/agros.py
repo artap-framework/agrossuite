@@ -12,6 +12,8 @@ ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_matio.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nlopt2.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_bayesopt.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga2.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_stb_truetype.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_ctemplate.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.2.0")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
 

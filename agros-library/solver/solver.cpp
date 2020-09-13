@@ -279,8 +279,8 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
     case SOLVER_DEALII:
         linearSolver.solvedealii(system, rhs, sln);
         break;
-    case SOLVER_EXTERNAL:
-        linearSolver.solveExternal(system, rhs, sln);
+    case SOLVER_EXTERNAL_PLUGIN:
+        linearSolver.solveExternalPlugin(system, rhs, sln);
         break;
     default:
         Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
@@ -569,7 +569,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     {
         dealii::KellyErrorEstimator<2>::estimate(primal->doFHandler,
                                                  m_quadratureFormulasFace,
-                                                 TYPENAME dealii::FunctionMap<2>::type(),
+        {},
                                                  primal->solution,
                                                  estimated_error_per_cell,
                                                  dealii::ComponentMask());
@@ -1009,7 +1009,7 @@ void SolverDeal::solveTransient()
     dealii::Vector<double> initialSolution(primal->doFHandler.n_dofs());
 
     dealii::VectorTools::interpolate(primal->doFHandler,
-                                     dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
+                                     dealii::Functions::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
                                      initialSolution);
 
     // initial step

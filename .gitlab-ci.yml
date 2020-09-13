@@ -4,39 +4,6 @@ variables:
   # GIT_CLEAN_FLAGS: -ffdx -e dealii/build
   GIT_CLEAN_FLAGS: none
 
-build_mumps:
-  tags:
-    - linux
-  cache:
-    untracked: true
-  script: 
-    - cd solver-external-mumps
-    - cmake .
-    - make 
-    - ctest --output-on-failure 
-
-build_trilinos:
-  tags:
-    - linux
-  cache:
-    untracked: true
-  script:       
-    - cd solver-external-trilinos
-    - cmake .
-    - make 
-    - ctest --output-on-failure 
-    
-build_petsc:
-  tags:
-    - linux
-  cache:
-    untracked: true
-  script:    
-    - cd solver-external-petsc
-    - cmake .
-    - make 
-    - ctest --output-on-failure 
-
 build:
   tags:
     - linux
@@ -46,7 +13,7 @@ build:
     - cd dealii 
     - mkdir -p build 
     - cd build 
-    - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_CXX14="OFF" -DDEAL_II_WITH_CXX17="OFF" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="ON" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_FORCE_BUNDLED_UMFPACK="ON" -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" ..
+    - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_CXX14="OFF" -DDEAL_II_WITH_CXX17="OFF" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" ..
     - make -j12
     - cd ../../
     # - export CC=/usr/bin/clang

@@ -121,9 +121,8 @@ private:
     QComboBox *cmbIterLinearSolverDealIIMethod;
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
     QComboBox *cmbExternalLinearSolverCommand;
-    QLineEdit *txtExternalLinearSolverCommandEnvironment;
-    QLineEdit *txtExternalLinearSolverCommandParameters;
-    QTextEdit *txtExternalLinearSolverHint;
+    QComboBox *cmbExternalLinearSolverMethod;
+    QLineEdit *txtExternalLinearSolverParameters;
 
     // equation
     // LaTeXViewer *equationLaTeX;

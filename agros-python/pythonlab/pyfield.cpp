@@ -142,14 +142,11 @@ void PyField::setLinearSolverDealIIPreconditioner(const std::string &linearSolve
 
 void PyField::setExternalMatrixSolver(const std::string &solver)
 {
-    QStringList solvers;
-    QDirIterator itDir(QString("%1/libs/").arg(Agros::dataDir()), QStringList() << "*.ext", QDir::Files);
-    while (itDir.hasNext())
-        solvers << QFileInfo(itDir.next()).fileName();
+    QStringList solvers = Agros::solvers().keys();
 
     if (solvers.contains(QString::fromStdString(solver)))
         m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, QString::fromStdString(solver));
-    else if (m_fieldInfo->matrixSolver() == SOLVER_EXTERNAL)
+    else if (m_fieldInfo->matrixSolver() == SOLVER_EXTERNAL_PLUGIN)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(solvers)).toStdString());
 }
 

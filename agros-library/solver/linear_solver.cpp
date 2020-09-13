@@ -67,6 +67,7 @@
 #include "plugin_interface.h"
 #include "logview.h"
 #include "plugin_interface.h"
+#include "plugin_solver_interface.h"
 #include "weak_form.h"
 #include "bdf2.h"
 
@@ -84,50 +85,58 @@ void SolverLinearSolver::solveUMFPACK(dealii::SparseMatrix<double> &system,
                                       dealii::Vector<double> &sln,
                                       bool reuseDecomposition)
 {
-    Agros::log()->printDebug(QObject::tr("Solver"),
-                               QObject::tr("Direct solver - UMFPACK"));
+    // default solver
+    QStringList solvers = Agros::solvers().keys();
+    if (solvers.contains("UMFPACK"))
+    {
+        Agros::log()->printMessage(QObject::tr("Solver"),
+                                   QObject::tr("Direct solver - UMFPACK"));
 
-    if (!reuseDecomposition)
-        direct_solver.initialize(system);
+        PluginSolverInterface *solver = Agros::loadSolver("UMFPACK");
+        solver->solve(system, rhs, sln);
+    }
     else
-        qDebug() << "LU decomposition has been reused";
+    {
+        // failsafe
+        solvedealii(system, rhs, sln);
+    }
 
-    direct_solver.vmult(sln, rhs);
+    //  if (!reuseDecomposition)
+    //      direct_solver.initialize(system);
+    //  else
+    //      qDebug() << "LU decomposition has been reused";
+
+    //  direct_solver.vmult(sln, rhs);
 }
 
-void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
-                                       dealii::Vector<double> &rhs,
-                                       dealii::Vector<double> &sln)
-{
-    // read command parameters
-    QFile f(QString("%1/libs/%2").arg(Agros::dataDir()).arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
-    if (!f.open(QFile::ReadOnly | QFile::Text))
-        throw AgrosSolverException(QObject::tr("Cannot not open external command file."));
-    QTextStream in(&f);
-    // command at second line
-    QStringList commandContent = in.readAll().split("\n");
+void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &system,
+                                             dealii::Vector<double> &rhs,
+                                             dealii::Vector<double> &sln)
+{    
+    QStringList solvers = Agros::solvers().keys();
+    if (solvers.contains(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()))
+    {
+        Agros::log()->printMessage(QObject::tr("Solver"),
+                                   QObject::tr("Solver - %1 (%2)").arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString())
+                                   .arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
 
-    // command at second line
-    QString name = commandContent.at(0);
-    QString command = commandContent.at(1);
-
-    Agros::log()->printDebug(QObject::tr("Solver"),
-                               QObject::tr("External solver - %1").arg(name));
-
-    AgrosExternalSolver ext(&system, &rhs);
-    ext.setCommand(command);
-    ext.setCommandEnvironment(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
-    ext.setCommandParameters(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
-    ext.solve();
-
-    sln = ext.solution();
+        PluginSolverInterface *solver = Agros::loadSolver(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
+        solver->setMethod(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
+        solver->setParameters(m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
+        solver->solve(system, rhs, sln);
+    }
+    else
+    {
+        // failsafe
+        solvedealii(system, rhs, sln);
+    }
 }
 
 void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
                                      dealii::Vector<double> &rhs,
                                      dealii::Vector<double> &sln)
 {
-    Agros::log()->printDebug(QObject::tr("Solver"),
+    Agros::log()->printMessage(QObject::tr("Solver"),
                                QObject::tr("Iterative solver: deal.II (%1, %2)")
                                .arg(iterLinearSolverDealIIMethodString((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()))
                                .arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));

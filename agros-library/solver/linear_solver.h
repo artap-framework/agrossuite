@@ -60,9 +60,9 @@ public:
                       dealii::Vector<double> &sln,
                       bool reuseDecomposition = false);
 
-    void solveExternal(dealii::SparseMatrix<double> &system,
-                              dealii::Vector<double> &rhs,
-                              dealii::Vector<double> &sln);
+    void solveExternalPlugin(dealii::SparseMatrix<double> &system,
+                             dealii::Vector<double> &rhs,
+                             dealii::Vector<double> &sln);
 
     void solvedealii(dealii::SparseMatrix<double> &system,
                      dealii::Vector<double> &rhs,

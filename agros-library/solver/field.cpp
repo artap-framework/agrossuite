@@ -608,47 +608,6 @@ Module::LocalVariable FieldInfo::defaultViewVectorVariable(CoordinateType coordi
     assert(0);
 }
 
-//void FieldInfo::load(XMLProblem::field_config *configxsd)
-//{
-//    // default
-//    m_setting = m_settingDefault;
-
-//    for (int i = 0; i < configxsd->field_item().size(); i ++)
-//    {
-//        Type key = stringKeyToType(QString::fromStdString(configxsd->field_item().at(i).field_key()));
-
-//        if (m_settingDefault.keys().contains(key))
-//        {
-//            if (m_settingDefault[key].type() == QVariant::Double)
-//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toDouble();
-//            else if (m_settingDefault[key].type() == QVariant::Int)
-//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).toInt();
-//            else if (m_settingDefault[key].type() == QVariant::Bool)
-//                m_setting[key] = (QString::fromStdString(configxsd->field_item().at(i).field_value()) == "1");
-//            else if (m_settingDefault[key].type() == QVariant::String)
-//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value());
-//            else if (m_settingDefault[key].type() == QVariant::StringList)
-//                m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).split("|");
-//            // else
-//            //    qDebug() << "Key not found" << QString::fromStdString(configxsd->field_item().at(i).field_key()) << QString::fromStdString(configxsd->field_item().at(i).field_value());
-//        }
-//    }
-//}
-
-//void FieldInfo::save(XMLProblem::field_config *configxsd)
-//{
-//    foreach (Type key, m_settingDefault.keys())
-//    {
-//        if (m_settingDefault[key].type() == QVariant::StringList)
-//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
-//        else if (m_settingDefault[key].type() == QVariant::Bool)
-//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-//        else
-//            configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
-
-//    }
-//}
-
 void FieldInfo::load(QJsonObject &object)
 {
     // default
@@ -751,8 +710,8 @@ void FieldInfo::setStringKeys()
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
     m_settingKey[LinearSolverIterIters] = "LinearSolverIterIters";
     m_settingKey[LinearSolverExternalName] = "LinearSolverExternalName";
-    m_settingKey[LinearSolverExternalCommandEnvironment] = "LinearSolverExternalCommandEnvironment";
-    m_settingKey[LinearSolverExternalCommandParameters] = "LinearSolverExternalCommandParameters";
+    m_settingKey[LinearSolverExternalMethod] = "LinearSolverExternalMethod";
+    m_settingKey[LinearSolverExternalParameters] = "LinearSolverExternalParameters";
     m_settingKey[TimeUnit] = "TimeUnit";
 }
 
@@ -794,7 +753,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
     m_settingDefault[LinearSolverExternalName] = "";
-    m_settingDefault[LinearSolverExternalCommandEnvironment] = "";
-    m_settingDefault[LinearSolverExternalCommandParameters] = "";
+    m_settingDefault[LinearSolverExternalMethod] = "";
+    m_settingDefault[LinearSolverExternalParameters] = "";
     m_settingDefault[TimeUnit] = "s";
 }

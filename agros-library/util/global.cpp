@@ -34,6 +34,7 @@
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
+#include "solver/plugin_solver_interface.h"
 
 #include "optilab/study.h"
 
@@ -91,6 +92,33 @@ QStringList pluginList(const QString &data)
 
     QStringList filters;
     filters << "libagros_plugin_*.so" << "agros_plugin_*.dll";
+
+    QStringList list;
+    foreach (QString entry, dir.entryList(filters))
+        list.append(QString("%1/%2").arg(pluginPath).arg(entry));
+
+    return list;
+}
+
+QStringList solverList(const QString &data)
+{
+    QString pluginPath = "";
+
+    if (isPluginDir(data + "/libs/"))
+        pluginPath = data + "/libs/";
+    else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
+        pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
+
+    if (pluginPath.isEmpty())
+    {
+        throw AgrosPluginException(QObject::tr("Could not load find plugins in directory."));
+        assert(0);
+    }
+
+    QDir dir(pluginPath);
+
+    QStringList filters;
+    filters << "libsolver_plugin_*.so" << "solver_plugin_*.dll";
 
     QStringList list;
     foreach (QString entry, dir.entryList(filters))
@@ -285,19 +313,21 @@ void Agros::readPlugins()
 {
     // set default datadir
     if (m_singleton.data()->dataDir().isEmpty())
-         m_singleton.data()->setDataDir(findDataDir());
+        m_singleton.data()->setDataDir(findDataDir());
 
     // plugins
     // read plugins
-    #ifdef AGROS_BUILD_PLUGIN_STATIC
+#ifdef AGROS_BUILD_PLUGIN_STATIC
     foreach (QObject *obj, QPluginLoader::staticInstances())
     {
         PluginInterface *plugin = qobject_cast<PluginInterface *>(obj);
         m_plugins[plugin->fieldId()] = plugin;
     }
-    #else
+#else
+    // plugins
     foreach (QString pluginPath, pluginList(m_singleton.data()->dataDir()))
     {
+
         // load new plugin
         QPluginLoader *loader = new QPluginLoader(pluginPath);
 
@@ -319,7 +349,31 @@ void Agros::readPlugins()
 
         delete loader;
     }
-    #endif
+    // solvers
+    foreach (QString pluginPath, solverList(m_singleton.data()->dataDir()))
+    {
+        // load new plugin
+        QPluginLoader *loader = new QPluginLoader(pluginPath);
+
+        if (!loader)
+        {
+            throw AgrosPluginException(QObject::tr("Could not find 'solver_plugin_%1'").arg(pluginPath));
+        }
+
+        if (!loader->load())
+        {
+            QString error = loader->errorString();
+            delete loader;
+            throw AgrosPluginException(QObject::tr("Could not load 'solver_plugin_%1' (%2)").arg(pluginPath).arg(error));
+        }
+
+        assert(loader->instance());
+        PluginSolverInterface *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
+        m_singleton.data()->m_solvers[plugin->name()] = plugin;
+
+        delete loader;
+    }
+#endif
 }
 
 Agros::~Agros()
@@ -333,7 +387,7 @@ void Agros::clear()
 
     delete m_singleton.data()->m_configComputer;
 
-    // remove temp and cache plugins    
+    // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
 }
@@ -372,6 +426,15 @@ PluginInterface *Agros::loadPlugin(const QString &pluginName)
 {
     if (Agros::singleton()->m_plugins.contains(pluginName))
         return Agros::singleton()->m_plugins[pluginName];
+
+    assert(0);
+    return nullptr;
+}
+
+PluginSolverInterface *Agros::loadSolver(const QString &solverName)
+{
+    if (Agros::singleton()->m_solvers.contains(solverName))
+        return Agros::singleton()->m_solvers[solverName];
 
     assert(0);
     return nullptr;
@@ -462,17 +525,17 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }
-        if (fieldInfo->matrixSolver() == SOLVER_EXTERNAL)
+        if (fieldInfo->matrixSolver() == SOLVER_EXTERNAL_PLUGIN)
         {
             str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
-            str += QString("%1.matrix_solver_parameters[\"external_environment\"] = \"%2\"\n").
+            str += QString("%1.matrix_solver_parameters[\"external_method\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
+                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
             str += QString("%1.matrix_solver_parameters[\"external_parameters\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
+                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
         }
 
         if (Agros::problem()->isTransient())

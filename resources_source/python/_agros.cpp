@@ -1838,6 +1838,7 @@ static const char __pyx_k_AdaptivitySteps[] = "AdaptivitySteps";
 static const char __pyx_k_ParticleTracing[] = "__ParticleTracing__";
 static const char __pyx_k_adaptivity_step[] = "adaptivity_step";
 static const char __pyx_k_coordinate_type[] = "coordinate_type";
+static const char __pyx_k_external_method[] = "external_method";
 static const char __pyx_k_external_solver[] = "external_solver";
 static const char __pyx_k_fine_percentage[] = "fine_percentage";
 static const char __pyx_k_new_computation[] = "new_computation";
@@ -1870,7 +1871,6 @@ static const char __pyx_k_external_parameters[] = "external_parameters";
 static const char __pyx_k_get_coordinate_type[] = "_get_coordinate_type";
 static const char __pyx_k_set_coordinate_type[] = "_set_coordinate_type";
 static const char __pyx_k_General_SolveProblem[] = "General_SolveProblem";
-static const char __pyx_k_external_environment[] = "external_environment";
 static const char __pyx_k_get_time_step_method[] = "_get_time_step_method";
 static const char __pyx_k_jacobian_reuse_ratio[] = "jacobian_reuse_ratio";
 static const char __pyx_k_jacobian_reuse_steps[] = "jacobian_reuse_steps";
@@ -2057,7 +2057,7 @@ static PyObject *__pyx_n_u_eta_c;
 static PyObject *__pyx_n_u_eta_m;
 static PyObject *__pyx_n_s_expression;
 static PyObject *__pyx_n_u_expression;
-static PyObject *__pyx_n_u_external_environment;
+static PyObject *__pyx_n_u_external_method;
 static PyObject *__pyx_n_u_external_parameters;
 static PyObject *__pyx_n_u_external_solver;
 static PyObject *__pyx_n_b_extrapolation;
@@ -13302,7 +13302,7 @@ static PyObject *__pyx_pf_6_agros_9__Field___8__get_matrix_solver_parameters__(s
  *                 'dealii_method' : self.thisptr.getLinearSolverDealIIMethod().decode(),
  *                 'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),             # <<<<<<<<<<<<<<
  *                 'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
- *                 'external_environment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
+ *                 'external_method' : self.thisptr.getExternalMatrixSolverMethod().decode(),
  */
   __pyx_t_4 = __Pyx_decode_cpp_string(__pyx_v_self->thisptr->getLinearSolverDealIIPreconditioner(), 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 305, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -13313,7 +13313,7 @@ static PyObject *__pyx_pf_6_agros_9__Field___8__get_matrix_solver_parameters__(s
  *                 'dealii_method' : self.thisptr.getLinearSolverDealIIMethod().decode(),
  *                 'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
  *                 'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),             # <<<<<<<<<<<<<<
- *                 'external_environment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
+ *                 'external_method' : self.thisptr.getExternalMatrixSolverMethod().decode(),
  *                 'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}
  */
   __pyx_t_4 = __Pyx_decode_cpp_string(__pyx_v_self->thisptr->getExternalMatrixSolver(), 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 306, __pyx_L1_error)
@@ -13324,18 +13324,18 @@ static PyObject *__pyx_pf_6_agros_9__Field___8__get_matrix_solver_parameters__(s
   /* "../resources_source/python/pyfield.pxi":307
  *                 'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
  *                 'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
- *                 'external_environment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),             # <<<<<<<<<<<<<<
+ *                 'external_method' : self.thisptr.getExternalMatrixSolverMethod().decode(),             # <<<<<<<<<<<<<<
  *                 'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}
  * 
  */
-  __pyx_t_4 = __Pyx_decode_cpp_string(__pyx_v_self->thisptr->getExternalMatrixSolverEnviroment(), 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 307, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_decode_cpp_string(__pyx_v_self->thisptr->getExternalMatrixSolverMethod(), 0, PY_SSIZE_T_MAX, NULL, NULL, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 307, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_external_environment, __pyx_t_4) < 0) __PYX_ERR(4, 302, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_u_external_method, __pyx_t_4) < 0) __PYX_ERR(4, 302, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
   /* "../resources_source/python/pyfield.pxi":308
  *                 'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
- *                 'external_environment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
+ *                 'external_method' : self.thisptr.getExternalMatrixSolverMethod().decode(),
  *                 'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}             # <<<<<<<<<<<<<<
  * 
  *     def __set_matrix_solver_parameters__(self, parameters):
@@ -13640,7 +13640,7 @@ static PyObject *__pyx_pf_6_agros_9__Field___10__set_matrix_solver_parameters__(
  * 
  *         # external solver
  *         self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())             # <<<<<<<<<<<<<<
- *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_environment'].encode())
+ *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandMethod'), <string>parameters['external_method'].encode())
  *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())
  */
   __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_parameters, __pyx_n_u_external_solver); if (unlikely(!__pyx_t_2)) __PYX_ERR(4, 324, __pyx_L1_error)
@@ -13675,11 +13675,11 @@ static PyObject *__pyx_pf_6_agros_9__Field___10__set_matrix_solver_parameters__(
   /* "../resources_source/python/pyfield.pxi":325
  *         # external solver
  *         self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())
- *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_environment'].encode())             # <<<<<<<<<<<<<<
+ *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandMethod'), <string>parameters['external_method'].encode())             # <<<<<<<<<<<<<<
  *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_parameters, __pyx_n_u_external_environment); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 325, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_parameters, __pyx_n_u_external_method); if (unlikely(!__pyx_t_4)) __PYX_ERR(4, 325, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_encode); if (unlikely(!__pyx_t_2)) __PYX_ERR(4, 325, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -13702,7 +13702,7 @@ static PyObject *__pyx_pf_6_agros_9__Field___10__set_matrix_solver_parameters__(
   __pyx_t_8 = __pyx_convert_string_from_py_std__in_string(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(4, 325, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   try {
-    __pyx_v_self->thisptr->setParameter(std::string(((char *)"LinearSolverExternalCommandEnvironment")), ((std::string)__pyx_t_8));
+    __pyx_v_self->thisptr->setParameter(std::string(((char *)"LinearSolverExternalCommandMethod")), ((std::string)__pyx_t_8));
   } catch(...) {
     __Pyx_CppExn2PyErr();
     __PYX_ERR(4, 325, __pyx_L1_error)
@@ -13710,7 +13710,7 @@ static PyObject *__pyx_pf_6_agros_9__Field___10__set_matrix_solver_parameters__(
 
   /* "../resources_source/python/pyfield.pxi":326
  *         self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())
- *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_environment'].encode())
+ *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandMethod'), <string>parameters['external_method'].encode())
  *         self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())             # <<<<<<<<<<<<<<
  * 
  *     # refinements
@@ -39826,7 +39826,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_eta_m, __pyx_k_eta_m, sizeof(__pyx_k_eta_m), 0, 1, 0, 1},
   {&__pyx_n_s_expression, __pyx_k_expression, sizeof(__pyx_k_expression), 0, 0, 1, 1},
   {&__pyx_n_u_expression, __pyx_k_expression, sizeof(__pyx_k_expression), 0, 1, 0, 1},
-  {&__pyx_n_u_external_environment, __pyx_k_external_environment, sizeof(__pyx_k_external_environment), 0, 1, 0, 1},
+  {&__pyx_n_u_external_method, __pyx_k_external_method, sizeof(__pyx_k_external_method), 0, 1, 0, 1},
   {&__pyx_n_u_external_parameters, __pyx_k_external_parameters, sizeof(__pyx_k_external_parameters), 0, 1, 0, 1},
   {&__pyx_n_u_external_solver, __pyx_k_external_solver, sizeof(__pyx_k_external_solver), 0, 1, 0, 1},
   {&__pyx_n_b_extrapolation, __pyx_k_extrapolation, sizeof(__pyx_k_extrapolation), 0, 0, 0, 1},

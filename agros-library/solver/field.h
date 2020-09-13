@@ -98,8 +98,8 @@ public:
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
         LinearSolverExternalName,
-        LinearSolverExternalCommandEnvironment,
-        LinearSolverExternalCommandParameters,
+        LinearSolverExternalMethod,
+        LinearSolverExternalParameters,
         TimeUnit
     };
 
@@ -135,8 +135,6 @@ public:
     void removeLabelPolynomialOrder(SceneLabel *label) { m_labelsPolynomialOrder.remove(label); }
 
     // load and save
-    // void load(XMLProblem::field_config *configxsd);
-    // void save(XMLProblem::field_config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 

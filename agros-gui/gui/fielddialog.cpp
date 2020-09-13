@@ -20,6 +20,7 @@
 #include "fielddialog.h"
 
 #include "solver/plugin_interface.h"
+#include "solver/plugin_solver_interface.h"
 
 #include "util/global.h"
 #include "util/constants.h"
@@ -448,20 +449,8 @@ QWidget *FieldWidget::createLinearSolverWidget()
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
     connect(cmbExternalLinearSolverCommand, SIGNAL(currentIndexChanged(int)), this, SLOT(doExternalSolverChanged(int)));
-    txtExternalLinearSolverCommandEnvironment = new QLineEdit();
-    txtExternalLinearSolverCommandParameters = new QLineEdit();
-    txtExternalLinearSolverHint = new QTextEdit();
-    txtExternalLinearSolverHint->setWordWrapMode(QTextOption::WordWrap);
-    txtExternalLinearSolverHint->setReadOnly(true);
-    QFont fnt = txtExternalLinearSolverHint->font();
-    fnt.setPointSize(fnt.pointSize() - 2);
-    txtExternalLinearSolverHint->setFont(fnt);
-    QPalette palette = txtExternalLinearSolverHint->palette();
-    palette.setColor(QPalette::Text, QColor(Qt::darkBlue));
-    txtExternalLinearSolverHint->setPalette(palette);
-    QFontMetrics m(txtExternalLinearSolverHint->font());
-    int rowHeight = m.lineSpacing();
-    txtExternalLinearSolverHint->setMinimumHeight(8 * rowHeight);
+    cmbExternalLinearSolverMethod = new QComboBox();
+    txtExternalLinearSolverParameters = new QLineEdit();
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
@@ -480,12 +469,11 @@ QWidget *FieldWidget::createLinearSolverWidget()
     externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
     externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
     externalSolverLayout->addWidget(new QLabel(tr("Environment:")), 1, 0);
-    externalSolverLayout->addWidget(txtExternalLinearSolverCommandEnvironment, 1, 1);
+    externalSolverLayout->addWidget(cmbExternalLinearSolverMethod, 1, 1);
     externalSolverLayout->addWidget(new QLabel(tr("Parameters:")), 2, 0);
-    externalSolverLayout->addWidget(txtExternalLinearSolverCommandParameters, 2, 1);
-    externalSolverLayout->addWidget(txtExternalLinearSolverHint, 3, 0, 1, 2);
+    externalSolverLayout->addWidget(txtExternalLinearSolverParameters, 2, 1);
 
-    QGroupBox *externalSolverGroup = new QGroupBox(tr("External (out of core)"));
+    QGroupBox *externalSolverGroup = new QGroupBox(tr("External)"));
     externalSolverGroup->setLayout(externalSolverLayout);
 
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
@@ -538,24 +526,9 @@ void FieldWidget::fillComboBox()
 
     // read from files
     cmbExternalLinearSolverCommand->clear();
-    QDirIterator itDir(QString("%1/libs/").arg(Agros::dataDir()), QStringList() << "*.ext", QDir::Files);
-    while (itDir.hasNext())
+    foreach (PluginSolverInterface *solver, Agros::solvers())
     {
-        QString fileName = QFileInfo(itDir.next()).fileName();
-
-        // read command parameters
-        QFile f(QString("%1/libs/%2").arg(Agros::dataDir()).arg(fileName));
-        if (f.open(QFile::ReadOnly | QFile::Text))
-        {
-            QTextStream in(&f);
-
-            QStringList commandContent = in.readAll().split("\n");
-
-            // command at second line
-            QString name = commandContent.at(0);
-
-            cmbExternalLinearSolverCommand->addItem(name, fileName);
-        }
+        cmbExternalLinearSolverCommand->addItem(solver->name(), solver->name());
     }
     if (cmbExternalLinearSolverCommand->count() > 0)
         cmbExternalLinearSolverCommand->setCurrentIndex(0);
@@ -610,8 +583,8 @@ void FieldWidget::load()
     cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
     // external solver
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
-    txtExternalLinearSolverCommandEnvironment->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
-    txtExternalLinearSolverCommandParameters->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
+    cmbExternalLinearSolverMethod->setCurrentIndex(cmbExternalLinearSolverMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
+    txtExternalLinearSolverParameters->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -660,8 +633,8 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
     // external solver
     m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandEnvironment, txtExternalLinearSolverCommandEnvironment->text());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandParameters, txtExternalLinearSolverCommandParameters->text());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalMethod, cmbExternalLinearSolverMethod->itemData(cmbExternalLinearSolverMethod->currentIndex()).toString());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalParameters, txtExternalLinearSolverParameters->text());
 
     return true;
 }
@@ -786,10 +759,9 @@ void FieldWidget::doLinearSolverChanged(int index)
     txtIterLinearSolverIters->setEnabled(isIterative);
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
-    cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL);
-    txtExternalLinearSolverCommandEnvironment->setEnabled(solverType == SOLVER_EXTERNAL);
-    txtExternalLinearSolverCommandParameters->setEnabled(solverType == SOLVER_EXTERNAL);
-    // lblExternalLinearSolverHint->clear();
+    cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
+    cmbExternalLinearSolverMethod->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
+    txtExternalLinearSolverParameters->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)
@@ -836,20 +808,17 @@ void FieldWidget::doExternalSolverChanged(int index)
 {
     if (cmbExternalLinearSolverCommand->currentIndex() != -1)
     {
-        QString fileName = QFileInfo(cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString()).fileName();
+        QString solverName = QFileInfo(cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString()).fileName();
 
-        // read command parameters
-        QFile f(QString("%1/libs/%2").arg(Agros::Agros::dataDir()).arg(fileName));
-        if (f.open(QFile::ReadOnly | QFile::Text))
+        PluginSolverInterface *solver = Agros::loadSolver(solverName);
+
+        cmbExternalLinearSolverMethod->clear();
+        foreach (QString method, solver->methods())
         {
-            QTextStream in(&f);
-
-            QStringList commandContent = in.readAll().split("\n");
-
-            // hint at third line
-            txtExternalLinearSolverHint->setVisible(!commandContent.at(2).trimmed().isEmpty());
-            txtExternalLinearSolverHint->setText(commandContent.at(2));
+            cmbExternalLinearSolverMethod->addItem(method, method);
         }
+        if (cmbExternalLinearSolverMethod->count() > 0)
+            cmbExternalLinearSolverMethod->setCurrentIndex(0);
     }
 }
 

@@ -126,6 +126,7 @@ SOURCE_GROUP(
   solver/marker.cpp
   solver/module.cpp
   solver/plugin_interface.cpp
+  solver/plugin_solver_interface.cpp
   solver/problem.cpp
   solver/problem_config.cpp
   solver/problem_result.cpp
@@ -183,6 +184,7 @@ SET(HEADERS
   solver/marker.h
   solver/module.h
   solver/plugin_interface.h
+  solver/plugin_solver_interface.h
   solver/problem.h
   solver/problem_config.h
   solver/problem_result.h
@@ -273,11 +275,5 @@ foreach(LANGFILE ${lang_files})
   ADD_DEPENDENCIES(${PROJECT_NAME} ${basefile})
 endforeach()
 
-#foreach(XSD_FILE ${xsd_files})
-#  GET_FILENAME_COMPONENT(basefile ${XSD_FILE} NAME_WE)
-#  ADD_DEPENDENCIES(${PROJECT_NAME} ${basefile})
-#endforeach()
-
-# ${XSD_LIBRARY} ${XercesC_LIBRARIES} 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${TRIANGLE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${CURL_LIBRARIES} ${DEAL_II_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${CTEMPLATE_LIBRARY} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

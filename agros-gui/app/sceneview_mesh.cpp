@@ -487,7 +487,7 @@ void SceneViewMesh::paintError()
 
         dealii::KellyErrorEstimator<2>::estimate(ma.doFHandler(),
                                                  quadratureFormulasFace,
-                                                 TYPENAME dealii::FunctionMap<2>::type(),
+        {},
                                                  ma.solution(),
                                                  m_estimated_error_per_cell);
 

@@ -17,41 +17,42 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "mpi/mpi.h"
-#include "dmumps_c.h"
-
 #include <streambuf>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <fstream>
 
+#include "../3rdparty/tclap/CmdLine.h"
+#include "../agros-library/util/sparse_io.h"
+#include "../agros-library/solver/plugin_solver_interface.h"
+
+#include "dmumps_c.h"
+
 #define JOB_INIT -1
 #define JOB_END -2
 #define JOB_SOLVE 6
 #define USE_COMM_WORLD -987654
 
-#include "../../3rdparty/tclap/CmdLine.h"
-#include "../agros-library/util/sparse_io.h"
 
-int main(int argc, char *argv[])
+class MUMPSSolverInterface : public QObject, public PluginSolverInterface
 {
-    try
+    Q_OBJECT
+    Q_INTERFACES(PluginSolverInterface)
+    Q_PLUGIN_METADATA(IID PluginSolverInterface_IID)
+
+public:
+    MUMPSSolverInterface() {}
+    virtual ~MUMPSSolverInterface() {}
+
+    virtual QString name() const { return QString("MUMPS"); }
+
+    virtual void solve(dealii::SparseMatrix<double> &system,
+                       dealii::Vector<double> &rhs,
+                       dealii::Vector<double> &sln)
     {
         int status = 0;
-
         int rank = 0;
-        int ierr = 0;
-        int np = 1;
-        ierr = MPI_Init(&argc, &argv);
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        MPI_Comm_size(MPI_COMM_WORLD, &np);
-
-        // time
-        MPI_Barrier(MPI_COMM_WORLD);
-        double timeStart = 0;
-        if (rank == 0)
-            timeStart = MPI_Wtime();
 
         // initialize a MUMPS instance. Use MPI_COMM_WORLD
         DMUMPS_STRUC_C id;
@@ -61,49 +62,36 @@ int main(int argc, char *argv[])
         id.comm_fortran = USE_COMM_WORLD;
         dmumps_c(&id);
 
-        // define the problem on the host
-        LinearSystemArgs linearSystem("External solver - MUMPS", argc, argv);
-        linearSystem.setInfoNumOfProc(np);
-
         if (rank == 0)
         {
-            linearSystem.readLinearSystem();
-
             // number of unknowns
-            id.n = linearSystem.n();
+            id.n = rhs.size();
 
             // number of nonzero elements in matrix
-            id.nz = linearSystem.nz();
+            id.nz = system.n_nonzero_elements();
 
-            // representation of the matrix and rhs
-            id.a = linearSystem.system_matrix->val;
-            id.rhs = linearSystem.system_rhs->val;
-
-            // matrix indices pointing to the row and column dimensions
+            // matrix
+            id.a = new double[id.nz];
             id.irn = new int[id.nz];
             id.jcn = new int[id.nz];
+
             int index = 0;
-
-            // loop over the elements of the matrix row by row
-            for (int row = 0; row < linearSystem.n(); ++row)
+            for (int row = 0; row < system.m(); ++row)
             {
-                std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
-                std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
-
-                for (int i = col_start; i < col_end; i++)
-                {
-                    id.irn[index] = row + 1;
-                    id.jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 1;
-
-                    ++index;
-                }
+                for (typename dealii::SparseMatrix<double>::const_iterator ptr = system.begin (row); ptr != system.end (row); ++ptr)
+                    if (std::abs(ptr->value()) > 0.0)
+                    {
+                        id.a[index] = ptr->value ();
+                        id.irn[index] = row + 1;
+                        id.jcn[index] = ptr->column() + 1;
+                        ++index;
+                    }
             }
 
-            linearSystem.setInfoTimeReadMatrix(MPI_Wtime() - timeStart);
-
-
-            // clear structures
-            linearSystem.system_matrix_pattern->clear();
+            // prepare RHS
+            id.rhs = new double[rhs.size()];
+            for (int i = 0; i < rhs.size(); ++i)
+                id.rhs[i] = rhs(i);
         }
 
         // no outputs
@@ -112,15 +100,15 @@ int main(int argc, char *argv[])
         id.icntl[2] = -1;
         id.icntl[3] =  0;
 
-        double timeSolveStart = 0;
-        if (rank == 0)
-            timeSolveStart = MPI_Wtime();
-
         // call the MUMPS package.
         id.job = JOB_SOLVE;
         dmumps_c(&id);
         id.job = JOB_END;
         dmumps_c(&id); // Terminate instance
+
+        delete [] id.a;
+        delete [] id.irn;
+        delete [] id.jcn;
 
         switch (id.infog[1])
         {
@@ -128,23 +116,12 @@ int main(int argc, char *argv[])
         {
             if (rank == 0)
             {
-                linearSystem.setInfoTimeSolver(MPI_Wtime() - timeSolveStart);
-
-                // MUMPS (rhs = sln)
-                linearSystem.system_sln = linearSystem.system_rhs;
-
-                // write solution
-                linearSystem.writeSolution();
-
-                // check solution
-                if (linearSystem.hasReferenceSolution())
-                    status = linearSystem.compareWithReferenceSolution();
-
-                delete [] id.irn;
-                delete [] id.jcn;
-
-                linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
-                linearSystem.setInfoSolverStateSolved();
+                sln = dealii::Vector<double>(id.nz);
+                for (int row = 0; row < id.nz; ++row)
+                {
+                    sln[row] = id.rhs[row];
+                }
+                delete [] id.rhs;
             }
         }
             break;
@@ -197,25 +174,7 @@ int main(int argc, char *argv[])
         }
             break;
         }
-
-        if (rank == 0)
-        {
-            if (linearSystem.verbose() > 0)
-            {
-                linearSystem.printStatus();
-
-                if (linearSystem.verbose() > 2)
-                    linearSystem.exportStatusToFile();
-            }
-        }
-
-        ierr = MPI_Finalize();
-
-        exit(status);
     }
-    catch (TCLAP::ArgException &e)
-    {
-        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        return 1;
-    }
-}
+};
+
+#include "main.moc"

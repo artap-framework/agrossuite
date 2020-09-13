@@ -81,8 +81,6 @@ public:
     void setMeshType(const MeshType meshType) { m_config[ProblemConfig::Mesh] = QVariant::fromValue(meshType); }
 
     // load and save
-    // void load(XMLProblem::problem_config *configxsd);
-    // void save(XMLProblem::problem_config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
@@ -228,8 +226,6 @@ public:
     void copy(const PostprocessorSetting *origin);
 
     // load and save
-    // void load(XMLProblem::config *configxsd);
-    // void save(XMLProblem::config *configxsd);
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
