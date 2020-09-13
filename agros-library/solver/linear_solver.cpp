@@ -89,8 +89,8 @@ void SolverLinearSolver::solveUMFPACK(dealii::SparseMatrix<double> &system,
     QStringList solvers = Agros::solvers().keys();
     if (solvers.contains("UMFPACK"))
     {
-        Agros::log()->printMessage(QObject::tr("Solver"),
-                                   QObject::tr("Direct solver - UMFPACK"));
+        Agros::log()->printDebug(QObject::tr("Solver"),
+                                 QObject::tr("Direct solver - UMFPACK"));
 
         PluginSolverInterface *solver = Agros::loadSolver("UMFPACK");
         solver->solve(system, rhs, sln);
@@ -116,9 +116,9 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QStringList solvers = Agros::solvers().keys();
     if (solvers.contains(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()))
     {
-        Agros::log()->printMessage(QObject::tr("Solver"),
-                                   QObject::tr("Solver - %1 (%2)").arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString())
-                                   .arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
+        Agros::log()->printDebug(QObject::tr("Solver"),
+                                 QObject::tr("Solver - %1 (%2)").arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString())
+                                 .arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
 
         PluginSolverInterface *solver = Agros::loadSolver(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
         solver->setMethod(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
@@ -136,10 +136,10 @@ void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
                                      dealii::Vector<double> &rhs,
                                      dealii::Vector<double> &sln)
 {
-    Agros::log()->printMessage(QObject::tr("Solver"),
-                               QObject::tr("Iterative solver: deal.II (%1, %2)")
-                               .arg(iterLinearSolverDealIIMethodString((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()))
-                               .arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));
+    Agros::log()->printDebug(QObject::tr("Solver"),
+                             QObject::tr("Iterative solver: deal.II (%1, %2)")
+                             .arg(iterLinearSolverDealIIMethodString((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()))
+                             .arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));
 
     // preconditioner
     dealii::PreconditionSSOR<> preconditioner;

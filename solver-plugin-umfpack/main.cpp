@@ -75,7 +75,10 @@ public:
             int statusNumeric = umfpack_di_numeric(Ap.data(),
                                                    Ai.data(),
                                                    Ax.data(),
-                                                   symbolic, &numeric, Control, Info);
+                                                   symbolic,
+                                                   &numeric,
+                                                   Control,
+                                                   Info);
 
             //  free the memory associated with the symbolic factorization.
             if (symbolic)
@@ -86,7 +89,7 @@ public:
                 sln = dealii::Vector<double>(rhs.size());
 
                 //  solve the linear system.
-                int statusSolve = umfpack_di_solve(UMFPACK_A,
+                int statusSolve = umfpack_di_solve(UMFPACK_At,
                                                    Ap.data(),
                                                    Ai.data(),
                                                    Ax.data(),
@@ -104,11 +107,13 @@ public:
                 }
                 else
                 {
-                    std::cerr << "UMFPACK numeric error: " << statusNumeric << std::endl;
+                    umfpack_di_report_info(Control, Info);
+                    std::cerr << "Error umfpack_di_solve status: " << statusSolve << std::endl;
                 }
             }
             else
             {
+                umfpack_di_report_info(Control, Info);
                 std::cerr << "UMFPACK numeric error: " << statusNumeric << std::endl;
             }
         }
