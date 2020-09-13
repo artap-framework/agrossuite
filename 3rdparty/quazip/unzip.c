@@ -10,7 +10,7 @@
          Modifications for Zip64 support on both zip and unzip
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
-         Modifications for QIODevice support and other QuaZIP fixes
+         Modifications for QIODevice support and other QuaZip fixes
          Copyright (C) 2005-2014 Sergey A. Tachenov
 
          For more info read MiniZip_info.txt
@@ -30,7 +30,7 @@
   If, for some reason, all these files are missing, the Info-ZIP license
   also may be found at:  ftp://ftp.info-zip.org/pub/infozip/license.html
 
-        crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
+        crypt.c (full version) by Info-ZIP.      Last revised:  [see minizip_crypt.h]
 
   The encryption/decryption parts of this source code (as opposed to the
   non-echoing password parts) were originally written in Europe.  The
@@ -73,7 +73,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "zlib.h"
+#include <zlib.h>
 #if (ZLIB_VERNUM < 0x1270)
 typedef uLongf z_crc_t;
 #endif
@@ -199,7 +199,7 @@ typedef struct
 
 
 #ifndef NOUNCRYPT
-#include "zcrypt.h"
+#include "minizip_crypt.h"
 #endif
 
 /* ===========================================================================
@@ -858,6 +858,17 @@ extern int ZEXPORT unzGetGlobalInfo (unzFile file, unz_global_info* pglobal_info
     pglobal_info32->size_comment = s->gi.size_comment;
     return UNZ_OK;
 }
+
+extern int ZEXPORT unzGetFileFlags (unzFile file, unsigned* pflags)
+{
+    unz64_s* s;
+    if (file==NULL)
+        return UNZ_PARAMERROR;
+    s=(unz64_s*)file;
+    *pflags = s->flags;
+    return UNZ_OK;
+}
+
 /*
    Translate date/time from Dos format to tm_unz (readable more easilty)
 */
@@ -1200,6 +1211,8 @@ extern int ZEXPORT unzGoToFirstFile (unzFile file)
                                              &s->cur_file_info_internal,
                                              NULL,0,NULL,0,NULL,0);
     s->current_file_ok = (err == UNZ_OK);
+    if (s->cur_file_info.flag & UNZ_ENCODING_UTF8)
+        unzSetFlags(file, UNZ_ENCODING_UTF8);
     return err;
 }
 

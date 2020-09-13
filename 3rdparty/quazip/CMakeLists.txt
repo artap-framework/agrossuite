@@ -6,37 +6,42 @@ include_directories(
 	${ZLIB_INCLUDE_DIRS}
 )
 
-SET(SOURCES JlCompress.cpp 
-  qioapi.cpp 
-  quaadler32.cpp 
-  quacrc32.cpp 
-  quagzipfile.cpp 
-  quaziodevice.cpp 
-  quazip.cpp 
-  quazipdir.cpp 
-  quazipfile.cpp 
-  quazipnewinfo.cpp 
-  quazipfileinfo.cpp
-  unzip.c 
-  zip.c
-)
+set(HEADERS
+        JlCompress.h
+        ioapi.h
+        minizip_crypt.h
+        quaadler32.h
+        quachecksum32.h
+        quacrc32.h
+        quagzipfile.h
+        quaziodevice.h
+        quazip.h
+        quazip_global.h
+        quazipdir.h
+        quazipfile.h
+        quazipfileinfo.h
+        quazipnewinfo.h
+        unzip.h
+        zip.h
+   )
 
-SET(HEADERS zcrypt.h
-  ioapi.h
-  JlCompress.h
-  quaadler32.h
-  quachecksum32.h
-  quacrc32.h
-  quagzipfile.h
-  quaziodevice.h
-  quazipdir.h
-  quazipfile.h
-  quazipfileinfo.h
-  quazip_global.h
-  quazip.h
-  quazipnewinfo.h
-)
-
+set(SOURCES
+        ${QUAZIP_HEADERS}
+        unzip.c
+        zip.c
+        JlCompress.cpp
+        qioapi.cpp
+        quaadler32.cpp
+        quachecksum32.cpp
+        quacrc32.cpp
+        quagzipfile.cpp
+        quaziodevice.cpp
+        quazip.cpp
+        quazipdir.cpp
+        quazipfile.cpp
+        quazipfileinfo.cpp
+        quazipnewinfo.cpp
+   )
 
 # Must be added to enable export macro
 ADD_DEFINITIONS(-DQUAZIP_BUILD)
@@ -45,7 +50,7 @@ qt_wrap_cpp(MOC_SRCS ${HEADERS})
 set(SRCS ${SRCS} ${MOC_SRCS})
 
 add_library(${QUAZIP_LIB_TARGET_NAME} SHARED ${SRCS})
-add_library(quazip_static STATIC ${SRCS})
+# add_library(quazip_static STATIC ${SRCS})
  
 IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})

@@ -9,7 +9,7 @@
 
          For more info read MiniZip_info.txt
 
-         Modifications for QIODevice support and other QuaZIP fixes
+         Modifications for QIODevice support and other QuaZip fixes
          Copyright (C) 2005-2014 Sergey A. Tachenov
 
          Fixing static code analysis issues
@@ -32,7 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "zlib.h"
+
+#include <zlib.h>
 #if (ZLIB_VERNUM < 0x1270)
 typedef uLongf z_crc_t;
 #endif
@@ -195,7 +196,7 @@ typedef struct
 
 #ifndef NOCRYPT
 #define INCLUDECRYPTINGCODE_IFCRYPTALLOWED
-#include "zcrypt.h"
+#include "minizip_crypt.h"
 #endif
 
 local linkedlist_datablock_internal* allocate_new_datablock()
@@ -992,7 +993,9 @@ int Write_LocalFileHeader(zip64_internal* zi, const char* filename,
 
   if (err==ZIP_OK)
   {
-    if(zi->ci.zip64)
+    if(zi->ci.flag & ZIP_ENCODING_UTF8)
+      err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)63,2);/* Version 6.3 is required for Unicode support */
+    else if(zi->ci.zip64)
       err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)45,2);/* version needed to extract */
     else
       err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)version_to_extract,2);
@@ -1150,6 +1153,8 @@ extern int ZEXPORT zipOpenNewFileInZip4_64 (zipFile file, const char* filename, 
     }
 
     zi->ci.flag = flagBase;
+    if (zi->flags & ZIP_ENCODING_UTF8)
+        zi->ci.flag |= ZIP_ENCODING_UTF8;
     if ((level==8) || (level==9))
       zi->ci.flag |= 2;
     if (level==2)
@@ -1655,8 +1660,7 @@ extern int ZEXPORT zipCloseFileInZipRaw64 (zipFile file, ZPOS64_T uncompressed_s
       /*version Made by*/
       zip64local_putValue_inmemory(zi->ci.central_header+4,(uLong)45,2);
       /*version needed*/
-      zip64local_putValue_inmemory(zi->ci.central_header+6,(uLong)45,2);
-
+      zip64local_putValue_inmemory(zi->ci.central_header+6,(uLong)((zi->ci.flag & ZIP_ENCODING_UTF8) ? 63 : 45),2);
     }
 
     zip64local_putValue_inmemory(zi->ci.central_header+16,crc32,4); /*crc*/
@@ -1738,7 +1742,7 @@ extern int ZEXPORT zipCloseFileInZipRaw64 (zipFile file, ZPOS64_T uncompressed_s
     if (err==ZIP_OK)
         err = add_data_in_datablock(&zi->central_dir, zi->ci.central_header, (uLong)zi->ci.size_centralheader);
 
-    free(zi->ci.central_header);
+    TRYFREE(zi->ci.central_header);
 
     if (err==ZIP_OK)
     {
@@ -1850,7 +1854,7 @@ int Write_Zip64EndOfCentralDirectoryRecord(zip64_internal* zi, uLong size_centra
     err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)45,2);
 
   if (err==ZIP_OK) /* version needed */
-    err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)45,2);
+    err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)((zi->ci.flag & ZIP_ENCODING_UTF8) ? 63 : 45),2);
 
   if (err==ZIP_OK) /* number of this disk */
     err = zip64local_putValue(&zi->z_filefunc,zi->filestream,(uLong)0,4);
