@@ -116,8 +116,8 @@ public:
         {
             if (rank == 0)
             {
-                sln = dealii::Vector<double>(id.nz);
-                for (int row = 0; row < id.nz; ++row)
+                sln = dealii::Vector<double>(rhs.size());
+                for (int row = 0; row < rhs.size(); ++row)
                 {
                     sln[row] = id.rhs[row];
                 }
