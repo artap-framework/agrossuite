@@ -583,7 +583,11 @@ void FieldWidget::load()
     cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
     // external solver
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
+    if (cmbExternalLinearSolverCommand->currentIndex() == -1)
+        cmbExternalLinearSolverCommand->setCurrentIndex(0);
     cmbExternalLinearSolverMethod->setCurrentIndex(cmbExternalLinearSolverMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
+    if (cmbExternalLinearSolverMethod->currentIndex() == -1)
+        cmbExternalLinearSolverMethod->setCurrentIndex(0);
     txtExternalLinearSolverParameters->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
@@ -759,9 +763,9 @@ void FieldWidget::doLinearSolverChanged(int index)
     txtIterLinearSolverIters->setEnabled(isIterative);
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
-    cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
-    cmbExternalLinearSolverMethod->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
-    txtExternalLinearSolverParameters->setEnabled(solverType == SOLVER_EXTERNAL_PLUGIN);
+    cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_PLUGIN);
+    cmbExternalLinearSolverMethod->setEnabled(solverType == SOLVER_PLUGIN);
+    txtExternalLinearSolverParameters->setEnabled(solverType == SOLVER_PLUGIN);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

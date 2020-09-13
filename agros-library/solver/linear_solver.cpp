@@ -80,50 +80,54 @@ SolverLinearSolver::SolverLinearSolver(const FieldInfo *fieldInfo)
 
 }
 
-void SolverLinearSolver::solveUMFPACK(dealii::SparseMatrix<double> &system,
-                                      dealii::Vector<double> &rhs,
-                                      dealii::Vector<double> &sln,
-                                      bool reuseDecomposition)
-{
-    // default solver
-    QStringList solvers = Agros::solvers().keys();
-    if (solvers.contains("UMFPACK"))
-    {
-        Agros::log()->printDebug(QObject::tr("Solver"),
-                                 QObject::tr("Direct solver - UMFPACK"));
+//  if (!reuseDecomposition)
+//      direct_solver.initialize(system);
+//  else
+//      qDebug() << "LU decomposition has been reused";
 
-        PluginSolverInterface *solver = Agros::loadSolver("UMFPACK");
-        solver->solve(system, rhs, sln);
-    }
-    else
-    {
-        // failsafe
-        solvedealii(system, rhs, sln);
-    }
-
-    //  if (!reuseDecomposition)
-    //      direct_solver.initialize(system);
-    //  else
-    //      qDebug() << "LU decomposition has been reused";
-
-    //  direct_solver.vmult(sln, rhs);
-}
+//  direct_solver.vmult(sln, rhs);
 
 void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &system,
                                              dealii::Vector<double> &rhs,
                                              dealii::Vector<double> &sln)
-{    
+{
     QStringList solvers = Agros::solvers().keys();
-    if (solvers.contains(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()))
+
+    QString solver = m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
+    QString method = m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString();
+    QString parameters = m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString();
+    if (solver.isEmpty() || solver.endsWith(".ext"))
+    {
+        if (solvers.contains("MUMPS"))
+        {
+            solver = "MUMPS";
+            method = "none";
+            parameters = "";
+        }
+        else if (solvers.contains("UMFPACK"))
+        {
+            solver = "UMFPACK";
+            method = "none";
+            parameters = "";
+        }
+        else
+        {
+            solver = "";
+            method = "none";
+            parameters = "";
+        }
+    }
+
+    // qInfo() << solver << method << parameters;
+    if (!solver.isEmpty())
     {
         Agros::log()->printDebug(QObject::tr("Solver"),
-                                 QObject::tr("Solver - %1 (%2)").arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString())
-                                 .arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
+                                 QObject::tr("Solver - %1 (%2)").arg(solver).arg(method));
 
-        PluginSolverInterface *solver = Agros::loadSolver(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
-        solver->setMethod(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
-        solver->setParameters(m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
-        solver->solve(system, rhs, sln);
+        PluginSolverInterface *s = Agros::loadSolver(solver);
+        s->setMethod(method);
+        s->setParameters(parameters);
+        s->solve(system, rhs, sln);
     }
     else
     {

@@ -184,7 +184,6 @@ class TestAdaptivityMagneticProfileConductor(AgrosTestCase):
         # magnetic
         self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
-        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "hp-adaptivity"

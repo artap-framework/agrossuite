@@ -747,7 +747,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
-    m_settingDefault[LinearSolver] = QVariant::fromValue(SOLVER_UMFPACK);
+    m_settingDefault[LinearSolver] = QVariant::fromValue(SOLVER_PLUGIN);
     m_settingDefault[LinearSolverIterDealIIMethod] = IterSolverDealII_BiCGStab;
     m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;

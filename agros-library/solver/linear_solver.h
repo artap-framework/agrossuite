@@ -55,11 +55,6 @@ public:
     SolverLinearSolver(const FieldInfo *fieldInfo);
 
     // linear system
-    void solveUMFPACK(dealii::SparseMatrix<double> &system,
-                      dealii::Vector<double> &rhs,
-                      dealii::Vector<double> &sln,
-                      bool reuseDecomposition = false);
-
     void solveExternalPlugin(dealii::SparseMatrix<double> &system,
                              dealii::Vector<double> &rhs,
                              dealii::Vector<double> &sln);
@@ -71,9 +66,6 @@ public:
 private:
     // local reference
     const FieldInfo *m_fieldInfo;
-
-    // we need to be able to keep LU decomposition for Jacobian reuse
-    dealii::SparseDirectUMFPACK direct_solver;
 };
 
 #endif // LINEAR_SOLVER_H

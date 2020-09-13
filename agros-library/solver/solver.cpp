@@ -273,18 +273,16 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
 
     switch (m_fieldInfo->matrixSolver())
     {
-    case SOLVER_UMFPACK:
-        linearSolver.solveUMFPACK(system, rhs, sln, reuseDecomposition);
-        break;
     case SOLVER_DEALII:
         linearSolver.solvedealii(system, rhs, sln);
         break;
-    case SOLVER_EXTERNAL_PLUGIN:
+    case SOLVER_PLUGIN:
         linearSolver.solveExternalPlugin(system, rhs, sln);
         break;
     default:
-        Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
-        return;
+        linearSolver.solveExternalPlugin(system, rhs, sln);
+        // Agros::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        // return;
     }
 
     /*

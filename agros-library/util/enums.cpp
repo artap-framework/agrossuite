@@ -247,9 +247,8 @@ void initLists()
 
     // MatrixSolverType
     // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
-    matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
+    matrixSolverTypeList.insert(SOLVER_PLUGIN, "external_plugin");
     matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
-    matrixSolverTypeList.insert(SOLVER_EXTERNAL_PLUGIN, "external_plugin");
 
     // dump format
     dumpFormatList.insert(EXPORT_FORMAT_PLAIN_ASCII, "plain_ascii");
@@ -646,9 +645,7 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
     {
     case SOLVER_EMPTY:
         return QObject::tr("EMPTY");
-    case SOLVER_UMFPACK:
-        return QObject::tr("UMFPACK");
-    case SOLVER_EXTERNAL_PLUGIN:
+    case SOLVER_PLUGIN:
         return QObject::tr("External (plugin)");
     case SOLVER_DEALII:
         return QObject::tr("deal.II (iter.)");

@@ -526,7 +526,7 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }
-        if (fieldInfo->matrixSolver() == SOLVER_EXTERNAL_PLUGIN)
+        if (fieldInfo->matrixSolver() == SOLVER_PLUGIN)
         {
             str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).

@@ -313,7 +313,6 @@ class TestMagneticNonlinAxisymmetric(AgrosTestCase):
         # magnetic
         self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
-        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"

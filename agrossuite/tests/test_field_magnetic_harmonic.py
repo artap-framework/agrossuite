@@ -320,7 +320,6 @@ class TestMagneticHarmonicNonlinAxisymmetric(AgrosTestCase):
         # magnetic
         self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
-        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 1
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
@@ -556,7 +555,6 @@ class TestMagneticHarmonicAxisymmetricTotalCurrent(AgrosTestCase):
         # fields
         self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
-        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 2
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
