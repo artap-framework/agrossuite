@@ -62,7 +62,7 @@ IF(WIN32)
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
 ELSE()
   ADD_CUSTOM_COMMAND(
-    COMMAND cython ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
+    COMMAND cython3 ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
 ENDIF()
