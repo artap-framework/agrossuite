@@ -17,22 +17,12 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
-#include "pythonengine_agros.h"
 #include "../resources_source/python/agros2d.cpp"
+
+#include "pythonengine_agros.h"
 #include "logview.h"
 #include "hermes2d/plugin_interface.h"
 #include "hermes2d/module.h"
-#ifdef _MSC_VER
-# ifdef _DEBUG
-#  undef _DEBUG
-#  include <Python.h>
-#  define _DEBUG
-# else
-#  include <Python.h>
-# endif
-#else
-#  include <Python.h>
-#endif
 
 #include "util/memory_monitor.h"
 
@@ -47,7 +37,7 @@ void PythonEngineAgros::addCustomExtensions()
     PythonEngine::addCustomExtensions();
 
     // init agros cython extensions
-    initagros2d();
+    PyInit_agros2d();
 }
 
 void PythonEngineAgros::addCustomFunctions()
@@ -150,7 +140,7 @@ QStringList PythonEngineAgros::testSuiteScenarios()
         Py_INCREF(result);
         for (int i = 0; i < PyList_Size(result); i++)
         {
-            QString testName = PyString_AsString(PyList_GetItem(result, i));
+            QString testName = PyBytes_AsString(PyList_GetItem(result, i));
 
             list.append(testName);
         }

@@ -41,18 +41,10 @@
 #include <QtWidgets>
 #endif
 
-#include <iostream>
-#ifdef _MSC_VER
-# ifdef _DEBUG
-#  undef _DEBUG
-#  include <Python.h>
-#  define _DEBUG
-# else
-#  include <Python.h>
-# endif
-#else
-#  include <Python.h>
-#endif
+#pragma push_macro("slots")
+#undef slots
+#include "Python.h"
+#pragma pop_macro("slots")
 
 // static history for all consoles
 static QStringList history;

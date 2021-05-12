@@ -8,4 +8,4 @@ SET(SOURCES  drw_entities.cpp
     intern/dxfwriter.cpp)
 
 ADD_LIBRARY(${PROJECT_NAME} ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns)

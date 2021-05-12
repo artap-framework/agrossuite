@@ -1,24 +1,21 @@
 PROJECT(${MATIO_LIBRARY})
 
+find_package(ZLIB REQUIRED)
+
+set_property(SOURCE matioConfig.h PROPERTY SKIP_AUTOMOC ON)
 add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
-IF(WIN32)
+IF(MSVC)
   ADD_CUSTOM_COMMAND(
-        SOURCE    matioConfigWin.h
         COMMAND   copy ARGS matioConfigWin.h matioConfig.h OUTPUT matioConfig.h
-        TARGET    MATIO_CONFIG
+        DEPENDS    matioConfigWin.h
         OUTPUTS   matioConfig.h)
 ELSE()
   ADD_CUSTOM_COMMAND(
-        SOURCE    matioConfigLinux.h
         COMMAND   cp ARGS matioConfigLinux.h matioConfig.h OUTPUT matioConfig.h
-        TARGET    MATIO_CONFIG
+        DEPENDS    matioConfigLinux.h
         OUTPUTS   matioConfig.h)
 ENDIF()
-ADD_CUSTOM_COMMAND(
-      SOURCE    MATIO_CONFIG
-      TARGET    MATIO_CONFIG
-      DEPENDS   matioConfig.h)
 
 SET(SOURCES endian.c
     inflate.c
@@ -34,5 +31,10 @@ SET(SOURCES endian.c
     matioConfig.h
 )
 
-ADD_LIBRARY(${PROJECT_NAME} ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME})
+IF (MSVC)
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
+ELSE()
+    ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
+ENDIF()
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${ZLIB_LIBRARIES})

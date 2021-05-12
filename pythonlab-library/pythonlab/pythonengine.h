@@ -1,18 +1,12 @@
 #ifndef PYTHONENGINE_H
 #define PYTHONENGINE_H
 
+#pragma push_macro("slots")
+#undef slots
+#include "Python.h"
+#pragma pop_macro("slots")
+
 #include "util.h"
-#ifdef _MSC_VER
-# ifdef _DEBUG
-#  undef _DEBUG
-#  include <Python.h>
-#  define _DEBUG
-# else
-#  include <Python.h>
-# endif
-#else
-#  include <Python.h>
-#endif
 
 struct PythonVariable
 {

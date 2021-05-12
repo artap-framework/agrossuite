@@ -1,6 +1,6 @@
 # Set project's name
 PROJECT( agros2d )
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # For Win64
@@ -14,20 +14,8 @@ else(${CMAKE_CL_64})
   set(WIN64 NO)
 endif(${CMAKE_CL_64})
 
-# Policy handling
-if(POLICY CMP0020)
-  cmake_policy(PUSH)
-  cmake_policy(SET CMP0020 OLD)
-endif()
-
-if (POLICY CMP0043)
-    cmake_policy(PUSH)
-    cmake_policy(SET CMP0043 OLD)
-endif (POLICY CMP0043)
-
 # Debug yes / no.
 SET(AGROS_DEBUG NO)
-SET(WITH_QT5 YES)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 set(WITH_OPENMP YES)
 
@@ -39,6 +27,8 @@ FIND_PACKAGE(OpenGLCustom REQUIRED)
 
 # Handle Qt.
 include(QtHandling.cmake)
+SET(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 # versions
 SET(VERSION_MAJOR 3)
@@ -154,7 +144,7 @@ IF(MSVC)
 ENDIF(MSVC)
 
 # Python
-FIND_PACKAGE(PythonLibs 2.7 REQUIRED)
+FIND_PACKAGE(PythonLibs 3.5 REQUIRED)
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIR})
 
 # Include current dir
@@ -252,14 +242,7 @@ ELSE(AGROS_DEBUG)
     message(" Build version: Release")
 ENDIF(AGROS_DEBUG)
 message("---------Qt---------")
-IF(WITH_QT5)
-  message(" Build with Qt5")
-ELSE(WITH_QT5)
-  message(" Build with Qt4")
-  message("  Qt use file: ${QT_USE_FILE}")
-  message("  Qt definitions: ${QT_DEFINITIONS}")
-  message("  Qt libraries: ${QT_LIBRARIES}")
-ENDIF(WITH_QT5)
+message(" Build with Qt5")
 message("---------------------")
 message("\n")
 
@@ -350,12 +333,3 @@ set(info resources/modules/acoustic.xml
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})
-
-# Policy handling
-if(POLICY CMP0020)
-  cmake_policy(POP)
-endif()
-
-if (POLICY CMP0043)
-    cmake_policy(POP)
-endif (POLICY CMP0043)

@@ -38,8 +38,5 @@ SET(HEADERS util.h
     indicators/indicator_unity.h)
     
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
-IF(WITH_QT5)
-    QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network OpenGL Xml XmlPatterns WebKit WebKitWidgets PrintSupport OpenGL)
-ENDIF(WITH_QT5)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Xml Qt5::XmlPatterns Qt5::Widgets Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport Qt5::OpenGL)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

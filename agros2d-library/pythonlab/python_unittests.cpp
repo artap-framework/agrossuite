@@ -200,8 +200,8 @@ void UnitTestsWidget::readTestsSettingsFromScenario(QAction *action)
             PyObject *obj = PyList_GetItem(result, i);
             Py_INCREF(obj);
 
-            modules << QString::fromStdString(PyString_AsString(PyObject_GetAttrString(obj, "__module__")));
-            clss << QString::fromStdString(PyString_AsString(PyObject_GetAttrString(obj, "__name__")));
+            modules << QString::fromStdString(PyBytes_AsString(PyObject_GetAttrString(obj, "__module__")));
+            clss << QString::fromStdString(PyBytes_AsString(PyObject_GetAttrString(obj, "__name__")));
 
             Py_XDECREF(obj);
         }
@@ -314,12 +314,12 @@ void UnitTestsWidget::runTestFromSuite(const QString &module, const QString &cls
             PyObject *list = PyList_GetItem(result, i);
             Py_INCREF(list);
 
-            QString tmodule = PyString_AsString(PyList_GetItem(list, 0));
-            QString tcls = PyString_AsString(PyList_GetItem(list, 1));
-            QString ttest = PyString_AsString(PyList_GetItem(list, 2));
+            QString tmodule = PyBytes_AsString(PyList_GetItem(list, 0));
+            QString tcls = PyBytes_AsString(PyList_GetItem(list, 1));
+            QString ttest = PyBytes_AsString(PyList_GetItem(list, 2));
             double telapsedTime = PyFloat_AsDouble(PyList_GetItem(list, 3));
-            QString tstatus = PyString_AsString(PyList_GetItem(list, 4));
-            QString terror = PyString_AsString(PyList_GetItem(list, 5));
+            QString tstatus = PyBytes_AsString(PyList_GetItem(list, 4));
+            QString terror = PyBytes_AsString(PyList_GetItem(list, 5));
 
             // add to the file
             XMLTest::item item(ttest.toStdString(),
@@ -523,8 +523,8 @@ void UnitTestsWidget::readTestsFromSuite()
             PyObject *list = PyList_GetItem(result, i);
             Py_INCREF(list);
 
-            QString module = PyString_AsString(PyList_GetItem(list, 1));
-            QString name = PyString_AsString(PyList_GetItem(list, 0));
+            QString module = PyBytes_AsString(PyList_GetItem(list, 1));
+            QString name = PyBytes_AsString(PyList_GetItem(list, 0));
 
             QString key = QString("UnitTestsWidget/Tests/%1/%2").arg(module).arg(name);
 
@@ -559,7 +559,7 @@ void UnitTestsWidget::readTestsFromSuite()
                 PyObject *test = PyList_GetItem(tests, j);
                 Py_INCREF(test);
 
-                QString name = PyString_AsString(PyList_GetItem(tests, j));
+                QString name = PyBytes_AsString(PyList_GetItem(tests, j));
                 testsList << name;
 
                 Py_XDECREF(test);

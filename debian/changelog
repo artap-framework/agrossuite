@@ -1,4 +1,10 @@
-agros2d (3.2-ubuntu301-groovy) groovy; urgency=low
+agros2d (3.2-ubuntu305-hirsute) hirsute; urgency=low
+
+  * ubuntu 21.04
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 28 Apr 2021 12:00:00 +0200
+
+agros2d (3.2-ubuntu302-groovy) groovy; urgency=low
 
   * ubuntu 20.10
   

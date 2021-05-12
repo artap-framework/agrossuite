@@ -114,7 +114,7 @@ static PyObject *pythonTempname(PyObject* self, PyObject* pArgs)
             fn = fn + "." + str;
     }
 
-    return PyString_FromString(compatibleFilename(fn).toLatin1().data());
+    return PyBytes_FromString(compatibleFilename(fn).toLatin1().data());
 }
 
 static PyMethodDef pythonEngineFuntions[] =
@@ -127,15 +127,27 @@ static PyMethodDef pythonEngineFuntions[] =
     {NULL, NULL, 0, NULL}
 };
 
+static struct PyModuleDef CallModuleDef = {
+      PyModuleDef_HEAD_INIT,
+      "pythonlab",
+      NULL,
+      -1,
+      pythonEngineFuntions,
+      NULL,
+      NULL,
+      NULL,
+      NULL
+};
+
 // ****************************************************************************
 
 // tracing
 int traceFunction(PyObject *obj, _frame *frame, int what, PyObject *arg)
 {
-    PyObject *str = PyObject_Str(frame->f_code->co_filename);
+    PyObject *str = frame->f_code->co_filename;
     if (str)
     {
-        QString fileName = QString::fromStdString(PyString_AsString(str));
+        QString fileName = QString::fromStdString(PyBytes_AsString(str));
         Py_DECREF(str);
 
         if (!currentPythonEngine()->profilerFileName().isEmpty() && fileName.contains(currentPythonEngine()->profilerFileName()))
@@ -231,8 +243,8 @@ void PythonEngine::init()
     // args
     /// \todo Better
     int argc = 1;
-    char ** argv = new char*[1];
-    argv[0] = new char[1]();
+    wchar_t ** argv = new wchar_t*[1];
+    argv[0] = new wchar_t[1]();
     PySys_SetArgv(argc, argv);
     delete [] argv[0];
     delete [] argv;
@@ -250,7 +262,8 @@ void PythonEngine::init()
     Py_INCREF(m_dictGlobal);
 
     // init engine extensions
-    Py_InitModule("pythonlab", pythonEngineFuntions);
+    PyModule_Create(&CallModuleDef);
+    // Py_InitModule("pythonlab", pythonEngineFuntions);
 
     addCustomExtensions();
 
@@ -271,7 +284,8 @@ void PythonEngine::useLocalDict()
     Py_INCREF(m_dictLocal);
 
     // init engine extensions
-    Py_InitModule("pythonlab", pythonEngineFuntions);
+    PyModule_Create(&CallModuleDef);
+    // Py_InitModule("pythonlab", pythonEngineFuntions);
 }
 
 void PythonEngine::useGlobalDict()
@@ -386,7 +400,7 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
         setProfilerFileName(fileName);
         startProfiler();
     }
-    if (code) output = PyEval_EvalCode((PyCodeObject *) code, dict(), dict());
+    if (code) output = PyEval_EvalCode(code, dict(), dict());
     if (m_useProfiler)
         finishProfiler();
 
@@ -557,7 +571,7 @@ QStringList PythonEngine::codeCompletion(const QString& command)
                     {
                         PyObject *item = PyList_GetItem(list, i);
 
-                        QString str = PyString_AsString(item);
+                        QString str = PyBytes_AsString(item);
 
                         // remove builtin methods
                         if (!str.startsWith("__"))
@@ -608,7 +622,7 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
                     {
                         PyObject *item = PyList_GetItem(list, i);
 
-                        QString str = PyString_AsString(item);
+                        QString str = PyBytes_AsString(item);
                         out.append(str);
                     }
                 }
@@ -645,13 +659,13 @@ ErrorResult PythonEngine::parseError()
             if (frame && frame->f_code) {
                 PyCodeObject* codeObject = frame->f_code;
                 if (PyString_Check(codeObject->co_filename))
-                    traceback.append(QString("File '%1'").arg(PyString_AsString(codeObject->co_filename)));
+                    traceback.append(QString("File '%1'").arg(PyBytes_AsString(codeObject->co_filename)));
 
                 int errorLine = PyCode_Addr2Line(codeObject, frame->f_lasti);
                 traceback.append(QString(", line %1").arg(errorLine));
 
                 if (PyString_Check(codeObject->co_name))
-                    traceback.append(QString(", in %1").arg(PyString_AsString(codeObject->co_name)));
+                    traceback.append(QString(", in %1").arg(PyBytes_AsString(codeObject->co_name)));
             }
             traceback.append(QString("\n"));
 
@@ -664,7 +678,7 @@ ErrorResult PythonEngine::parseError()
     if (errorType != NULL && (errorString = PyObject_Str(errorType)) != NULL && (PyString_Check(errorString)))
     {
         Py_INCREF(errorString);
-        text.append(PyString_AsString(errorString));
+        text.append(PyBytes_AsString(errorString));
         Py_XDECREF(errorString);
     }
     else
@@ -676,7 +690,7 @@ ErrorResult PythonEngine::parseError()
     {
         Py_INCREF(errorString);
         text.append("\n");
-        text.append(PyString_AsString(errorString));
+        text.append(PyBytes_AsString(errorString));
         Py_XDECREF(errorString);
     }
     else
@@ -699,7 +713,7 @@ ErrorResult PythonEngine::parseError()
 void PythonEngine::addCustomExtensions()
 {
     // init pythonlab cython extensions
-    initpythonlab();
+    PyInit_pythonlab();
 }
 
 QList<PythonVariable> PythonEngine::variableList()
@@ -742,7 +756,7 @@ QList<PythonVariable> PythonEngine::variableList()
         PythonVariable var;
 
         // variable name
-        var.name = PyString_AsString(key);
+        var.name = PyBytes_AsString(key);
 
         // variable type
         var.type = value->ob_type->tp_name;
@@ -762,7 +776,7 @@ QList<PythonVariable> PythonEngine::variableList()
         }
         else if (var.type == "str")
         {
-            var.value = PyString_AsString(value);
+            var.value = PyBytes_AsString(value);
         }
         else if (var.type == "list")
         {
@@ -782,7 +796,7 @@ QList<PythonVariable> PythonEngine::variableList()
         }
         else if (var.type == "module")
         {
-            var.value = PyString_AsString(PyObject_GetAttrString(value, "__name__"));
+            var.value = PyBytes_AsString(PyObject_GetAttrString(value, "__name__"));
         }
         else if (var.type == "function"
                  || var.type == "instance"
