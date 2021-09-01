@@ -373,11 +373,11 @@ cdef class __Geometry__:
 
     def export_vtk(self, filename):
         """Export geometry in VTK format."""
-        self.thisptr.exportVTK(filename)
+        self.thisptr.exportVTK(filename.encode())
 
     def export_svg(self, filename):
         """Export geometry in SVG format."""
-        self.thisptr.exportSVG(filename)
+        self.thisptr.exportSVG(filename.encode())
 
     def export_svg_image(self):
         """Export geometry in SVG format."""

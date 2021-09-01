@@ -16,6 +16,8 @@ ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_stb_truetype.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_ctemplate.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.2.0")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_MUMPS.so")
+ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_UMFPACK.so")
 
 from . import _agros
 

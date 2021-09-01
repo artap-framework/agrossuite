@@ -449,7 +449,7 @@ void Scene::exportVTKGeometry(const QString &fileName)
     foreach (SceneNode *node, nodes->items())
         vtkNodes.append(Point(node->point().x, node->point().y));
 
-    QMap<int, int> vtkEdges;
+    QMultiMap<int, int> vtkEdges;
     foreach (SceneFace *edge, faces->items())
     {
         if (edge->isStraight())
@@ -467,7 +467,7 @@ void Scene::exportVTKGeometry(const QString &fileName)
             double startAngle = atan2(center.y - edge->nodeStart()->point().y,
                                       center.x - edge->nodeStart()->point().x) - M_PI;
 
-            int segments = edge->angle() / 15.0;
+            int segments = edge->angle() / 5.0;
             double theta = deg2rad(edge->angle()) / double(segments);
 
             for (int j = 1; j <= segments; j++)
@@ -523,7 +523,7 @@ void Scene::exportVTKGeometry(const QString &fileName)
     foreach (Point p, vtkNodes)
         out << QString("%1 %2 0.0\n").arg(p.x).arg(p.y);
     out << QString("LINES %1 %2\n").arg(vtkEdges.count()).arg(vtkEdges.count() * 3);
-    for (int i = 0; i < vtkEdges.keys().size(); i++)
+    for (int i = 0; i < vtkEdges.count(); i++)
         out << QString("2 %1 %2\n").arg(vtkEdges.keys().at(i)).arg(vtkEdges.values().at(i));
 
     file.waitForBytesWritten(0);

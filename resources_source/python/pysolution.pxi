@@ -213,12 +213,13 @@ cdef class __Solution__:
 
         return {'error' : error, 'dofs' : dofs}
 
-    def exportVTK(self, fileName, time_step, adaptivity_step, variable, variableComp):
+    def export_vtk(self, fileName, time_step, adaptivity_step, variable, variableComp):
         self._solution.exportVTK(fileName.encode(),
                                  int(-1 if time_step is None else time_step),
                                  int(-1 if adaptivity_step is None else adaptivity_step),
                                  variable.encode(),
                                  variableComp.encode())
+                                                                  
     # solution
     def solution(self, time_step = None, adaptivity_step = None):
         cdef vector[double] sln_vector

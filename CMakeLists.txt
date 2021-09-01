@@ -207,8 +207,9 @@ ADD_SUBDIRECTORY(agros-library)
 ADD_SUBDIRECTORY(solver-plugin-umfpack)
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     ADD_SUBDIRECTORY(solver-plugin-mumps)
+    # ADD_SUBDIRECTORY(solver-plugin-petsc)
 ENDIF()
-# ADD_SUBDIRECTORY(solver-plugin-petsc)
+
 ADD_SUBDIRECTORY(agros-generator)
 # Python interface
 ADD_SUBDIRECTORY(agros-python)

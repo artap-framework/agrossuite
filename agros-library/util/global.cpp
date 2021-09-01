@@ -526,18 +526,18 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }
-        if (fieldInfo->matrixSolver() == SOLVER_PLUGIN)
-        {
-            str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
-            str += QString("%1.matrix_solver_parameters[\"external_method\"] = \"%2\"\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
-            str += QString("%1.matrix_solver_parameters[\"external_parameters\"] = \"%2\"\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
-        }
+        //        if (fieldInfo->matrixSolver() == SOLVER_PLUGIN)
+        //        {
+        //            str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
+        //                    arg(fieldInfo->fieldId()).
+        //                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
+        //            str += QString("%1.matrix_solver_parameters[\"external_method\"] = \"%2\"\n").
+        //                    arg(fieldInfo->fieldId()).
+        //                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString());
+        //            str += QString("%1.matrix_solver_parameters[\"external_parameters\"] = \"%2\"\n").
+        //                    arg(fieldInfo->fieldId()).
+        //                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
+        //        }
 
         if (Agros::problem()->isTransient())
         {

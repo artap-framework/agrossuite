@@ -23,12 +23,12 @@ add_custom_target(CYTHON_AGROS ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_sou
 
 IF(WIN32)
   ADD_CUSTOM_COMMAND(
-    COMMAND C:/Python36/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    COMMAND C:/Python36/Scripts/cython ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 ELSE()
   ADD_CUSTOM_COMMAND(
-    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    COMMAND cython3 ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 ENDIF()

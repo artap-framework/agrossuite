@@ -42,6 +42,37 @@ public:
     virtual ~PETScSolverInterface() {}
 
     virtual QString name() const { return QString("PETSc"); }
+    virtual QStringList methods() const
+    {
+        QStringList meth;
+
+        meth.append("richardson");
+        meth.append("chebyshev");
+        meth.append("cg");
+        meth.append("gmres");
+        meth.append("cgs");
+        meth.append("bicg");
+
+        return meth;
+    }
+
+    virtual QStringList preconditioners() const
+    {
+        QStringList precs;
+
+        precs.append("none");
+        precs.append("jacobi");
+        precs.append("sor");
+        precs.append("lu");
+        precs.append("cgs");
+        precs.append("ilu");
+        precs.append("icc");
+        precs.append("ksp");
+        precs.append("cholesky");
+        precs.append("hypre");
+
+        return precs;
+    }
 
     virtual void solve(dealii::SparseMatrix<double> &system,
                        dealii::Vector<double> &rhs,
@@ -121,28 +152,30 @@ public:
         // Create linear solver context
         KSP ksp = nullptr;
         PC pc = nullptr;
-        ierr = KSPCreate(comm, &ksp);CHKERRQ(ierr);
+        ierr = KSPCreate(comm, &ksp); CHKERRQ(ierr);
         ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
-        ierr = KSPSetType(ksp, KSPBCGSL); CHKERRQ(ierr);
+        if (this->method.isEmpty())
+            this->method = "gmres";
+        ierr = KSPSetType(ksp, this->method.toStdString().c_str()); CHKERRQ(ierr);
         ierr = KSPSetInitialGuessNonzero(ksp, PETSC_TRUE); CHKERRQ(ierr);
 
         // std::string preconditioner = linearSystem->preconditionerArg.getValue();
         // preconditioner
         ierr = KSPGetPC(ksp, &pc); CHKERRQ(ierr);
-        ierr = PCSetType(pc, PCGAMG); CHKERRQ(ierr);
+        ierr = PCSetType(pc, PCHYPRE); CHKERRQ(ierr);
         // PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
         // PCFactorSetShiftType(pc, MAT_SHIFT_POSITIVE_DEFINITE);
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
         ierr = KSPSetUp(ksp); CHKERRQ(ierr);
 
-        ierr = KSPSetTolerances(ksp, 1e-6, PETSC_DEFAULT, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRQ(ierr);
+        ierr = KSPSetTolerances(ksp, 1e-4, PETSC_DEFAULT, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRQ(ierr);
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
 
         if (nonzeroguess)
         {
             PetscScalar p = .5;
             ierr = VecSet(x,p); CHKERRQ(ierr);
-            ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
+            ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE); CHKERRQ(ierr);
         }
 
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
@@ -173,7 +206,7 @@ public:
         {
             double value;
             VecGetValues(x, 1, &i, &value);
-            std::cout << value << std::endl;
+            // std::cout << value << std::endl;
             sln[i] = value;
         }
 
