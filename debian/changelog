@@ -1,3 +1,15 @@
+agros2d (3.2-ubuntu314-impish) impish; urgency=low
+
+  * ubuntu 21.10
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 28 Apr 2021 12:00:00 +0200
+
+agros2d (3.2-ubuntu309-hirsute) hirsute; urgency=low
+
+  * ubuntu 21.04
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 28 Apr 2021 12:00:00 +0200
+
 agros2d (3.2-ubuntu305-hirsute) hirsute; urgency=low
 
   * ubuntu 21.04

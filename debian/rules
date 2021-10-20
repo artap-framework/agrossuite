@@ -1,12 +1,14 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE=1
-
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++ 
+  
 configure: configure-stamp
 
 configure-stamp:
 	dh_testdir
-	-$(MAKE) distclean
+	-$(MAKE) distclean	
 	cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/agros2d/usr .
 	touch configure-stamp
 

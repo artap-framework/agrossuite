@@ -991,13 +991,13 @@ void LocalMatrix<ValueType>::ExtractSubMatrix(const int row_offset,
 
     assert( ( (this->matrix_ == this->matrix_host_)  && (mat->matrix_ == mat->matrix_host_)) ||
             ( (this->matrix_ == this->matrix_accel_) && (mat->matrix_ == mat->matrix_accel_) ) );
-    
+
     std::string mat_name = "Submatrix of " + this->object_name_ + " "
-      + "[" + static_cast<std::ostringstream*>( &(std::ostringstream() << row_offset) )->str()
-      + "," + static_cast<std::ostringstream*>( &(std::ostringstream() << col_offset) )->str() + "]-"
-      + "[" + static_cast<std::ostringstream*>( &(std::ostringstream() << row_offset+row_size-1) )->str()
-      + "," + static_cast<std::ostringstream*>( &(std::ostringstream() << col_offset+row_size-1) )->str() + "]";
-    
+      + "[" + std::to_string(row_offset)
+      + "," + std::to_string(col_offset)  + "]-"
+      + "[" + std::to_string(row_offset+row_size-1) 
+      + "," + std::to_string(col_offset+row_size-1) + "]";
+      
     mat->object_name_ = mat_name;
     
     bool err = false;

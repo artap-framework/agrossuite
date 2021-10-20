@@ -17,7 +17,7 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
-// #include <QtUiTools/QUiLoader>
+#include <QtUiTools/QUiLoader>
 #include "form_script.h"
 
 #include "ctemplate/template.h"
@@ -118,7 +118,6 @@ void FormScript::loadWidget(const QString &fileName)
 
     if (QFile::exists(fileName))
     {
-        /*
         QUiLoader loader;
         // loader.setWorkingDirectory(QDir(datadir() + "/resources/forms"));
         loader.setWorkingDirectory(QFileInfo(fileName).absoluteDir());
@@ -126,7 +125,6 @@ void FormScript::loadWidget(const QString &fileName)
         file.open(QFile::ReadOnly);
         mainWidget = loader.load(&file, this);
         file.close();
-        */
     }
     else
     {
