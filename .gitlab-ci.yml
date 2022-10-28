@@ -6,7 +6,7 @@ variables:
 
 build:
   tags:
-    - linux
+    - agros
   
   script: 
     - git submodule update --init 
