@@ -27,11 +27,6 @@
 
 #include "solver/plugin_interface.h"
 
-#undef signals
-#include <deal.II/hp/dof_handler.h>
-#include <deal.II/numerics/fe_field_function.h>
-#define signals public
-
 class FieldInfo;
 
 class {{CLASS}}ForceValue : public ForceValue
@@ -47,8 +42,8 @@ public:
 
 private:
     MultiArray ma;
-    std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > > localvalues;
-    dealii::hp::DoFHandler<2>::active_cell_iterator currentCell;
+    // std::shared_ptr<dealii::Functions::FEFieldFunction<2> > localvalues;
+    // dealii::hp::DoFHandler<2>::active_cell_iterator currentCell;
 };
 
 #endif // {{ID}}_FORCE_H

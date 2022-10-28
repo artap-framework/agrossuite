@@ -21,6 +21,7 @@
 
 #include "util/constants.h"
 #include "util/global.h"
+#include "util/point.h"
 
 #include "gui/common.h"
 

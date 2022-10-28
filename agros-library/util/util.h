@@ -70,8 +70,6 @@
 #define AGROS_LIBRARY_API
 #endif
 
-#include "util/point.h"
-
 // zero
 #define EPS_ZERO 1e-10
 

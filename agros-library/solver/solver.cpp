@@ -414,7 +414,7 @@ void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Ve
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc_int = doFHandler.end();
     for (; cell != endc_int; ++cell)
     {
-        if (!cell->active())
+        if (!cell->is_active())
             continue;
 
         // volume integration
@@ -441,7 +441,7 @@ void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Ve
     cell = doFHandler.begin_active(), endc_int = doFHandler.end();
     for (; cell != endc_int; ++cell)
     {
-        if (!cell->active())
+        if (!cell->is_active())
             continue;
 
         // volume integration
@@ -897,7 +897,7 @@ void SolverDeal::solveSteadyState()
         QVector<double> adaptiveError;
 
         // solution transfer
-        dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(primal->doFHandler);
+        dealii::SolutionTransfer<2, dealii::Vector<double> > solutionTrans(primal->doFHandler);
         dealii::Vector<double> previousSolution;
 
         for (int adaptiveStep = 0; adaptiveStep < m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt(); adaptiveStep++)
@@ -910,7 +910,7 @@ void SolverDeal::solveSteadyState()
                 //
 
                 // prepare for transfer solution
-                solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(primal->doFHandler);
+                solutionTrans = dealii::SolutionTransfer<2>(primal->doFHandler);
                 previousSolution = primal->solution;
 
                 m_computation->calculationMesh().prepare_coarsening_and_refinement();
@@ -1054,7 +1054,7 @@ void SolverDeal::solveTransient()
     double averageErrorToLenghtRatio = 0.0;
 
     // solution transfer
-    dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(primal->doFHandler);
+    dealii::SolutionTransfer<2> solutionTrans(primal->doFHandler);
     std::vector<dealii::Vector<double> > previousSolutions;
 
     // solutions and step length
@@ -1273,7 +1273,7 @@ void SolverDeal::solveTransient()
                     if (adaptiveStep > 0)
                         Agros::log()->updateAdaptivityChartInfo(m_fieldInfo, timeStep, adaptiveStep);
 
-                    solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(primal->doFHandler);
+                    solutionTrans = dealii::SolutionTransfer<2>(primal->doFHandler);
                     previousSolutions.clear();
                     // all previous solutions
                     for (int i = 0; i < solutions.size(); i++)

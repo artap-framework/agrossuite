@@ -17,7 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "sceneview_post2d.h"
+#include <deal.II/numerics/fe_field_function.h>
+#include <deal.II/hp/dof_handler.h>
 
 #include "util/util.h"
 #include "util/global.h"
@@ -25,7 +26,6 @@
 
 #include "scene.h"
 #include "solver/problem.h"
-#include "logview.h"
 
 #include "util/constants.h"
 
@@ -33,7 +33,6 @@
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
-#include "scenemarker.h"
 #include "postprocessorview.h"
 #include "scenemarkerselectdialog.h"
 
@@ -45,10 +44,8 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/plugin_interface.h"
-#include "solver/solutionstore.h"
 
-#include <deal.II/numerics/fe_field_function.h>
-#include <deal.II/hp/dof_handler.h>
+#include "sceneview_post2d.h"
 
 SceneViewPost2D::SceneViewPost2D(PostprocessorWidget *postprocessorWidget)
     : SceneViewCommon2D(postprocessorWidget), SceneViewPostInterface(postprocessorWidget), m_postprocessorWidget(postprocessorWidget),
@@ -526,7 +523,7 @@ void SceneViewPost2D::paintVectors()
         double gs = (rect.width() + rect.height()) / m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorCount).toInt();
 
         MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
-        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(ma.doFHandler(), ma.solution());
+        dealii::Functions::FEFieldFunction<2> localvalues(ma.doFHandler(), ma.solution());
 
         QList<PostTriangle> triangleX = m_postprocessorWidget->currentComputation()->postDeal()->vectorXValues();
         QList<PostTriangle> triangleY = m_postprocessorWidget->currentComputation()->postDeal()->vectorYValues();

@@ -17,20 +17,6 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
-#include "{{ID}}_volumeintegral.h"
-// #include "{{ID}}_extfunction.h"
-#include "{{ID}}_interface.h"
-
-#include "util/global.h"
-#include "util/constants.h"
-
-#include "solver/problem.h"
-#include "solver/problem_config.h"
-#include "solver/field.h"
-#include "solver/solutionstore.h"
-
-#include "solver/plugin_interface.h"
-
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/fe/fe_q.h>
@@ -41,6 +27,20 @@
 #include <deal.II/numerics/fe_field_function.h>
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/base/work_stream.h>
+
+#include "{{ID}}_volumeintegral.h"
+// #include "{{ID}}_extfunction.h"
+// #include "{{ID}}_interface.h"
+
+#include "util/global.h"
+#include "util/constants.h"
+
+#include "solver/problem.h"
+#include "solver/problem_config.h"
+#include "solver/field.h"
+#include "solver/solutionstore.h"
+
+#include "solver/plugin_interface.h"
 
 {{#MACRO}}#define {{MACRO_ID}} {{MACRO_EXPRESSION}}
 {{/MACRO}}

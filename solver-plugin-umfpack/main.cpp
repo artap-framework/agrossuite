@@ -23,7 +23,6 @@
 #include <string>
 #include <fstream>
 
-#include "../3rdparty/tclap/CmdLine.h"
 #include "../agros-library/util/sparse_io.h"
 #include "../agros-library/solver/plugin_solver_interface.h"
 

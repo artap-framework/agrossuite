@@ -108,7 +108,7 @@ ENDIF(MSVC)
 
 # Set global compiler parameters.
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type -std=c++17")
   INCLUDE_DIRECTORIES(/usr/include/google)
 ENDIF()
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -235,7 +235,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.2.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.9.4.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)

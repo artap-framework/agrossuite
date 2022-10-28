@@ -26,7 +26,7 @@ individual::individual(const individual_config& c
                        const unsigned int nbin,
                        const unsigned int ncon,
                        const std::vector<int>& nbits,
-                       const unsigned int nobj*/) throw (nsga2::nsga2exception) :
+                                              const unsigned int nobj*/) noexcept(false) :
     rank(0),
     constr_violation(0),
     xreal(0),
@@ -53,7 +53,7 @@ individual::individual(const individual_config& c
 individual::~individual() {
 }
 
-void individual::initialize() throw (nsga2::nsga2exception) {
+void individual::initialize() noexcept(false) {
     if (!config)
         throw nsga2::nsga2exception("Individual not configured");
 
@@ -304,7 +304,7 @@ population::population(const int size,
                        const double eta_m,
 		       const double epsilon_c,
                        const individual_config::funcType func)
-	  throw (nsga2::nsga2exception) :
+noexcept(false) :
 	  crowd_obj(true),
 	  ind_config(),
 	  eval_pop_function(NULL) {
@@ -332,7 +332,7 @@ population::population(const int size,
 population::~population() {
 }
 
-void population::initialize() throw (nsga2::nsga2exception) {
+void population::initialize() noexcept(false) {
     std::vector<individual>::iterator it;
     for (it  = ind.begin();
          it != ind.end();
@@ -533,7 +533,7 @@ void population::crowding_distance(int fronti) {
 }
 
 void population::merge(const population& pop1, const population& pop2)
-    throw (nsga2::nsga2exception) {
+noexcept(false) {
 
     if (size() < pop1.size() + pop2.size())
         throw nsga2::nsga2exception("Merge: target population not big enough");

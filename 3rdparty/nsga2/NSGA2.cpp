@@ -67,7 +67,7 @@ NSGA2::~NSGA2() {
 }
 
 
-void NSGA2::initialize() throw (nsga2exception) {
+void NSGA2::initialize() noexcept(false) {
 
     cout << "Initializing NSGA-II v0.2.1\n"
          << "Checking configuration" << endl;
@@ -346,7 +346,7 @@ bool NSGA2::load_backup() {
 // }
 
 void NSGA2::selection(population& oldpop, population& newpop)
-throw (nsga2::nsga2exception) {
+noexcept(false) {
     const int N = oldpop.size();
     if (newpop.size() != N)
         throw nsga2::nsga2exception("Selection error: new and old pops don't have the same size");

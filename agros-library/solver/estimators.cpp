@@ -21,6 +21,7 @@
 #include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/work_stream.h>
 #include <deal.II/numerics/error_estimator.h>
+#include <deal.II/numerics/smoothness_estimator.h>
 #include <deal.II/grid/grid_refinement.h>
 #include <deal.II/fe/fe_tools.h>
 
@@ -48,7 +49,13 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2
                                                   const dealii::Vector<double> &solution,
                                                   dealii::Vector<float> &smoothness_indicators)
 {
-    dealii::FESeries::Fourier<2> fourier(m_N, doFHandler.get_fe_collection(), quadratureFormulas);
+    dealii::FESeries::Fourier<2> fourier = dealii::SmoothnessEstimator::Fourier::default_fe_series(doFHandler.get_fe_collection());
+    dealii::SmoothnessEstimator::Fourier::coefficient_decay(fourier,
+                                                            doFHandler,
+                                                            solution,
+                                                            smoothness_indicators);
+
+    // dealii::FESeries::Fourier<2> fourier(m_N, doFHandler.get_fe_collection(), quadratureFormulas);
 
     // local DoF values:
     dealii::Vector<double> local_dof_values;

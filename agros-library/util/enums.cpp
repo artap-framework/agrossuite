@@ -19,11 +19,14 @@
 
 #include "enums.h"
 
-#include "util/util.h"
 #include "util/global.h"
 #include "scene.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
+
+#undef signals
+#include <deal.II/base/time_stepping.h>
+#define signals public
 
 // QMap lookup is faster than in a QMap for less than about 10 elements
 static QMap<CoordinateType, QString> coordinateTypeList;

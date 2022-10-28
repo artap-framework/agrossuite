@@ -24,7 +24,6 @@
 
 #include "problem.h"
 #include "problem_config.h"
-#include "problem_function.h"
 #include "problem_result.h"
 #include "plugin_interface.h"
 
@@ -40,9 +39,7 @@
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
-#include "weak_form.h"
 #include "coupling.h"
-#include "solver.h"
 #include "logview.h"
 
 #include "mesh/meshgenerator_triangle.h"
@@ -368,7 +365,7 @@ MultiArray PostDeal::activeMultiSolutionArray()
 
 // ************************************************************************************************
 
-PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
+PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2>(),
     m_computation(parentProblem), m_fieldInfo(fieldInfo)
 {
 }
@@ -512,7 +509,8 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 {
     // return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
 
-    DataOut<2>::cell_iterator cell = dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+    // ERROR ???
+    DataOut<2>::cell_iterator cell = next_cell(old_cell);
     while (cell != this->dofs->end())
     {
         if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())

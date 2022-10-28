@@ -17,6 +17,10 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
+#include <deal.II/grid/tria.h>
+#include <deal.II/fe/mapping_q1.h>
+#include <deal.II/numerics/fe_field_function.h>
+
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_filter.h"
 #include "{{ID}}_interface.h"
@@ -41,7 +45,7 @@
                                                      int adaptivityStep,
                                                      const QString &variable,
                                                      PhysicFieldVariableComp physicFieldVariableComp)
-    : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_hessians | dealii::update_q_points),
+    : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_hessians | dealii::update_quadrature_points),
       m_computation(computation), m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep),
       m_variable(variable), m_physicFieldVariableComp(physicFieldVariableComp)
 {

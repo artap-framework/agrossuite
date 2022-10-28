@@ -24,6 +24,7 @@
 
 #include "util/util.h"
 #include "util/enums.h"
+#include "util/point.h"
 #include "gui/other.h"
 
 #include "qcustomplot.h"

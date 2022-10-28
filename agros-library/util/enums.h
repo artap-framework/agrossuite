@@ -20,14 +20,10 @@
 #ifndef UTIL_ENUMS_H
 #define UTIL_ENUMS_H
 
-#include "QtCore"
 
 #include "util/util.h"
 #include "util/table.h"
 
-#undef signals
-#include <deal.II/base/time_stepping.h>
-#define signals public
 
 enum CoordinateType
 {

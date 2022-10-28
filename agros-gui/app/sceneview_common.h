@@ -23,6 +23,7 @@
 #include <QGLWidget>
 
 #include "util/util.h"
+#include "util/point.h"
 
 #include "gui/scenewidget.h"
 #include "util/enums.h"

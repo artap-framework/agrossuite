@@ -17,6 +17,11 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
+
+#include <deal.II/grid/tria.h>
+#include <deal.II/fe/mapping_q1.h>
+#include <deal.II/numerics/fe_field_function.h>
+
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_localvalue.h"
 #include "{{ID}}_interface.h"
@@ -28,7 +33,7 @@
 #include "solver/field.h"
 #include "solver/solutionstore.h"
 
-#include "solver/plugin_interface.h"
+// #include "solver/plugin_interface.h"
 
 #include <deal.II/grid/tria.h>
 #include <deal.II/fe/mapping_q1.h>
@@ -92,11 +97,11 @@ void {{CLASS}}LocalValue::calculate()
                     else
                     {
                         // point values
-                        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(ma.doFHandler(), ma.solution());
+                        dealii::Functions::FEFieldFunction<2> localvalues(ma.doFHandler(), ma.solution());
 
                         // set variables
                         solution_values[k][i] = localvalues.value(p, i);
-                       solution_gradients[k][i] = localvalues.gradient(p, i);
+                        solution_gradients[k][i] = localvalues.gradient(p, i);
                     }
                 }
 

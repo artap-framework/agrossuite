@@ -17,26 +17,24 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "sceneview_mesh.h"
-
 #include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
 
 #include "scene.h"
 #include "solver/field.h"
-#include "logview.h"
 
 #include "scenebasic.h"
 #include "scenenode.h"
 #include "sceneedge.h"
-#include "scenelabel.h"
 #include "postprocessorview.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/module.h"
 #include "solver/solutionstore.h"
+
+#include "sceneview_mesh.h"
 
 // deal.ii
 #include <deal.II/grid/tria.h>

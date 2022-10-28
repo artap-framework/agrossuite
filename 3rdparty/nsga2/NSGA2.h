@@ -23,7 +23,7 @@ public:
     NSGA2();
     virtual ~NSGA2();
 
-    void initialize() throw (nsga2exception);
+    void initialize() noexcept(false);
     void advance();
     void evolve();
 
@@ -143,7 +143,7 @@ private:
     bool load_backup();
 
     void selection(population& oldpop, population& newpop)
-    throw (nsga2::nsga2exception) ;
+    noexcept(false) ;
     individual& tournament(individual& ind1, individual& ind2) const;
     void crossover(const individual& parent1, const individual& parent2,
                    individual& child1, individual& child2);

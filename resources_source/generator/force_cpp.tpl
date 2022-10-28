@@ -17,6 +17,10 @@
 // University of Nevada, Reno (UNR) and University of West Bohemia, Pilsen
 // Email: agros2d@googlegroups.com, home page: http://hpfem.org/agros2d/
 
+#include <deal.II/grid/tria.h>
+#include <deal.II/fe/mapping_q1.h>
+#include <deal.II/numerics/fe_field_function.h>
+
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_force.h"
 
@@ -26,12 +30,6 @@
 #include "solver/problem_config.h"
 #include "solver/solutionstore.h"
 #include "solver/solver_utils.h"
-
-#include "solver/plugin_interface.h"
-
-#include <deal.II/grid/tria.h>
-#include <deal.II/fe/mapping_q1.h>
-#include <deal.II/numerics/fe_field_function.h>
 
 {{CLASS}}ForceValue::{{CLASS}}ForceValue(Computation *computation,
                                          const FieldInfo *fieldInfo,
@@ -43,8 +41,8 @@
     ma = m_computation->solutionStore()->multiArray(fsid);
 
     // point values
-    localvalues = std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > >
-            (new dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> >(ma.doFHandler(), ma.solution()));
+    // localvalues = std::shared_ptr<dealii::Functions::FEFieldFunction<2> >
+    //        (new dealii::Functions::FEFieldFunction<2>(ma.doFHandler(), ma.solution()));
 }
 
 bool {{CLASS}}ForceValue::hasForce()
@@ -71,6 +69,9 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
         double x = point.x;
         double y = point.y;
         dealii::Point<2> p(point.x, point.y);
+
+        // point values
+        dealii::Functions::FEFieldFunction<2> localvalues(ma.doFHandler(), ma.solution());
 
         /*
         try
@@ -124,8 +125,8 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
                 else
                 {
                     // set variables
-                    solution_values[k][i] = localvalues->value(p, i);
-                    solution_gradients[k][i] = localvalues->gradient(p, i);
+                    solution_values[k][i] = localvalues.value(p, i);
+                    solution_gradients[k][i] = localvalues.gradient(p, i);
                 }
             }
             catch (...) // (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)

@@ -26,7 +26,6 @@
 #define signals public
 
 #include "util/util.h"
-#include "value.h"
 #include "solutiontypes.h"
 #include "problem_config.h"
 #include "problem_parameter.h"
@@ -67,7 +66,7 @@ struct PostTriangle
     double values[3];
 };
 
-class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
+class PostDataOut : public dealii::DataOut<2>
 {
 public:
     PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem);

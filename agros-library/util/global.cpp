@@ -84,7 +84,7 @@ QStringList pluginList(const QString &data)
 
     if (pluginPath.isEmpty())
     {
-        throw AgrosPluginException(QObject::tr("Could not load find plugins in directory."));
+        throw AgrosPluginException(QObject::tr("Could not find plugins in directory."));
         assert(0);
     }
 

@@ -524,7 +524,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
                     hp_fe_face_values.reinit(cell, face);
                     const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
                     std::vector<dealii::Point<2> > points;
-                    points.reserve(dealii::DoFTools::max_dofs_per_face(doFHandler));
+                    points.reserve(doFHandler.get_fe_collection().max_dofs_per_face());
                     points = fe_values.get_quadrature_points();
 
                     const unsigned int dofs_per_face = fe.dofs_per_face;

@@ -3,6 +3,10 @@ INCLUDE_DIRECTORIES(${CMAKE_AGROS_DIRECTORY}/agros-library)
 INCLUDE_DIRECTORIES(${CMAKE_AGROS_DIRECTORY}/3rdparty)
 INCLUDE_DIRECTORIES(.)
 
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type -std=c++17")
+ENDIF()
+
 # This overrides CXX flags for MSVC
 IF(MSVC)
   SET(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} /Ob2")

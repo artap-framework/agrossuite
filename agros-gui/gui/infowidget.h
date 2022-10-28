@@ -20,7 +20,6 @@
 #ifndef INFOWIDGET_H
 #define INFOWIDGET_H
 
-#include "util/util.h"
 #include "app/sceneview_common.h"
 
 class SceneViewPreprocessor;

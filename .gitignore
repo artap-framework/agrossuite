@@ -117,3 +117,8 @@ projects
 Agros.AppDir/resources/
 3rdparty/bayesopt/Doxyfile
 *_autogen/
+.qtc_clangd/
+agrossuite.egg-info/
+agrossuite/_agros.so
+build/
+dist/

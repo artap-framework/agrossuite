@@ -21,6 +21,7 @@
 #define LOCALVALUE_H
 
 #include "util/util.h"
+#include "util/point.h"
 #include "app/scenemarkerselectdialog.h"
 #include "app/scenebasicselectdialog.h"
 

@@ -49,12 +49,12 @@ struct individual {
 
     individual() throw (); // needed for std::vector<individual> allocator
 
-    individual(const individual_config& c) throw (nsga2::nsga2exception);
+    individual(const individual_config& c) noexcept(false);
     virtual ~individual();
 
     // individual& operator=(const individual& ind);
 
-    void initialize() throw (nsga2::nsga2exception);
+    void initialize() noexcept(false);
 
     void decode();
     void evaluate();
@@ -99,10 +99,10 @@ struct population {
                const double eta_m,
 	       const double epsilon_c,
                const individual_config::funcType func)
-        throw (nsga2::nsga2exception);
+    noexcept(false);
     virtual ~population();
 
-    void initialize() throw (nsga2::nsga2exception);
+    void initialize() noexcept(false);
 
     void decode();
     void evaluate();
@@ -114,7 +114,7 @@ struct population {
 
     std::pair<int,int> mutate();
     void merge(const population& pop1, const population& pop2)
-    throw (nsga2::nsga2exception);
+    noexcept(false);
 
     void report(std::ostream& os) const;
     void dump(std::ostream& os) const;

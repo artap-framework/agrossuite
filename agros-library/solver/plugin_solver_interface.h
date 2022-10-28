@@ -35,9 +35,9 @@
 #define AGROS_LIBRARY_API
 #endif
 
-#include <QtPlugin>
 #include <deal.II/lac/sparse_matrix.h>
 #include <deal.II/lac/vector.h>
+#include <QtPlugin>
 
 class AGROS_LIBRARY_API PluginSolverInterface
 {

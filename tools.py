@@ -163,7 +163,7 @@ def appimage_package():
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
-    shutil.copy('dealii/build/lib/libdeal_II.so.9.2.0', dest + '/libs/libdeal_II.so.9.2.0')
+    shutil.copy('dealii/build/lib/libdeal_II.so.9.4.0', dest + '/libs/libdeal_II.so.9.4.0')
      
     # strip
     os.system("strip " + dest + "/*")
@@ -178,6 +178,63 @@ def callgrind():
     call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  
 
 def python_pack():
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+
+    try:
+        shutil.rmtree('dist')
+    except:
+        pass
+    try:
+        shutil.rmtree('build')
+    except:
+        pass
+    try:
+        shutil.rmtree('agrossuite/resources')
+    except:
+        pass
+    try:
+        shutil.rmtree('agrossuite/libs')
+    except:
+        pass
+    try:
+        shutil.rmtree('agrossuite/__pycache__')
+    except:
+        pass
+    try:
+        shutil.rmtree('agrossuite/.idea')
+    except:
+        pass
+        
+    # copy files
+    # distutils.file_util.copy_file("libs/_agros.so", "agrossuite/_agros.so")
+    # distutils.dir_util.copy_tree("resources", "agrossuite/resources")
+
+    # libs
+    if not os.path.exists("agrossuite/libs"):
+        os.makedirs("agrossuite/libs")
+    for (dirpath, dirnames, filenames) in os.walk("libs"):
+        for file in filenames:
+            if file == "_agros.so":
+                continue
+            ext = os.path.splitext(file)[-1].lower()
+            if ext == ".so":
+                shutil.copy("libs/" + file, "agrossuite/libs/" + file)
+
+    # deal
+    shutil.copy("dealii/build/lib/libdeal_II.so.9.4.0", "agrossuite/libs/libdeal_II.so.9.4.0")
+    # os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
+
+
+    try:
+        os.remove("agrossuite/libs/libagros_plugin_dek.so")
+    except:
+        pass
+
+    # strip libraries
+    os.system("strip agrossuite/libs/*")    
+    os.system("strip agrossuite/_agros.so")
+   
+
     call(['python3', 'setup.py', 'sdist', 'bdist_wheel'])	  
 
 def python_upload():
