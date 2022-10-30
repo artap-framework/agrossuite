@@ -1011,5 +1011,5 @@ void ProblemSolver<Scalar>::resumeAdaptivityProcess(int adaptivityStep)
 
 
 //template class VectorStore<double>;
-template class PicardSolverContainer<double>;
+template class HermesSolverContainer<double>;
 template class ProblemSolver<double>;

@@ -456,7 +456,7 @@ void appendToFile(const QString &fileName, const QString &str)
     if (file.open(QIODevice::Append | QIODevice::Text))
     {
         QTextStream outFile(&file);
-        outFile << str << endl;
+        outFile << str << Qt::endl;
 
         file.close();
     }

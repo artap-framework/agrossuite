@@ -18,8 +18,8 @@ build-stamp: configure-stamp
 	dh_testdir	
 	$(MAKE) -j10
 	LD_LIBRARY_PATH=$(CURDIR)/libs ./agros2d_generator
-	cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/agros2d/usr plugins/CMakeLists.txt
-	$(MAKE) -j10 --directory plugins
+	cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/agros2d/usr -S $(CURDIR)/plugins $(CURDIR)/plugins/CMakeLists.txt
+	$(MAKE) -j10 --directory $(CURDIR)/plugins
 	#$(MAKE) html --directory resources_source/doc
 	#cp -r resources_source/doc/build/html resources/help
 	touch build-stamp

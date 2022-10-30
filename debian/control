@@ -8,7 +8,7 @@ Homepage: http://agros2d.org
 
 Package: agros2d
 Architecture: any
-Depends: ${shlibs:Depends}, gmsh, libmumps-seq-5.3, libblas3 (>= 1.2), libqt5opengl5 (>= 5.4.0), libqt5xmlpatterns5 (>= 5.4.0), libqt5opengl5 (>= 5.4.0), libqt5printsupport5 (>= 5.4.0), libqt5webkit5 (>= 5.4.0), libqt5gui5 (>= 5.4.0), libxerces-c3.2 (>= 3.2.0)
+Depends: ${shlibs:Depends}, gmsh, libmumps-seq-5.4, libblas3 (>= 1.2), libqt5opengl5 (>= 5.4.0), libqt5xmlpatterns5 (>= 5.4.0), libqt5opengl5 (>= 5.4.0), libqt5printsupport5 (>= 5.4.0), libqt5webkit5 (>= 5.4.0), libqt5gui5 (>= 5.4.0), libxerces-c3.2 (>= 3.2.0)
 Description: hp-FEM multiphysics application based on Hermes2D library
  Agros2D is a multiplatform C++ application for the solution of two-dimensional 
  problems described by partial differential equations (PDE), based on the Hermes2D library. 
