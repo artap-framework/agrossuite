@@ -126,7 +126,7 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;
 
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     QVector<double> nonlinearSteps;
@@ -243,7 +243,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;
 
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     QVector<double> nonlinearSteps;
@@ -280,7 +280,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     {
         SolverAgros::Phase phase = SolverAgros::Phase_Solving;
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
 
         iteration++;

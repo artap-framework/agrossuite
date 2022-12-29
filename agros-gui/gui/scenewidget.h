@@ -20,8 +20,6 @@
 #ifndef SCENEWIDGET_H
 #define SCENEWIDGET_H
 
-#include <QGLWidget>
-
 #include "util/util.h"
 #include "gui/other.h"
 

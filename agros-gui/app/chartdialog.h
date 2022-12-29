@@ -24,8 +24,8 @@
 #include "solver/plugin_interface.h"
 #include "gui/other.h"
 
-#include <QSvgWidget>
-#include <QSvgRenderer>
+#include <QtSvg/QSvgRenderer>
+#include <QtSvgWidgets/QSvgWidget>
 
 class LineEditDouble;
 class LocalValue;

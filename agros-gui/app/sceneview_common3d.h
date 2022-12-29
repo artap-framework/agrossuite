@@ -20,8 +20,6 @@
 #ifndef SCENEVIEWCOMMON3D_H
 #define SCENEVIEWCOMMON3D_H
 
-#include <QGLWidget>
-
 #include "sceneview_post.h"
 
 class SceneViewCommon3D : public SceneViewCommon

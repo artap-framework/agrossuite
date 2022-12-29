@@ -22,8 +22,6 @@
 
 #include <QtCore>
 #include <QtNetwork>
-#include <QDomDocument>
-#include <QtXmlPatterns>
 #include <QtPlugin>
 #include <QtGlobal>
 #include <QtPrintSupport/QPrinter>

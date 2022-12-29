@@ -145,7 +145,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
     int numberOfParticles = m_computation->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt();
 
-    QTime timePart;
+    QElapsedTimer timePart;
     timePart.start();
 
     RectPoint bound = m_computation->scene()->boundingBox();

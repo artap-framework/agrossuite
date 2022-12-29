@@ -234,7 +234,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
             if ({{COUPLING_SOURCE_ID}}_material != m_computation->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
             {
-                const QMap<uint, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
+                const QMap<ulong, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
                 //{{COUPLING_SOURCE_ID}} variables for individual source analysis types{{#COUPLING_VARIABLES_ANALYSIS_TYPE}}
                 if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                 {{{#COUPLING_VARIABLES}}
@@ -308,7 +308,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
             }
         }
 
-        const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
+        const QMap<ulong, QSharedPointer<Value> > materialValues = material->values();
         {{#VOLUME_SOURCE}}
         if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
         {
@@ -409,7 +409,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
             if(cell->face(face)->user_index() > 0 )
             {
                 SceneBoundary *boundary = m_computation->scene()->faces->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
-                const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
+                const QMap<ulong, QSharedPointer<Value> > boundaryValues = boundary->values();
 
                 if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {

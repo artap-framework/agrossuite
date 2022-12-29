@@ -61,9 +61,7 @@ private:
     QCheckBox *chkShowGrid;
 
     // scene font
-    QComboBox *cmbRulersFont;
     QSpinBox *txtRulersFontSizes;
-    QComboBox *cmbPostFont;
     QSpinBox *txtPostFontSizes;
 
     // workspace other

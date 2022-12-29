@@ -43,7 +43,7 @@ const QSharedPointer<Value> Marker::value(const QString &name) const
     return value(m_valuesHash[name]);
 }
 
-const QSharedPointer<Value> Marker::value(const uint id) const
+const QSharedPointer<Value> Marker::value(const ulong id) const
 {
     assert(m_values.contains(id));
 
@@ -56,12 +56,12 @@ const Value* Marker::valueNakedPtr(const QString &name) const
     return value(name).data();
 }
 
-const Value* Marker::valueNakedPtr(const uint id) const
+const Value* Marker::valueNakedPtr(const ulong id) const
 {
     return value(id).data();
 }
 
-const QMap<uint, QSharedPointer<Value> > Marker::values() const
+const QMap<ulong, QSharedPointer<Value> > Marker::values() const
 {
     return m_values;
 }
@@ -71,7 +71,7 @@ bool Marker::contains(const QString &name) const
     return m_valuesHash.contains(name);
 }
 
-const QString Marker::valueName(const uint id) const
+const QString Marker::valueName(const ulong id) const
 {
     assert(m_valuesHash.values().contains(id));
 
@@ -80,7 +80,7 @@ const QString Marker::valueName(const uint id) const
 
 void Marker::setValue(const QString& name, Value value)
 {
-    uint hsh = qHash(name);
+    ulong hsh = qHash(name);
     m_valuesHash[name] = hsh;
     m_values[hsh] = QSharedPointer<Value>(new Value(value));
 }
@@ -95,7 +95,7 @@ void Marker::modifyValue(const QString& name, Value value)
     else
     {
         // new value
-        uint hsh = qHash(name);
+        ulong hsh = qHash(name);
         m_valuesHash[name] = hsh;
         m_values[hsh] = QSharedPointer<Value>(new Value(value));
     }

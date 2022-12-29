@@ -253,8 +253,8 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
 
     createControls();
 
-    int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
-    int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
+    int w = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -320,7 +320,7 @@ void LogDialog::createControls()
     m_progress->setMaximumHeight(85);
     m_progress->setFont(fontProgress);
     m_progress->setStyleSheet(QString("QListView { background-color: %1; border: 0px; padding: 0px; margin: 0px; }").
-                              arg(this->palette().color(QPalette::Background).name()));
+                              arg(this->palette().color(QPalette::Window).name()));
 
     btnClose = new QPushButton(tr("Close"));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(closeLog()));

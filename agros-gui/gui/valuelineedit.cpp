@@ -112,7 +112,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
     lblInfo = new QLabel();
 
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->setMargin(0);
+    // layout->setMargin(0);
     if (isBool)
         layout->addWidget(chkCheckBox, 1);
     else

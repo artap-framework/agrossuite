@@ -39,6 +39,7 @@
 #include "solver/problem_config.h"
 
 #include "util/constants.h"
+#include <qt5/QtCore/qnamespace.h>
 
 SceneViewCommon2D::SceneViewCommon2D(QWidget *parent) : SceneViewCommon(parent)
 {
@@ -185,8 +186,8 @@ void SceneViewCommon2D::paintAxes()
     glColor3d(COLORCROSS[0], COLORCROSS[1], COLORCROSS[2]);
 
     Point rulersArea = rulersAreaSize();
-    Point border = (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? Point(rulersArea.x + 10.0, rulersArea.y + 10.0)
-                                                                                                    : Point(10.0, 10.0);
+    Point border = (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
+            ? Point(rulersArea.x + 10.0, rulersArea.y + 10.0) : Point(10.0, 10.0);
 
     // x-axis
     glBegin(GL_QUADS);
@@ -218,8 +219,8 @@ void SceneViewCommon2D::paintAxes()
 
     glDisable(GL_POLYGON_OFFSET_FILL);
 
-    printRulersAt(border.x + 38, border.y + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, problem()->config()->labelX());
-    printRulersAt(border.x + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, border.y + 38, problem()->config()->labelY());
+    printRulersAt(border.x + 38, border.y + 1 - 0.5*m_labelRulersSize, problem()->config()->labelX());
+    printRulersAt(border.x + 1 - 0.5*m_labelRulersSize, border.y + 38, problem()->config()->labelY());
 }
 
 void SceneViewCommon2D::paintRulers()
@@ -358,7 +359,7 @@ void SceneViewCommon2D::paintRulers()
                     text = QString::number(i*gridStep, 'f', 6);
 
                 Point scr = untransform(i*gridStep, cornerMax.y);
-                printRulersAt(scr.x + (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0,
+                printRulersAt(scr.x + 1.2*m_labelRulersSize,
                               scr.y + 2, QString(text + "        ").left(9));
             }
         }
@@ -378,7 +379,7 @@ void SceneViewCommon2D::paintRulers()
                     text = QString::number(i*gridStep, 'f', 7);
 
                 Point scr = untransform(cornerMin.x + rulersArea.x / 20.0, i*gridStep);
-                printRulersAt(scr.x, scr.y - 2 * (m_charDataRulers[GLYPH_M].y1 - m_charDataRulers[GLYPH_M].y0) * 1.1,
+                printRulersAt(scr.x, scr.y - 1.6*m_labelRulersSize,
                               QString(((i >= 0) ? " " : "") + text + "        ").left(9));
             }
         }
@@ -452,25 +453,25 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Up:
     {
         m_offset2d.y += step;
-        updateGL();
+        update();
     }
         break;
     case Qt::Key_Down:
     {
         m_offset2d.y -= step;
-        updateGL();
+        update();
     }
         break;
     case Qt::Key_Left:
     {
         m_offset2d.x -= step;
-        updateGL();
+        update();
     }
         break;
     case Qt::Key_Right:
     {
         m_offset2d.x += step;
-        updateGL();
+        update();
     }
         break;
     case Qt::Key_Plus:
@@ -490,7 +491,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         {
             problem()->scene()->selectNone();
             emit mousePressed();
-            updateGL();
+            update();
         }
     }
         break;
@@ -526,7 +527,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         ; //
     }
 
-    QGLWidget::keyPressEvent(event);
+    QWidget::keyPressEvent(event);
 }
 
 void SceneViewCommon2D::keyReleaseEvent(QKeyEvent *event)
@@ -536,9 +537,9 @@ void SceneViewCommon2D::keyReleaseEvent(QKeyEvent *event)
     if (!(event->modifiers() & Qt::ControlModifier))
     {
         m_nodeLast = NULL;
-        updateGL();
+        update();
     }
-    QGLWidget::keyReleaseEvent(event);
+    QWidget::keyReleaseEvent(event);
 
     emit mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
@@ -546,15 +547,15 @@ void SceneViewCommon2D::keyReleaseEvent(QKeyEvent *event)
 // rulers
 Point SceneViewCommon2D::rulersAreaSize()
 {
-    return Point((m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) * 11,
-                 (m_charDataRulers[GLYPH_M].y1 - m_charDataRulers[GLYPH_M].y0) * 3);
+    return Point(0.8*m_labelRulersSize * 11,
+                 1.0*m_labelRulersSize * 3);
 }
 
 void SceneViewCommon2D::setZoom(double power)
 {
     m_scale2d = m_scale2d * pow(1.2, power);
 
-    updateGL();
+    update();
 }
 
 void SceneViewCommon2D::doZoomRegion(const Point &start, const Point &end)
@@ -610,7 +611,7 @@ void SceneViewCommon2D::mouseDoubleClickEvent(QMouseEvent * event)
     if (!(event->modifiers() & Qt::ControlModifier))
     {
         // zoom best fit
-        if ((event->buttons() & Qt::MidButton)
+        if ((event->buttons() & Qt::MiddleButton)
                 || ((event->buttons() & Qt::LeftButton)
                     && ((!(event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier)))))
         {
@@ -639,7 +640,7 @@ void SceneViewCommon2D::mouseReleaseEvent(QMouseEvent *event)
     }
 
     m_zoomRegion = false;
-    updateGL();
+    update();
 
     emit mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
@@ -657,10 +658,10 @@ void SceneViewCommon2D::mouseMoveEvent(QMouseEvent *event)
 
     // zoom or select region
     if (m_zoomRegion)
-        updateGL();
+        update();
 
     // pan - middle button or shift + left mouse
-    if ((event->buttons() & Qt::MidButton)
+    if ((event->buttons() & Qt::MiddleButton)
             || ((event->buttons() & Qt::LeftButton) && (event->modifiers() & Qt::ShiftModifier) && !(event->modifiers() & Qt::ControlModifier)))
     {
         setCursor(Qt::PointingHandCursor);
@@ -670,32 +671,32 @@ void SceneViewCommon2D::mouseMoveEvent(QMouseEvent *event)
 
         emit mouseSceneModeChanged(MouseSceneMode_Pan);
 
-        updateGL();
+        update();
     }
 
     emit mouseMoved(p);
 
     if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
-        updateGL();
+        update();
 }
 
 void SceneViewCommon2D::wheelEvent(QWheelEvent *event)
 {
     Point posMouse;
-    posMouse = Point((2.0/width()*(event->pos().x() - width()/2.0))/m_scale2d*aspect(),
-                     -(2.0/height()*(event->pos().y() - height()/2.0))/m_scale2d);
+    posMouse = Point((2.0/width()*(event->position().x() - width()/2.0))/m_scale2d*aspect(),
+                     -(2.0/height()*(event->position().y() - height()/2.0))/m_scale2d);
 
     m_offset2d.x += posMouse.x;
     m_offset2d.y += posMouse.y;
 
-    m_scale2d = m_scale2d * pow(1.2, event->delta()/150.0);
+    m_scale2d = m_scale2d * qPow(1.2, event->angleDelta().y()/150.0);
 
-    posMouse = Point((2.0/width()*(event->pos().x() - width()/2.0))/m_scale2d*aspect(),
-                     -(2.0/height()*(event->pos().y() - height()/2.0))/m_scale2d);
+    posMouse = Point((2.0/width()*(event->position().x() - width()/2.0))/m_scale2d*aspect(),
+                     -(2.0/height()*(event->position().y() - height()/2.0))/m_scale2d);
 
     m_offset2d.x -= posMouse.x;
     m_offset2d.y -= posMouse.y;
 
-    updateGL();
+    update();
 }
 

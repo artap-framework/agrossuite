@@ -34,18 +34,18 @@ public:
 
     /// value of one individual variable
     const Value* valueNakedPtr(const QString &name) const;
-    const Value* valueNakedPtr(const uint id) const;
+    const Value* valueNakedPtr(const ulong id) const;
 
     /// value of one individual variable
     const QSharedPointer<Value> value(const QString &name) const;
-    const QSharedPointer<Value> value(const uint id) const;
+    const QSharedPointer<Value> value(const ulong id) const;
 
     /// get all values
-    const QMap<uint, QSharedPointer<Value> > values() const;
+    const QMap<ulong, QSharedPointer<Value> > values() const;
 
     /// key exists
     bool contains(const QString &name) const;
-    const QString valueName(const uint id) const;
+    const QString valueName(const ulong id) const;
 
     // creates new shared pointer and copy Value inside
     void setValue(const QString &name, Value value);
@@ -81,8 +81,8 @@ protected:
 private:
 
     /// variables - the way to customize boundary "template", given by the type parameter
-    QMap<uint, QSharedPointer<Value> > m_values;
-    QMap<QString, uint> m_valuesHash;
+    QMap<ulong, QSharedPointer<Value> > m_values;
+    QMap<QString, ulong> m_valuesHash;
 
     /// we don't want those objects to be copied since we compare pointers
     Marker(Scene *scene, const Marker& );

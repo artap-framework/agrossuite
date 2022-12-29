@@ -37,7 +37,7 @@
 #include "gui/lineeditdouble.h"
 #include "gui/physicalfield.h"
 
-#include <QSvgRenderer>
+#include <QtSvg/QSvgRenderer>
 #include "qcustomplot/qcustomplot.h"
 
 SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
@@ -429,7 +429,7 @@ void SceneViewChart::doExportData()
         {
             foreach(QString key, table.keys())
                 out << QString::number(table.value(key).at(i)) << ";";
-            out << endl;
+            out << Qt::endl;
         }
 
         if (fileInfo.absoluteDir() != tempProblemDir())

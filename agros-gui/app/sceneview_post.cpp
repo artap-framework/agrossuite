@@ -222,9 +222,8 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView
     glTranslated(-sceneView->width() / 2.0, -sceneView->height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0)
-            * (QString::number(-1.0, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()).length() + 1);
-    int textHeight = 2 * (sceneView->m_charDataPost[GLYPH_M].y1 - sceneView->m_charDataPost[GLYPH_M].y0);
+    int textWidth = 9.5 * sceneView->m_labelPostSize;
+    int textHeight = 1.8 * sceneView->m_labelPostSize;
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // height() - 20.0
     Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (sceneView->width() - (45.0 + textWidth));
@@ -303,7 +302,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView
         if (fabs(value) < EPS_ZERO) value = 0.0;
         double tickY = (scaleSize.y - 60.0) / (numTicks - 1.0);
 
-        sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0) : 0.0),
+        sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? 1.1*sceneView->m_labelPostSize : 0.0),
                                scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
                                QString::number(value, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()));
     }
@@ -316,7 +315,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView
             arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
             arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
 
-    sceneView->printPostAt(scaleLeft + scaleSize.x / 2.0 - (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0) * str.count() / 2.0,
+    sceneView->printPostAt(scaleLeft + scaleSize.x / 2.0 - 1.5*sceneView->m_labelPostSize,
                            scaleBorder.y + scaleSize.y - 20.0,
                            str);
 }

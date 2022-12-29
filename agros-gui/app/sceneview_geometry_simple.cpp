@@ -172,7 +172,7 @@ void SceneViewChartSimpleGeometry::setChartLine(const ChartLine &chartLine)
 {
     m_chartLine = chartLine;
 
-    updateGL();
+    update();
 }
 
 void SceneViewChartSimpleGeometry::doZoomRegion(const Point &start, const Point &end)

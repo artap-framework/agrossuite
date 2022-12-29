@@ -72,9 +72,7 @@ void ConfigComputerDialog::load()
     chkShowAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowAxes).toBool());
     chkShowRulers->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
 
-    cmbRulersFont->setCurrentIndex(cmbRulersFont->findData(Agros::configComputer()->value(Config::Config_RulersFontFamily).toString()));
     txtRulersFontSizes->setValue(Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt());
-    cmbPostFont->setCurrentIndex(cmbPostFont->findData(Agros::configComputer()->value(Config::Config_PostFontFamily).toString()));
     txtPostFontSizes->setValue(Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt());
 }
 
@@ -108,9 +106,7 @@ void ConfigComputerDialog::save()
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
     Agros::configComputer()->setValue(Config::Config_ShowAxes, chkShowAxes->isChecked());
 
-    Agros::configComputer()->setValue(Config::Config_RulersFontFamily, cmbRulersFont->itemData(cmbRulersFont->currentIndex()).toString());
     Agros::configComputer()->setValue(Config::Config_RulersFontPointSize, txtRulersFontSizes->value());
-    Agros::configComputer()->setValue(Config::Config_PostFontFamily, cmbPostFont->itemData(cmbPostFont->currentIndex()).toString());
     Agros::configComputer()->setValue(Config::Config_PostFontPointSize, txtPostFontSizes->value());
 
     // save
@@ -177,14 +173,10 @@ QWidget *ConfigComputerDialog::createMainWidget()
     QGroupBox *grpGrid = new QGroupBox(tr("Grid"));
     grpGrid->setLayout(layoutGrid);
 
-    cmbRulersFont = new QComboBox();
-    fillComboBoxFonts(cmbRulersFont);
     txtRulersFontSizes = new QSpinBox();
     txtRulersFontSizes->setMinimum(6);
     txtRulersFontSizes->setMaximum(40);
 
-    cmbPostFont = new QComboBox();
-    fillComboBoxFonts(cmbPostFont);
     txtPostFontSizes = new QSpinBox();
     txtPostFontSizes->setMinimum(6);
     txtPostFontSizes->setMaximum(40);
@@ -192,11 +184,9 @@ QWidget *ConfigComputerDialog::createMainWidget()
     QGridLayout *layoutFont = new QGridLayout();
     layoutFont->setColumnStretch(1, 1);
     layoutFont->addWidget(new QLabel(tr("Rulers:")), 0, 0);
-    layoutFont->addWidget(cmbRulersFont, 0, 1);
-    layoutFont->addWidget(txtRulersFontSizes, 0, 2);
+    layoutFont->addWidget(txtRulersFontSizes, 0, 1);
     layoutFont->addWidget(new QLabel(tr("Postprocessor:")), 2, 0);
-    layoutFont->addWidget(cmbPostFont, 2, 1);
-    layoutFont->addWidget(txtPostFontSizes, 2, 2);
+    layoutFont->addWidget(txtPostFontSizes, 2, 1);
 
     QGroupBox *grpFont = new QGroupBox(tr("Fonts"));
     grpFont->setLayout(layoutFont);

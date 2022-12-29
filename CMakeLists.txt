@@ -1,6 +1,9 @@
 # Set project's name
 PROJECT( agros )
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
@@ -47,11 +50,9 @@ IF(MSVC)
         INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 ENDIF()
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt5 COMPONENTS Network REQUIRED)
-find_package(Qt5 COMPONENTS Svg REQUIRED)
-find_package(Qt5 COMPONENTS Xml REQUIRED)
-find_package(Qt5 COMPONENTS XmlPatterns REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Network REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
 
 # git revision
 #execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)
@@ -76,7 +77,6 @@ SET(DXFLIB_LIBRARY agros_3rdparty_dxflib)
 SET(POLY2TRI_LIBRARY agros_3rdparty_poly2tri)
 SET(QCUSTOMPLOT_LIBRARY agros_3rdparty_qcustomplot)
 SET(QUAZIP_LIBRARY agros_3rdparty_quazip)
-SET(STB_TRUETYPE_LIBRARY agros_3rdparty_stb_truetype)
 SET(QTSINGLEAPPLICATION_LIBRARY agros_3rdparty_qtsingleapplication)
 SET(MATIO_LIBRARY agros_3rdparty_matio)
 SET(TRIANGLE_LIBRARY agros_3rdparty_triangle)

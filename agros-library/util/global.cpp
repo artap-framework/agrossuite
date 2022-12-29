@@ -19,6 +19,8 @@
 
 #include "global.h"
 
+#include <QTextCodec>
+
 #include "util/constants.h"
 
 #include "util/util.h"
@@ -688,7 +690,7 @@ QString createPythonFromModel()
         str += "# boundaries\n";
         foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
-            const QMap<uint, QSharedPointer<Value> > values = boundary->values();
+            const QMap<ulong, QSharedPointer<Value> > values = boundary->values();
 
             QString variables = "{";
 
@@ -732,7 +734,7 @@ QString createPythonFromModel()
         str += "# materials\n";
         foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(fieldInfo).items())
         {
-            const QMap<uint, QSharedPointer<Value> > values = material->values();
+            const QMap<ulong, QSharedPointer<Value> > values = material->values();
 
             QString variables = "{";
             foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())

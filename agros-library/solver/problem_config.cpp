@@ -211,8 +211,8 @@ void ProblemConfig::setDefaultValues()
 void ProblemConfig::checkVariableName(const QString &keyToCheck, const QString &keyToSkip)
 {
     // variable name
-    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
-    if (!expr.exactMatch(keyToCheck))
+    QRegularExpression expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
+    if (!expr.match(keyToCheck).hasMatch())
         throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(keyToCheck));
 
     // keywords - time, x, y, r, z, value

@@ -215,7 +215,7 @@ void SceneViewPreprocessor::doSceneEdgeSwapDirection()
                 if (Agros::problem()->scene()->faces->at(i)->isSelected())
                 {
                     Agros::problem()->scene()->faces->at(i)->swapDirection();
-                    updateGL();
+                    update();
                 }
 }
 
@@ -325,7 +325,7 @@ void SceneViewPreprocessor::doSceneGeometryModeSet(QAction *action)
     Agros::problem()->scene()->selectNone();
     m_nodeLast = NULL;
 
-    updateGL();
+    update();
 
     emit sceneGeometryModeChanged(m_sceneMode);
 }
@@ -387,7 +387,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                            arg(node->point().x, 0, 'g', 3).
                            arg(node->point().y, 0, 'g', 3).
                            arg(Agros::problem()->scene()->nodes->items().indexOf(node)));
-                updateGL();
+                update();
             }
         }
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
@@ -417,7 +417,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                            arg(str).
                            arg(edge->angle(), 0, 'f', 0).
                            arg(Agros::problem()->scene()->faces->items().indexOf(edge)));
-                updateGL();
+                update();
             }
         }
         if (m_sceneMode == SceneGeometryMode_OperateOnLabels)
@@ -482,7 +482,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                            arg(area_refinement).
                            arg(polynomial_order).
                            arg(Agros::problem()->scene()->labels->items().indexOf(label)));
-                updateGL();
+                update();
             }
         }
     }
@@ -499,7 +499,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
             {
                 Agros::problem()->scene()->highlightNone();
                 node->setHighlighted(true);
-                updateGL();
+                update();
             }
         }
     }
@@ -512,10 +512,10 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
     if (m_snapToGrid && !(event->modifiers() & Qt::ControlModifier))
     {
         m_snapToGrid = false;
-        updateGL();
+        update();
     }
     if (m_snapToGrid && (event->modifiers() & Qt::ControlModifier))
-        updateGL();
+        update();
 
     // move nodes and labels directly by mouse - left mouse + control + shift
     if ((event->buttons() & Qt::LeftButton)
@@ -603,7 +603,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
             undoStack()->endMacro();
         }
 
-        updateGL();
+        update();
     }
 
     if (m_snapToGrid)
@@ -676,7 +676,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
                 SceneNode *nodeAdded = Agros::problem()->scene()->addNode(node);
                 if (nodeAdded == node)
                     undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
-                updateGL();
+                update();
             }
         }
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
@@ -705,7 +705,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
                     m_nodeLast = NULL;
                 }
 
-                updateGL();
+                update();
             }
         }
         // add label directly by mouse click
@@ -725,7 +725,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
                 if (labelAdded == label)
                     undoStack()->push(getAddCommand(label));
 
-                updateGL();
+                update();
             }
         }
     }
@@ -745,7 +745,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
             if (node)
             {
                 node->setSelected(!node->isSelected());
-                updateGL();
+                update();
             }
         }
 
@@ -756,7 +756,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
             if (edge)
             {
                 edge->setSelected(!edge->isSelected());
-                updateGL();
+                update();
             }
         }
 
@@ -767,7 +767,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
             if (label)
             {
                 label->setSelected(!label->isSelected());
-                updateGL();
+                update();
             }
         }
     }
@@ -791,7 +791,7 @@ void SceneViewPreprocessor::mouseReleaseEvent(QMouseEvent *event)
     }
 
     m_selectRegion = false;
-    updateGL();
+    update();
 
     // move by mouse - select none
     if ((event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
@@ -819,12 +819,12 @@ void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
                 if (node)
                 {
                     node->setSelected(true);
-                    updateGL();
+                    update();
 
                     SceneNodeDialog *dialog = new SceneNodeDialog(node, this);
                     if (dialog->exec() == QDialog::Accepted)
                     {
-                        updateGL();
+                        update();
                     }
                 }
             }
@@ -835,12 +835,12 @@ void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
                 if (edge)
                 {
                     edge->setSelected(true);
-                    updateGL();
+                    update();
 
                     SceneFaceDialog *dialog = new SceneFaceDialog(edge, this);
                     if (dialog->exec() == QDialog::Accepted)
                     {
-                        updateGL();
+                        update();
                     }
                 }
             }
@@ -851,17 +851,17 @@ void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
                 if (label)
                 {
                     label->setSelected(true);
-                    updateGL();
+                    update();
 
                     SceneLabelDialog *dialog = new SceneLabelDialog(label, this);
                     if (dialog->exec() == QDialog::Accepted)
                     {
-                        updateGL();
+                        update();
                     }
                 }
             }
             Agros::problem()->scene()->selectNone();
-            updateGL();
+            update();
         }
     }
 
@@ -888,12 +888,12 @@ void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
         if (event->modifiers() & Qt::ControlModifier)
         {
             Agros::problem()->scene()->selectAll(m_sceneMode);
-            updateGL();
+            update();
         }
         break;
     }
     default:
-        QGLWidget::keyPressEvent(event);
+        QWidget::keyPressEvent(event);
     }
 
     SceneViewCommon2D::keyPressEvent(event);
@@ -907,7 +907,7 @@ void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
 void SceneViewPreprocessor::keyReleaseEvent(QKeyEvent *event)
 {
     m_snapToGrid = false;
-    updateGL();
+    update();
 
     SceneViewCommon2D::keyReleaseEvent(event);
 }
@@ -994,8 +994,8 @@ void SceneViewPreprocessor::paintRulersHintsEdges()
         glTranslated(- width() / 2.0, -height() / 2.0, 0.0);
 
         Point scr = untransform(snapPoint.x, snapPoint.y);
-        printRulersAt(scr.x + (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0),
-                      scr.y + (m_charDataRulers[GLYPH_M].y1 - m_charDataRulers[GLYPH_M].y0) * 0.7,
+        printRulersAt(scr.x + 1.5*m_labelRulersSize,
+                      scr.y + 1.5*m_labelRulersSize * 0.7,
                       QString("%1, %2").arg(snapPoint.x).arg(snapPoint.y));
     }
 }
@@ -1279,8 +1279,8 @@ void SceneViewPreprocessor::paintGeometry()
 
             Point scr = untransform(label->point().x, label->point().y);
 
-            printRulersAt(scr.x - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) * str.length() / 2.0,
-                          scr.y - (m_charDataRulers[GLYPH_M].y1 - m_charDataRulers[GLYPH_M].y0) * 1.2, str);
+            printRulersAt(scr.x - 1.5*m_labelRulersSize * str.length() / 2.0,
+                          scr.y - 1.5*m_labelRulersSize * 1.2, str);
         }
     }
 }

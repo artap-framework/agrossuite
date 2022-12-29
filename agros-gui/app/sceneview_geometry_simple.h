@@ -40,7 +40,7 @@ public:
     SceneViewSimpleGeometry(QWidget *parent);
     virtual ~SceneViewSimpleGeometry() {}
 
-    void setProblem(QSharedPointer<ProblemBase> problem) { m_problem = problem; updateGL(); }
+    void setProblem(QSharedPointer<ProblemBase> problem) { m_problem = problem; update(); }
 
 protected:
     QSharedPointer<ProblemBase> m_problem;

@@ -53,8 +53,8 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     m_study->updateParametersAndFunctionals = std::bind(&LogOptimizationDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
     
-    int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
-    int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
+    int w = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -394,7 +394,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
     }
     
     int w = sizeHint().width() + 20;
-    int h = 1.5/5.0 * QApplication::desktop()->screenGeometry().height();
+    int h = 1.5/5.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -1083,7 +1083,7 @@ ParameterSelectDialog::ParameterSelectDialog(Study *study, QWidget *parent) : QD
     }
     
     int w = sizeHint().width();
-    int h = 1.0/3.0 * QApplication::desktop()->screenGeometry().height();
+    int h = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);

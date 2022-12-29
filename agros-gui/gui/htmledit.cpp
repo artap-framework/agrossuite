@@ -34,7 +34,6 @@ HtmlValueEdit::HtmlValueEdit(QWidget *parent, const QString &str)
     lblValue = new QLabel(this);
 
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->setMargin(0);
     layout->addWidget(txtLineEdit, 1);
     layout->addWidget(lblValue, 0, Qt::AlignRight);
 

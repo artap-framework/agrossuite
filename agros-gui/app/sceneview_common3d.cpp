@@ -233,7 +233,7 @@ void SceneViewCommon3D::setZoom(double power)
 {
     m_scale3d = m_scale3d * pow(1.2, power);
 
-    updateGL();
+    update();
 }
 
 // events
@@ -246,7 +246,7 @@ void SceneViewCommon3D::keyReleaseEvent(QKeyEvent *event)
 {
     setToolTip("");
 
-    QGLWidget::keyReleaseEvent(event);
+    QWidget::keyReleaseEvent(event);
     emit mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
 
@@ -272,7 +272,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
     setToolTip("");
 
     // pan
-    if ((event->buttons() & Qt::MidButton)
+    if ((event->buttons() & Qt::MiddleButton)
             || ((event->buttons() & Qt::LeftButton)
                 && (((event->modifiers() & Qt::ShiftModifier) && !(event->modifiers() & Qt::ControlModifier)))))
 
@@ -284,7 +284,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
 
         emit mouseSceneModeChanged(MouseSceneMode_Pan);
 
-        updateGL();
+        update();
     }
 
     // rotate
@@ -298,7 +298,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
 
         emit mouseSceneModeChanged(MouseSceneMode_Rotate);
 
-        updateGL();
+        update();
     }
     if ((event->buttons() & Qt::LeftButton)
             && (!(event->modifiers() & Qt::ShiftModifier) && (event->modifiers() & Qt::ControlModifier)))
@@ -309,13 +309,13 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
 
         emit mouseSceneModeChanged(MouseSceneMode_Rotate);
 
-        updateGL();
+        update();
     }
 }
 
 void SceneViewCommon3D::wheelEvent(QWheelEvent *event)
 {
-    setZoom(event->delta()/150.0);
+    setZoom(event->angleDelta().y()/150.0);
 }
 
 void SceneViewCommon3D::contextMenuEvent(QContextMenuEvent *event)
@@ -339,19 +339,19 @@ void SceneViewCommon3D::contextMenuEvent(QContextMenuEvent *event)
 void SceneViewCommon3D::doSetProjectionXY()
 {
     m_rotation3d.x = m_rotation3d.y = m_rotation3d.z = 0.0;
-    updateGL();
+    update();
 }
 
 void SceneViewCommon3D::doSetProjectionXZ()
 {
     m_rotation3d.y = m_rotation3d.z = 0.0;
     m_rotation3d.x = 90.0;
-    updateGL();
+    update();
 }
 
 void SceneViewCommon3D::doSetProjectionYZ()
 {
     m_rotation3d.x = m_rotation3d.y = 90.0;
     m_rotation3d.z = 0.0;
-    updateGL();
+    update();
 }

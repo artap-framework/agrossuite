@@ -210,6 +210,7 @@ QString cacheProblemDir()
 #ifdef Q_WS_X11
     // fast fix for ht condor
     static QString cch = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    // qInfo() << cch;
     QDir dirc(cch);
     if (!dirc.exists() && !cch.isEmpty())
         dirc.mkpath(cch);
@@ -318,7 +319,7 @@ void appendToFile(const QString &fileName, const QString &str)
     if (file.open(QIODevice::Append | QIODevice::Text))
     {
         QTextStream outFile(&file);
-        outFile << str << endl;
+        outFile << str << Qt::endl;
 
         file.close();
     }

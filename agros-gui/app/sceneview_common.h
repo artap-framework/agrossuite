@@ -20,15 +20,14 @@
 #ifndef SCENEVIEWCOMMON_H
 #define SCENEVIEWCOMMON_H
 
-#include <QGLWidget>
+#include <QtOpenGLWidgets/QOpenGLWidget>
+#include <QtOpenGL/QOpenGLDebugMessage>
 
 #include "util/util.h"
 #include "util/point.h"
 
 #include "gui/scenewidget.h"
 #include "util/enums.h"
-
-#include "stb_truetype/stb_truetype.h"
 
 class Scene;
 class SceneViewCommon;
@@ -46,7 +45,7 @@ namespace Module
     class LocalVariable;
 }
 
-class SceneViewCommon : public QGLWidget
+class SceneViewCommon : public QOpenGLWidget
 {
     Q_OBJECT
 
@@ -96,18 +95,10 @@ protected:
     void drawArc(const Point &point, double r, double startAngle, double arcAngle, int segments = -1) const;
     void drawBlend(Point start, Point end, double red = 1.0, double green = 1.0, double blue = 1.0, double alpha = 0.75) const;
 
-    void printAt(int penX, int penY, const QString &text, stbtt_bakedchar *fnt);
-    void initFont(GLuint &textureID, stbtt_bakedchar *fnt, const QString fontName, int pointSize);
-    void createFontTexture();
+    void printAt(int penX, int penY, const QString &text, int fontSize);
 
-    GLuint m_textureLabelRulers;
-    QString m_textureLabelRulersName;
-    int m_textureLabelRulersSize;
-    stbtt_bakedchar m_charDataRulers[96]; // ASCII 32..126 is 95 glyphs
-    GLuint m_textureLabelPost;
-    QString m_textureLabelPostName;
-    int m_textureLabelPostSize;
-    stbtt_bakedchar m_charDataPost[96]; // ASCII 32..126 is 95 glyphs
+    int m_labelRulersSize;
+    int m_labelPostSize;
 
     void printRulersAt(int penX, int penY, const QString &text);
     void printPostAt(int penX, int penY, const QString &text);

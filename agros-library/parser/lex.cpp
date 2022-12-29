@@ -1,7 +1,5 @@
 #include<iostream>
-#include <QTextStream>
 #include "lex.h"
-#include <QRegExp>
 
 Token::Token(ParserTokenType type, QString text, int nestingLevel, int position)
 {
@@ -41,7 +39,7 @@ void LexicalAnalyser::printTokens()
     QTextStream qout(stdout);
     foreach (Token token, m_tokens)
     {
-        qout << token.toString() << endl;
+        qDebug() << token.toString();
     }
 }
 
@@ -343,6 +341,6 @@ void Terminals::print()
     int n =this->m_list.count();
     for(int i = 0; i < n; i++)
     {
-        qout << this->m_list[i].toString() << endl;
+        qDebug() << this->m_list[i].toString();
     }
 }

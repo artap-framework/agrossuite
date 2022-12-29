@@ -6,7 +6,7 @@ include_directories(
 	${ZLIB_INCLUDE_DIRS}
 )
 
-set(HEADERS
+set(QUAZIP_HEADERS
         JlCompress.h
         ioapi.h
         minizip_crypt.h
@@ -17,6 +17,7 @@ set(HEADERS
         quaziodevice.h
         quazip.h
         quazip_global.h
+        quazip_qt_compat.h
         quazipdir.h
         quazipfile.h
         quazipfileinfo.h
@@ -25,7 +26,7 @@ set(HEADERS
         zip.h
    )
 
-set(SOURCES
+set(QUAZIP_SOURCES
         ${QUAZIP_HEADERS}
         unzip.c
         zip.c
@@ -51,18 +52,18 @@ set(CMAKE_AUTOUIC ON)
 ADD_DEFINITIONS(-DQUAZIP_BUILD)
 
 FIND_PACKAGE(ZLIB REQUIRED)
-FIND_PACKAGE(Qt5 COMPONENTS Core REQUIRED)
+FIND_PACKAGE(Qt6 COMPONENTS Core REQUIRED)
 
 add_library(${QUAZIP_LIB_TARGET_NAME} SHARED ${SRCS})
 # add_library(quazip_static STATIC ${SRCS})
 
 IF (MSVC)
-    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADERS} ${QUAZIP_SOURCES})
 ELSE()
-    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADERS} ${QUAZIP_SOURCES})
 ENDIF()
  
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} Qt5::Core ${ZLIB_LIBRARIES})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} Qt6::Core ${ZLIB_LIBRARIES})
 
 

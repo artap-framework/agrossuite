@@ -85,7 +85,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
         if (numberOfParticles != particleCharges.size())
             throw invalid_argument(QObject::tr("Number of particle charges is not equal to number of particles.").toStdString());
 
-        particleCharges = QList<double>::fromVector(QVector<double>::fromStdVector(particleChargesVector));
+        particleCharges = QList<double>::fromVector(QVector<double>(particleChargesVector.begin(), particleChargesVector.end()));
     }
 
     // particle masses
@@ -100,7 +100,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
         if (numberOfParticles != particleMasses.size())
             throw invalid_argument(QObject::tr("Number of partical masses is not equal to number of particles.").toStdString());
 
-        particleMasses = QList<double>::fromVector(QVector<double>::fromStdVector(particleMassesVector));
+        particleMasses = QList<double>::fromVector(QVector<double>(particleMassesVector.begin(), particleMassesVector.end()));
     }
 
     ParticleTracing particleTracing(m_computation.data(), particleMasses);
@@ -162,7 +162,7 @@ void PyParticleTracing::times(vector<vector<double> > &t) const
         throw logic_error(QObject::tr("Trajectories of particles are not solved.").toStdString());
 
     for (int i = 0; i < m_times.length(); i++)
-        t.push_back(m_times.at(i).toVector().toStdVector());
+        t.push_back(vector<double>(m_times.at(i).begin(), m_times.at(i).end()));
 }
 
 void PyParticleTracing::getInitialPosition(vector<double> &position) const

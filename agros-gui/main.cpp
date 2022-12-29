@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include <QApplication>
+#include <QtCore5Compat/QTextCodec>
 
 #include "util/util.h"
 #include "gui/logwidget.h"

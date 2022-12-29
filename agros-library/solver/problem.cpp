@@ -702,7 +702,7 @@ bool ProblemBase::applyParametersInternal()
     // check materials
     foreach (SceneMaterial* material, m_scene->materials->items())
     {
-        foreach (uint key, material->values().keys())
+        foreach (ulong key, material->values().keys())
         {
             if (!material->value(key)->isEvaluated())
             {
@@ -716,7 +716,7 @@ bool ProblemBase::applyParametersInternal()
     // check boundaries
     foreach (SceneBoundary* boundary, m_scene->boundaries->items())
     {
-        foreach (uint key, boundary->values().keys())
+        foreach (ulong key, boundary->values().keys())
         {
             if (!boundary->value(key)->isEvaluated())
             {
@@ -1604,8 +1604,8 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             boundaryJson[BOUNDARY_FACES] = boundaryFacesJson;
 
             QJsonArray boundaryTypesJson;
-            const QMap<uint, QSharedPointer<Value> > values = bound->values();
-            for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            const QMap<ulong, QSharedPointer<Value> > values = bound->values();
+            for (QMap<ulong, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
             {
                 QJsonObject type;
                 type[ID] = bound->valueName(it.key());
@@ -1641,8 +1641,8 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             materialJson[MATERIAL_LABELS] = materialLabelsJson;
 
             QJsonArray materialTypesJson;
-            const QMap<uint, QSharedPointer<Value> > values = mat->values();
-            for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            const QMap<ulong, QSharedPointer<Value> > values = mat->values();
+            for (QMap<ulong, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
             {
                 QJsonObject type;
                 type[ID] = mat->valueName(it.key());
@@ -1772,7 +1772,7 @@ void Computation::readFromProblem()
                 bound->setValue(variable.id(), Value(this));
 
             // boundaries
-            foreach (uint originValueIndex, originBoundary->values().keys())
+            foreach (ulong originValueIndex, originBoundary->values().keys())
             {
                 QSharedPointer<Value> originValue = originBoundary->value(originValueIndex);
 
@@ -1807,7 +1807,7 @@ void Computation::readFromProblem()
                 mat->setValue(variable.id(), Value(this));
 
             // materials
-            foreach (uint originValueIndex, originMaterial->values().keys())
+            foreach (ulong originValueIndex, originMaterial->values().keys())
             {
                 QSharedPointer<Value> originValue = originMaterial->value(originValueIndex);
 
@@ -1967,7 +1967,7 @@ void Computation::solve()
     {
         m_isSolving = true;
 
-        QTime time;
+        QElapsedTimer time;
         time.start();
 
         // clear solution

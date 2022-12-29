@@ -34,31 +34,59 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-#ifndef STB_TRUETYPE_IMPLEMENTATION
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype/stb_truetype.h"
-#endif
-
 #ifndef GL_MULTISAMPLE
 #define GL_MULTISAMPLE 0x809D
 #endif
 
 static const int TEXTURE_SIZE = 512;
 
+
+inline void transformPoint(GLdouble out[4], const GLdouble m[16], const GLdouble in[4])
+{
+#define M(row,col)  m[col*4+row]
+    out[0] = M(0, 0) * in[0] + M(0, 1) * in[1] + M(0, 2) * in[2] + M(0, 3) * in[3];
+    out[1] = M(1, 0) * in[0] + M(1, 1) * in[1] + M(1, 2) * in[2] + M(1, 3) * in[3];
+    out[2] = M(2, 0) * in[0] + M(2, 1) * in[1] + M(2, 2) * in[2] + M(2, 3) * in[3];
+    out[3] = M(3, 0) * in[0] + M(3, 1) * in[1] + M(3, 2) * in[2] + M(3, 3) * in[3];
+#undef M
+}
+
+inline GLint project(GLdouble objx, GLdouble objy, GLdouble objz,
+                     const GLdouble model[16], const GLdouble proj[16],
+const GLint viewport[4], GLdouble * winx, GLdouble * winy, GLdouble * winz)
+{
+    GLdouble in[4], out[4];
+
+    in[0] = objx;
+    in[1] = objy;
+    in[2] = objz;
+    in[3] = 1.0;
+    transformPoint(out, model, in);
+    transformPoint(in, proj, out);
+
+    if (in[3] == 0.0)
+        return GL_FALSE;
+
+    in[0] /= in[3];
+    in[1] /= in[3];
+    in[2] /= in[3];
+
+    *winx = viewport[0] + (1 + in[0]) * viewport[2] / 2;
+    *winy = viewport[1] + (1 + in[1]) * viewport[3] / 2;
+
+    *winz = (1 + in[2]) / 2;
+    return GL_TRUE;
+}
+
 SceneViewCommon::SceneViewCommon(QWidget *parent)
-    : QGLWidget(parent),
+    : QOpenGLWidget(parent),
       actSceneZoomRegion(NULL),
-      m_textureLabelRulers(0),
-      m_textureLabelPost(0),
-      m_textureLabelRulersName(""),
-      m_textureLabelPostName(""),
-      m_textureLabelRulersSize(0),
-      m_textureLabelPostSize(0),
+      m_labelRulersSize(0),
+      m_labelPostSize(0),
       m_lastPos(QPoint()),
       m_zoomRegion(false),
       m_zoomRegionPos(QPointF())
 {
-    createFontTexture();
     createActions();
 
     setMouseTracking(true);
@@ -95,8 +123,6 @@ void SceneViewCommon::initializeGL()
     glShadeModel(GL_SMOOTH);
     glDisable(GL_MULTISAMPLE);
     glEnable(GL_NORMALIZE);
-
-    createFontTexture();
 }
 
 #if QT_VERSION > 0x050100
@@ -105,35 +131,6 @@ void SceneViewCommon::messageLogged(QOpenGLDebugMessage message)
     qDebug() << message;
 }
 #endif
-
-void SceneViewCommon::createFontTexture()
-{
-    // rulers font
-    if (m_textureLabelRulersName != Agros::configComputer()->value(Config::Config_RulersFontFamily).toString()
-            || m_textureLabelRulersSize != Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt())
-    {
-        makeCurrent();
-        if (glIsTexture(m_textureLabelRulers))
-            glDeleteTextures(1, &m_textureLabelRulers);
-        glGenTextures(1, &m_textureLabelRulers);
-        m_textureLabelRulersName = Agros::configComputer()->value(Config::Config_RulersFontFamily).toString();
-        m_textureLabelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
-        initFont(m_textureLabelRulers, m_charDataRulers, m_textureLabelRulersName, m_textureLabelRulersSize);
-    }
-
-    // rulers font
-    if (m_textureLabelPostName != Agros::configComputer()->value(Config::Config_PostFontFamily).toString()
-            || m_textureLabelPostSize != Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt())
-    {
-        makeCurrent();
-        if (glIsTexture(m_textureLabelPost))
-            glDeleteTextures(1, &m_textureLabelPost);
-        glGenTextures(1, &m_textureLabelPost);
-        m_textureLabelPostName = Agros::configComputer()->value(Config::Config_PostFontFamily).toString();
-        m_textureLabelPostSize = Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt();
-        initFont(m_textureLabelPost, m_charDataPost, m_textureLabelPostName, m_textureLabelPostSize);
-    }
-}
 
 void SceneViewCommon::resizeGL(int w, int h)
 {
@@ -146,16 +143,15 @@ void SceneViewCommon::setupViewport(int w, int h)
 }
 
 void SceneViewCommon::printRulersAt(int penX, int penY, const QString &text)
-{
-    glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
-    glBindTexture(GL_TEXTURE_2D, m_textureLabelRulers);
-    printAt(penX, penY, text, m_charDataRulers);
+{    
+    m_labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
+    printAt(penX, penY, text, m_labelRulersSize);
 }
 
 void SceneViewCommon::printPostAt(int penX, int penY, const QString &text)
 {
-    glBindTexture(GL_TEXTURE_2D, m_textureLabelPost);
-    printAt(penX, penY, text, m_charDataPost);
+    m_labelPostSize = Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt();
+    printAt(penX, penY, text, m_labelPostSize);
 }
 
 QPixmap SceneViewCommon::renderScenePixmap(int w, int h, bool useContext)
@@ -163,7 +159,7 @@ QPixmap SceneViewCommon::renderScenePixmap(int w, int h, bool useContext)
     // QPixmap p = QPixmap::fromImage(grabFrameBuffer(false));
     // p = renderPixmap(width() * 3, height() * 3);
     // return p;
-    return QPixmap::fromImage(grabFrameBuffer(false));
+    return QPixmap::fromImage(grabFramebuffer());
 }
 
 void SceneViewCommon::loadProjectionViewPort()
@@ -177,99 +173,31 @@ void SceneViewCommon::loadProjectionViewPort()
     glLoadIdentity();
 }
 
-void getBakedQuad(stbtt_bakedchar *chardata, int pw, int ph, int char_index,
-                  float *xpos, float *ypos, stbtt_aligned_quad *q)
+void SceneViewCommon::printAt(int penX, int penY, const QString &text, int fontSize)
 {
+    int width = this->width();
+    int height = this->height();
 
-}
+    GLdouble model[4][4], proj[4][4];
+    GLint view[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX, &model[0][0]);
+    glGetDoublev(GL_PROJECTION_MATRIX, &proj[0][0]);
+    glGetIntegerv(GL_VIEWPORT, &view[0]);
 
-void SceneViewCommon::printAt(int penX, int penY, const QString &text, stbtt_bakedchar *fnt)
-{
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    GLdouble textPosX = 0;
+    GLdouble textPosY = 0;
+    GLdouble textPosZ = 0;
 
-    double xpos = 0.0;
+    project(penX, penY, 0, &model[0][0], &proj[0][0], &view[0], &textPosX, &textPosY, &textPosZ);
 
-    glBegin(GL_TRIANGLES);
-    for (int i = 0; i < text.length(); ++i)
-    {
-        ushort c = text.at(i).unicode();
+    textPosY = height - textPosY; // y is inverted
 
-        if (c >= 32 && c < 128)
-        {
-            stbtt_aligned_quad q;
-
-            stbtt_bakedchar *b = fnt + c - 32;
-
-            int round_x = std::floor(penX + b->xoff);
-            int round_y = std::floor(penY - b->yoff);
-
-            q.x0 = (float) round_x + xpos;
-            q.y0 = (float) round_y;
-            q.x1 = (float) round_x + b->x1 - b->x0 + xpos;
-            q.y1 = (float) round_y - b->y1 + b->y0;
-
-            q.s0 = b->x0 / (float) TEXTURE_SIZE;
-            q.t0 = b->y0 / (float) TEXTURE_SIZE;
-            q.s1 = b->x1 / (float) TEXTURE_SIZE;
-            q.t1 = b->y1 / (float) TEXTURE_SIZE;
-
-            xpos += b->xadvance;
-
-            glTexCoord2f(q.s0, q.t0);
-            glVertex2i(q.x0, q.y0);
-            glTexCoord2f(q.s1, q.t1);
-            glVertex2i(q.x1, q.y1);
-            glTexCoord2f(q.s1, q.t0);
-            glVertex2i(q.x1, q.y0);
-
-            glTexCoord2f(q.s0, q.t0);
-            glVertex2i(q.x0, q.y0);
-            glTexCoord2f(q.s0, q.t1);
-            glVertex2i(q.x0, q.y1);
-            glTexCoord2f(q.s1, q.t1);
-            glVertex2i(q.x1, q.y1);
-        }
-    }
-    glEnd();
-
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
-}
-
-void SceneViewCommon::initFont(GLuint &textureID, stbtt_bakedchar *fnt, const QString fontName, int pointSize)
-{
-    // load font
-    QString fntx = QFileInfo(QString("%1/resources/fonts/%2.ttf").arg(Agros::dataDir()).arg(fontName)).absoluteFilePath();
-    if (!QFile::exists(fntx)) return;
-
-    FILE* fp = fopen(fntx.toStdString().c_str(), "rb");
-    if (!fp) return;
-    fseek(fp, 0, SEEK_END);
-    int fsize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    unsigned char *ttfBuffer = (unsigned char*) malloc(fsize);
-
-    size_t s = fread(ttfBuffer, 1, fsize, fp);
-    fclose(fp);
-    fp = NULL;
-
-    unsigned char *bmap = (unsigned char*) malloc(TEXTURE_SIZE*TEXTURE_SIZE);
-
-    stbtt_BakeFontBitmap(ttfBuffer, 0, pointSize, bmap, TEXTURE_SIZE, TEXTURE_SIZE, 32, 96, fnt);
-
-    // can free ttf_buffer at this point
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bmap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    free(ttfBuffer);
-    free(bmap);
+    QPainter painter(this);
+    painter.setPen(Qt::black);
+    painter.setFont(QFont("Fixed", fontSize));
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+    painter.drawText(textPosX, textPosY, text); // z = pointT4.z + distOverOp / 4
+    painter.end();
 }
 
 // events *****************************************************************************************************************************
@@ -306,10 +234,8 @@ void SceneViewCommon::doZoomOut()
 
 void SceneViewCommon::refresh()
 {
-    createFontTexture();
-
     paintGL();
-    updateGL();
+    update();
 }
 
 void SceneViewCommon::drawArc(const Point &point, double r, double startAngle, double arcAngle, int segments) const

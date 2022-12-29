@@ -93,7 +93,7 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
     }
 
     int w = sizeHint().width();
-    int h = 1.0/2.0 * QApplication::desktop()->screenGeometry().height();
+    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);
     setMaximumSize(w, h);

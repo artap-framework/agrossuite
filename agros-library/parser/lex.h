@@ -23,8 +23,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QTextStream>
-#include <QtCore/QRegExp>
 #include <QtCore/QDebug>
+#include <QRegExp>
 #include <QStringList>
 
 #include "util/util.h"

@@ -1306,7 +1306,7 @@ void OptiLab::graphClicked(QCPAbstractPlottable *plottable, int code, QMouseEven
 void OptiLab::graphMouseDoubleClick(QMouseEvent *event)
 {
     // rescale chart
-    if (event->buttons() & Qt::MidButton)
+    if (event->buttons() & Qt::MiddleButton)
     {
         chartRescale(true);
         return;

@@ -451,8 +451,8 @@ void SceneViewMesh::paintOrder()
 
                 Point scr = untransform(point[0], point[1]);
 
-                printPostAt(scr.x - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0,
-                            scr.y - (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0) / 2.0,
+                printPostAt(scr.x - 1.5*m_labelPostSize,
+                            scr.y - 1.5*m_labelPostSize,
                             QString::number(degree));
             }
         }
@@ -581,8 +581,8 @@ void SceneViewMesh::paintError()
 
                 Point scr = untransform(point[0], point[1]);
 
-                printPostAt(scr.x - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0,
-                            scr.y - (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0) / 2.0,
+                printPostAt(scr.x - 1.5*m_labelPostSize,
+                            scr.y - 1.5*m_labelPostSize,
                             QString::number(error));
             }
         }
@@ -615,8 +615,8 @@ void SceneViewMesh::paintErrorColorBar()
     glTranslated(- width() / 2.0, -height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = 11 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0);
-    int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
+    int textWidth = 11 * 0.5*m_labelPostSize;
+    int textHeight = 1.5*m_labelPostSize;
     Point scaleSize = Point(20 + textWidth, (20 + maxError * (2 * textHeight) - textHeight / 2.0 + 2));
     Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (width() - (20 + textWidth));
@@ -653,7 +653,7 @@ void SceneViewMesh::paintErrorColorBar()
     glColor3d(0.0, 0.0, 0.0);
     for (int i = 1; i < maxError + 1; i++)
     {
-        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(pow(10, (i*2-15))).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
+        printPostAt(scaleLeft + 10 + textWidth / 2.0 - 1.5*m_labelPostSize - scaleBorder.x,
                     scaleBorder.y + 10.0 + (i-1)*(2.0 * textHeight) + textHeight / 2.0,
                     QString::number(pow(10, (i*2-15))));
     }
@@ -685,8 +685,8 @@ void SceneViewMesh::paintOrderColorBar()
     glTranslated(- width() / 2.0, -height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = 6 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0);
-    int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
+    int textWidth = 4.5*m_labelPostSize;
+    int textHeight = 1.5*m_labelPostSize;
     Point scaleSize = Point(20 + textWidth, (20 + maxDegree * (2 * textHeight) - textHeight / 2.0 + 2));
     Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (width() - (20 + textWidth));
@@ -723,7 +723,7 @@ void SceneViewMesh::paintOrderColorBar()
     glColor3d(0.0, 0.0, 0.0);
     for (int i = 1; i < maxDegree + 1; i++)
     {
-        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(i).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
+        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(i).size() - 1) * 1.5*m_labelPostSize - scaleBorder.x,
                     scaleBorder.y + 10.0 + (i-1)*(2.0 * textHeight) + textHeight / 2.0,
                     QString::number(i));
     }

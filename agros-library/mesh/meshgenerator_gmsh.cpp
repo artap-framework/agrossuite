@@ -384,7 +384,7 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     for (int i = 0; i < k; i++)
     {
         QString s = inGMSH.readLine();
-        QStringList data = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+        QStringList data = s.split(QRegularExpression("\\s+")); // QString::SkipEmptyParts
 
         // int n = data[0].toInt();
         double x = data[1].toDouble();
@@ -402,7 +402,7 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     for (int i = 0; i < k; i++)
     {
         QString s = inGMSH.readLine();
-        QStringList data = s.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+        QStringList data = s.split(QRegularExpression("\\s+"));
 
         // int n = data[0].toInt();
         int type = data[1].toInt();

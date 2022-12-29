@@ -59,24 +59,24 @@ void CheckVersion::run(bool quiet)
     m_quiet = quiet;
 
     QByteArray postData;
-    postData.append(QString("OS=%1&").arg(esc(SystemUtils::operatingSystem())));
-    postData.append(QString("PROCESSOR=%1&").arg(esc(SystemUtils::cpuType())));
-    postData.append(QString("THREADS=%1&").arg(QString::number(SystemUtils::numberOfThreads())));
-    postData.append(QString("MEMORY=%1&").arg(QString::number(SystemUtils::totalMemorySize())));
-    postData.append(QString("RESOLUTION=0 x 0&"));
+    postData.append(QString("OS=%1&").arg(esc(SystemUtils::operatingSystem())).toLatin1());
+    postData.append(QString("PROCESSOR=%1&").arg(esc(SystemUtils::cpuType())).toLatin1());
+    postData.append(QString("THREADS=%1&").arg(QString::number(SystemUtils::numberOfThreads())).toLatin1());
+    postData.append(QString("MEMORY=%1&").arg(QString::number(SystemUtils::totalMemorySize())).toLatin1());
+    postData.append(QString("RESOLUTION=0 x 0&").toLatin1());
     // postData.append(QString("RESOLUTION=%1 x %2&").
     //                arg(QApplication::desktop()->screenGeometry().width()).
     //                arg(QApplication::desktop()->screenGeometry().height()));
-    postData.append(QString("AGROS2D_VERSION=%1&").arg(esc(QCoreApplication::applicationVersion())));
-    postData.append(QString("AGROS2D_ARCH=%1&").arg(esc(version64bit() ? "64 bit" : "32 bit")));
-    postData.append(QString("AGROS2D_SOLVER=%1&").arg(m_solver ? "1" : "0"));
+    postData.append(QString("AGROS2D_VERSION=%1&").arg(esc(QCoreApplication::applicationVersion())).toLatin1());
+    postData.append(QString("AGROS2D_ARCH=%1&").arg(esc(version64bit() ? "64 bit" : "32 bit")).toLatin1());
+    postData.append(QString("AGROS2D_SOLVER=%1&").arg(m_solver ? "1" : "0").toLatin1());
 
     QNetworkRequest req(m_url);
     req.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
 
     m_networkReply = m_manager->post(req, postData);
 
-    connect(m_networkReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
+    connect(m_networkReply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
 }
 
 void CheckVersion::downloadFinished(QNetworkReply *networkReply)
@@ -85,7 +85,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
     if (!text.isEmpty())
     {
-        QRegExp rx("^(\\d{1,1}.\\d{1,1}.\\d{1,1}.\\d{8,8})");
+        QRegularExpression rx("^(\\d{1,1}.\\d{1,1}.\\d{1,1}.\\d{8,8})");
         if (!QString(text).contains(rx))
         {
             // be quiet

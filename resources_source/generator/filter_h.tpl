@@ -61,7 +61,7 @@ private:
     SceneMaterial *m_noneMarker;
 
     QString m_variable;
-    uint m_variableHash;
+    ulong m_variableHash;
     PhysicFieldVariableComp m_physicFieldVariableComp;
     CoordinateType m_coordinateType;
 };

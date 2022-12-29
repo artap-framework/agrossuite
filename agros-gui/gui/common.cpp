@@ -59,36 +59,10 @@ void addTreeWidgetItemValue(QTreeWidgetItem *parent, const QString &name, const 
     item->setTextAlignment(2, Qt::AlignLeft);
 }
 
-void fillComboBoxFonts(QComboBox *cmbFonts)
-{
-    // read fonts
-    cmbFonts->blockSignals(true);
-
-    // store variable
-    QString fnt = cmbFonts->itemData(cmbFonts->currentIndex(), Qt::UserRole).toString();
-
-    QDir dir(Agros::dataDir() + "/resources/fonts");
-
-    QStringList filter;
-    filter << "*.ttf";
-    QStringList list = dir.entryList(filter);
-
-    cmbFonts->clear();
-    foreach (QString filename, list)
-    {
-        cmbFonts->addItem(QFileInfo(filename).baseName(), QFileInfo(filename).baseName());
-    }
-
-    cmbFonts->setCurrentIndex(cmbFonts->findData(fnt, Qt::UserRole));
-    if (cmbFonts->currentIndex() == -1 && cmbFonts->children().size() > 0)
-        cmbFonts->setCurrentIndex(0);
-    cmbFonts->blockSignals(false);
-}
-
 // column minimum width
 int columnMinimumWidth()
 {
-    if (QApplication::desktop()->width() == 1024)
+    if (QGuiApplication::primaryScreen()->availableGeometry().width() == 1024)
         return 70;
     else
         return 110;

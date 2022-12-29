@@ -19,6 +19,8 @@
 
 #include "about.h"
 
+#include <QScreen>
+
 #include "util/util.h"
 #include "util/system_utils.h"
 #include "gui/checkversion.h"
@@ -155,8 +157,7 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>libdxfrw:</b> LibreCAD DXF library (<a href=\"http://sourceforge.net/projects/libdxfrw/\">libdxfrw</a>)<br/>"
                                          "<b>ctemplate:</b> Simple but powerful template language for C++ (<a href=\"http://code.google.com/p/ctemplate/\">ctemplate</a>)<br/>"
                                          "<b>matio:</b> MAT File I/O Library (<a href=\"http://sourceforge.net/projects/matio/\">matio</a>)<br/>"
-                                         "<b>poly2tri:</b> A 2D constrained Delaunay triangulation library (<a href=\"http://code.google.com/p/poly2tri/\">poly2tri</a>)<br/>"
-                                         "<b>stb_truetype.h:</b> TrueType processing library - Sean Barrett / RAD Game Tools (<a href=\"http://nothings.org/\">stb</a>)<br/>"
+                                         "<b>poly2tri:</b> A 2D constrained Delaunay triangulation library (<a href=\"http://code.google.com/p/poly2tri/\">poly2tri</a>)<br/>"                                         
                                          "<b>Triangle:</b> Jonathan Richard Shewchuk (<a href=\"http://www.cs.cmu.edu/~quake/triangle.html\">Triangle</a>)<br/>"
                                          "<b>UMFPACK:</b> unsymmetric multifrontal sparse LU factorization package (<a href=\"http://www.cise.ufl.edu/research/sparse/umfpack/\">UMFPACK</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
@@ -216,8 +217,8 @@ QWidget *AboutDialog::createSysinfo()
     layoutSystem->addWidget(new QLabel(QString("%1 MB").arg(SystemUtils::totalMemorySize() / 1024 / 1024)), 12, 1);
     layoutSystem->addWidget(new QLabel(tr("Screen resolution:")), 13, 0);
     layoutSystem->addWidget(new QLabel(QString("%1 x %2").
-                                       arg(QApplication::desktop()->screenGeometry().width()).
-                                       arg(QApplication::desktop()->screenGeometry().height())), 13, 1);
+                                       arg(QGuiApplication::primaryScreen()->availableGeometry().width()).
+                                       arg(QGuiApplication::primaryScreen()->availableGeometry().height())), 13, 1);
     layoutSystem->setRowStretch(20, 1);
 
     QGroupBox *grpSystem = new QGroupBox(tr("System"));

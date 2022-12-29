@@ -306,7 +306,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
 
 void SolverDeal::AssembleBase::setup(bool useDirichletLift)
 {
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     assert(m_computation->problemSolver()->feCollection(m_fieldInfo));

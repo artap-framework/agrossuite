@@ -132,7 +132,7 @@ void SceneViewPost2D::keyPressEvent(QKeyEvent *event)
                 emit mousePressed();
             }
 
-            updateGL();
+            update();
         }
     }
 
@@ -154,7 +154,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             m_selectedPoint = p;
             emit mousePressed(p);
 
-            updateGL();
+            update();
         }
 
         // select volume integral area
@@ -166,7 +166,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             {
                 label->setSelected(!label->isSelected());
 
-                updateGL();
+                update();
                 emit mousePressed();
             }
         }
@@ -178,7 +178,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             SceneFace *edge = SceneFace::findClosestFace(m_postprocessorWidget->currentComputation()->scene(), p);
 
             edge->setSelected(!edge->isSelected());
-            updateGL();
+            update();
 
             emit mousePressed();
         }
@@ -188,7 +188,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
 void SceneViewPost2D::paintGL()
 {
     if (!isVisible() || m_postprocessorWidget->currentComputation().isNull()) return;
-    makeCurrent();
+    this->makeCurrent();
 
     glClearColor(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2], 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1091,7 +1091,7 @@ void SceneViewPost2D::selectPoint()
     if (localPointValueDialog.exec() == QDialog::Accepted)
     {
         emit mousePressed(localPointValueDialog.point());
-        updateGL();
+        update();
     }
 }
 
@@ -1110,11 +1110,11 @@ void SceneViewPost2D::doPostprocessorModeGroup(QAction *action)
         m_postprocessorWidget->currentComputation()->scene()->selectNone();
 
     setControls();
-    updateGL();
+    update();
 }
 
 void SceneViewPost2D::selectedPoint(const Point &p)
 {
     m_selectedPoint = p;
-    updateGL();
+    update();
 }
