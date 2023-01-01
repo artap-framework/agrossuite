@@ -23,8 +23,11 @@
 #include "util/global.h"
 
 #include "scene.h"
-#include "solver/module.h"
 
+#include "solver/field.h"
+#include "solver/form_info.h"
+#include "solver/solver.h"
+#include "solver/module.h"
 #include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
@@ -234,12 +237,12 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
             if ({{COUPLING_SOURCE_ID}}_material != m_computation->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
             {
-                const QMap<ulong, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
+                const QMap<size_t, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
                 //{{COUPLING_SOURCE_ID}} variables for individual source analysis types{{#COUPLING_VARIABLES_ANALYSIS_TYPE}}
                 if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                 {{{#COUPLING_VARIABLES}}
                     // {{VARIABLE}}
-                    {{VARIABLE_SHORT}} = {{COUPLING_SOURCE_ID}}_materialValues[{{VARIABLE_HASH}}]->number(); {{/COUPLING_VARIABLES}}
+                    {{VARIABLE_SHORT}} = {{COUPLING_SOURCE_ID}}_materialValues[{{VARIABLE_HASH}}u]->number(); {{/COUPLING_VARIABLES}}
                 }{{/COUPLING_VARIABLES_ANALYSIS_TYPE}}
             }
         }
@@ -308,14 +311,14 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
             }
         }
 
-        const QMap<ulong, QSharedPointer<Value> > materialValues = material->values();
+        const QMap<size_t, QSharedPointer<Value> > materialValues = material->values();
         {{#VOLUME_SOURCE}}
         if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
         {
             // matrix
             {{#VARIABLE_SOURCE_LINEAR}}
             // {{VARIABLE}}
-            const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+            const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}u]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
             {{#FUNCTION_SOURCE_CONSTANT}}
             const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
@@ -324,8 +327,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                 const dealii::Point<2> p = fe_values.quadrature_point(q_point);
                 {{#VARIABLE_SOURCE_NONLINEAR}}
                 // {{VARIABLE}}
-                const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}};
-                const double {{VARIABLE_SHORT}}_der = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}u]->{{VARIABLE_VALUE}};
+                const double {{VARIABLE_SHORT}}_der = materialValues[{{VARIABLE_HASH}}u]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
                 {{#FUNCTION_SOURCE_NONCONSTANT}}
                 const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
 
@@ -409,7 +412,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
             if(cell->face(face)->user_index() > 0 )
             {
                 SceneBoundary *boundary = m_computation->scene()->faces->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
-                const QMap<ulong, QSharedPointer<Value> > boundaryValues = boundary->values();
+                const QMap<size_t, QSharedPointer<Value> > boundaryValues = boundary->values();
 
                 if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
@@ -420,7 +423,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                     {
                         {{#VARIABLE_SOURCE_LINEAR}}
                         // {{VARIABLE}}
-                        const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                        const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}u]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
                         scratch_data.hp_fe_face_values.reinit(cell, face);
 
@@ -433,7 +436,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
                             {{#VARIABLE_SOURCE_NONLINEAR}}
                             // {{VARIABLE}}
-                            const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                            const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}u]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {

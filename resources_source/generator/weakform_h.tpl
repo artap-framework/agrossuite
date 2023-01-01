@@ -22,8 +22,11 @@
 
 #include "util/util.h"
 #include "solver/plugin_interface.h"
+#include "solver/solver_nonlinear.h"
+#include "solver/solver.h"
 #include "solver/marker.h"
 #include "solver/solver_utils.h"
+
 #include "{{ID}}_interface.h"
 
 // typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, typename dealii::hp::DoFHandler<2>::active_cell_iterator> IteratorTuple;

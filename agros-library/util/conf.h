@@ -20,8 +20,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "util/util.h"
-#include "util/enums.h"
+#include <QObject>
+#include <QVariant>
+#include <QMap>
+#include <QSettings>
+#include <QString>
 
 class Config : public QObject
 {

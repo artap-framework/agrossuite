@@ -17,30 +17,18 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+#include "solver_utils.h"
 #include "solver.h"
-#include "linear_solver.h"
-#include "estimators.h"
 
-#include "util/util.h"
-#include "util/global.h"
 #include "util/constants.h"
 #include "util/sparse_io.h"
 
 #include "field.h"
 #include "problem.h"
-#include "solver/problem_config.h"
-//#include "module.h"
 #include "coupling.h"
-#include "scene.h"
-#include "sceneedge.h"
-#include "scenelabel.h"
-#include "scenemarker.h"
 #include "solutionstore.h"
 #include "plugin_interface.h"
-#include "logview.h"
 #include "plugin_interface.h"
-#include "weak_form.h"
-#include "bdf2.h"
 
 #include "matio/matio.h"
 

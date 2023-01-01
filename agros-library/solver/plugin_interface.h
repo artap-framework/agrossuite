@@ -31,9 +31,7 @@
 #include "solver/module.h"
 #include "solver/marker.h"
 #include "solver/field.h"
-#include "solver/weak_form.h"
 #include "solver/solver.h"
-#include "solver/solver_nonlinear.h"
 
 #undef signals
 #include <deal.II/numerics/data_postprocessor.h>
@@ -123,9 +121,9 @@ public:
     class AGROS_LIBRARY_API IntegralCopyData
     {
     public:
-        IntegralCopyData() : results(QMap<ulong, double>()) {}
+        IntegralCopyData() : results(QMap<size_t, double>()) {}
 
-        QMap<ulong, double> results;
+        QMap<size_t, double> results;
     };
 
     virtual void localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell_int,

@@ -24,10 +24,8 @@
 #include "parameter.h"
 
 #include "util/global.h"
+#include "util/loops.h"
 #include "solver/problem.h"
-#include "solver/problem_result.h"
-#include "solver/solutionstore.h"
-#include "solver/plugin_interface.h"
 
 #include "scene.h"
 

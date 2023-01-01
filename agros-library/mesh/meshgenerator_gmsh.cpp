@@ -65,6 +65,7 @@ bool MeshGeneratorGMSH::mesh()
         process->setStandardOutputFile(tempProblemFileName() + ".gmsh.out");
         process->setStandardErrorFile(tempProblemFileName() + ".gmsh.err");
         process->start(triangleGMSH);
+        qInfo() << triangleGMSH;
 
         if (!process->waitForStarted())
         {

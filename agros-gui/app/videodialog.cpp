@@ -20,16 +20,13 @@
 #include "videodialog.h"
 
 #include "util/global.h"
+#include "util/conf.h"
 
-#include "scene.h"
-#include "sceneview_post2d.h"
 #include "solver/problem.h"
-#include "solver/problem_config.h"
 #include "solver/solutionstore.h"
 #include "solver/field.h"
-#include "postprocessorview.h"
 
-#include "gui/lineeditdouble.h"
+#include "sceneview_common.h"
 
 VideoDialog::VideoDialog(SceneViewCommon *sceneView, Computation *computation, QWidget *parent)
     : QDialog(parent), m_sceneView(sceneView), m_computation(computation)

@@ -17,12 +17,9 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "scene.h"
+#include "conf.h"
 
-#include "solver/module.h"
-#include "util/constants.h"
-#include "util/global.h"
-#include "util/system_utils.h"
+#include "util/enums.h"
 
 Config::Config()
 {

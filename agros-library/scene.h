@@ -22,9 +22,7 @@
 
 #include "util/util.h"
 #include "util/enums.h"
-#include "util/conf.h"
-
-#include "solver/solutiontypes.h"
+#include "util/point.h"
 
 class Scene;
 class SceneNode;
@@ -45,6 +43,7 @@ class SceneMaterialContainer;
 class SceneTransformDialog;
 class CouplingInfo;
 
+class FieldInfo;
 class ProblemBase;
 class SolutionStore;
 class Log;

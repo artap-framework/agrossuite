@@ -20,7 +20,7 @@
 #ifndef HERMES_FIELD_H
 #define HERMES_FIELD_H
 
-#include "form_info.h"
+#include "util/util.h"
 
 class BDF2Table;
 class Computation;

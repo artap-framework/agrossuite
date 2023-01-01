@@ -92,7 +92,7 @@ void {{CLASS}}ViewScalarFilter::evaluate_scalar_field (const dealii::DataPostpro
         solution_hessians[k][0] = inputs.solution_hessians[k];
 
         {{#VARIABLE_SOURCE}}
-        if ((m_variableHash == {{VARIABLE_HASH}})
+        if ((m_variableHash == {{VARIABLE_HASH}}u)
                 && (m_coordinateType == {{COORDINATE_TYPE}})
                 && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                 && (m_physicFieldVariableComp == {{PHYSICFIELDVARIABLECOMP_TYPE}}))
@@ -128,7 +128,7 @@ void {{CLASS}}ViewScalarFilter::evaluate_vector_field (const dealii::DataPostpro
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
         {{/VARIABLE_MATERIAL}}
         {{#VARIABLE_SOURCE}}
-        if ((m_variableHash == {{VARIABLE_HASH}})
+        if ((m_variableHash == {{VARIABLE_HASH}}u)
                 && (m_coordinateType == {{COORDINATE_TYPE}})
                 && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                 && (m_physicFieldVariableComp == {{PHYSICFIELDVARIABLECOMP_TYPE}}))

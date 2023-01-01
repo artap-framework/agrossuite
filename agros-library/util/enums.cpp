@@ -20,7 +20,6 @@
 #include "enums.h"
 
 #include "util/global.h"
-#include "scene.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 

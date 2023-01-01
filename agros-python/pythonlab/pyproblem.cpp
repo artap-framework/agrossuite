@@ -18,10 +18,12 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "pyproblem.h"
+
 #include "solver/problem_result.h"
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
+#include "util/loops.h"
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {

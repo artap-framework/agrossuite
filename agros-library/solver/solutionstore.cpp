@@ -19,14 +19,13 @@
 
 #include "solutionstore.h"
 
-#include "util/global.h"
+#include "solver/solver_utils.h"
+#include "util/conf.h"
 #include "util/constants.h"
 
-#include "logview.h"
 #include "field.h"
 #include "scene.h"
 #include "problem.h"
-#include "problem_config.h"
 
 #include <deal.II/fe/fe_q.h>
 

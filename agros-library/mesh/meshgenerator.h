@@ -22,7 +22,7 @@
 
 #include "util/util.h"
 #include "solver/field.h"
-#include "util/loops.h"
+
 #ifdef Q_WS_X11
 #include <tr1/memory>
 #endif

@@ -21,25 +21,13 @@
 
 #include "util/global.h"
 
-#include "sceneview_data.h"
 #include "scene.h"
-#include "scenemarker.h"
-#include "scenemarkerdialog.h"
-#include "scenemarkerselectdialog.h"
-#include "scenebasicselectdialog.h"
-
-#include "scenebasic.h"
-#include "scenenode.h"
-#include "sceneedge.h"
-#include "scenelabel.h"
-
-#include "solver/module.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
 #include "util/constants.h"
-#include <qt5/QtCore/qnamespace.h>
+// #include <qt5/QtCore/qnamespace.h>
 
 SceneViewCommon2D::SceneViewCommon2D(QWidget *parent) : SceneViewCommon(parent)
 {

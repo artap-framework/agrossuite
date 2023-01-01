@@ -20,7 +20,6 @@
 #ifndef SCENEVIEWGEOMETRY_H
 #define SCENEVIEWGEOMETRY_H
 
-#include "util/util.h"
 #include "util/loops.h"
 
 #include "sceneview_common2d.h"
@@ -31,7 +30,9 @@ class SceneLabelCommandAdd;
 class SceneLabelCommandRemove;
 class SceneNodeCommandRemove;
 
+#ifndef signals
 #define signals public
+#endif
 
 class SceneViewPreprocessor : public SceneViewCommon2D
 {

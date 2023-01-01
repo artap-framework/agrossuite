@@ -25,6 +25,7 @@
 #include "gui/logwidget.h"
 #include "gui/checkversion.h"
 #include "util/global.h"
+#include "util/conf.h"
 
 #include "app/scenegeometrydialog.h"
 #include "app/scenemarkerdialog.h"

@@ -22,9 +22,6 @@
 
 #include "util/util.h"
 #include "util/global.h"
-#include "solutiontypes.h"
-#include "scene.h"
-#include "linear_solver.h"
 
 #include "solver.h"
 

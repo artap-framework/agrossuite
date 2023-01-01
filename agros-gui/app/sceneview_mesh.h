@@ -20,10 +20,12 @@
 #ifndef SCENEVIEWMESH_H
 #define SCENEVIEWMESH_H
 
+#undef signals
+#include <deal.II/lac/vector.h>
+#define signals public
+
 #include "util/util.h"
 #include "sceneview_common2d.h"
-
-#include <deal.II/lac/vector.h>
 
 class PostprocessorWidget;
 

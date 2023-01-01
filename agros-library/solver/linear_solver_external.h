@@ -21,8 +21,6 @@
 #define SOLVER_EXTERNAL_H
 
 #include "util/util.h"
-#include "util/global.h"
-#include "solutiontypes.h"
 
 #undef signals
 #include <deal.II/lac/vector.h>

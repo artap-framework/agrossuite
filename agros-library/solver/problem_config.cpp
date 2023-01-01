@@ -20,25 +20,12 @@
 #include "problem_config.h"
 
 #include "util/global.h"
-#include "util/constants.h"
 
-#include "field.h"
-#include "solutionstore.h"
-
-#include "scene.h"
-#include "scenemarker.h"
-#include "scenebasic.h"
-#include "scenenode.h"
-#include "sceneedge.h"
-#include "scenelabel.h"
-#include "module.h"
+#include "problem.h"
 #include "problem_result.h"
 #include "problem_function.h"
 #include "problem_parameter.h"
-#include "coupling.h"
-#include "solver.h"
-#include "mesh/meshgenerator.h"
-#include "logview.h"
+
 
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem),
     m_parameters(new ProblemParameters()), m_functions(new ProblemFunctions())

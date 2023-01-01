@@ -64,6 +64,7 @@
 
 #include "util/global.h"
 #include "util/conf.h"
+#include "util/loops.h"
 
 #include "scene.h"
 #include "scenebasic.h"

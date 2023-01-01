@@ -22,6 +22,7 @@
 
 #include "util/util.h"
 #include "util/global.h"
+#include "util/conf.h"
 #include "scene.h"
 #include "solver/field.h"
 #include "solver/problem.h"

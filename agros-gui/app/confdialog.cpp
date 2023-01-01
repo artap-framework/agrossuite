@@ -19,18 +19,10 @@
 
 #include "confdialog.h"
 
-#include "util/constants.h"
 #include "util/global.h"
-#include "gui/lineeditdouble.h"
-#include "gui/systemoutput.h"
-#include "gui/common.h"
-
-#include "scene.h"
-#include "sceneview_common.h"
+#include "util/conf.h"
 
 #include "solver/module.h"
-#include "solver/coupling.h"
-#include "util/system_utils.h"
 
 ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 {

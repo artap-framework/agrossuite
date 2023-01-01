@@ -25,9 +25,10 @@
 
 #include "util/util.h"
 #include "util/point.h"
+#include "util/enums.h"
+#include "util/conf.h"
 
 #include "gui/scenewidget.h"
-#include "util/enums.h"
 
 class Scene;
 class SceneViewCommon;

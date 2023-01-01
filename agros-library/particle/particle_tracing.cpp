@@ -386,8 +386,12 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                                                   edge->center(), edge->radius(), edge->angle());
 
                 if (incts.length() > 0)
+                {
                     foreach (Point p, incts)
+                    {
                         intersections.insert(edge, p);
+                    }
+                }
             }
 
             // find the closest intersection

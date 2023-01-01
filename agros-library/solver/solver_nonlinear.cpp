@@ -64,29 +64,16 @@
 #include <streambuf>
 #include <sstream>
 
+#include "solver_nonlinear.h"
 #include "solver.h"
-#include "linear_solver.h"
-#include "estimators.h"
 
 #include "util/util.h"
 #include "util/global.h"
-#include "util/constants.h"
 
 #include "field.h"
 #include "problem.h"
-#include "solver/problem_config.h"
-//#include "module.h"
-#include "coupling.h"
-#include "scene.h"
-#include "sceneedge.h"
-#include "scenelabel.h"
-#include "scenemarker.h"
-#include "solutionstore.h"
-#include "plugin_interface.h"
+
 #include "logview.h"
-#include "plugin_interface.h"
-#include "weak_form.h"
-#include "bdf2.h"
 
 #include <functional>
 #include <typeinfo>

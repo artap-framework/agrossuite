@@ -21,9 +21,8 @@
 
 #include <QTextCodec>
 
-#include "util/constants.h"
-
 #include "util/util.h"
+#include "util/conf.h"
 #include "logview.h"
 #include "scene.h"
 #include "scenenode.h"
@@ -33,16 +32,12 @@
 #include "solver/module.h"
 
 #include "solver/problem.h"
-#include "solver/coupling.h"
-#include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
 #include "solver/plugin_solver_interface.h"
 
 #include "optilab/study.h"
 
 #include "util/system_utils.h"
-
-#include "boost/archive/archive_exception.hpp"
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -200,8 +195,8 @@ void initSingleton()
 
     setlocale(LC_NUMERIC, "C");
 
-    char *argv[] = {(char *) QString("%1/agros_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
-    int argc = sizeof(argv) / sizeof(char*) - 1;
+    // char *argv[] = {(char *) QString("%1/agros_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
+    // int argc = sizeof(argv) / sizeof(char*) - 1;
 
     QCoreApplication::setApplicationVersion(versionString());
     QCoreApplication::setOrganizationName("agros");
@@ -690,7 +685,7 @@ QString createPythonFromModel()
         str += "# boundaries\n";
         foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
-            const QMap<ulong, QSharedPointer<Value> > values = boundary->values();
+            const QMap<size_t, QSharedPointer<Value> > values = boundary->values();
 
             QString variables = "{";
 
@@ -734,7 +729,7 @@ QString createPythonFromModel()
         str += "# materials\n";
         foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(fieldInfo).items())
         {
-            const QMap<ulong, QSharedPointer<Value> > values = material->values();
+            const QMap<size_t, QSharedPointer<Value> > values = material->values();
 
             QString variables = "{";
             foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())

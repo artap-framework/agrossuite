@@ -18,7 +18,6 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "util/util.h"
-#include "util/global.h"
 #include "agros_version.h"
 
 #ifndef M_PI_2
@@ -127,23 +126,23 @@ void setLocale(const QString &locale)
 
     QString country = locale.section('_',0,0);
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))
-        qtTranslator->load(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm");
+        auto ok = qtTranslator->load(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm");
     else if (QFile::exists(":/lang/qt_" + country + ".qm"))
-        qtTranslator->load(":/lang/qt_" + country + ".qm");
+        auto ok = qtTranslator->load(":/lang/qt_" + country + ".qm");
     else
         qDebug() << "Qt locale file not found.";
 
     if (QFile::exists(":/lang/" + locale + ".qm"))
-        appTranslator->load(":/lang/" + locale + ".qm");
+        auto ok = appTranslator->load(":/lang/" + locale + ".qm");
     else if (QFile::exists(":/lang/en_US.qm"))
-        appTranslator->load(":/lang/en_US.qm");
+        auto ok = appTranslator->load(":/lang/en_US.qm");
     else
         qDebug() << "Locale file not found.";
 
     if (QFile::exists(":/lang/plugin_" + locale + ".qm"))
-        pluginTranslator->load(":/lang/plugin_" + locale + ".qm");
+        auto ok = pluginTranslator->load(":/lang/plugin_" + locale + ".qm");
     else if (QFile::exists(":/lang/plugin_en_US.qm"))
-        pluginTranslator->load(":/lang/plugin_en_US.qm");
+        auto ok = pluginTranslator->load(":/lang/plugin_en_US.qm");
     else
         qDebug() << "Plugin locale file not found.";
 

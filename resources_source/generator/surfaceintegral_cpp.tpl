@@ -151,7 +151,7 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
 
                         res += (atBoundary ? 1.0 : 0.5) * fe_values.JxW(k) * ({{EXPRESSION}});
                     }
-                    copy_data.results[{{VARIABLE_HASH}}] += res;
+                    copy_data.results[{{VARIABLE_HASH}}u] += res;
                 }
                 {{/VARIABLE_SOURCE}}
             }
@@ -168,7 +168,7 @@ void {{CLASS}}SurfaceIntegral::copyLocalToGlobal(const IntegralCopyData &copy_da
     {{#VARIABLE_SOURCE}}
     if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
     {
-        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[{{VARIABLE_HASH}}];
+        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[{{VARIABLE_HASH}}u];
     }
     {{/VARIABLE_SOURCE}}
 }
