@@ -18,7 +18,6 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include <QApplication>
-#include <QtCore5Compat/QTextCodec>
 
 #include "util/util.h"
 #include "gui/logwidget.h"
@@ -56,13 +55,6 @@ public:
         // css fix for QScrollArea in QTabWidget
         // setStyleSheet("QScrollArea { background: transparent; } QScrollArea > QWidget > QWidget { background: transparent; }");
     #endif
-
-        // std::string codec
-    #if QT_VERSION < 0x050000
-        QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-        QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    #endif
-        QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
         // force number format
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));

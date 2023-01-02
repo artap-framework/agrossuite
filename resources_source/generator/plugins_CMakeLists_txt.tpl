@@ -31,7 +31,7 @@ find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6 COMPONENTS SvgWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 
 # Build type.
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)

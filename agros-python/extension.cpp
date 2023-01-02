@@ -3,7 +3,6 @@
 #include <QCoreApplication>
 
 #include <QTranslator>
-#include <QTextCodec>
 #include <QDir>
 #include <QString>
 

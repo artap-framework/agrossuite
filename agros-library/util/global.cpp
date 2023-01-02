@@ -19,8 +19,6 @@
 
 #include "global.h"
 
-#include <QTextCodec>
-
 #include "util/util.h"
 #include "util/conf.h"
 #include "logview.h"
@@ -202,9 +200,6 @@ void initSingleton()
     QCoreApplication::setOrganizationName("agros");
     QCoreApplication::setOrganizationDomain("agros");
     QCoreApplication::setApplicationName("Agros Suite");
-
-    // std::string codec
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     // force number format
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
