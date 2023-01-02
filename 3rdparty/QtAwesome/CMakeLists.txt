@@ -4,7 +4,7 @@ SET(SOURCES QtAwesome.cpp
             QtAwesomeAnim.cpp)
 
 # images
-SET(RESOURCES QtAwesome.qrc)
+SET(RESOURCES QtAwesomeFree.qrc)
 QT_ADD_RESOURCES(RESOURCES_RCC ${RESOURCES})
 
 IF (MSVC)

@@ -71,15 +71,15 @@ ProblemBase *SceneViewPost2D::problem() const
 void SceneViewPost2D::createActionsPost2D()
 {
     // point
-    actSelectPoint = new QAction(iconAwesome(fa::mappin), tr("Local point value"), this);
+    actSelectPoint = new QAction(iconAwesome(fa::fa_map_pin), tr("Local point value"), this);
     connect(actSelectPoint, SIGNAL(triggered()), this, SLOT(selectPoint()));
 
     // marker
-    actSelectByMarker = new QAction(iconAwesome(fa::mapmarker), tr("Select by marker"), this);
+    actSelectByMarker = new QAction(iconAwesome(fa::fa_bookmark), tr("Select by marker"), this);
     connect(actSelectByMarker, SIGNAL(triggered()), this, SLOT(selectByMarker()));
 
     // postprocessor group
-    actPostprocessorModeNothing = new QAction(iconAwesome(fa::circleonotch), tr("Nothing"), this);
+    actPostprocessorModeNothing = new QAction(iconAwesome(fa::fa_xmark), tr("Nothing"), this);
     actPostprocessorModeNothing->setCheckable(true);
 
     actPostprocessorModeLocalPointValue = new QAction(icon("mode-localpointvalue"), tr("Local Values"), this);

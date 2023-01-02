@@ -40,7 +40,7 @@
 
 #include "../3rdparty/exprtk/exprtk.hpp"
 
-// qt5
+// qt
 #ifdef Q_OS_WIN
 #define Q_WS_WIN
 #endif

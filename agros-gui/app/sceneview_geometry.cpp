@@ -117,11 +117,11 @@ void SceneViewPreprocessor::createActionsGeometry()
     connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doSceneGeometryModeSet(QAction *)));
 
     // select region
-    actSceneViewSelectRegion = new QAction(iconAwesome(fa::thlarge), tr("&Select region"), this);
+    actSceneViewSelectRegion = new QAction(iconAwesome(fa::fa_square_full), tr("&Select region"), this);
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties
-    actSceneObjectProperties = new QAction(iconAwesome(fa::cog), tr("Object properties"), this);
+    actSceneObjectProperties = new QAction(iconAwesome(fa::fa_gear), tr("Object properties"), this);
     actSceneObjectProperties->setShortcut(Qt::Key_Space);
     connect(actSceneObjectProperties, SIGNAL(triggered()), this, SLOT(doSceneObjectProperties()));
 

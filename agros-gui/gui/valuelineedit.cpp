@@ -72,7 +72,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         btnMaterialDialog->setIcon(iconAwesome(fa::caretup));
         btnMaterialDialog->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnMaterialDialog = new QPushButton(iconAwesome(fa::caretup), "");
+        btnMaterialDialog = new QPushButton(iconAwesome(fa::fa_caret_up), "");
         btnMaterialDialog->setMaximumSize(btnMaterialDialog->sizeHint());
 #endif
         connect(btnMaterialDialog, SIGNAL(clicked()), this, SLOT(doOpenMaterialDialog()));
@@ -82,7 +82,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         btnDataTableDelete->setIcon(iconAwesome(fa::remove));
         btnDataTableDelete->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnDataTableDelete = new QPushButton(iconAwesome(fa::remove), "");
+        btnDataTableDelete = new QPushButton(iconAwesome(fa::fa_trash), "");
         btnDataTableDelete->setMaximumSize(btnDataTableDelete->sizeHint());
 #endif
         connect(btnDataTableDelete, SIGNAL(clicked()), this, SLOT(doOpenDataTableDelete()));
@@ -92,7 +92,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         btnDataTableDialog->setIcon(iconAwesome(fa::caretup));
         btnDataTableDialog->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnDataTableDialog = new QPushButton(iconAwesome(fa::caretup), "");
+        btnDataTableDialog = new QPushButton(iconAwesome(fa::fa_caret_up), "");
         btnDataTableDialog->setMaximumSize(btnDataTableDialog->sizeHint());
 #endif
         connect(btnDataTableDialog, SIGNAL(clicked()), this, SLOT(doOpenDataTableDialog()));
@@ -103,7 +103,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         btnEditTimeDep->setIcon(iconAwesome(fa::caretup));
         btnEditTimeDep->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnEditTimeDep = new QPushButton(iconAwesome(fa::caretup), "");
+        btnEditTimeDep = new QPushButton(iconAwesome(fa::fa_caret_up), "");
 #endif
         connect(btnEditTimeDep, SIGNAL(clicked()), this, SLOT(doOpenValueTimeDialog()));
     }

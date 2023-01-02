@@ -20,14 +20,13 @@
 #include "sceneview_common2d.h"
 
 #include "util/global.h"
+#include "util/constants.h"
 
 #include "scene.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-#include "util/constants.h"
-// #include <qt5/QtCore/qnamespace.h>
 
 SceneViewCommon2D::SceneViewCommon2D(QWidget *parent) : SceneViewCommon(parent)
 {
