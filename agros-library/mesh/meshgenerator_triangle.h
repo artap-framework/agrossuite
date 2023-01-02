@@ -20,7 +20,6 @@
 #ifndef MESHGENERATOR_TRIANGLE_H
 #define MESHGENERATOR_TRIANGLE_H
 
-#include "util/util.h"
 #include "meshgenerator.h"
 
 extern "C"

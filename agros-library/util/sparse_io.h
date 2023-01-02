@@ -28,7 +28,7 @@
 
 #include <chrono>
 
-#include "../3rdparty/tclap/CmdLine.h"
+#include "tclap/CmdLine.h"
 
 class SparseMatrixRW
 {

@@ -22,23 +22,17 @@
 #include "util/global.h"
 
 #include "scene.h"
-
 #include "scenebasic.h"
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "scenemarker.h"
-#include "logview.h"
-
-#include "solver/module.h"
-
-#include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "util/loops.h"
 
-#include <deal.II/grid/grid_in.h>
+#include "logview.h"
+
 
 MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemBase *problem)
     : MeshGenerator(problem), m_isError(false)
@@ -64,8 +58,7 @@ bool MeshGeneratorGMSH::mesh()
         QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
         process->setStandardOutputFile(tempProblemFileName() + ".gmsh.out");
         process->setStandardErrorFile(tempProblemFileName() + ".gmsh.err");
-        process->start(triangleGMSH);
-        qInfo() << triangleGMSH;
+        process->startCommand(triangleGMSH);
 
         if (!process->waitForStarted())
         {

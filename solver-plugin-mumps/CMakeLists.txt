@@ -29,6 +29,8 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb-2018_U2/include/")
 
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
+
 FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
 # HACK
 # string(REPLACE "/lib/lib" "/lib" DEAL_II_LIBRARIES ${DEAL_II_LIBRARIES})

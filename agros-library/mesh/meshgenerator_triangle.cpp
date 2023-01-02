@@ -22,21 +22,14 @@
 #include "util/global.h"
 
 #include "scene.h"
-
 #include "scenebasic.h"
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "scenemarker.h"
-#include "logview.h"
-
-#include "solver/module.h"
-
-#include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
-#include "util/loops.h"
+#include "logview.h"
 
 #include <QThread>
 
