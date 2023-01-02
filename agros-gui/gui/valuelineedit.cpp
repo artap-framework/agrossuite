@@ -293,7 +293,7 @@ bool ValueLineEdit::checkCondition(double value)
 
     // symbol table
     exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters()->symbolTable();
-    parametersSymbolTable.add_constant("time", 0.0);
+    parametersSymbolTable.add_constant("timse", 0.0);
 
     exprtk::expression<double> expr;
     expr.register_symbol_table(parametersSymbolTable);

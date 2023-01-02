@@ -133,8 +133,8 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     csrRowPtr[mtx.n()] = mtx.n_nonzero_elements(); // indices from 0
 
     // allocate space for the transposed matrix
-    int *cscColPtr = new int[mtx.m() + 1];
-    int *cscRowInd = new int[mtx.n_nonzero_elements()];
+    mat_uint32_t *cscColPtr = new mat_uint32_t[mtx.m() + 1];
+    mat_uint32_t *cscRowInd = new mat_uint32_t[mtx.n_nonzero_elements()];
     double *cscA = new double[mtx.n_nonzero_elements()];
 
     // compute number of non-zero entries per column of A
