@@ -39,9 +39,6 @@ QStringList PluginSolverInterface::methods() const
 
 void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matrix)
 {
-    int n_rows = matrix.m();
-    int n_cols = matrix.n();
-
     const int N = matrix.m();
 
     // copy over the data from the matrix to the data structures UMFPACK

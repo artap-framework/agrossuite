@@ -22,8 +22,10 @@ SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    # SET(AGROS_UMFPACK ON)
     INCLUDE(CMake.vars.Linux OPTIONAL)
 ELSE()
+    SET(AGROS_UMFPACK ON)
     INCLUDE(CMake.vars.Windows OPTIONAL)
 ENDIF()
 INCLUDE(CMake.vars OPTIONAL)
@@ -41,7 +43,6 @@ ENDIF()
 # Handle Qt.
 SET(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
 
 # Link OpenGL and Zlib when needed.
 IF(MSVC)
@@ -105,21 +106,6 @@ IF(MSVC)
   SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_AGROS_DIRECTORY}/libs)
   SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_AGROS_DIRECTORY}/libs)
 ENDIF(MSVC)
-
-# Set global compiler parameters.
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type -std=c++17")
-  INCLUDE_DIRECTORIES(/usr/include/google)
-ENDIF()
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unsupported-friend -std=c++14")
-  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
-ENDIF()
-
-# VTK
-#FIND_PACKAGE(VTK REQUIRED)
-#include(${VTK_USE_FILE})
-#INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
 
 # Include current dir
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)

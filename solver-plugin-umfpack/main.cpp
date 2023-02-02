@@ -26,7 +26,8 @@
 #include "../agros-library/util/sparse_io.h"
 #include "../agros-library/solver/plugin_solver_interface.h"
 
-#include <umfpack.h>
+// #include <umfpack.h>
+#include <umfpack/include/umfpack.h>
 
 
 class UMFPACKSolverInterface : public QObject, public PluginSolverInterface
@@ -113,6 +114,7 @@ public:
             else
             {
                 umfpack_di_report_info(Control, Info);
+                umfpack_di_report_status(Control, statusNumeric);
                 std::cerr << "UMFPACK numeric error: " << statusNumeric << std::endl;
             }
         }

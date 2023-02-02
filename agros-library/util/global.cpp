@@ -245,8 +245,8 @@ QString findDataDir()
     // linux
 #ifdef Q_WS_X11
     // solver DEK
-    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/agros2d/resources/templates/empty.tpl"))
-        return(QString::fromLatin1(getenv("PWD")) + "/agros2d");
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/agros/resources/templates/empty.tpl"))
+        return(QString::fromLatin1(getenv("PWD")) + "/agros");
 
     // gui and solver
     else if (QCoreApplication::instance() && QFile::exists(QCoreApplication::applicationDirPath() + "/resources/templates/empty.tpl"))
