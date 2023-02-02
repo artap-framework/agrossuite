@@ -2,18 +2,6 @@ PROJECT(solver_plugin_UMFPACK C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
-# SET(DEBUG_FLAGS "-g")
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
-
-# Set global compiler parameters.
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wno-deprecated -Ofast")
-ENDIF()
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unsupported-friend")
-  SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
-ENDIF()
-
 SET(SOURCES
     main.cpp
     ../agros-library/solver/plugin_solver_interface.cpp)

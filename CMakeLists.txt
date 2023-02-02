@@ -8,14 +8,14 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/c
 
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
 IF(MSVC)
-  SET (CMAKE_EXE_LINKER_FLAGS "/machine:X64")
-  SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
-  SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
-  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN64")
+#  SET (CMAKE_EXE_LINKER_FLAGS "/machine:X64")
+#  SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
+#  SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
+#  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN64")
 
-  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG")
-  SET(CMAKE_SHARED_LINKER_FLAGS	 "${CMAKE_SHARED_LINKER_FLAGS} /LTCG")
-  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
+#  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG")
+#  SET(CMAKE_SHARED_LINKER_FLAGS	 "${CMAKE_SHARED_LINKER_FLAGS} /LTCG")
+#  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 ENDIF(MSVC)
 
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
@@ -32,13 +32,6 @@ INCLUDE(CMake.vars OPTIONAL)
 
 # set static build
 SET(PLUGINS)
-
-# Handle OpenMP should it be included in DealII.
-IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-  find_package(OpenMP REQUIRED)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-ENDIF()
 
 # Handle Qt.
 SET(CMAKE_AUTOMOC ON)
@@ -116,29 +109,17 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 # Configure CCache if available
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_BUILD_TYPE RelWithDebInfo)
   SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
   ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
 ENDIF()
-
-# This overrides CXX flags for MSVC
-IF(MSVC)
-  # On MSVC, we will always use Debug, otherwise the plugins do not work.
-  # SET(CMAKE_BUILD_TYPE Debug)
-  # SET(MSVC_DEFINES "/D_WINDOWS /Dpopen=_popen /Dpclose=_pclose /D__value=_value /Dfinite=_finite /Dhypot=_hypot /Disatty=_isatty /Dfileno=_fileno /D_CRT_SECURE_NO_WARNINGS /MP")
-  SET(CMAKE_CXX_FLAGS_DEBUG_INIT          "/bigobj /D_DEBUG /Od /Ob2 /MDd /Zi ${MSVC_DEFINES}")
-  SET(CMAKE_CXX_FLAGS_RELEASE_INIT        "/bigobj /DNDEBUG /O2 /Ob2 /MD ${MSVC_DEFINES}")
-  SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
-  SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
-  SET (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SAFESEH:NO /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libcmt")
-ENDIF(MSVC)
 
 # Create file with preprocessor definitions exposing the build settings to the source code.
 configure_file(
@@ -160,7 +141,6 @@ REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX14)
 
 SET(DEAL_II_BUILD_TYPE "Release")
 
-#ENDIF()
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
@@ -181,11 +161,6 @@ INCLUDE_DIRECTORIES(${KOMPLEX_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${LOCA_EPETRA_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${NOX_EPETRA_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${EPETRAEXT_INCLUDE_PATH})
-
-if (WITH_MPI)
-  find_package(MPI REQUIRED)
-  include_directories(${MPI_INCLUDE_PATH})
-endif(WITH_MPI)
 
 message("CMake: Start agros")
 message("=====================")

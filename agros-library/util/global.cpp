@@ -200,6 +200,7 @@ void initSingleton()
     QCoreApplication::setOrganizationName("agros");
     QCoreApplication::setOrganizationDomain("agros");
     QCoreApplication::setApplicationName("Agros Suite");
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
     // force number format
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
