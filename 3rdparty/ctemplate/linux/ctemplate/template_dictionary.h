@@ -63,13 +63,11 @@
 
 
 namespace ctemplate {
+
 template <class T, class C> class ArenaAllocator;
 class UnsafeArena;
 template<typename A, int B, typename C, typename D> class small_map;
 template<typename NormalMap> class small_map_default_init;  // in small_map.h
-}
-
-namespace ctemplate {
 
 
 class  TemplateDictionary : public TemplateDictionaryInterface {
@@ -231,10 +229,6 @@ class  TemplateDictionary : public TemplateDictionaryInterface {
       __attribute__((__format__ (__printf__, 4, 5)))
 #endif
      ;  // starts at 4 because of implicit 1st arg 'this'
-  void SetEscapedValueAndShowSection(const TemplateString variable,
-                                     const TemplateString value,
-                                     const TemplateModifier& escfn,
-                                     const TemplateString section_name);
 
 
  private:
@@ -454,6 +448,5 @@ class  TemplateDictionary : public TemplateDictionaryInterface {
 };
 
 }
-
 
 #endif  // TEMPLATE_TEMPLATE_DICTIONARY_H_

@@ -111,7 +111,7 @@
 #ifndef GOOGLE_MUTEX_H_
 #define GOOGLE_MUTEX_H_
 
-#include <config_ctemplate.h>
+#include <config.h>
 #if defined(NO_THREADS)
   typedef int MutexType;      // to keep a lock-count
 #elif defined(_WIN32) || defined(__CYGWIN32__) || defined(__CYGWIN64__)
@@ -158,7 +158,7 @@
 #include <assert.h>
 #include <stdlib.h>      // for abort()
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 namespace base {
 // This is used for the single-arg constructor
@@ -403,6 +403,6 @@ class WriterMutexLock {
 #define ReaderMutexLock(x) COMPILE_ASSERT(0, rmutex_lock_decl_missing_var_name)
 #define WriterMutexLock(x) COMPILE_ASSERT(0, wmutex_lock_decl_missing_var_name)
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  /* #define GOOGLE_MUTEX_H__ */

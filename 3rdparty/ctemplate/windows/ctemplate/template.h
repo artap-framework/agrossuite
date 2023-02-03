@@ -57,7 +57,7 @@ class PerExpandData;
 }
 #endif
 
-namespace google_ctemplate_streamhtmlparser {
+namespace ctemplate_htmlparser {
 class HtmlParser;
 }
 
@@ -65,7 +65,7 @@ class HtmlParser;
 // (rather than using the template .dll), set '/D CTEMPLATE_DLL_DECL='
 // as a compiler flag in your project file to turn off the dllimports.
 #ifndef CTEMPLATE_DLL_DECL
-# define CTEMPLATE_DLL_DECL  
+# define CTEMPLATE_DLL_DECL  __declspec(dllimport)
 #endif
 
 namespace ctemplate {
@@ -324,9 +324,6 @@ class CTEMPLATE_DLL_DECL Template {
   static bool StringToTemplateCache(const TemplateString& key,
                                     const char* content, Strip);
 
-  // INSTEAD, use ReloadAllIfChanged.
-  bool ReloadIfChanged();
-
  protected:
   friend class SectionTemplateNode;  // for access to set_state(), ParseState
   friend class TemplateTemplateNode; // for recursive call to Expand()
@@ -439,7 +436,7 @@ class CTEMPLATE_DLL_DECL Template {
   TemplateContext initial_context_;
   // Non-null if the template was initialized in an Auto-Escape mode that
   // requires a parser (currently TC_HTML, TC_CSS and TC_JS).
-  google_ctemplate_streamhtmlparser::HtmlParser *htmlparser_;
+  ctemplate_htmlparser::HtmlParser *htmlparser_;
 
   // A sorted list of trusted variable names, declared here because a unittest
   // needs to verify that it is appropriately sorted (an unsorted array would
@@ -487,6 +484,5 @@ class CTEMPLATE_DLL_DECL Template {
 };
 
 }
-
 
 #endif // CTEMPLATE_TEMPLATE_H_

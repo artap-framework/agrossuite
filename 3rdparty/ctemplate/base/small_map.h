@@ -48,11 +48,12 @@
 #ifndef UTIL_GTL_SMALL_MAP_H_
 #define UTIL_GTL_SMALL_MAP_H_
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <assert.h>
 #include <utility>   // for make_pair()
 #include "base/manual_constructor.h"
-_START_GOOGLE_NAMESPACE_
+
+namespace ctemplate {
 
 template <bool> struct CompileAssert { };
 #define COMPILE_ASSERT(expr, msg) \
@@ -563,6 +564,6 @@ inline bool small_map<NormalMap, kArraySize, EqualKey,
   return other != *this;
 }
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  // UTIL_GTL_SMALL_MAP_H_

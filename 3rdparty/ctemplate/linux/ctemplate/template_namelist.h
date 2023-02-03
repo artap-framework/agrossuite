@@ -40,7 +40,7 @@
 #define TEMPLATE_TEMPLATE_NAMELIST_H_
 
 #include <time.h>    // for time_t
-#include <tr1/unordered_set>
+#include <unordered_set>
 #include <string>
 #include <vector>
 #include <ctemplate/template_enums.h>    // for Strip
@@ -64,7 +64,7 @@ namespace ctemplate {
 // TODO (we wish): Make this macro produce the #include for the auto-generated
 // header files, when and if the macro pre-processor supports that
 #define RegisterTemplateFilename(var, name)         \
-  const char* const var = ::ctemplate::TemplateNamelist::RegisterTemplate(name);
+  const char* const var = ctemplate::TemplateNamelist::RegisterTemplate(name);
 
 // Class: TemplateNamelist
 //   Each time this class is instantiated, the name passed to
@@ -82,7 +82,7 @@ class  TemplateNamelist {
   // thing you should do with them is call size() and/or iterate
   // between begin() and end(), and the only operations we promise
   // the iterators will support are operator* and operator++.
-  typedef std::tr1::unordered_set<std::string, StringHash> NameListType;
+  typedef std::unordered_set<std::string, StringHash> NameListType;
   typedef std::vector<std::string> MissingListType;
   typedef std::vector<std::string> SyntaxListType;
 
@@ -159,6 +159,5 @@ class  TemplateNamelist {
 };
 
 }
-
 
 #endif  // TEMPLATE_TEMPLATE_NAMELIST_H_

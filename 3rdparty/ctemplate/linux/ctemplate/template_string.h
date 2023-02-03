@@ -34,18 +34,12 @@
 #define TEMPLATE_TEMPLATE_STRING_H_
 
 #include <string.h>      // for memcmp() and size_t
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
 #include <assert.h>
-#if 1
-#include <stdint.h>       // one place @ac_cv_unit64@ might live
-#endif
-#if 1
-#include <inttypes.h>     // another place @ac_cv_unit64@ might live
-#endif
-#include <sys/types.h>    // final place @ac_cv_unit64@ might live
+#include <cstdint>
 
 class TemplateStringTest;          // needed for friendship declaration
 class StaticTemplateStringTest;
@@ -110,7 +104,7 @@ struct  StringHash {
 
 // ----------------------- THE CLASSES -------------------------------
 
-typedef u_int64_t TemplateId;
+typedef uint64_t TemplateId;
 
 const TemplateId kIllegalTemplateId = 0;
 
@@ -122,14 +116,7 @@ struct  StaticTemplateString {
 
   // These members shouldn't be accessed directly, except in the
   // internals of the template code.  They are public because that is
-  // the only way we can brace-initialize them.  NOTE: MSVC (at least
-  // up to 8.0) has a bug where it ignores 'mutable' when it's buried
-  // in an internal struct.  To fix that, we have to make this whole
-  // internal struct mutable.  We only do this on MSVC, so on other
-  // compilers we get the full constness we want.
-#ifdef _MSC_VER
-  mutable
-#endif
+  // the only way we can brace-initialize them.
   struct {
     const char* ptr_;
     size_t length_;
@@ -137,7 +124,7 @@ struct  StaticTemplateString {
   } do_not_use_directly_;
 
   // This class is a good hash functor to pass in as the third
-  // argument to std::tr1::unordered_map<>, when creating a map whose keys are
+  // argument to unordered_map<>, when creating a map whose keys are
   // StaticTemplateString.  NOTE: This class isn't that safe to use,
   // because it requires that StaticTemplateStringInitializer has done
   // its job.  Unfortunately, even when you use the STS_INIT macro
@@ -337,9 +324,9 @@ class  StaticTemplateStringInitializer {
 
 // Don't use this.  This is used only in auto-generated .varnames.h files.
 #define STS_INIT_WITH_HASH(name, str, hash)                                   \
-  { { str, sizeof("" str "")-1, hash } };                                     \
+  { { str, sizeof("" str "")-1, hash } };                                       \
   namespace ctemplate_sts_init {                                              \
-  static const ::ctemplate::StaticTemplateStringInitializer name##_init(&name); \
+  static const ctemplate::StaticTemplateStringInitializer name##_init(&name); \
   }
 
 // We computed this hash value for the empty string online.  In debug
@@ -353,6 +340,5 @@ const StaticTemplateString kStsEmpty =
     STS_INIT_WITH_HASH(kStsEmpty, "", 1457976849674613049ULL);
 
 }
-
 
 #endif  // TEMPLATE_TEMPLATE_STRING_H_

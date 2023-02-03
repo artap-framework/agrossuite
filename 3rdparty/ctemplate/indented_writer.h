@@ -33,10 +33,10 @@
 #ifndef TEMPLATE_INDENTED_WRITER_H_
 #define TEMPLATE_INDENTED_WRITER_H_
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <string>
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 using std::string;
 
@@ -129,6 +129,6 @@ class IndentedWriter {
   const static int kIndent = 2;            // num spaces to indent each level
 };
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  // TEMPLATE_INDENTED_WRITER_H_

@@ -35,7 +35,7 @@
 #ifndef TEMPLATE_OPENSOURCE_FILEUTIL_H_
 #define TEMPLATE_OPENSOURCE_FILEUTIL_H_
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -44,7 +44,7 @@
 #endif
 #include <string>
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 class FileStat {
  public:
@@ -101,6 +101,6 @@ class File {
   FILE* fp_;
 };
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  // TEMPLATE_OPENSOURCE_FILEUTIL_H_

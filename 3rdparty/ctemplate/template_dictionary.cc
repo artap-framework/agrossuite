@@ -32,7 +32,7 @@
 //
 // Based on the 'old' TemplateDictionary by Frank Jernigan.
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "base/mutex.h"         // This must go first so we get _XOPEN_SOURCE
 #include <assert.h>
 #include <stdlib.h>
@@ -60,7 +60,7 @@ using std::map;
 using std::pair;
 using std::make_pair;
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 // Guards the initialization of the global dictionary.
 static GoogleOnceType g_once = GOOGLE_ONCE_INIT;
@@ -616,16 +616,6 @@ void TemplateDictionary::SetValueAndShowSection(const TemplateString variable,
   sub_dict->SetValue(variable, value);
 }
 
-void TemplateDictionary::SetEscapedValueAndShowSection(
-    const TemplateString variable, const TemplateString value,
-    const TemplateModifier& escfn, const TemplateString section_name) {
-  string escaped_string(escfn(value.ptr_, value.length_));
-  if (escaped_string.empty())    // no value: the do-nothing case
-    return;
-  TemplateDictionary* sub_dict = AddSectionDictionary(section_name);
-  sub_dict->SetValue(variable, escaped_string);
-}
-
 // ----------------------------------------------------------------------
 // TemplateDictionary::AddIncludeDictionary()
 //    This is much like AddSectionDictionary().  One major difference
@@ -861,7 +851,7 @@ class TemplateDictionary::DictionaryPrinter {
 
   string GetDictNum(size_t index, size_t size) const {
     char buf[64];   // big enough for two ints
-    snprintf(buf, sizeof(buf), "%" PRIuS" of %" PRIuS, index, size);
+    snprintf(buf, sizeof(buf), "%" PRIuS " of %" PRIuS, index, size);
     return buf;
   }
 
@@ -1039,4 +1029,4 @@ TemplateDictionary::CreateSectionIterator(
   abort();
 }
 
-_END_GOOGLE_NAMESPACE_
+}

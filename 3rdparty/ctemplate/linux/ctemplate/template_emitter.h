@@ -67,5 +67,4 @@ class  StringEmitter : public ExpandEmitter {
 
 }
 
-
 #endif  // TEMPLATE_TEMPLATE_EMITTER_H_

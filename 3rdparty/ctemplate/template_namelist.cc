@@ -29,7 +29,7 @@
 
 // ---
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <stdlib.h>
 #include <sys/stat.h>            // for stat()
 #include <time.h>                // for time_t
@@ -54,7 +54,7 @@ using std::vector;
 
 #define LOG(level)  std::cerr << #level << ": "
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 TemplateNamelist::NameListType *TemplateNamelist::namelist_ = NULL;
 TemplateNamelist::MissingListType *TemplateNamelist::missing_list_ = NULL;
@@ -191,4 +191,4 @@ bool TemplateNamelist::IsAllSyntaxOkay(Strip strip) {
   return bad_syntax_list.empty();
 }
 
-_END_GOOGLE_NAMESPACE_
+}

@@ -34,7 +34,7 @@
 // to windows easier, though it's nice to have an API for this kind of
 // thing.
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <string>
 #include <ctype.h>       // for isalpha, used on windows
 #include <string.h>      // for strchr
@@ -48,7 +48,7 @@
 # endif
 #endif
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 using std::string;
 
@@ -142,4 +142,4 @@ bool ContainsFullWord(const string& text, const string& word) {
   return false;
 }
 
-_END_GOOGLE_NAMESPACE_
+}

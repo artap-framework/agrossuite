@@ -34,11 +34,11 @@
 #ifndef SECURITY_STREAMHTMLPARSER_JSPARSER_H
 #define SECURITY_STREAMHTMLPARSER_JSPARSER_H
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "htmlparser/statemachine.h"
 
 #ifdef __cplusplus
-namespace HTMLPARSER_NAMESPACE {
+namespace ctemplate_htmlparser {
 #endif /* __cplusplus */
 
 /* Size of the ring buffer used to lookup the last token in the javascript

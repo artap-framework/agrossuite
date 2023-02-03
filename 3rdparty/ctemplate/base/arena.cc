@@ -39,7 +39,7 @@
 // suggested by Ron van der Wal and Scott Meyers at
 //     http://www.aristeia.com/BookErrata/M27Comments_frames.html
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "base/arena.h"
 #include "base/arena-inl.h"
 #include <assert.h>
@@ -55,7 +55,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif            // last place uintptr_t might be
-#include "base/macros.h"       // for uint64
 #include "base/mutex.h"
 #include "base/util.h"         // for DCHECK_*
 
@@ -70,7 +69,7 @@ static void* aligned_malloc(size_t size, size_t alignment) {
 // The value here doesn't matter until page_aligned_ is supported.
 static const int kPageSize = 8192;   // should be getpagesize()
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 // We used to only keep track of how much space has been allocated in
 // debug mode. Now we track this for optimized builds, as well. If you
@@ -400,19 +399,19 @@ void* BaseArena::GetMemoryWithHandle(
   }
   CHECK_GE(block_index, 0) << "Failed to find block that was allocated from";
   CHECK(block != NULL) << "Failed to find block that was allocated from";
-  const uint64 offset = reinterpret_cast<char*>(p) - block->mem;
+  const uint64_t offset = reinterpret_cast<char*>(p) - block->mem;
   DCHECK_LT(offset, block_size_);
   DCHECK((offset & ((1 << handle_alignment_bits_) - 1)) == 0);
   DCHECK((block_size_ & ((1 << handle_alignment_bits_) - 1)) == 0);
-  uint64 handle_value =
-      ((static_cast<uint64>(block_index) << block_size_bits_) + offset) >>
+  uint64_t handle_value =
+      ((static_cast<uint64_t>(block_index) << block_size_bits_) + offset) >>
       handle_alignment_bits_;
-  if (handle_value >= static_cast<uint64>(0xFFFFFFFF)) {
+  if (handle_value >= static_cast<uint64_t>(0xFFFFFFFF)) {
     // We ran out of space to be able to return a handle, so return an invalid
     // handle.
     handle_value = Handle::kInvalidValue;
   }
-  handle->handle_ = static_cast<uint32>(handle_value);
+  handle->handle_ = static_cast<uint32_t>(handle_value);
   return p;
 }
 
@@ -448,7 +447,7 @@ void BaseArena::set_handle_alignment(int align) {
 
 void* BaseArena::HandleToPointer(const Handle& h) const {
   CHECK(h.valid());
-  uint64 handle = static_cast<uint64>(h.handle_) << handle_alignment_bits_;
+  uint64_t handle = static_cast<uint64_t>(h.handle_) << handle_alignment_bits_;
   int block_index = static_cast<int>(handle >> block_size_bits_);
   size_t block_offset =
       static_cast<size_t>(handle & ((1 << block_size_bits_) - 1));
@@ -502,4 +501,4 @@ char* SafeArena::Realloc(char* s, size_t oldsize, size_t newsize) {
   return newstr;
 }
 
-_END_GOOGLE_NAMESPACE_
+}

@@ -45,14 +45,14 @@
 #include <stdlib.h>   // for NULL
 #include <string.h>   // for strcmp
 #include <sys/types.h>
-#include <hash_map>
+#include <unordered_map>
 #include <ctemplate/template_string.h>   // for StringHash
 
 // NOTE: if you are statically linking the template library into your binary
 // (rather than using the template .dll), set '/D CTEMPLATE_DLL_DECL='
 // as a compiler flag in your project file to turn off the dllimports.
 #ifndef CTEMPLATE_DLL_DECL
-# define CTEMPLATE_DLL_DECL  
+# define CTEMPLATE_DLL_DECL  __declspec(dllimport)
 #endif
 
 namespace ctemplate {
@@ -130,15 +130,10 @@ class CTEMPLATE_DLL_DECL PerExpandData {
   }
 
  private:
-#ifdef _MSC_VER
-  typedef stdext::hash_map<const char*, const void*, StringHash> DataMap;
-#else
   struct DataEq {
     bool operator()(const char* s1, const char* s2) const;
   };
-  typedef stdext::hash_map<const char*, const void*, StringHash, DataEq>
-    DataMap;
-#endif
+  typedef std::unordered_map<const char*, const void*, StringHash, DataEq> DataMap;
 
   const char* annotate_path_;
   TemplateAnnotator* annotator_;

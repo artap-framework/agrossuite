@@ -45,7 +45,7 @@
 #include <stdlib.h>   // for NULL
 #include <string.h>   // for strcmp
 #include <sys/types.h>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <ctemplate/template_string.h>   // for StringHash
 
 
@@ -125,15 +125,10 @@ class  PerExpandData {
   }
 
  private:
-#ifdef _MSC_VER
-  typedef std::tr1::unordered_map<const char*, const void*, StringHash> DataMap;
-#else
   struct DataEq {
     bool operator()(const char* s1, const char* s2) const;
   };
-  typedef std::tr1::unordered_map<const char*, const void*, StringHash, DataEq>
-    DataMap;
-#endif
+  typedef std::unordered_map<const char*, const void*, StringHash, DataEq> DataMap;
 
   const char* annotate_path_;
   TemplateAnnotator* annotator_;

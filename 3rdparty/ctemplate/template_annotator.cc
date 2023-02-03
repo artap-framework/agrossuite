@@ -29,7 +29,7 @@
 
 // ---
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <ctemplate/template_annotator.h>
 #include <string>
 #include <ctemplate/template_emitter.h>
@@ -49,7 +49,7 @@
   (emitter)->Emit(value);                               \
   (emitter)->Emit("}}", 2);
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 using std::string;
 
@@ -105,4 +105,4 @@ void TextTemplateAnnotator::EmitFileIsMissing(ExpandEmitter* emitter,
   EMIT_MISSING_ANNOTATION(emitter,"MISSING_FILE", value);
 }
 
-_END_GOOGLE_NAMESPACE_
+}

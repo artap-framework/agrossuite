@@ -44,8 +44,9 @@
 #ifndef UTIL_GTL_MANUAL_CONSTRUCTOR_H_
 #define UTIL_GTL_MANUAL_CONSTRUCTOR_H_
 
-#include <config_ctemplate.h>
-_START_GOOGLE_NAMESPACE_
+#include <config.h>
+
+namespace ctemplate {
 
 namespace util {
 namespace gtl {
@@ -231,6 +232,6 @@ class ManualConstructor {
 #undef UTIL_GTL_ALIGNED_CHAR_ARRAY
 #undef UTIL_GTL_ALIGN_OF
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  // UTIL_GTL_MANUAL_CONSTRUCTOR_H_

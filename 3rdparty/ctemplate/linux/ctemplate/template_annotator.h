@@ -47,7 +47,7 @@
 // to.
 //
 // Template annotation is turned on and the template annotator subclass
-// set by methods in ::ctemplate::PerExpandData.
+// set by methods in ctemplate::PerExpandData.
 
 #ifndef TEMPLATE_TEMPLATE_ANNOTATOR_H_
 #define TEMPLATE_TEMPLATE_ANNOTATOR_H_
@@ -132,6 +132,5 @@ class  TextTemplateAnnotator : public TemplateAnnotator {
 };
 
 }
-
 
 #endif  // TEMPLATE_TEMPLATE_ANNOTATOR_H_

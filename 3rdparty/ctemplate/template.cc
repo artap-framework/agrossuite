@@ -29,7 +29,7 @@
 
 // ---
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "base/mutex.h"     // This must go first so we get _XOPEN_SOURCE
 #include <ctemplate/template.h>
 
@@ -106,17 +106,11 @@ using std::list;
 using std::vector;
 using std::pair;
 using std::binary_search;
-#ifdef HAVE_UNORDERED_MAP
 using HASH_NAMESPACE::unordered_map;
-// This is totally cheap, but minimizes the need for #ifdef's below...
-#define hash_map unordered_map
-#else
-using HASH_NAMESPACE::hash_map;
-#endif
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
-using HTMLPARSER_NAMESPACE::HtmlParser;
+using ctemplate_htmlparser::HtmlParser;
 
 TemplateId GlobalIdForSTS_INIT(const TemplateString& s) {
   return s.GetGlobalId();   // normally this method is private
@@ -454,17 +448,17 @@ static bool FilenameValidForContext(const string& filename,
                                     TemplateContext context) {
   string stripped_filename = Basename(filename);
 
-  if (GOOGLE_NAMESPACE::ContainsFullWord(stripped_filename, "css") ||
-      GOOGLE_NAMESPACE::ContainsFullWord(stripped_filename, "stylesheet") ||
-      GOOGLE_NAMESPACE::ContainsFullWord(stripped_filename, "style")) {
+  if (ctemplate::ContainsFullWord(stripped_filename, "css") ||
+      ctemplate::ContainsFullWord(stripped_filename, "stylesheet") ||
+      ctemplate::ContainsFullWord(stripped_filename, "style")) {
     if (context != TC_CSS) {
       LOG(WARNING) << "Template filename " << filename
                    << " indicates CSS but given TemplateContext"
                    << " was not TC_CSS." << endl;
       return false;
     }
-  } else if (GOOGLE_NAMESPACE::ContainsFullWord(stripped_filename, "js") ||
-             GOOGLE_NAMESPACE::ContainsFullWord(stripped_filename, "javascript")) {
+  } else if (ctemplate::ContainsFullWord(stripped_filename, "js") ||
+             ctemplate::ContainsFullWord(stripped_filename, "javascript")) {
     if (context != TC_JS) {
       LOG(WARNING) << "Template filename " << filename
                    << " indicates javascript but given TemplateContext"
@@ -618,7 +612,7 @@ static void WriteOneHeaderEntry(
   MutexLock ml(&g_header_mutex);
 
   // we use hash_map instead of hash_set just to keep the stl size down
-  static hash_map<string, bool, StringHash> vars_seen
+  static unordered_map<string, bool, StringHash> vars_seen
       GUARDED_BY(g_header_mutex);
   static string current_file GUARDED_BY(g_header_mutex);
   static string prefix GUARDED_BY(g_header_mutex);
@@ -655,17 +649,17 @@ static void WriteOneHeaderEntry(
   }
 
   // print out the variable, but only if we haven't seen it before.
-  if (vars_seen.find(variable) == vars_seen.end()) {
+  if (!vars_seen.count(variable)) {
     if (variable == kMainSectionName || variable.find("BI_") == 0) {
       // We don't want to write entries for __MAIN__ or the built-ins
     } else {
       const TemplateId id = GlobalIdForSTS_INIT(TemplateString(variable));
       std::ostringstream outstream;
       outstream << "static const "
-                << AS_STR(GOOGLE_NAMESPACE) << "::StaticTemplateString "
+                << "::ctemplate::StaticTemplateString "
                 << prefix << variable << " = STS_INIT_WITH_HASH("
                 << prefix << variable << ", \"" << variable << "\", "
-                << id << "LLU);\n";
+                << id << "ULL);\n";
       outstring->append(outstream.str());
     }
     vars_seen[variable] = true;
@@ -2381,7 +2375,7 @@ bool Template::StringToTemplateCache(const TemplateString& key,
   // We say the insert succeeded only if it succeded for all strip values.
   bool retval = true;
   for (int i = 0; i < static_cast<int>(NUM_STRIPS); ++i) {
-    if (!GOOGLE_NAMESPACE::StringToTemplateCache(key, content, static_cast<Strip>(i)))
+    if (!ctemplate::StringToTemplateCache(key, content, static_cast<Strip>(i)))
       retval = false;
   }
   return retval;
@@ -2691,14 +2685,6 @@ bool Template::ReloadIfChangedLocked()
   }
 }
 
-bool Template::ReloadIfChanged() LOCKS_EXCLUDED(g_template_mutex) {
-  // ReloadIfChanged() is protected by g_template_mutex so when it's
-  // called from different threads, they don't stomp on tree_ and
-  // state_.  (This is the only write-locker on g_template_mutex.)
-  WriterMutexLock ml(&g_template_mutex);
-  return ReloadIfChangedLocked();
-}
-
 // ----------------------------------------------------------------------
 // Template::ExpandLocked()
 // Template::ExpandWithDataAndCache()
@@ -2782,4 +2768,4 @@ bool Template::ExpandWithDataAndCache(
   return ExpandLocked(expand_emitter, dict, per_expand_data, cache);
 }
 
-_END_GOOGLE_NAMESPACE_
+}

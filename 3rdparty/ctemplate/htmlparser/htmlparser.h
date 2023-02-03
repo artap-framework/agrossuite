@@ -35,7 +35,7 @@
 #ifndef SECURITY_STREAMHTMLPARSER_HTMLPARSER_H
 #define SECURITY_STREAMHTMLPARSER_HTMLPARSER_H
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "htmlparser/statemachine.h"
 #include "htmlparser/jsparser.h"
 
@@ -50,7 +50,7 @@
 #endif
 
 #ifdef __cplusplus
-namespace HTMLPARSER_NAMESPACE {
+namespace ctemplate_htmlparser {
 #endif
 
 /* entity filter */

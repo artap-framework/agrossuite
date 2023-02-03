@@ -270,16 +270,16 @@
 #ifndef BASE_ARENA_H_
 #define BASE_ARENA_H_
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "base/mutex.h"   // must go first to get _XOPEN_SOURCE
 #include <assert.h>
+#include <cstdint>
 #include <string.h>
 #include <vector>
 #include "base/thread_annotations.h"
-#include "base/macros.h"  // for uint32
 #include "base/util.h"    // for CHECK, etc
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 // Annoying stuff for windows -- make sure clients (in this case
 // unittests) can import the class definitions and variables.
@@ -306,23 +306,23 @@ class CTEMPLATE_DLL_DECL BaseArena {
   // copy and assignment semantics.
   class Handle {
    public:
-    static const uint32 kInvalidValue = 0xFFFFFFFF;   // int32-max
+    static const uint32_t kInvalidValue = 0xFFFFFFFF;   // int32-max
 
     Handle() : handle_(kInvalidValue) { }
     // Default copy constructors are fine here.
     bool operator==(const Handle& h) const { return handle_ == h.handle_; }
     bool operator!=(const Handle& h) const { return handle_ != h.handle_; }
 
-    uint32 hash() const { return handle_; }
+    uint32_t hash() const { return handle_; }
     bool valid() const { return handle_ != kInvalidValue; }
 
    private:
     // Arena needs to be able to access the internal data.
     friend class BaseArena;
 
-    explicit Handle(uint32 handle) : handle_(handle) { }
+    explicit Handle(uint32_t handle) : handle_(handle) { }
 
-    uint32 handle_;
+    uint32_t handle_;
   };
 
   // they're "slow" only 'cause they're virtual (subclasses define "fast" ones)
@@ -693,6 +693,6 @@ class CTEMPLATE_DLL_DECL SafeArena : public BaseArena {
   DISALLOW_COPY_AND_ASSIGN(SafeArena);
 };
 
-_END_GOOGLE_NAMESPACE_
+}
 
 #endif  // BASE_ARENA_H_

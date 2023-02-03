@@ -33,20 +33,19 @@
 // but is not conveniently defined in the header file, e.g., because it would
 // introduce new include dependencies.
 
-#include <config_ctemplate.h>
+#include <config.h>
+#include <ctemplate/find_ptr.h>
 #include <ctemplate/per_expand_data.h>
 #include <ctemplate/template_annotator.h>
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 using std::string;
 
-#ifndef _MSC_VER
 bool PerExpandData::DataEq::operator()(const char* s1, const char* s2) const {
   return ((s1 == 0 && s2 == 0) ||
           (s1 && s2 && *s1 == *s2 && strcmp(s1, s2) == 0));
 }
-#endif
 
 PerExpandData::~PerExpandData() {
   delete map_;
@@ -71,10 +70,7 @@ void PerExpandData::InsertForModifiers(const char* key, const void* value) {
   // Retrieve data specific to this Expand call. Returns NULL if key
   // is not found.  This should only be used by template modifiers.
 const void* PerExpandData::LookupForModifiers(const char* key) const {
-  if (!map_)
-    return NULL;
-  const DataMap::const_iterator it = map_->find(key);
-  return it == map_->end() ? NULL : it->second;
+  return map_ ? find_ptr2(*map_, key) : NULL;
 }
 
-_END_GOOGLE_NAMESPACE_
+}

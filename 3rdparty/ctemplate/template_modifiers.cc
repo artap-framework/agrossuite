@@ -45,7 +45,7 @@
 // the list of Safe XSS Alternatives.
 //
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -82,9 +82,9 @@ bool HasInsecureProtocol(const char* in, int inlen) {
 }
 }  // namespace URL
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
-using HTMLPARSER_NAMESPACE::HtmlParser;
+using ctemplate_htmlparser::HtmlParser;
 
 // A most-efficient way to append a string literal to the var named 'out'.
 // The ""s ensure literal is actually a string literal
@@ -1414,4 +1414,4 @@ vector<const ModifierAndValue*> GetDefaultModifierForJson() {
   return GetModifierForJson(NULL, NULL);
 }
 
-_END_GOOGLE_NAMESPACE_
+}

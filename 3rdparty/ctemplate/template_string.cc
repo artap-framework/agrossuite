@@ -31,25 +31,20 @@
 // Authors: jcrim@google.com (Jay Crim)
 //          csilvers@google.com (Craig Silverstein)
 
-#include <config_ctemplate.h>
+#include <config.h>
 #include "base/mutex.h"   // This has to come first to get _XOPEN_SOURCE
+#include <ctemplate/find_ptr.h>
 #include <ctemplate/template_string.h>
 #include HASH_SET_H
 #include "base/arena.h"
 #include "base/thread_annotations.h"
 #include <assert.h>
-#include "base/macros.h"    // for uint32, uint64, UNALIGNED_LOAD32
+#include "base/macros.h"
 #include "base/util.h"
 
-#ifdef HAVE_UNORDERED_MAP
 using HASH_NAMESPACE::unordered_set;
-// This is totally cheap, but minimizes the need for #ifdef's below...
-#define hash_set unordered_set
-#else
-using HASH_NAMESPACE::hash_set;
-#endif
 
-_START_GOOGLE_NAMESPACE_
+namespace ctemplate {
 
 // Based on public domain MurmurHashUnaligned2, by Austin Appleby.
 // http://murmurhash.googlepages.com/
@@ -60,15 +55,15 @@ _START_GOOGLE_NAMESPACE_
 //     64-bits,
 //   - uses a fixed seed.
 // This is not static because template_string_test accesses it directly.
-uint64 MurmurHash64(const char* ptr, size_t len) {
-  const uint32 kMultiplyVal = 0x5bd1e995;
+uint64_t MurmurHash64(const char* ptr, size_t len) {
+  const uint32_t kMultiplyVal = 0x5bd1e995;
   const int kShiftVal = 24;
-  const uint32 kHashSeed1 = 0xc86b14f7;
-  const uint32 kHashSeed2 = 0x650f5c4d;
+  const uint32_t kHashSeed1 = 0xc86b14f7;
+  const uint32_t kHashSeed2 = 0x650f5c4d;
 
-  uint32 h1 = kHashSeed1 ^ len, h2 = kHashSeed2;
+  uint32_t h1 = kHashSeed1 ^ len, h2 = kHashSeed2;
   while (len >= 8) {
-    uint32 k1 = UNALIGNED_LOAD32(ptr);
+    uint32_t k1 = UNALIGNED_LOAD32(ptr);
     k1 *= kMultiplyVal;
     k1 ^= k1 >> kShiftVal;
     k1 *= kMultiplyVal;
@@ -77,7 +72,7 @@ uint64 MurmurHash64(const char* ptr, size_t len) {
     h1 ^= k1;
     ptr += 4;
 
-    uint32 k2 = UNALIGNED_LOAD32(ptr);
+    uint32_t k2 = UNALIGNED_LOAD32(ptr);
     k2 *= kMultiplyVal;
     k2 ^= k2 >> kShiftVal;
     k2 *= kMultiplyVal;
@@ -90,7 +85,7 @@ uint64 MurmurHash64(const char* ptr, size_t len) {
   }
 
   if (len >= 4) {
-    uint32 k1 = UNALIGNED_LOAD32(ptr);
+    uint32_t k1 = UNALIGNED_LOAD32(ptr);
     k1 *= kMultiplyVal;
     k1 ^= k1 >> kShiftVal;
     k1 *= kMultiplyVal;
@@ -120,7 +115,7 @@ uint64 MurmurHash64(const char* ptr, size_t len) {
   h1 ^= h2 >> 17;
   h1 *= kMultiplyVal;
 
-  uint64 h = h1;
+  uint64_t h = h1;
   h = (h << 32) | h2;
   return h;
 }
@@ -152,7 +147,7 @@ struct TemplateStringHasher {
 namespace {
 Mutex mutex(base::LINKER_INITIALIZED);
 
-typedef hash_set<TemplateString, TemplateStringHasher> TemplateStringSet;
+typedef unordered_set<TemplateString, TemplateStringHasher> TemplateStringSet;
 
 TemplateStringSet* template_string_set
 GUARDED_BY(mutex) PT_GUARDED_BY(mutex) = NULL;
@@ -173,9 +168,9 @@ void TemplateString::AddToGlobalIdToNameMap() LOCKS_EXCLUDED(mutex) {
     // Check to see if it's already here.
     ReaderMutexLock reader_lock(&mutex);
     if (template_string_set) {
-      TemplateStringSet::const_iterator iter =
-          template_string_set->find(*this);
-      if (iter != template_string_set->end()) {
+      const TemplateString* iter =
+          find_ptr0(*template_string_set, *this);
+      if (iter) {
         DCHECK_EQ(TemplateString(ptr_, length_),
                   TemplateString(iter->ptr_, iter->length_))
             << "TemplateId collision!";
@@ -193,7 +188,7 @@ void TemplateString::AddToGlobalIdToNameMap() LOCKS_EXCLUDED(mutex) {
     arena = new UnsafeArena(1024);  // 1024 was picked out of a hat.
   }
 
-  if (template_string_set->find(*this) != template_string_set->end()) {
+  if (template_string_set->count(*this)) {
     return;
   }
   // If we are immutable, we can store ourselves directly in the map.
@@ -225,14 +220,9 @@ TemplateString TemplateString::IdToString(TemplateId id) LOCKS_EXCLUDED(mutex) {
   // TemplateString.  This may seem weird, but it lets us use a
   // hash_set instead of a hash_map.
   TemplateString id_as_template_string(NULL, 0, false, id);
-  TemplateStringSet::const_iterator iter =
-      template_string_set->find(id_as_template_string);
-  if (iter == template_string_set->end()) {
-    return TemplateString(kStsEmpty);
-  }
-  return *iter;
+  const TemplateString* iter = find_ptr0(*template_string_set, id_as_template_string);
+  return iter ? *iter : TemplateString(kStsEmpty);
 }
-
 
 StaticTemplateStringInitializer::StaticTemplateStringInitializer(
     const StaticTemplateString* sts) {
@@ -257,4 +247,4 @@ StaticTemplateStringInitializer::StaticTemplateStringInitializer(
   ts_copy_of_sts.AddToGlobalIdToNameMap();
 }
 
-_END_GOOGLE_NAMESPACE_
+}

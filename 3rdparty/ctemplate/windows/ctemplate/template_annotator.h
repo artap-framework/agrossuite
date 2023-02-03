@@ -58,7 +58,7 @@
 // (rather than using the template .dll), set '/D CTEMPLATE_DLL_DECL='
 // as a compiler flag in your project file to turn off the dllimports.
 #ifndef CTEMPLATE_DLL_DECL
-# define CTEMPLATE_DLL_DECL  
+# define CTEMPLATE_DLL_DECL  __declspec(dllimport)
 #endif
 
 namespace ctemplate {
@@ -137,6 +137,5 @@ class CTEMPLATE_DLL_DECL TextTemplateAnnotator : public TemplateAnnotator {
 };
 
 }
-
 
 #endif  // TEMPLATE_TEMPLATE_ANNOTATOR_H_
