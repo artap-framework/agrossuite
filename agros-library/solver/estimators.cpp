@@ -27,8 +27,6 @@
 
 #include "estimators.h"
 
-#include "problem.h"
-
 #include <numeric>
 #include <functional>
 

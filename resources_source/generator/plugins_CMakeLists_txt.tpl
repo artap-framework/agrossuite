@@ -3,11 +3,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
 # For Win64
-if(${CMAKE_CL_64})
-  set(CMAKE_EXE_LINKER_FLAGS "/machine:X64")
-  SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
-  SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
-endif(${CMAKE_CL_64})
+# if(${CMAKE_CL_64})
+#   set(CMAKE_EXE_LINKER_FLAGS "/machine:X64")
+#   SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
+#   SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
+# endif(${CMAKE_CL_64})
 
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/../")
 
@@ -96,20 +96,21 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_BUILD_TYPE Release)
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo)
   SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS} -std=c++11 -Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations")
+  SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+  ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
 ENDIF()
 
 # This overrides CXX flags for MSVC
-IF(MSVC)
+#IF(MSVC)
   # On MSVC, we will always use Debug, otherwise the plugins do not work.
-  SET(CMAKE_BUILD_TYPE Debug)
-  SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
-  SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
-  SET (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SAFESEH:NO")
+  #SET(CMAKE_BUILD_TYPE Debug)
+  #SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
+  #SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /SAFESEH:NO")
+  #SET (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /SAFESEH:NO")
   # The rest had to be moved to modules / couplings because of a strange linking problems caused by inline functions expansion (/Ob2).
-ENDIF(MSVC)
+#ENDIF(MSVC)
 
 # Include OUR header files location
 include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)

@@ -46,16 +46,6 @@ public:
         setOrganizationDomain("agros");
         setApplicationName("Agros Suite");
 
-    #ifdef Q_WS_MAC
-        // don't show icons in menu
-        setAttribute(Qt::AA_DontShowIconsInMenus, true);
-    #endif
-
-    #ifdef Q_WS_X11
-        // css fix for QScrollArea in QTabWidget
-        // setStyleSheet("QScrollArea { background: transparent; } QScrollArea > QWidget > QWidget { background: transparent; }");
-    #endif
-
         // force number format
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
@@ -123,6 +113,36 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
+
+        QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
+        QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+        // QApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+
+        // DPI
+#ifdef Q_OS_MAC
+        //
+#endif
+
+#ifdef Q_OS_LINUX
+        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+
+        const bool hasWaylandDisplay = qEnvironmentVariableIsSet("WAYLAND_DISPLAY");
+        const bool isWaylandSessionType = qgetenv("XDG_SESSION_TYPE") == "wayland";
+        const QByteArray currentDesktop = qgetenv("XDG_CURRENT_DESKTOP").toLower();
+        const QByteArray sessionDesktop = qgetenv("XDG_SESSION_DESKTOP").toLower();
+        const bool isGnome = currentDesktop.contains("gnome") || sessionDesktop.contains("gnome");
+        const bool isWayland = hasWaylandDisplay || isWaylandSessionType;
+        if (isGnome && isWayland)
+        {
+            qInfo() << "Warning: Ignoring WAYLAND_DISPLAY on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.";
+            qputenv("QT_QPA_PLATFORM", "xcb");
+        }
+#endif
+
+#ifdef Q_OS_WIN
+        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+#endif
+
         CleanExit cleanExit;
         AgrosApplication a(argc, argv);
 
@@ -146,7 +166,7 @@ int main(int argc, char *argv[])
                     std::cout << QObject::tr("Unknown suffix.").toStdString() << std::endl;
                 }
             }
-        }        
+        }
 
         w.show();
 
@@ -156,5 +176,5 @@ int main(int argc, char *argv[])
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         return 1;
-    }    
+    }
 }
