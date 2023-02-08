@@ -24,7 +24,6 @@ class Scene;
 class SceneLabel;
 class SceneFace;
 
-#include "util/util.h"
 #include "util/point.h"
 
 class LoopsInfo : public QObject

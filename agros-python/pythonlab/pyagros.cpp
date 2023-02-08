@@ -30,6 +30,8 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
+#include "util/script_generator.h"
+
 #ifdef TBB_FOUND
 #include <tbb/tbb.h>
 tbb::mutex runPythonHeaderMutex;
@@ -65,6 +67,13 @@ void saveFile(const std::string &file, bool saveWithSolution)
     {
         throw logic_error(e.toString().toStdString());
     }
+}
+
+std::string getScriptFromModel()
+{
+    auto scriptGenerator = ScriptGenerator();
+
+    return scriptGenerator.createPythonFromModel().toStdString();
 }
 
 std::string pyVersion()

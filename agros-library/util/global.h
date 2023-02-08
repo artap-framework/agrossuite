@@ -84,7 +84,4 @@ private:
     QMap<QString, PluginSolverInterface *> m_solvers;
 };
 
-// create script from model
-QString createPythonFromModel();
-
 #endif /* GLOBAL_H */

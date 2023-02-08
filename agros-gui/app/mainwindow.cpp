@@ -26,6 +26,7 @@
 #include "gui/checkversion.h"
 #include "util/global.h"
 #include "util/conf.h"
+#include "util/script_generator.h"
 
 #include "app/scenegeometrydialog.h"
 #include "app/scenemarkerdialog.h"
@@ -834,7 +835,9 @@ void MainWindow::doDocumentSaveGeometry()
 
 void MainWindow::doCreatePythonFromModel()
 {
-    QString script = createPythonFromModel();
+    auto scriptGenerator = ScriptGenerator();
+
+    QString script = scriptGenerator.createPythonFromModel();
     QString fn = tempProblemFileName() + ".py";
 
     writeStringContent(fn, script);

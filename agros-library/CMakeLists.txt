@@ -92,6 +92,7 @@ SET(SOURCES
     util/system_utils.cpp
     util/spline.cpp
     util/table.cpp
+    util/script_generator.cpp
     value.cpp
   )   
 
@@ -149,7 +150,7 @@ SOURCE_GROUP(
   util/enums.cpp
   util/global.cpp
   util/loops.cpp
-  util/xml.cpp
+  util/script_generator.cpp
 )
 
 SET(HEADERS

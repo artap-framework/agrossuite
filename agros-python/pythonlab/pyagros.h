@@ -23,9 +23,6 @@
 #include "util/util.h"
 #include "util/global.h"
 #include "util/conf.h"
-#include "scene.h"
-#include "solver/field.h"
-#include "solver/problem.h"
 
 class Solution;
 
@@ -33,7 +30,7 @@ class Solution;
 
 void openFile(const std::string &file, bool openWithSolution);
 void saveFile(const std::string &file, bool saveWithSolution);
-inline std::string getScriptFromModel() { return createPythonFromModel().toStdString(); }
+std::string getScriptFromModel();
 
 inline std::string tempDir() { return tempProblemDir().toStdString(); }
 inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
