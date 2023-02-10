@@ -110,6 +110,12 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
             method = "none";
             parameters = "";
         }
+        else if (solvers.contains("EIGEN"))
+        {
+            solver = "Eigen";
+            method = "none";
+            parameters = "";
+        }
         else
         {
             solver = "";
