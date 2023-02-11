@@ -22,10 +22,8 @@ SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    # SET(AGROS_UMFPACK ON)
     INCLUDE(CMake.vars.Linux OPTIONAL)
 ELSE()
-    SET(AGROS_UMFPACK ON)
     INCLUDE(CMake.vars.Windows OPTIONAL)
 ENDIF()
 INCLUDE(CMake.vars OPTIONAL)
@@ -167,7 +165,6 @@ message("=====================")
 ADD_SUBDIRECTORY(agros-library)
 ADD_SUBDIRECTORY(solver-plugin-eigen)
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    ADD_SUBDIRECTORY(solver-plugin-umfpack)
     ADD_SUBDIRECTORY(solver-plugin-mumps)
 ENDIF()
 

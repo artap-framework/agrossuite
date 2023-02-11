@@ -98,21 +98,15 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QString parameters = m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString();
     if (solver.isEmpty() || solver.endsWith(".ext"))
     {
-        if (solvers.contains("MUMPS"))
-        {
-            solver = "MUMPS";
-            method = "none";
-            parameters = "";
-        }
-        else if (solvers.contains("UMFPACK"))
-        {
-            solver = "UMFPACK";
-            method = "none";
-            parameters = "";
-        }
-        else if (solvers.contains("EIGEN"))
+        if (solvers.contains("EIGEN"))
         {
             solver = "Eigen";
+            method = "none";
+            parameters = "";
+        }
+        else if (solvers.contains("MUMPS"))
+        {
+            solver = "MUMPS";
             method = "none";
             parameters = "";
         }
@@ -124,7 +118,7 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
         }
     }
 
-    // qInfo() << solver << method << parameters;
+    qInfo() << solver << method << parameters;
     if (!solver.isEmpty())
     {
         Agros::log()->printDebug(QObject::tr("Solver"),
