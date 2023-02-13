@@ -86,20 +86,14 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
     def tearDown(self):
         self.tearDownClass()
         
-    def test_external_umfpack(self):
+    def test_external_eigen(self):
         # UMFPACK
-        sln = self.model("external_plugin", "UMFPACK", "none", "")        
-        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "UMFPACK (external) sln failed.")
+        sln = self.model("external_plugin", "Eigen", "none", "")        
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "EIGEN (external) sln failed.")
 
     def test_external_mumps(self):
         # MUMPS
         sln = self.model("external_plugin", "MUMPS", "none", "")        
-        print(len(self.reference_sln))
-        print(len(sln))        
+        # print(len(self.reference_sln))
+        # print(len(sln))        
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "MUMPS (external) sln failed.")
-
-    def disabled_test_external_petsc(self):
-        # PETSC
-        sln = self.model("external_plugin", "PETSc", "none", "")        
-        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "PETSC (external) sln failed.")
-

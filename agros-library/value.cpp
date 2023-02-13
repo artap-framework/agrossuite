@@ -19,8 +19,8 @@
 
 #include "value.h"
 
-#include "util/global.h"
-#include "logview.h"
+#include "tbb/mutex.h"
+#include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
@@ -193,13 +193,12 @@ double Value::numberAtPoint(const Point &point) const
     if (!isCoordinateDependent())
         return number();
 
+    tbb::mutex::scoped_lock lock(numberAtPointMutex);
     if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
             && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
         return number();
 
     {
-        tbb::mutex::scoped_lock lock(numberAtPointMutex);
-
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
@@ -215,12 +214,11 @@ double Value::numberAtTime(double time) const
     if (!isTimeDependent())
         return number();
 
+    tbb::mutex::scoped_lock lock(numberAtTimeMutex);
     if (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
         return number();
 
     {
-        tbb::mutex::scoped_lock lock(numberAtTimeMutex);
-
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
 
         compileExpression(m_text, *m_exprtkExpr);
@@ -233,14 +231,13 @@ double Value::numberAtTimeAndPoint(const double time, const Point &point) const
     if (!isTimeDependent() && !isCoordinateDependent())
         return number();
 
+    tbb::mutex::scoped_lock lock(numberAtTimeAndPointMutex);
     if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
             && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
             && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
         return number();
 
     {
-        tbb::mutex::scoped_lock lock(numberAtTimeAndPointMutex);
-
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
         m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
