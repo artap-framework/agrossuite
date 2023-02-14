@@ -27,14 +27,11 @@
 #include "{{ID}}_surfaceintegral.h"
 #include "{{ID}}_volumeintegral.h"
 
-#include "util/global.h"
-#include "util/constants.h"
 #include "solver/problem.h"
-#include "solver/problem_config.h"
 
 {{CLASS}}Interface::{{CLASS}}Interface() : PluginInterface()
 {  
-    QByteArray content = QByteArray::fromBase64("{{JSON_CONTENT}}");
+    QByteArray content = QByteArray::fromBase64({{JSON_CONTENT}});
     m_moduleJson->read(content);
 
     // coupling sources{{#COUPLING_SOURCE}}

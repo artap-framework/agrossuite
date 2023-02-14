@@ -115,7 +115,24 @@ void Agros2DGeneratorModule::prepareWeakFormsOutput()
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly))
     {
-        m_output->SetValue("JSON_CONTENT", file.readAll().toBase64().toStdString());
+        int sz = 1024;
+        std::string input = file.readAll().toBase64().toStdString();
+        std::string output;
+        for (unsigned i = 0; i < input.length(); i += sz) {
+            if (i < input.length())
+            {
+                int len = sz;
+                if ((input.length() - i) < sz)
+                {
+                    len = input.length() - i;
+                }
+
+                output.append("\"");
+                output.append(input.substr(i, len));
+                output.append("\"\n");
+            }
+        }
+        m_output->SetValue("JSON_CONTENT", output);
     }
     else
     {
