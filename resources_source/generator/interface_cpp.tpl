@@ -94,14 +94,14 @@ QString {{CLASS}}Interface::localeName(const QString &name)
 {
     {{#NAMES}}
     if (name == "{{NAME}}")
-        return tr("{{NAME}}");
+        return QObject::tr("{{NAME}}");
     {{/NAMES}}
     return name;
 }
 
 QString {{CLASS}}Interface::localeDescription()
 {
-    return tr("{{DESCRIPTION}}");
+    return QObject::tr("{{DESCRIPTION}}");
 }
 
 
