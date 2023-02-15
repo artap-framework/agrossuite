@@ -74,11 +74,10 @@ class TestAdaptivityAcoustic(AgrosTestCase):
         self.acoustic.number_of_refinements = 0
         self.acoustic.polynomial_order = 1
         self.acoustic.adaptivity_type = "hp-adaptivity"
-        self.acoustic.adaptivity_parameters['steps'] = 12
+        self.acoustic.adaptivity_parameters['steps'] = 20
         self.acoustic.adaptivity_parameters['estimator'] = "kelly"
         self.acoustic.adaptivity_parameters['strategy'] = "fixed_fraction_of_total_error"
-        self.acoustic.adaptivity_parameters['strategy_hp'] = "alternate"          
-        self.acoustic.adaptivity_parameters['tolerance'] = 2
+        self.acoustic.adaptivity_parameters['tolerance'] = 0
         self.acoustic.solver = "linear"
         
         # boundaries
