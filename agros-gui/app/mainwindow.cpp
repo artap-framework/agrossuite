@@ -933,15 +933,20 @@ void MainWindow::doCopy()
     // copy image to clipboard
     QPixmap pixmap;
     if (sceneViewProblem->actSceneModeProblem->isChecked())
+    {
         pixmap = sceneViewProblem->renderScenePixmap();
-    // else if (sceneViewMesh->actSceneModeMesh->isChecked())
-    //    pixmap = sceneViewMesh->renderScenePixmap();
-    // else if (sceneViewPost2D->actSceneModePost2D->isChecked())
-    //     pixmap = sceneViewPost2D->renderScenePixmap();
-    // else if (sceneViewPost3D->actSceneModePost3D->isChecked())
-    //     pixmap = sceneViewPost3D->renderScenePixmap();
-    // else if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
-    //    pixmap = sceneViewParticleTracing->renderScenePixmap();
+    }
+    else if (postprocessorWidget->actSceneModeResults->isChecked())
+    {
+        if (postprocessorWidget->mode() == PostprocessorWidgetMode_Mesh)
+            pixmap = postprocessorWidget->sceneViewMesh()->renderScenePixmap();
+        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post2D)
+            pixmap = postprocessorWidget->sceneViewPost2D()->renderScenePixmap();
+        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post3D)
+            pixmap = postprocessorWidget->sceneViewPost3D()->renderScenePixmap();
+        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Chart)
+            pixmap = postprocessorWidget->sceneViewChart()->chart()->toPixmap();
+    }
 
     QApplication::clipboard()->setImage(pixmap.toImage());
 }

@@ -118,7 +118,6 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
         }
     }
 
-    qInfo() << solver << method << parameters;
     if (!solver.isEmpty())
     {
         Agros::log()->printDebug(QObject::tr("Solver"),
