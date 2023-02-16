@@ -73,14 +73,6 @@ public:
 
     void compute_nodes(QList<PostTriangle> &values, bool deform = false);
 
-#ifdef _MSC_VER
-    virtual dealii::DataOut<2>::cell_iterator first_cell();
-    virtual dealii::DataOut<2>::cell_iterator next_cell(const dealii::DataOut<2>::cell_iterator &old_cell);
-#else
-    virtual typename dealii::DataOut<2>::cell_iterator first_cell();
-    virtual typename dealii::DataOut<2>::cell_iterator next_cell(const typename dealii::DataOut<2>::cell_iterator &old_cell);
-#endif   
-
 private:
     Computation *m_computation;
     const FieldInfo *m_fieldInfo;

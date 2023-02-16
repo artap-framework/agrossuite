@@ -369,6 +369,11 @@ MultiArray PostDeal::activeMultiSolutionArray()
 PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2>(),
     m_computation(parentProblem), m_fieldInfo(fieldInfo)
 {
+    // select only cells with material without none marker
+    this->set_cell_selection([this](const typename dealii::DataOut<2>::cell_iterator &cell)
+    {
+        return !(this->m_computation->scene()->labels->at(cell->material_id() - 1)->marker(this->m_fieldInfo)->isNone());
+    });
 }
 
 void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
@@ -490,37 +495,6 @@ void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase
         node*= 1-yfrac;
         node += ((patch->vertices[3] * xfrac) + (patch->vertices[2] * (1-xfrac))) * yfrac;
     }
-}
-
-dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
-{
-    DataOut<2>::cell_iterator cell = this->dofs->begin_active();
-    while (cell != this->dofs->end())
-    {
-        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
-            break;
-        else
-            cell++;
-    }
-
-    return cell;
-}
-
-dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_iterator &old_cell)
-{
-    // return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
-
-    // ERROR ???
-    DataOut<2>::cell_iterator cell = next_cell(old_cell);
-    while (cell != this->dofs->end())
-    {
-        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
-            break;
-        else
-            cell++;
-    }
-
-    return cell;
 }
 
 // ************************************************************************************************************************
@@ -838,8 +812,8 @@ void ProblemBase::synchronizeCouplings()
         if (!(m_fieldInfos.contains(couplingInfo->sourceFieldId()) &&
               m_fieldInfos.contains(couplingInfo->targetFieldId()) &&
               isCouplingAvailable(couplingInfo->sourceFieldId(), m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
-                                                  couplingInfo->targetFieldId(), m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
-                                                  CouplingType_Weak)))
+                                  couplingInfo->targetFieldId(), m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
+                                  CouplingType_Weak)))
         {
             QPair<QString, QString> key = QPair<QString, QString>(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId());
             m_couplingInfos.remove(key);
