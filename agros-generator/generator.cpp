@@ -21,14 +21,6 @@
 #include "generator.h"
 #include "generator_module.h"
 
-#include "util/constants.h"
-#include "solver/module.h"
-#include "solver/coupling.h"
-
-#include "parser/lex.h"
-
-#include "util/constants.h"
-
 void checkDuplicities(QList<FormInfo> list)
 {
     for(int i = 0; i < list.size(); i++)
