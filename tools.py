@@ -163,7 +163,7 @@ def appimage_package():
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
-    shutil.copy('dealii/build/lib/libdeal_II.so.9.4.0', dest + '/libs/libdeal_II.so.9.4.0')
+    shutil.copy('dealii/build/lib/libdeal_II.so.9.4.2', dest + '/libs/libdeal_II.so.9.4.2')
      
     # strip
     os.system("strip " + dest + "/*")
@@ -221,7 +221,7 @@ def python_pack():
                 shutil.copy("libs/" + file, "agrossuite/libs/" + file)
 
     # deal
-    shutil.copy("dealii/build/lib/libdeal_II.so.9.4.0", "agrossuite/libs/libdeal_II.so.9.4.0")
+    shutil.copy("dealii/build/lib/libdeal_II.so.9.4.2", "agrossuite/libs/libdeal_II.so.9.4.2")
     # os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 

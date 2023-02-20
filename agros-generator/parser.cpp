@@ -1,14 +1,6 @@
-#include "util/constants.h"
-#include "solver/weak_form.h"
-#include "solver/module.h"
-#include "solver/coupling.h"
 #include "parser/lex.h"
-#include "generator.h"
 #include "parser.h"
 #include "parser_instance.h"
-
-//QMap<ParserModuleInfo, QSharedPointer<ParserInstanceWeakForm> > Parser::m_parserWeakFormCache;
-//QMap<ParserModuleInfo, QSharedPointer<ParserInstanceWeakformCheck> > Parser::m_parserWeakFormCheckCache;
 
 // to allow use of QMap for caching (not used at the moment)
 bool operator<(const ParserModuleInfo &pmi1, const ParserModuleInfo &pmi2)
