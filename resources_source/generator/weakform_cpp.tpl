@@ -184,9 +184,6 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         // components cache
         std::vector<int> components(dofs_per_cell);
 
-        // volume value and grad cache
-        // AssembleCache &cache = m_solverDeal->assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
-
         // local cache
         SolverDeal::AssembleCache cache;
 

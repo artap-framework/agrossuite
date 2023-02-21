@@ -37,10 +37,6 @@
 #include <deal.II/numerics/data_postprocessor.h>
 #define signals public
 
-namespace XMLModule
-{
-class field;
-}
 
 class PositionInfo;
 

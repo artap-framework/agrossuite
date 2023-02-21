@@ -32,7 +32,7 @@
 
 #include "util/script_generator.h"
 
-#ifdef TBB_FOUND
+#ifdef DEAL_II_WITH_TBB
 #include <tbb/tbb.h>
 tbb::mutex runPythonHeaderMutex;
 #endif

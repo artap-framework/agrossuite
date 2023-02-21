@@ -21,11 +21,8 @@
 #define LINEAR_SOLVER_H
 
 #include "util/util.h"
-#include "util/global.h"
-#include "solutiontypes.h"
-#include "scene.h"
 
-#include "tbb/tbb.h"
+class FieldInfo;
 
 #undef signals
 #include <deal.II/grid/tria.h>

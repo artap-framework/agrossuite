@@ -392,7 +392,6 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
         for (unsigned int i = 0; i < (patch->n_subdivisions + 1) * (patch->n_subdivisions + 1); i++)
         {
             double value = patch->data(0, i);
-            qInfo() << value;
 
             min = std::min(min, value);
             max = std::max(max, value);

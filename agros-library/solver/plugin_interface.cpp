@@ -18,10 +18,6 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "plugin_interface.h"
-#include "field.h"
-#include "util/global.h"
-
-// #include "../../resources_source/classes/module_xml.h"
 
 // general
 const QString GENERAL = "general";

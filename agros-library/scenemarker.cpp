@@ -19,16 +19,8 @@
 
 #include "scenemarker.h"
 
-#include "util/global.h"
-
-#include "solver/marker.h"
-
-#include "scene.h"
 #include "solver/field.h"
 #include "solver/problem.h"
-
-#include <tbb/tbb.h>
-tbb::mutex addMarkerMutex;
 
 template <typename MarkerType>
 MarkerContainer<MarkerType>::~MarkerContainer()
