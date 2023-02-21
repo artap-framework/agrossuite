@@ -15,8 +15,10 @@ ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga2.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_ctemplate.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.4.2")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_EIGEN.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_MUMPS.so")
+if os.path.isfile(path + "/libs/libsolver_plugin_EIGEN.so"):
+    ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_EIGEN.so")
+if os.path.isfile(path + "/libs/libsolver_plugin_MUMPS.so"):
+    ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_MUMPS.so")
 
 from . import _agros
 
