@@ -1432,51 +1432,6 @@
                             "shortname_html": "<i>J</i><sub>ext,r</sub>",
                             "unit": "A/m2",
                             "unit_html": "A.m<sup>-2</sup>"
-                        },
-                        "magnetic_total_current_imag": {
-                            "condition": "",
-                            "default_value": 0,
-                            "is_bool": false,
-                            "is_source": true,
-                            "name": "Total current - imag",
-                            "only_if": "magnetic_total_current_prescribed",
-                            "only_if_not": "",
-                            "shortname": "Iti",
-                            "shortname_dependence": "",
-                            "shortname_dependence_html": "",
-                            "shortname_html": "<i>I</i><sub>t,i</sub>",
-                            "unit": "A",
-                            "unit_html": "A"
-                        },
-                        "magnetic_total_current_prescribed": {
-                            "condition": "",
-                            "default_value": 0,
-                            "is_bool": true,
-                            "is_source": false,
-                            "name": "Total current prescribed",
-                            "only_if": "",
-                            "only_if_not": "",
-                            "shortname": "IPrescribed",
-                            "shortname_dependence": "",
-                            "shortname_dependence_html": "",
-                            "shortname_html": "IPrescribed",
-                            "unit": "-",
-                            "unit_html": "-"
-                        },
-                        "magnetic_total_current_real": {
-                            "condition": "",
-                            "default_value": 0,
-                            "is_bool": false,
-                            "is_source": true,
-                            "name": "Total current - real",
-                            "only_if": "magnetic_total_current_prescribed",
-                            "only_if_not": "",
-                            "shortname": "Itr",
-                            "shortname_dependence": "",
-                            "shortname_dependence_html": "",
-                            "shortname_html": "<i>I</i><sub>t,r</sub>",
-                            "unit": "A",
-                            "unit_html": "A"
                         }
                     }
                 },
@@ -2389,13 +2344,13 @@
                             "nonlinearity_cart": "",
                             "nonlinearity_planar": ""
                         },
-                        "magnetic_current_density_external_imag": {
+                        "magnetic_current_density_external_real": {
                             "dependency": "",
                             "nonlinearity_axi": "",
                             "nonlinearity_cart": "",
                             "nonlinearity_planar": ""
                         },
-                        "magnetic_current_density_external_real": {
+                        "magnetic_current_density_external_imag": {
                             "dependency": "",
                             "nonlinearity_axi": "",
                             "nonlinearity_cart": "",
@@ -2414,24 +2369,6 @@
                             "nonlinearity_planar": ""
                         },
                         "magnetic_remanence_angle": {
-                            "dependency": "",
-                            "nonlinearity_axi": "",
-                            "nonlinearity_cart": "",
-                            "nonlinearity_planar": ""
-                        },
-                        "magnetic_total_current_imag": {
-                            "dependency": "",
-                            "nonlinearity_axi": "",
-                            "nonlinearity_cart": "",
-                            "nonlinearity_planar": ""
-                        },
-                        "magnetic_total_current_prescribed": {
-                            "dependency": "",
-                            "nonlinearity_axi": "",
-                            "nonlinearity_cart": "",
-                            "nonlinearity_planar": ""
-                        },
-                        "magnetic_total_current_real": {
                             "dependency": "",
                             "nonlinearity_axi": "",
                             "nonlinearity_cart": "",
