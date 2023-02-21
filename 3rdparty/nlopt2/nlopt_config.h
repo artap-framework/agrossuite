@@ -139,7 +139,7 @@
 
 /* Define to C thread-local keyword, or to nothing if this is not supported in
    your compiler. */
-#define THREADLOCAL __declspec(thread)
+#define THREADLOCAL 
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 /* #undef TIME_WITH_SYS_TIME */
