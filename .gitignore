@@ -82,7 +82,7 @@ resources_source/resources.rc
 *.bak
 *.spc
 CMakeFiles
-CMakeCache.txt
+CMakeCache.txt*
 *.unsuccessfulbuild
 *_automoc.cpp
 *.cbp
@@ -108,7 +108,6 @@ install_manifest.txt
 standalone
 *.supp
 optilab
-solver-external-paralution/paralution/build/
 libs/solver_stat
 .ipynb_checkpoints
 *ninja*
@@ -119,6 +118,7 @@ Agros.AppDir/resources/
 *_autogen/
 .qtc_clangd/
 agrossuite.egg-info/
-agrossuite/_agros.so
+_agros.so
+_agros.cpp
 build/
 dist/
