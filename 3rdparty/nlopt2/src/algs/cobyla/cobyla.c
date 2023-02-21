@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <stdint.h>
 #include "cobyla.h"
 
 /* SGJ, 2008: modified COBYLA code to take explicit account of bound
@@ -284,7 +284,7 @@ done:
    rather than use nlopt_urand, and set the initial seed deterministically. */
 
 #if defined(HAVE_STDINT_H)
-#  include <stdint.h>
+// #  include <stdint.h>
 #endif
 
 #ifndef HAVE_UINT32_T
