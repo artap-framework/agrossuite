@@ -101,8 +101,11 @@ const int QUADRATURE_ORDER_INCREASE = 2;
 const int MAX_NUM_NONLIN_ITERS = 100;
 const int MAX_NUM_TRANSIENT_ADAPTIVE_ITERS = 20;
 
+#ifdef DEAL_II_WITH_TBB
+#include "tbb/tbb.h"
 tbb::mutex createCache;
 tbb::mutex resizeCache;
+#endif
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                                                      const dealii::hp::MappingCollection<2> &mappingCollection,
@@ -143,53 +146,12 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
 
 void SolverDeal::solveProblem()
 {
-    // clear cache
-    m_assembleCache.clear();
-
     m_computation->propagateBoundaryMarkers();
 
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         solveTransient();
     else
         solveSteadyState();
-}
-
-SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points)
-{
-    assert(0);
-
-    // create or resize cache
-    bool idExists = !(m_assembleCache.find(thread_id) == m_assembleCache.end());
-
-    if (!idExists || m_assembleCache[thread_id].dofs_per_cell < dofs_per_cell)
-    {
-        {
-            tbb::mutex::scoped_lock lock(createCache);
-
-            SolverDeal::AssembleCache cache;
-
-            // volume value and grad cache
-            cache.shape_value = std::vector<std::vector<double> >(dofs_per_cell, std::vector<double>(n_q_points));
-            cache.shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
-
-            // surface cache
-            cache.shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
-            cache.shape_face_value = std::vector<std::vector<std::vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<std::vector<double> >(dofs_per_cell));
-            cache.shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
-
-            // previous values and grads
-            cache.solution_value_previous = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-            cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-            cache.dofs_per_cell = dofs_per_cell;
-            cache.n_q_points = n_q_points;
-
-            m_assembleCache[thread_id] = cache;
-            // std::cout << "init " << thread_id << std::endl;
-        }
-    }
-
-    return m_assembleCache[thread_id];
 }
 
 
@@ -543,7 +505,7 @@ SolverDeal::SolverDeal(Computation *computation, const FieldInfo *fieldInfo)
 
 SolverDeal::~SolverDeal()
 {
-    m_assembleCache.clear();
+    // m_assembleCache.clear();
 }
 
 void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> primal,

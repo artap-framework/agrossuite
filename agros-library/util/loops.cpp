@@ -31,9 +31,10 @@
 
 #include "scene.h"
 
+#ifdef DEAL_II_WITH_TBB
 #include "tbb/tbb.h"
-
 tbb::mutex processMutex;
+#endif
 
 const static int LOOPS_NON_EXISTING = -100000;
 const static double TOL = 0.001;
@@ -849,8 +850,9 @@ void LoopsInfo::processPolygonTriangles(bool force)
     try
     {
         {
+#ifdef DEAL_II_WITH_TBB
             tbb::mutex::scoped_lock lock(processMutex);
-
+#endif
             clear();
 
             // find loops

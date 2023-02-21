@@ -29,8 +29,6 @@
 #include "solver.h"
 #include "linear_solver.h"
 
-#include "tbb/tbb.h"
-
 #undef signals
 #include <deal.II/dofs/dof_handler.h>
 

@@ -26,20 +26,15 @@
 #include "util/global.h"
 #include "gui/lineeditdouble.h"
 
-#include "scene.h"
-#include "scenenode.h"
-#include "sceneedge.h"
-
 #include "gui/lineeditdouble.h"
-#include "gui/common.h"
-
-#include "solver/module.h"
 
 #include "ctemplate/template.h"
 #include "qcustomplot/qcustomplot.h"
 
-#include <tbb/tbb.h>
+#ifdef DEAL_II_WITH_TBB
+#include "tbb/mutex.h"
 tbb::mutex compileExpressionMutex;
+#endif
 
 const QString GENERAL = "general";
 const QString VERSION = "version";
@@ -66,7 +61,9 @@ void materialValues(const QString exprStr, double lower, double upper, int count
 {
     QString str = exprStr;
 
+#ifdef DEAL_II_WITH_TBB
     tbb::mutex::scoped_lock lock(compileExpressionMutex);
+#endif
 
     // replace "**" with "^"
     str = str.replace("**", "^");

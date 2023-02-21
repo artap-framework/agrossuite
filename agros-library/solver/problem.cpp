@@ -372,8 +372,10 @@ PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dea
     // select only cells with material without none marker
     this->set_cell_selection([this](const typename dealii::DataOut<2>::cell_iterator &cell)
     {
-        // return true;
-        return !(this->m_computation->scene()->labels->at(cell->material_id() - 1)->marker(this->m_fieldInfo)->isNone());
+        if (cell->is_active())
+            return !(this->m_computation->scene()->labels->at(cell->material_id() - 1)->marker(this->m_fieldInfo)->isNone());
+        else
+            return false;
     });
 }
 
@@ -392,7 +394,6 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
         for (unsigned int i = 0; i < (patch->n_subdivisions + 1) * (patch->n_subdivisions + 1); i++)
         {
             double value = patch->data(0, i);
-            qInfo() << value;
 
             min = std::min(min, value);
             max = std::max(max, value);
@@ -406,8 +407,6 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
             }
         }
     }
-
-    // qInfo() << min << max;
 
     double dmult = 0.0;
     if (deform)

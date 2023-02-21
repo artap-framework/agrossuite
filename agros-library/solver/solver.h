@@ -27,8 +27,6 @@
 #include "linear_solver.h"
 #include "estimators.h"
 
-#include "tbb/tbb.h"
-
 #undef signals
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
@@ -49,6 +47,7 @@
 #include <deal.II/lac/sparse_direct.h>
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/base/time_stepping.h>
+#include <deal.II/base/config.h>
 #define signals public
 
 class FieldInfo;
@@ -178,10 +177,6 @@ public:
     // assemble base class
     virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase(dealii::Triangulation<2> &triangulation) = 0;
 
-    // assemble cache
-    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
-    inline void clearCache() { m_assembleCache.clear(); }
-
 protected:   
     class AGROS_LIBRARY_API AssemblyScratchData
     {
@@ -223,9 +218,6 @@ protected:
     // local reference
     Computation *m_computation;
     const FieldInfo *m_fieldInfo;
-
-    // assemble cache
-    std::map<tbb::tbb_thread::id, AssembleCache> m_assembleCache;
 
     // quadrature cache
     dealii::hp::QCollection<2> m_quadratureFormulas;

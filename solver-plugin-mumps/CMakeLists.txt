@@ -27,7 +27,6 @@ SET(SOURCES main.cpp ../agros-library/solver/plugin_solver_interface.cpp)
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.70.0/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb-2018_U2/include/")
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
 

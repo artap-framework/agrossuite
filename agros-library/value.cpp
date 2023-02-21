@@ -19,7 +19,6 @@
 
 #include "value.h"
 
-#include "tbb/mutex.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "parser/lex.h"
@@ -29,11 +28,14 @@
 static const int LOCAL_SYMBOL_TABLE = 0;
 static const int PARAMETERS_SYMBOL_TABLE = 1;
 
+#ifdef DEAL_II_WITH_TBB
+#include "tbb/mutex.h"
 tbb::mutex numberEvaluateMutex;
 tbb::mutex numberSetMutex;
 tbb::mutex numberAtPointMutex;
 tbb::mutex numberAtTimeMutex;
 tbb::mutex numberAtTimeAndPointMutex;
+#endif
 
 Value::Value()
     : m_problem(nullptr),
@@ -162,8 +164,9 @@ double Value::number() const
     if (m_problem)
     {
         {
+#ifdef DEAL_II_WITH_TBB
             tbb::mutex::scoped_lock lock(numberEvaluateMutex);
-
+#endif
             if (!(m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) == m_problem->config()->parameters()->symbolTable()))
             {
                 // replace parameters symbol table
@@ -179,7 +182,7 @@ double Value::number() const
                 {
                     m_isEvaluated = false;
                     qDebug() << "Value::number()" << m_error;
-                }                
+                }
             }
         }
     }
@@ -193,19 +196,23 @@ double Value::numberAtPoint(const Point &point) const
     if (!isCoordinateDependent())
         return number();
 
-    tbb::mutex::scoped_lock lock(numberAtPointMutex);
-    if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
-            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
-        return number();
-
     {
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
+#ifdef DEAL_II_WITH_TBB
+        tbb::mutex::scoped_lock lock(numberAtPointMutex);
+#endif
+        if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
+                && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
+            return number();
 
-        compileExpression(m_text, *m_exprtkExpr);
-        return number();
+        {
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
+
+            compileExpression(m_text, *m_exprtkExpr);
+            return number();
+        }
     }
 }
 
@@ -214,15 +221,19 @@ double Value::numberAtTime(double time) const
     if (!isTimeDependent())
         return number();
 
-    tbb::mutex::scoped_lock lock(numberAtTimeMutex);
-    if (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
-        return number();
-
     {
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
+#ifdef DEAL_II_WITH_TBB
+        tbb::mutex::scoped_lock lock(numberAtTimeMutex);
+#endif
+        if (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
+            return number();
 
-        compileExpression(m_text, *m_exprtkExpr);
-        return number();
+        {
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
+
+            compileExpression(m_text, *m_exprtkExpr);
+            return number();
+        }
     }
 }
 
@@ -231,21 +242,25 @@ double Value::numberAtTimeAndPoint(const double time, const Point &point) const
     if (!isTimeDependent() && !isCoordinateDependent())
         return number();
 
-    tbb::mutex::scoped_lock lock(numberAtTimeAndPointMutex);
-    if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
-            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
-            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
-        return number();
-
     {
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
-        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
+#ifdef DEAL_II_WITH_TBB
+        tbb::mutex::scoped_lock lock(numberAtTimeAndPointMutex);
+#endif
+        if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
+                && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
+                && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
+            return number();
 
-        compileExpression(m_text, *m_exprtkExpr);
-        return number();
+        {
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
+            m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
+
+            compileExpression(m_text, *m_exprtkExpr);
+            return number();
+        }
     }
 }
 
@@ -299,8 +314,9 @@ void Value::setText(const QString &str)
         lexicalAnalysis();
 
         {
+#ifdef DEAL_II_WITH_TBB
             tbb::mutex::scoped_lock lock(numberSetMutex);
-
+#endif
             // expression
             if (!m_exprtkExpr)
             {

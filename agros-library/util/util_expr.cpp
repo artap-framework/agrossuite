@@ -19,15 +19,19 @@
 
 #include "util/util_expr.h"
 
+#ifdef DEAL_II_WITH_TBB
 #include <tbb/tbb.h>
 tbb::mutex compileExpressionMutex;
+#endif
 
 static exprtk::parser<double> *m_exprtkParser = nullptr;
 
 bool compileExpression(const QString &exprString, exprtk::expression<double> &expr, QString *error)
 {
     {
+#ifdef DEAL_II_WITH_TBB
         tbb::mutex::scoped_lock lock(compileExpressionMutex);
+#endif
 
         if (!m_exprtkParser)
             m_exprtkParser = new exprtk::parser<double>();
