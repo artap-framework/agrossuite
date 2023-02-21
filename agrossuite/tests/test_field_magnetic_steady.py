@@ -95,13 +95,6 @@ class TestMagneticPlanar(AgrosTestCase):
         self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.531945167373358)
         self.value_test("Surface Maxwell force - y", surface["Fty"], -10.176192051889345, 0.05)
         self.value_test("Surface Maxwell torque", surface["Tt"], 0.09914308361389448)          
-        
-#    def test_values_total_current(self):
-#        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 1e6*1.225e-2})
-#        self.geometry.add_label(0.00301448, 0.0404858, area = 0.005, materials = {"magnetic" : "Cu"})
-#        self.computation = self.problem.computation()
-#        self.computation.solve()
-#        self.general_test_values()
 
     def test_values_current_density(self):
         self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : 1e6})
@@ -203,13 +196,6 @@ class TestMagneticAxisymmetric(AgrosTestCase):
         # surface integral
         surface = solution.surface_integrals([12, 13, 14, 15])
         self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.05)
-#        
-#    def test_values_total_current(self):
-#        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 2e6*1.216e-3 }) 
-#        self.geometry.add_label(0.021206, 0.0692964, materials = {"magnetic" : "Cu"})
-#        self.computation = self.problem.computation()
-#        self.computation.solve()        
-#        self.general_test_values()
 
     def test_values_current_density(self):
         self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : 2e6}) 
@@ -331,10 +317,10 @@ class TestMagneticNonlinAxisymmetric(AgrosTestCase):
         self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
         
         # materials
-        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 2e+06, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
-        self.magnetic.add_material("Fe", {"magnetic_permeability" : { "value" : 300, "x" : [0,0.170911,0.177249,0.20487,0.212115,0.253777,0.275513,0.282755,0.328941,0.405909,0.424924,0.771689,0.858155,1.2092,1.33438,1.3589,1.51368,1.60909,1.64417,1.66552,1.69157,1.73858,1.79572,1.82437,1.93984,1.9929,2.00005,2.01811,2.07161,2.08962,2.20335,2.30633,2.48983], "y" : [729.678,982.941,1008.92,1119.05,1146.74,1289.7,1357.53,1378.93,1508.03,1696.32,1739.63,2274.94,2330.44,2002.5,1706.76,1633.54,997.751,638.141,524.418,464.22,399.375,297.585,211.579,176.496,87.0871,62.8709,59.9063,53.3691,37.7024,33.2283,16.7621,10.3287,6.16704], "interpolation" : "piecewise_linear", "extrapolation" : "constant", "derivative_at_endpoints" : "first" }, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
-        self.magnetic.add_material("Air", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
-        self.magnetic.add_material("Magnet", {"magnetic_permeability" : 1.1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0.6, "magnetic_remanence_angle" : 90, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
+        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 2e+06})
+        self.magnetic.add_material("Fe", {"magnetic_permeability" : { "value" : 300, "x" : [0,0.170911,0.177249,0.20487,0.212115,0.253777,0.275513,0.282755,0.328941,0.405909,0.424924,0.771689,0.858155,1.2092,1.33438,1.3589,1.51368,1.60909,1.64417,1.66552,1.69157,1.73858,1.79572,1.82437,1.93984,1.9929,2.00005,2.01811,2.07161,2.08962,2.20335,2.30633,2.48983], "y" : [729.678,982.941,1008.92,1119.05,1146.74,1289.7,1357.53,1378.93,1508.03,1696.32,1739.63,2274.94,2330.44,2002.5,1706.76,1633.54,997.751,638.141,524.418,464.22,399.375,297.585,211.579,176.496,87.0871,62.8709,59.9063,53.3691,37.7024,33.2283,16.7621,10.3287,6.16704], "interpolation" : "piecewise_linear", "extrapolation" : "constant", "derivative_at_endpoints" : "first" }, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0})
+        self.magnetic.add_material("Air", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0})
+        self.magnetic.add_material("Magnet", {"magnetic_permeability" : 1.1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0.6, "magnetic_remanence_angle" : 90, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0})
         
         # geometry
         geometry = problem.geometry()
