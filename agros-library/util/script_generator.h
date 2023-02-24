@@ -27,7 +27,16 @@ class ScriptGenerator
 public:
     ScriptGenerator();
 
+    inline void setParametersAsVariables(bool v) { m_parametersAsVariables = v; }
+    inline void setAddSolution(bool v) { m_addSolution = v; }
+    inline void setAddComputation(bool v) { m_addComputation = v; }
+
     QString createPythonFromModel();
+
+private:
+    bool m_addComputation;
+    bool m_addSolution;
+    bool m_parametersAsVariables;
 };
 
 #endif // SCRIPTGENERATOR_H

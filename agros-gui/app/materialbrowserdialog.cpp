@@ -277,11 +277,13 @@ void LibraryMaterial::write(const QString &fileName)
     file.write(doc.toJson(QJsonDocument::Indented));
 }
 
-MaterialEditDialog::MaterialEditDialog(const QString &fileName, QWidget *parent) : QDialog(parent),
+MaterialEditDialog::MaterialEditDialog(const QString &fileName, QWidget *parent)
+    : QDialog(parent),
     m_fileName(fileName)
 {
     setWindowTitle(tr("Material editor"));
-    
+    setWindowFlags(Qt::WindowFlags() | Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
     createControls();
     
     readMaterial();

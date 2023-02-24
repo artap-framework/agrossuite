@@ -131,7 +131,6 @@ class TestMagneticHarmonicPlanar(AgrosTestCase):
         self.geometry.add_label(0.00778124, 0.00444642, materials = {"magnetic" : "Cond 1"}, area=1e-05)
         self.computation = self.problem.computation()
         self.computation.solve()  
-#        self.problem.solve()
         self.general_nonzero_cond_test_values()
                           
     # zero conductivity and external current density given                                                        
@@ -140,7 +139,6 @@ class TestMagneticHarmonicPlanar(AgrosTestCase):
         self.geometry.add_label(0.00778124, 0.00444642, materials = {"magnetic" : "Cond 1"}, area=1e-05)
         self.computation = self.problem.computation()
         self.computation.solve()  
-#        self.problem.solve()
         self.general_zero_cond_test_values()
 
 class TestMagneticHarmonicAxisymmetric(AgrosTestCase):

@@ -70,6 +70,8 @@ SET(SOURCES main.cpp
     app/sceneview_post2d.cpp
     app/sceneview_post3d.cpp
     app/sceneview_post.cpp
+    app/scriptgenerator_utils.cpp
+    app/scriptgeneratordialog.cpp
     # app/sceneview_vtk2d.cpp
     app/videodialog.cpp    
     optilab/optilab.cpp
@@ -128,6 +130,8 @@ SET(HEADERS gui/about.h
     app/sceneview_post2d.h
     app/sceneview_post3d.h
     app/sceneview_post.h
+    app/scriptgenerator_utils.h
+    app/scriptgeneratordialog.h
     # app/sceneview_vtk2d.h
     app/videodialog.h    
     optilab/optilab.h

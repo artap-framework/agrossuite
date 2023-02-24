@@ -26,10 +26,10 @@
 #include "gui/checkversion.h"
 #include "util/global.h"
 #include "util/conf.h"
-#include "util/script_generator.h"
 
 #include "app/scenegeometrydialog.h"
 #include "app/scenemarkerdialog.h"
+#include "app/scriptgeneratordialog.h"
 
 #include "solver/module.h"
 #include "solver/problem.h"
@@ -155,6 +155,10 @@ MainWindow::~MainWindow()
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
+
+    delete m_connectLog;
+    if (logStdOut != nullptr)
+        delete logStdOut;
 }
 
 void MainWindow::createActions()
@@ -835,26 +839,8 @@ void MainWindow::doDocumentSaveGeometry()
 
 void MainWindow::doCreatePythonFromModel()
 {
-    auto scriptGenerator = ScriptGenerator();
-
-    QString script = scriptGenerator.createPythonFromModel();
-    QString fn = tempProblemFileName() + ".py";
-
-    writeStringContent(fn, script);
-
-    QStringList splitted = Agros::configComputer()->value(Config::Config_ExternalPythonEditor).toString().split(' ');
-
-    if (splitted.size() > 0)
-    {
-        QStringList args;
-        for (int i = 1; i < splitted.size(); i++)
-            args << splitted[i];
-        args << fn;
-
-        QProcess process;
-        process.startDetached(splitted[0], args);
-        // process.startDetached(QString("%1/pythonlab").arg(QCoreApplication::applicationDirPath()), QStringList() << "-s" << fn);
-    }
+    auto scriptDialog = new ScriptGeneratorDialog();
+    scriptDialog->show();
 }
 
 void MainWindow::doSolve()

@@ -33,7 +33,8 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-ScriptGenerator::ScriptGenerator()
+ScriptGenerator::ScriptGenerator() :
+    m_addComputation(true), m_addSolution(true), m_parametersAsVariables(true)
 {
 }
 
@@ -52,9 +53,19 @@ QString ScriptGenerator::createPythonFromModel()
     str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros::problem()->config()->meshType()));
 
     // parameters
+    str += "\n";
     QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
+    if (!parameters.isEmpty())
+        str += "# parameters\n";
     foreach (QString key, parameters.keys())
-        str += QString("problem.parameters[\"%1\"] = %2\n").arg(key).arg(parameters[key].value());
+        if (m_parametersAsVariables)
+        {
+            str += QString("%1 = %2\n").arg(key).arg(parameters[key].value());
+        }
+        else
+        {
+            str += QString("problem.parameters[\"%1\"] = %2\n").arg(key).arg(parameters[key].value());
+        }
     if (parameters.count() > 0)
         str += "\n";
 
@@ -302,6 +313,12 @@ QString ScriptGenerator::createPythonFromModel()
                                 arg(variable.id()).
                                 arg(value->toString());
                     }
+                    else if (m_parametersAsVariables)
+                    {
+                        variables += QString("\"%1\" : %2, ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
                     else
                     {
                         variables += QString("\"%1\" : \"%2\", ").
@@ -364,6 +381,12 @@ QString ScriptGenerator::createPythonFromModel()
                                 arg(variable.id()).
                                 arg(value->toString());
                     }
+                    else if (m_parametersAsVariables)
+                    {
+                        variables += QString("\"%1\" : %2, ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
                     else
                     {
                         variables += QString("\"%1\" : \"%2\", ").
@@ -398,17 +421,23 @@ QString ScriptGenerator::createPythonFromModel()
             Value endPointY = edge->nodeEnd()->pointValue().y();
 
             str += QString("geometry.add_edge(%1, %2, %3, %4").
-                    arg(startPointX.isNumber() ? QString::number(startPointX.number()) : QString("\"%1\"").arg(startPointX.toString())).
-                    arg(startPointY.isNumber() ? QString::number(startPointY.number()) : QString("\"%1\"").arg(startPointY.toString())).
-                    arg(endPointX.isNumber() ? QString::number(endPointX.number()) : QString("\"%1\"").arg(endPointX.toString())).
-                    arg(endPointY.isNumber() ? QString::number(endPointY.number()) : QString("\"%1\"").arg(endPointY.toString()));
+                    arg(startPointX.isNumber() ? QString::number(startPointX.number()) :
+                                                 m_parametersAsVariables ? QString("%1").arg(startPointX.toString()) : QString("\"%1\"").arg(startPointX.toString())).
+                    arg(startPointY.isNumber() ? QString::number(startPointY.number()) :
+                                                 m_parametersAsVariables ? QString("%1").arg(startPointY.toString()) : QString("\"%1\"").arg(startPointY.toString())).
+                    arg(endPointX.isNumber() ? QString::number(endPointX.number()) :
+                                               m_parametersAsVariables ? QString("%1").arg(endPointX.toString()) : QString("\"%1\"").arg(endPointX.toString())).
+                    arg(endPointY.isNumber() ? QString::number(endPointY.number()) :
+                                               m_parametersAsVariables ? QString("%1").arg(endPointY.toString()) : QString("\"%1\"").arg(endPointY.toString()));
 
             if (edge->angle() > 0.0)
             {
                 if (edge->angleValue().isNumber())
                     str += ", angle = " + QString::number(edge->angle());
-                else
+                else if (m_parametersAsVariables)
                     str += QString("%1").arg(edge->angleValue().toString());
+                else
+                    str += QString("\"%1\"").arg(edge->angleValue().toString());
 
                 if (edge->segments() > 4)
                     str += ", segments = " + QString::number(edge->segments());
@@ -450,8 +479,10 @@ QString ScriptGenerator::createPythonFromModel()
             Value pointX = label->pointValue().x();
             Value pointY = label->pointValue().y();
             str += QString("geometry.add_label(%1, %2").
-                    arg(pointX.isNumber() ? QString::number(pointX.number()) : QString("\"%1\"").arg(pointX.toString())).
-                    arg(pointY.isNumber() ? QString::number(pointY.number()) : QString("\"%1\"").arg(pointY.toString()));
+                    arg(pointX.isNumber() ? QString::number(pointX.number()) :
+                                            m_parametersAsVariables ? QString("%1").arg(pointX.toString()) : QString("\"%1\"").arg(pointX.toString())).
+                    arg(pointY.isNumber() ? QString::number(pointY.number()) :
+                                            m_parametersAsVariables ? QString("%1").arg(pointY.toString()) : QString("\"%1\"").arg(pointY.toString()));
 
             if (label->area() > 0.0)
                 str += ", area = " + QString::number(label->area());
@@ -631,9 +662,42 @@ QString ScriptGenerator::createPythonFromModel()
                 }
             }
 
+            if (m_addComputation)
+            {
+                str += "# computation\n";
+                str += QString("study_%1.solve()\n").
+                        arg(studyTypeToStringKey(study->type()));
+            }
+
             str += "\n";
         }
     }
+
+    if (Agros::problem()->studies()->items().count() == 0)
+    {
+        str += "\n";
+        if (m_addComputation)
+        {
+            str += "\n";
+            str += "# computation\n";
+            str += "computation = problem.computation()\n";
+            str += "computation.solve()\n";
+        }
+
+        str += "\n";
+        if (m_addSolution)
+        {
+            str += "# solution\n";
+            foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
+            {
+                str += QString("solution_%1 = computation.solution(\"%2\")\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->fieldId());
+            }
+        }
+    }
+
+    str += "\n";
 
     return str;
 }

@@ -42,7 +42,6 @@ private slots:
 private:
     // main
     QComboBox *cmbLanguage;
-    QLineEdit *txtExternalPythonEditor;
 
     // show result in line edit value widget
     QCheckBox *chkLineEditValueShowResult;
