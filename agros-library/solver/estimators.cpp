@@ -316,93 +316,93 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
 
 // ************************************************************************************************************************
 
-DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const dealii::hp::FECollection<2> &primal_fe,
-                                                                   const dealii::Vector<double> &primal_solution,
-                                                                   const dealii::Vector<double> &dual_solution)
-    :
-      hp_fe_values(primal_fe,
-                   dealii::hp::QCollection<2>(dealii::QGauss<2>(5)),
-                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
-      primal_solution(primal_solution),
-      dual_solution(dual_solution)
-{
-}
+//DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const dealii::hp::FECollection<2> &primal_fe,
+//                                                                   const dealii::Vector<double> &primal_solution,
+//                                                                   const dealii::Vector<double> &dual_solution)
+//    :
+//      hp_fe_values(primal_fe,
+//                   dealii::hp::QCollection<2>(dealii::QGauss<2>(5)),
+//                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
+//      primal_solution(primal_solution),
+//      dual_solution(dual_solution)
+//{
+//}
+//
+//DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const EstimateScratchData &scratch_data)
+//    :
+//      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(),
+//                   scratch_data.hp_fe_values.get_quadrature_collection(),
+//                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
+//      primal_solution(scratch_data.primal_solution),
+//      dual_solution(scratch_data.dual_solution)
+//{
+//}
+//
+//void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_dof,
+//                                        const dealii::Vector<double> &primal_solution,
+//                                        const dealii::Vector<double> &dual_solution,
+//                                        dealii::Vector<float> &error_per_cell)
+//{
+//    Assert (error_per_cell.size() == primal_dof.get_triangulation().n_active_cells(),
+//            ExcInvalidVectorLength (error_per_cell.size(),
+//                                    primal_dof.get_triangulation().n_active_cells()));
+//    typedef std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+//
+//    dealii::SynchronousIterators<IteratorTuple>
+//            begin_sync_it (IteratorTuple(primal_dof.begin_active(), error_per_cell.begin())),
+//            end_sync_it (IteratorTuple(primal_dof.end(), error_per_cell.end()));
+//
+//    dealii::WorkStream::run(begin_sync_it,
+//                            end_sync_it,
+//                            &DifferenceErrorEstimator::estimate_cell,
+//                            std::function<void (const EstimateCopyData &)> (),
+//                            EstimateScratchData(primal_dof.get_fe_collection(), primal_solution, dual_solution),
+//                            EstimateCopyData());
+//}
 
-DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const EstimateScratchData &scratch_data)
-    :
-      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(),
-                   scratch_data.hp_fe_values.get_quadrature_collection(),
-                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
-      primal_solution(scratch_data.primal_solution),
-      dual_solution(scratch_data.dual_solution)
-{
-}
-
-void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_dof,
-                                        const dealii::Vector<double> &primal_solution,
-                                        const dealii::Vector<double> &dual_solution,
-                                        dealii::Vector<float> &error_per_cell)
-{
-    Assert (error_per_cell.size() == primal_dof.get_triangulation().n_active_cells(),
-            ExcInvalidVectorLength (error_per_cell.size(),
-                                    primal_dof.get_triangulation().n_active_cells()));
-    typedef std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
-
-    dealii::SynchronousIterators<IteratorTuple>
-            begin_sync_it (IteratorTuple(primal_dof.begin_active(), error_per_cell.begin())),
-            end_sync_it (IteratorTuple(primal_dof.end(), error_per_cell.end()));
-
-    dealii::WorkStream::run(begin_sync_it,
-                            end_sync_it,
-                            &DifferenceErrorEstimator::estimate_cell,
-                            std::function<void (const EstimateCopyData &)> (),
-                            EstimateScratchData(primal_dof.get_fe_collection(), primal_solution, dual_solution),
-                            EstimateCopyData());
-}
-
-void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
-                                             EstimateScratchData &scratch_data,
-                                             const EstimateCopyData &)
-{
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(*cell));
-
-    const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
-
-    // reinit volume
-    scratch_data.hp_fe_values.reinit(cell_it);
-
-    const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
-    const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-    // TODO: more solutions
-    std::vector<dealii::Vector<double> > primal_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
-    std::vector<std::vector<dealii::Tensor<1, 2> > > primal_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
-    std::vector<dealii::Vector<double> > dual_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
-    std::vector<std::vector<dealii::Tensor<1, 2> > > dual_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
-    fe_values.get_function_values(scratch_data.primal_solution, primal_solution_value);
-    fe_values.get_function_gradients(scratch_data.primal_solution, primal_solution_gradients);
-    fe_values.get_function_values(scratch_data.dual_solution, dual_solution_value);
-    fe_values.get_function_gradients(scratch_data.dual_solution, dual_solution_gradients);
-
-    // h1-norm
-    double value = 0.0;
-    for (unsigned int k = 0; k < n_q_points; ++k)
-    {
-        for (unsigned int l = 0; l < cell_it->get_fe().n_components(); l++)
-        {
-            // h1-norm
-            value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l])
-                                         + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
-            // l2-norm
-            // value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l]));
-            // h1-seminorm
-            // value += fe_values.JxW(k) * ((primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
-        }
-    }
-
-    *(std_get<1>(*cell)) = value;
-    // *(std_get<1>(cell.iterators)) = log(value);
-}
+//void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+//                                             EstimateScratchData &scratch_data,
+//                                             const EstimateCopyData &)
+//{
+//    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(*cell));
+//
+//    const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
+//
+//    // reinit volume
+//    scratch_data.hp_fe_values.reinit(cell_it);
+//
+//    const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
+//    const unsigned int n_q_points = fe_values.n_quadrature_points;
+//
+//    // TODO: more solutions
+//    std::vector<dealii::Vector<double> > primal_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
+//    std::vector<std::vector<dealii::Tensor<1, 2> > > primal_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
+//    std::vector<dealii::Vector<double> > dual_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
+//    std::vector<std::vector<dealii::Tensor<1, 2> > > dual_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
+//    fe_values.get_function_values(scratch_data.primal_solution, primal_solution_value);
+//    fe_values.get_function_gradients(scratch_data.primal_solution, primal_solution_gradients);
+//    fe_values.get_function_values(scratch_data.dual_solution, dual_solution_value);
+//    fe_values.get_function_gradients(scratch_data.dual_solution, dual_solution_gradients);
+//
+//    // h1-norm
+//    double value = 0.0;
+//    for (unsigned int k = 0; k < n_q_points; ++k)
+//    {
+//        for (unsigned int l = 0; l < cell_it->get_fe().n_components(); l++)
+//        {
+//            // h1-norm
+//            value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l])
+//                                         + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+//            // l2-norm
+//            // value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l]));
+//            // h1-seminorm
+//            // value += fe_values.JxW(k) * ((primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+//        }
+//    }
+//
+//    *(std_get<1>(*cell)) = value;
+//    // *(std_get<1>(cell.iterators)) = log(value);
+//}
 
 // ************************************************************************************************************************
 

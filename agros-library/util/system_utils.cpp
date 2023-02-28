@@ -290,18 +290,7 @@ size_t SystemUtils::totalMemorySize()
 QString SystemUtils::operatingSystem()
 {
 #ifdef Q_WS_WIN
-    switch (QSysInfo::windowsVersion())
-    {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // This somehow does not work for Qt 4.8
-    case QSysInfo::WV_WINDOWS8: return "Windows 8";
-#endif
-    case QSysInfo::WV_WINDOWS7: return "Windows 7";
-    case QSysInfo::WV_VISTA: return "Windows Vista";
-    case QSysInfo::WV_2003: return "Windows 2003";
-    case QSysInfo::WV_2000: return "Windows 2000";
-    case QSysInfo::WV_XP: return "Windows XP";
-    default: return "Windows";
-    }
+    return QSysInfo::productVersion();    
 #endif
 #ifdef Q_WS_X11
     FILE* pipe = popen("lsb_release -ds", "r");

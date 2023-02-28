@@ -22,7 +22,12 @@ project (${NLOPTLIB_LIBRARY})
 list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 option (NLOPT_CXX "enable cxx routines" OFF)
+IF(MSVC)
+option (BUILD_SHARED_LIBS "Build NLopt as a shared library" OFF)
+ELSE()
 option (BUILD_SHARED_LIBS "Build NLopt as a shared library" ON)
+ENDIF()
+
 option (NLOPT_PYTHON "build python bindings" OFF)
 option (NLOPT_OCTAVE "build octave bindings" OFF)
 option (NLOPT_MATLAB "build matlab bindings" OFF)
