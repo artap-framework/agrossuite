@@ -33,6 +33,9 @@ see quazip/(un)zip.h files for details. Basically it's the zlib license.
   be defined explicitly to avoid possible troubles with unnecessary
   importing/exporting.
   */
+#if defined(_WIN32)
+#define QUAZIP_STATIC
+#endif
 #ifdef QUAZIP_STATIC
 #define QUAZIP_EXPORT
 #else
