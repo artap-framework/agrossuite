@@ -51,6 +51,9 @@ class TemplateCacheUnittest;
 // NOTE: if you are statically linking the template library into your binary
 // (rather than using the template .dll), set '/D CTEMPLATE_DLL_DECL='
 // as a compiler flag in your project file to turn off the dllimports.
+#ifdef _MSC_VER
+#define CTEMPLATE_DLL_DECL
+#endif
 #ifndef CTEMPLATE_DLL_DECL
 # define CTEMPLATE_DLL_DECL  __declspec(dllimport)
 extern template class __declspec(dllimport) std::allocator<std::string>;

@@ -211,6 +211,10 @@
 // to define this here because this file is only used internally, to
 // compile the DLL, and every dll source file #includes "config.h"
 // before anything else.
+#ifdef _MSVC_VER
+#define CTEMPLATE_DLL_DECL
+#endif
+
 #ifndef CTEMPLATE_DLL_DECL
 # define CTEMPLATE_DLL_DECL  __declspec(dllexport)
 # define CTEMPLATE_DLL_DECL_FOR_UNITTESTS  __declspec(dllimport)
