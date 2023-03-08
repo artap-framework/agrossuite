@@ -21,17 +21,18 @@
 #define PLUGINSOLVERINTERFACE_H
 
 // Windows DLL export/import definitions
-#ifdef Q_WS_WIN
+#ifdef _MSC_VER
+#define AGROS_LIBRARY_API
 // windows
 // DLL build
-#ifdef AGROS_LIBRARY_DLL
-#define AGROS_LIBRARY_API __declspec(dllexport)
-// DLL usage
+//#ifdef AGROS_LIBRARY_DLL
+//#define AGROS_LIBRARY_API __declspec(dllexport)
+//// DLL usage
+//#else
+//#define AGROS_LIBRARY_API __declspec(dllimport)
+//#endif
 #else
-#define AGROS_LIBRARY_API __declspec(dllimport)
-#endif
-#else
-// linux
+//// linux
 #define AGROS_LIBRARY_API
 #endif
 

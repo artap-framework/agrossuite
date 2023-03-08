@@ -11,10 +11,8 @@ REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX14)
 # set(Python_ADDITIONAL_VERSIONS REQUIRED)
 FIND_PACKAGE(PythonLibs REQUIRED)
 
-IF(MSVC)
-  get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
-ENDIF()
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIR})
+
 
 # cython
 # message("Cython files - agros")
@@ -23,7 +21,7 @@ add_custom_target(CYTHON_AGROS ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_sou
 
 IF(WIN32)
   ADD_CUSTOM_COMMAND(
-    COMMAND C:/Python36/Scripts/cython ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
+    COMMAND cython ARGS --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/_agros.cpp)
 ELSE()
@@ -82,14 +80,18 @@ set(info_python ../resources_source/python/agros.pyx
 add_info_files(${info_python})
 add_custom_target(other_python SOURCES ${info_python})
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${AGROS_LIBRARY} ${PYTHON_LIBRARIES} Qt6::Core Qt6::Network)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "" OUTPUT_NAME _agros)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-
+IF (WIN32)
 add_custom_command(
     TARGET ${AGROS_PYTHON} POST_BUILD 
-    COMMAND ${CMAKE_COMMAND} -E copy "../libs/_agros.so" "../agrossuite/_agros.so"
-)
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/_agros.dll ${CMAKE_HOME_DIRECTORY}/agrossuite/_agros.dll)
+ELSE()    
+add_custom_command(
+    TARGET ${AGROS_PYTHON} POST_BUILD 
+        COMMAND ${CMAKE_COMMAND} -E copy "../libs/_agros.so" "../agrossuite/_agros.so")
+ENDIF()
