@@ -122,3 +122,7 @@ _agros.so
 _agros.cpp
 build/
 dist/
+Debug/
+Release/
+.vs/
+dealii/

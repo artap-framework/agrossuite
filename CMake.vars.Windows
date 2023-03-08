@@ -13,7 +13,7 @@ SET(CMAKE_LIBRARY_PATH "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/
 MESSAGE( STATUS "Settings for x64 Solution...")
 SET(DEPENDENCIES_DIR_PLATFORM "${DEPENDENCIES_DIR}/64")
 
-SET(PYTHON_INCLUDE_DIR "c:/python311/include/Python.h" )
+SET(PYTHON_INCLUDE_DIR "c:/python311/include" )
 SET(PYTHON_LIB_DIR "c:/python311/libs/" )
 # SET(XSD_ROOT "${DEPENDENCIES_DIR_PLATFORM}")
 SET(XercesC_LIBRARY "${DEPENDENCIES_DIR_PLATFORM}/lib/xerces-c_3.lib")
