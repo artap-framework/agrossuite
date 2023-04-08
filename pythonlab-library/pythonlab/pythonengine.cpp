@@ -144,7 +144,7 @@ static struct PyModuleDef CallModuleDef = {
 // tracing
 int traceFunction(PyObject *obj, _frame *frame, int what, PyObject *arg)
 {
-    PyObject *str = frame->f_code->co_filename;
+    PyObject *str = frame->f_frame->f_code->co_filename;
     if (str)
     {
         QString fileName = QString::fromStdString(PyBytes_AsString(str));
@@ -656,12 +656,12 @@ ErrorResult PythonEngine::parseError()
         {
             PyFrameObject *frame = tb->tb_frame;
 
-            if (frame && frame->f_code) {
-                PyCodeObject* codeObject = frame->f_code;
+            if (frame && frame->f_frame->f_code) {
+                PyCodeObject* codeObject = frame->f_frame->f_code;
                 if (PyString_Check(codeObject->co_filename))
                     traceback.append(QString("File '%1'").arg(PyBytes_AsString(codeObject->co_filename)));
 
-                int errorLine = PyCode_Addr2Line(codeObject, frame->f_lasti);
+                int errorLine = PyCode_Addr2Line(codeObject, PyFrame_GetLasti(frame));
                 traceback.append(QString(", line %1").arg(errorLine));
 
                 if (PyString_Check(codeObject->co_name))

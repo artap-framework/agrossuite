@@ -1,3 +1,9 @@
+agros2d (3.2-ubuntu330-lunar) lunar; urgency=low
+
+  * ubuntu 23.04
+  
+ -- Pavel Karban <pkarban@gmail.com>  Wed, 29 Jul 2022 12:00:00 +0200
+
 agros2d (3.2-ubuntu321-kinetic) kinetic; urgency=low
 
   * ubuntu 22.10
