@@ -4,7 +4,7 @@ PROJECT( agros )
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake /usr/lib/x86_64-linux-gnu/cmake/Qt6)
 
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
 IF(MSVC)
@@ -113,9 +113,10 @@ endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_BUILD_TYPE RelWithDebInfo)
+  # SET(CMAKE_BUILD_TYPE RelWithDebInfo)
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-  SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
+  # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
+  SET(RELEASE_FLAGS "-DNDEBUG -g")
   SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
   ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
 ENDIF()
@@ -179,7 +180,7 @@ message("\nagros Configuration results")
 message("---------------------")
 message(" Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUB}")
 
-message(" Build version: Release")
+message(" Build version: ${CMAKE_BUILD_TYPE}")
 message("---------------------")
 message("\n")
 

@@ -116,7 +116,7 @@ def source_package(version):
 
     temp = '{0}/agros2d-{1}'.format(TEMP_DIR, version)
 
-    ignored = ['tmp', '.git*', '*.mph', 'build']
+    ignored = ['tmp', '.git*', '*.mph', 'build', '__pycache__']
     shutil.copytree('./', temp, ignore=shutil.ignore_patterns(*ignored))
 
     os.chdir(temp)

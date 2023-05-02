@@ -2,6 +2,13 @@ PROJECT(solver_plugin_EIGEN C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_BUILD_TYPE Release)
+  SET(RELEASE_FLAGS "-g -O0 -Ofast -mavx2 -mfma")
+  SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+  ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
+ENDIF()
+
 SET(SOURCES
     main.cpp
     ../agros-library/solver/plugin_solver_interface.cpp)
@@ -13,7 +20,7 @@ FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
 # Handle Qt.
 SET(CMAKE_AUTOMOC TRUE)
 
-FIND_PACKAGE(Qt6Core REQUIRED)
+# FIND_PACKAGE(Qt6Core REQUIRED)
 
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
