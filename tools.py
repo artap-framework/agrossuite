@@ -15,11 +15,12 @@ LOC_DIR = './resources/lang'
 PLUGINS_DIR = './plugins'
 TEMP_DIR = './tmp'
 
-LOC_SOURCE_FILES = ['agros2d-binary/', 'agros2d-library/',
-                    'pythonlab-binary/', 'pythonlab-library/',
+LOC_SOURCE_FILES = ['agros2d-binary/', 'agros2d-library/',                    
                     'agros2d-solver/', 'util/', 'dealii']
-LOC_TARGET_FILES = ['resources_source/lang/en_US.ts', 'resources_source/lang/cs_CZ.ts',
-                    'resources_source/lang/pl_PL.ts', 'resources_source/lang/ru_RU.ts',
+LOC_TARGET_FILES = ['resources_source/lang/en_US.ts', 
+                    'resources_source/lang/cs_CZ.ts',
+                    'resources_source/lang/pl_PL.ts', 
+                    'resources_source/lang/ru_RU.ts',
                     'resources_source/lang/fr_FR.ts']
 
 LOC_PLUGINS_SOURCE_FILES = ['plugins/']
@@ -159,7 +160,6 @@ def appimage_package():
     
     # copy binary files
     shutil.copy('agros', dest + '/agros')
-    shutil.copy('pythonlab', dest + '/pythonlab')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
