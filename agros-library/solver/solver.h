@@ -31,7 +31,6 @@
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>
@@ -62,7 +61,7 @@ public:
         AssembleBase(Computation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
 
         // current solution
-        dealii::hp::DoFHandler<2> doFHandler;
+        dealii::DoFHandler<2> doFHandler;
 
         dealii::AffineConstraints<double> constraintsHangingNodes;
         dealii::AffineConstraints<double> constraintsDirichlet;

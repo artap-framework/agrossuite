@@ -43,7 +43,7 @@ MultiArray::MultiArray() :
 {
 }
 
-MultiArray::MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+MultiArray::MultiArray(dealii::DoFHandler<2> *doFHandler,
                        dealii::Vector<double> &solution)
     : m_doFHandler(doFHandler),
       m_solution(solution)
@@ -51,7 +51,7 @@ MultiArray::MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
 }
 
 MultiArray::MultiArray(dealii::Triangulation<2> *triangulation,
-                       dealii::hp::DoFHandler<2> *doFHandler,
+                       dealii::DoFHandler<2> *doFHandler,
                        dealii::Vector<double> &solution)
     : m_triangulation(triangulation),
       m_doFHandler(doFHandler),

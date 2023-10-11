@@ -43,7 +43,7 @@ public:
 private:
     MultiArray ma;
     // std::shared_ptr<dealii::Functions::FEFieldFunction<2> > localvalues;
-    // dealii::hp::DoFHandler<2>::active_cell_iterator currentCell;
+    // dealii::DoFHandler<2>::active_cell_iterator currentCell;
 };
 
 #endif // {{ID}}_FORCE_H

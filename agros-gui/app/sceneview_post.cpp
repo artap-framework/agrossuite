@@ -20,7 +20,6 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/data_postprocessor.h>
 #include <deal.II/grid/filtered_iterator.h>
-#include <deal.II/hp/dof_handler.h>
 
 #include "sceneview_post.h"
 #include "postprocessorview.h"

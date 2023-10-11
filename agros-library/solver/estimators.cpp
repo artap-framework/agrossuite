@@ -42,7 +42,7 @@ ErrorEstimator::ErrorEstimator(int maxDegree)
     fourier_coefficients.reinit(size);
 }
 
-void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
+void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::DoFHandler<2> &doFHandler,
                                                   const dealii::hp::QCollection<2> &quadratureFormulas,
                                                   const dealii::Vector<double> &solution,
                                                   dealii::Vector<float> &smoothness_indicators)
@@ -59,7 +59,7 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2
     dealii::Vector<double> local_dof_values;
 
     // Then here is the loop:
-    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    typename dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for (; cell != endc; ++cell)
     {
         local_dof_values.reinit(cell->get_fe().dofs_per_cell);
@@ -123,7 +123,7 @@ std::pair<bool, unsigned int> ErrorEstimator::predicate(const dealii::TableIndic
 
 
 /*
-void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::hp::DoFHandler<2> &doFHandler,
+void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::DoFHandler<2> &doFHandler,
                                                      const dealii::hp::QCollection<2> &quadratureFormulas,
                                                      const dealii::Vector<double> &solution,
                                                      dealii::Vector<float> &smoothness_indicators)
@@ -135,7 +135,7 @@ void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::hp::DoFHandle
     //    dealii::Table<2, std::complex<double> > fourier_coefficients;
 
     //    dealii::Vector<double> local_dof_values;
-    //    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    //    typename dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     //    for (; cell != endc; ++cell)
     //    {
     //        local_dof_values.reinit (cell->get_fe().dofs_per_cell);
@@ -207,7 +207,7 @@ void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::hp::DoFHandle
     }
     std::vector<std::complex<double> > fourier_coefficients(n_fourier_modes);
     dealii::Vector<double> local_dof_values;
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    TYPENAME dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
     {
         local_dof_values.reinit (cell->get_fe().dofs_per_cell);
@@ -250,7 +250,7 @@ void ErrorEstimator::estimateAdaptivitySmoothnessOld(const dealii::hp::DoFHandle
 }
 */
 
-double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
+double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::DoFHandler<2> &doFHandler,
                                                       const dealii::hp::QCollection<2> &quadratureFormulas,
                                                       const dealii::Vector<double> &sln1,
                                                       const dealii::Vector<double> &sln2)
@@ -264,7 +264,7 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
 
     dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe_collection(), quadratureFormulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = doFHandler.begin_active(), endc_int = doFHandler.end();
+    dealii::DoFHandler<2>::active_cell_iterator cell_int = doFHandler.begin_active(), endc_int = doFHandler.end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // volume integration
@@ -338,7 +338,7 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
 //{
 //}
 //
-//void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_dof,
+//void DifferenceErrorEstimator::estimate(const dealii::DoFHandler<2> &primal_dof,
 //                                        const dealii::Vector<double> &primal_solution,
 //                                        const dealii::Vector<double> &dual_solution,
 //                                        dealii::Vector<float> &error_per_cell)
@@ -346,7 +346,7 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
 //    Assert (error_per_cell.size() == primal_dof.get_triangulation().n_active_cells(),
 //            ExcInvalidVectorLength (error_per_cell.size(),
 //                                    primal_dof.get_triangulation().n_active_cells()));
-//    typedef std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+//    typedef std_tuple<typename dealii::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
 //
 //    dealii::SynchronousIterators<IteratorTuple>
 //            begin_sync_it (IteratorTuple(primal_dof.begin_active(), error_per_cell.begin())),
@@ -360,11 +360,11 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandl
 //                            EstimateCopyData());
 //}
 
-//void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+//void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
 //                                             EstimateScratchData &scratch_data,
 //                                             const EstimateCopyData &)
 //{
-//    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(*cell));
+//    TYPENAME dealii::DoFHandler<2>::active_cell_iterator cell_it(std_get<0>(*cell));
 //
 //    const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
 //
@@ -442,12 +442,12 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
 
 
     FaceIntegrals face_integrals;
-    for (dealii::hp::DoFHandler<2>::active_cell_iterator cell = dual_solver->doFHandler.begin_active(); cell != dual_solver->doFHandler.end(); ++cell)
+    for (dealii::DoFHandler<2>::active_cell_iterator cell = dual_solver->doFHandler.begin_active(); cell != dual_solver->doFHandler.end(); ++cell)
         for (unsigned int face_no=0; face_no<dealii::GeometryInfo<dim>::faces_per_cell; ++face_no)
             face_integrals[cell->face(face_no)] = -1e20;
     error_indicators.reinit (dual_solver->doFHandler.get_triangulation().n_active_cells());
 
-    typedef std_tuple<dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+    typedef std_tuple<dealii::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
     dealii::SynchronousIterators<IteratorTuple> cell_and_error_begin(IteratorTuple (dual_solver->doFHandler.begin_active(), error_indicators.begin()));
     dealii::SynchronousIterators<IteratorTuple> cell_and_error_end  (IteratorTuple (dual_solver->doFHandler.end(), error_indicators.begin()));
     dealii::WorkStream::run(cell_and_error_begin,
@@ -465,7 +465,7 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
                                                          dual_weights),
                             WeightedResidualCopyData());
     unsigned int present_cell=0;
-    for (dealii::hp::DoFHandler<2>::active_cell_iterator cell=dual_solver->doFHandler.begin_active(); cell!=dual_solver->doFHandler.end(); ++cell, ++present_cell)
+    for (dealii::DoFHandler<2>::active_cell_iterator cell=dual_solver->doFHandler.begin_active(); cell!=dual_solver->doFHandler.end(); ++cell, ++present_cell)
         for (unsigned int face_no=0; face_no<dealii::GeometryInfo<dim>::faces_per_cell;
              ++face_no)
         {
@@ -590,8 +590,8 @@ void WeightedResidual<dim>::integrate_over_irregular_face (const active_cell_ite
                                                            FaceIntegrals &face_integrals) const
 {
     const unsigned int n_q_points = face_data.fe_face_values_cell.get_present_fe_values().n_quadrature_points;
-    const typename dealii::hp::DoFHandler<dim>::face_iterator face = cell->face(face_no);
-    const typename dealii::hp::DoFHandler<dim>::cell_iterator neighbor = cell->neighbor(face_no);
+    const typename dealii::DoFHandler<dim>::face_iterator face = cell->face(face_no);
+    const typename dealii::DoFHandler<dim>::cell_iterator neighbor = cell->neighbor(face_no);
 
     Assert (neighbor.state() == IteratorState::valid, ExcInternalError());
     Assert (neighbor->has_children(), ExcInternalError());

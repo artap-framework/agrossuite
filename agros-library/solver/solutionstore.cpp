@@ -183,7 +183,7 @@ MultiArray &SolutionStore::multiArray(FieldSolutionID solutionID)
         triangulation->load(sbiMesh, 0);
 
         // dof handler
-        std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler = std::shared_ptr<dealii::hp::DoFHandler<2> >(new dealii::hp::DoFHandler<2>(*triangulation));
+        std::shared_ptr<dealii::DoFHandler<2> > doFHandler = std::shared_ptr<dealii::DoFHandler<2> >(new dealii::DoFHandler<2>(*triangulation));
         doFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
         QString fnDoF = QString("%1.dof").arg(baseFN);
         if (!QFile::exists(fnDoF))
@@ -214,7 +214,7 @@ bool SolutionStore::contains(FieldSolutionID solutionID) const
 }
 
 void SolutionStore::addSolution(FieldSolutionID solutionID,
-                                dealii::hp::DoFHandler<2> &doFHandler,
+                                dealii::DoFHandler<2> &doFHandler,
                                 dealii::Vector<double> &solution,
                                 SolutionRunTimeDetails runTime)
 {
@@ -366,7 +366,7 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
     return adaptiveStep;
 }
 
-void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution)
+void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution)
 {
     // triangulation
     dealii::Triangulation<2> *newTriangulation = new dealii::Triangulation<2>();
@@ -377,7 +377,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
     boost::archive::binary_oarchive sboDoF(fsDoF);
     doFHandler.save(sboDoF, 0);
     // new handler
-    dealii::hp::DoFHandler<2> *newDoFHandler = new dealii::hp::DoFHandler<2>(*newTriangulation);
+    dealii::DoFHandler<2> *newDoFHandler = new dealii::DoFHandler<2>(*newTriangulation);
     newDoFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);

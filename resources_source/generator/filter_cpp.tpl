@@ -23,14 +23,10 @@
 
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_filter.h"
-#include "{{ID}}_interface.h"
-
-#include "util/global.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/solutionstore.h"
-#include "solver/plugin_interface.h"
 
 #include <deal.II/grid/tria.h>
 #include <deal.II/fe/mapping_q1.h>
@@ -70,7 +66,7 @@ void {{CLASS}}ViewScalarFilter::evaluate_scalar_field (const dealii::DataPostpro
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
-    SceneLabel *label = m_labels->at(inputs.get_cell<dealii::hp::DoFHandler<2> >()->material_id() - 1);
+    SceneLabel *label = m_labels->at(inputs.get_cell<2>()->material_id() - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
     if(material == m_noneMarker)
         return;
@@ -109,7 +105,7 @@ void {{CLASS}}ViewScalarFilter::evaluate_vector_field (const dealii::DataPostpro
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
-    SceneLabel *label = m_labels->at(inputs.get_cell<dealii::hp::DoFHandler<2> >()->material_id() - 1);
+    SceneLabel *label = m_labels->at(inputs.get_cell<2>()->material_id() - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
     if(material == m_computation->scene()->materials->getNone(m_fieldInfo))
         return;

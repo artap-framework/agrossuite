@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "study_nsga2.h"
+#include "NSGA2.h"
 
 #include "study.h"
 #include "parameter.h"

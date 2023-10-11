@@ -122,7 +122,7 @@ public:
         QMap<size_t, double> results;
     };
 
-    virtual void localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell_int,
+    virtual void localAssembleSystem(const typename dealii::DoFHandler<2>::active_cell_iterator &cell_int,
                                      IntegralScratchData &scratch_data,
                                      IntegralCopyData &copy_data) = 0;
     virtual void copyLocalToGlobal(const IntegralCopyData &copy_data) = 0;

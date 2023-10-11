@@ -39,7 +39,6 @@
 // deal.ii
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/base/quadrature_lib.h>
 #include <deal.II/numerics/error_estimator.h>
 
@@ -316,7 +315,7 @@ void SceneViewMesh::paintSolutionMesh()
         MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
         for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -362,7 +361,7 @@ void SceneViewMesh::paintOrder()
 
         for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -428,7 +427,7 @@ void SceneViewMesh::paintOrder()
 
         for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -492,7 +491,7 @@ void SceneViewMesh::paintError()
 
         for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -558,7 +557,7 @@ void SceneViewMesh::paintError()
 
         for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -598,7 +597,7 @@ void SceneViewMesh::paintErrorColorBar()
     MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
 
     int level = 0;
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
+    dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
     for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
     {
         // polynomial degree
@@ -668,7 +667,7 @@ void SceneViewMesh::paintOrderColorBar()
     MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
 
     int level = 0;
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
+    dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // polynomial degree

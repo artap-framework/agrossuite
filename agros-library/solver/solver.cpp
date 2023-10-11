@@ -171,7 +171,7 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
     m_fieldInfo(solverDeal->m_fieldInfo)
 {
     // find those elements, which are used for this field
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for (unsigned int index = 0; cell != endc; ++cell, ++index)
     {
         if (cell->active_fe_index() != 0)
@@ -368,7 +368,7 @@ void SolverDeal::AssembleBase::transientWriteSystemToDisk(std::vector<dealii::Ve
 
     // active elements count
     int celln = 0;
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc_int = doFHandler.end();
+    dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc_int = doFHandler.end();
     for (; cell != endc_int; ++cell)
     {
         if (!cell->is_active())
@@ -558,8 +558,8 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         dual->doFHandler.load(sbiDoF, 0);
         // std::cout << "Number of degrees of freedom (after load): " << dual->doFHandler.n_dofs() << std::endl;
 
-        dealii::hp::DoFHandler<2>::active_cell_iterator cellHandler;
-        dealii::hp::DoFHandler<2>::active_cell_iterator endcHandler;
+        dealii::DoFHandler<2>::active_cell_iterator cellHandler;
+        dealii::DoFHandler<2>::active_cell_iterator endcHandler;
         cellHandler = dual->doFHandler.begin_active();
         endcHandler = dual->doFHandler.end();
 
@@ -642,7 +642,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     // p-adaptivity
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
     {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+        dealii::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
         for (; cell != endc; ++cell)
         {
             if (cell->refine_flag_set())
@@ -697,7 +697,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
 
                 min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
                 max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-                dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = primal->doFHandler.begin_active(), endcmm = primal->doFHandler.end();
+                dealii::DoFHandler<2>::active_cell_iterator cellmm = primal->doFHandler.begin_active(), endcmm = primal->doFHandler.end();
                 for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
                 {
                     if (cellmm->refine_flag_set())
@@ -710,7 +710,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
 
             const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+            dealii::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
             for (; cell != endc; ++cell)
             {
                 if ((maxPIncrease == -1) ||
@@ -745,7 +745,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             break;
         case AdaptivityStrategyHP_Alternate:
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+            dealii::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
             for (; cell != endc; ++cell)
             {
                 // odd - h-adaptivity
@@ -793,7 +793,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     // maximum number of refinements
     if (maxHIncrease != -1)
     {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+        dealii::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
         for (unsigned int index = 0; cell != endc; ++cell, ++index)
         {
             // remove h adaptivity flag

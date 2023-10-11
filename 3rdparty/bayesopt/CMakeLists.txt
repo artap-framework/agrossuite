@@ -18,8 +18,8 @@
 #    along with BayesOpt.  If not, see <http://www.gnu.org/licenses/>.
 # ------------------------------------------------------------------------
 
+CMAKE_MINIMUM_REQUIRED(VERSION 3.13.4)
 PROJECT(${BAYESOPTLIB_LIBRARY} CXX)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} 
 		      ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -55,8 +55,8 @@ ELSE()
 set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 ENDIF()
 #  experimental - testing Win compilation
-set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.70.0)
-set (BOOST_INCLUDEDIR ..\\..\\dealii\\bundled\\boost-1.70.0\\include)
+# set (BOOST_ROOT ../../dealii/bundled/boost-1.70.0)
+# set (BOOST_INCLUDEDIR ../../dealii/bundled/boost-1.70.0/include)
 #  -------------------------------------  
 
 find_package( Boost REQUIRED )

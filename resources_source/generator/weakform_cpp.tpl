@@ -74,7 +74,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
 
     // m_solverDeal->clearCache();
 
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
+    TYPENAME dealii::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
     cell_begin = doFHandler.begin_active();
     cell_end = doFHandler.end();
 
@@ -142,11 +142,11 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
     double actualTime = m_solverDeal->get_time();
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
-    const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
-    // const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = std::get<0>(iter.iterators);
+    const TYPENAME dealii::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
+    // const TYPENAME dealii::DoFHandler<2>::active_cell_iterator cell = std::get<0>(iter.iterators);
 
     // coupling sources{{#COUPLING_SOURCE}}
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
+    dealii::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
     if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
     {
         cell_{{COUPLING_SOURCE_ID}} = iter.cell_first;
@@ -505,7 +505,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
 
     // dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_solverDeal->mappingCollection(), m_solverDeal->feCollection(), m_solverDeal->quadratureFormulasFace(), dealii::update_values | dealii::update_quadrature_points);
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
+    dealii::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for(; cell != endc; ++cell)
     {
         if (m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) == m_computation->scene()->materials->getNone(m_fieldInfo))

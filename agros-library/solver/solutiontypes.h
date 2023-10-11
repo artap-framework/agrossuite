@@ -22,7 +22,6 @@
 
 #undef signals
 #include <deal.II/dofs/dof_handler.h>
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/lac/vector.h>
 #include <deal.II/grid/tria.h>
 #define signals public
@@ -40,17 +39,17 @@ class AGROS_LIBRARY_API MultiArray
 {
 public:
     MultiArray();
-    MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+    MultiArray(dealii::DoFHandler<2> *doFHandler,
                dealii::Vector<double> &solution);
     MultiArray(dealii::Triangulation<2> *triangulation,
-               dealii::hp::DoFHandler<2> *doFHandler,
+               dealii::DoFHandler<2> *doFHandler,
                dealii::Vector<double> &solution);
 
     ~MultiArray();
 
     void clear();
 
-    inline dealii::hp::DoFHandler<2> &doFHandler() const { return *m_doFHandler; }
+    inline dealii::DoFHandler<2> &doFHandler() const { return *m_doFHandler; }
     inline dealii::Vector<double> &solution() { return m_solution; }
     inline dealii::Vector<double> solution() const { return m_solution; }
     inline void setSolution(dealii::Vector<double> &solution) { m_solution = solution; }
@@ -59,7 +58,7 @@ public:
 
 private:
     dealii::Triangulation<2> *m_triangulation;
-    dealii::hp::DoFHandler<2> *m_doFHandler;
+    dealii::DoFHandler<2> *m_doFHandler;
     dealii::Vector<double> m_solution;
 };
 

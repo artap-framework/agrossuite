@@ -18,7 +18,6 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include <deal.II/numerics/fe_field_function.h>
-#include <deal.II/hp/dof_handler.h>
 
 #include "util/util.h"
 #include "util/global.h"

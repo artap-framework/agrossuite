@@ -1,5 +1,5 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.13.4)
 project(plugins)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
 # For Win64
@@ -81,12 +81,11 @@ IF(MSVC)
 ENDIF(MSVC)
 
 # Python
-set(Python_ADDITIONAL_VERSIONS 3.4)
-FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
+FIND_PACKAGE(Python COMPONENTS Development REQUIRED)
+INCLUDE_DIRECTORIES(${Python_INCLUDE_DIRS})
 IF(MSVC)
 	get_filename_component(PYTHON_INCLUDE_DIR ${PYTHON_INCLUDE_DIR} PATH)
 ENDIF()
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIR})
 
 # Include current dir
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -120,14 +119,16 @@ include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.70.0/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb-2018_U2/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/kokkos-3.7.00/core/src/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/kokkos-3.7.00/tpls/desul/include/")
+
 
 FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
 # HACK
-string(REPLACE "/lib/lib" "/lib" DEAL_II_LIBRARIES ${DEAL_II_LIBRARIES})
 # message(${DEAL_II_LIBRARIES})
+# string(REPLACE "/lib/lib" "/lib" DEAL_II_LIBRARIES ${DEAL_II_LIBRARIES})
+
 
 # modules
 {{#SOURCE}}

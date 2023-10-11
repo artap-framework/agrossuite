@@ -76,7 +76,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
         /*
         try
         {
-            std::pair<TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Point<2> > cell
+            std::pair<TYPENAME dealii::DoFHandler<2>::active_cell_iterator, dealii::Point<2> > cell
                     = dealii::GridTools::find_active_cell_around_point(*ProblemSolver::mappingCollection(m_fieldInfo), *ma.doFHandler(), p);
             currentCell = cell.first;
 

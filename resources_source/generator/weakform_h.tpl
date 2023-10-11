@@ -29,7 +29,7 @@
 
 #include "{{ID}}_interface.h"
 
-// typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, typename dealii::hp::DoFHandler<2>::active_cell_iterator> IteratorTuple;
+// typedef std::tuple<typename dealii::DoFHandler<2>::active_cell_iterator, typename dealii::DoFHandler<2>::active_cell_iterator> IteratorTuple;
 
 class SolverDeal{{CLASS}} : public SolverDeal
 {

@@ -1,10 +1,19 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT( agros )
+CMAKE_MINIMUM_REQUIRED(VERSION 3.13.4)
+PROJECT(agros)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake /usr/lib/x86_64-linux-gnu/cmake/Qt6)
+
+# SET(DEAL_II_BUILD_TYPE "Release")
+SET(DEAL_II_DIR "/home/karban/Projects/agros2d-dealii/dealii/build")
+FIND_PACKAGE(deal.II HINTS ${DEAL_II_DIR})
+deal_ii_initialize_cached_variables()
+
+message("deal.II: ${DEAL_II_VERSION}")
+message("deal.II includes: ${DEAL_II_INCLUDE_DIRS}")
+message("deal.II libraries: ${DEAL_II_LIBRARIES}")
 
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
 IF(MSVC)
@@ -113,7 +122,7 @@ endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # SET(CMAKE_BUILD_TYPE RelWithDebInfo)
+  SET(CMAKE_BUILD_TYPE Release)
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
   SET(RELEASE_FLAGS "-DNDEBUG -g")
@@ -137,16 +146,14 @@ ADD_SUBDIRECTORY(3rdparty)
 
 # deal.ii
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
-REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX14)
-
-SET(DEAL_II_BUILD_TYPE "Release")
+# REMOVE_DEFINITIONS(-DDEAL_II_WITH_CXX17)
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
-
-FIND_PACKAGE(deal.II HINTS "dealii/build" REQUIRED)
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/kokkos-3.7.00/core/src/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/kokkos-3.7.00/tpls/desul/include/")
 
 # Include external directories.
 INCLUDE_DIRECTORIES(${AMESOS_INCLUDE_PATH})
@@ -195,7 +202,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.4.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.9.5.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)

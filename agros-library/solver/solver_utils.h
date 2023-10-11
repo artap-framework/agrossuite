@@ -21,18 +21,14 @@
 #define SOLVER_UTILS_H
 
 #include "util/util.h"
-#include "util/global.h"
-#include "solutiontypes.h"
 #include "scene.h"
 #include "scenemarker.h"
 #include "problem.h"
 #include "solver.h"
-#include "linear_solver.h"
 
 #undef signals
 #include <deal.II/dofs/dof_handler.h>
 
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>
@@ -59,19 +55,19 @@ void writeMatioMatrix(std::vector<dealii::Vector<int> > vecs, const QString &nam
 class DoubleCellIterator
 {
 public:
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
+    dealii::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
 
-    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first,
-                       const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second,
-                       const dealii::hp::DoFHandler<2> &doFHandler,
+    DoubleCellIterator(const dealii::DoFHandler<2>::active_cell_iterator &cell_first,
+                       const dealii::DoFHandler<2>::active_cell_iterator &cell_second,
+                       const dealii::DoFHandler<2> &doFHandler,
                        Computation *computation,
                        const FieldInfo *fieldInfo) :
-        cell_first(cell_first), cell_second(cell_second), m_doFHandler(&doFHandler), m_computation(computation), m_fieldInfo(fieldInfo)
+        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_computation(computation), m_doFHandler(&doFHandler)
     {
     }
 
     DoubleCellIterator(const DoubleCellIterator &dci) :
-        cell_first(dci.cell_first), cell_second(dci.cell_second), m_doFHandler(dci.m_doFHandler), m_computation(dci.m_computation), m_fieldInfo(dci.m_fieldInfo)
+        cell_first(dci.cell_first), cell_second(dci.cell_second), m_fieldInfo(dci.m_fieldInfo), m_computation(dci.m_computation), m_doFHandler(dci.m_doFHandler)
     {
     }
 
@@ -113,7 +109,7 @@ public:
     }
     const FieldInfo *m_fieldInfo;
     Computation *m_computation;
-    const dealii::hp::DoFHandler<2> *m_doFHandler;
+    const dealii::DoFHandler<2> *m_doFHandler;
 };
 
 inline bool operator==(const DoubleCellIterator& a, const DoubleCellIterator& b)

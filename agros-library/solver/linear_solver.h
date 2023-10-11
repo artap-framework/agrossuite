@@ -28,7 +28,6 @@ class FieldInfo;
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>

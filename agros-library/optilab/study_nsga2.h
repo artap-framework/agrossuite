@@ -20,11 +20,8 @@
 #ifndef STUDY_NSGA2_H
 #define STUDY_NSGA2_H
 
-#include "util/util.h"
 #include "util/enums.h"
 #include "study.h"
-
-#include "NSGA2.h"
 
 class LineEditDouble;
 

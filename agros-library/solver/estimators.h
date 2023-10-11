@@ -27,7 +27,6 @@
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 
-#include <deal.II/hp/dof_handler.h>
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>
@@ -55,12 +54,12 @@ class ErrorEstimator
 public:
     ErrorEstimator(int maxDegree);
 
-    void estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
+    void estimateAdaptivitySmoothness(const dealii::DoFHandler<2> &doFHandler,
                                       const dealii::hp::QCollection<2> &quadratureFormulas,
                                       const dealii::Vector<double> &solution,
                                       dealii::Vector<float> &smoothness_indicators);
 
-    static double relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
+    static double relativeChangeBetweenSolutions(const dealii::DoFHandler<2> &doFHandler,
                                                  const dealii::hp::QCollection<2> &quadratureFormulas,
                                                  const dealii::Vector<double> &sln1,
                                                  const dealii::Vector<double> &sln2);
@@ -79,7 +78,7 @@ private:
 class DifferenceErrorEstimator
 {
 public:
-    static void estimate(const dealii::hp::DoFHandler<2> &primal_dof,
+    static void estimate(const dealii::DoFHandler<2> &primal_dof,
                          const dealii::Vector<double> &primal_solution,
                          const dealii::Vector<double> &dual_solution,
                          dealii::Vector<float> &error_per_cell);
@@ -105,7 +104,7 @@ private:
     };
     struct EstimateCopyData {};
 
-    static void estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+    static void estimate_cell(const dealii::SynchronousIterators<std_tuple<typename dealii::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
                               EstimateScratchData &scratch_data,
                               const EstimateCopyData &copy_data);
 };
@@ -217,7 +216,7 @@ private:
     // Then declare abbreviations for active cell iterators, to avoid that
     // we have to write this lengthy name over and over again:
 
-    typedef typename dealii::hp::DoFHandler<dim>::active_cell_iterator active_cell_iterator;
+    typedef typename dealii::DoFHandler<dim>::active_cell_iterator active_cell_iterator;
 
     // Next, declare a data type that we will us to store the contribution
     // of faces to the error estimator. The idea is that we can compute the
@@ -230,7 +229,7 @@ private:
     // cells a second time and grabbing the values from the map.
     //
     // The data type of this map is declared here:
-    typedef typename std::map<typename dealii::hp::DoFHandler<dim>::face_iterator, double> FaceIntegrals;
+    typedef typename std::map<typename dealii::DoFHandler<dim>::face_iterator, double> FaceIntegrals;
 
     // In the computation of the error estimates on cells and faces, we need
     // a number of helper objects, such as <code>FEValues</code> and
