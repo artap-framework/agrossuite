@@ -10,10 +10,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/c
 SET(DEAL_II_DIR "dealii/build")
 FIND_PACKAGE(deal.II HINTS ${DEAL_II_DIR})
 deal_ii_initialize_cached_variables()
-
 message("deal.II: ${DEAL_II_VERSION}")
-message("deal.II includes: ${DEAL_II_INCLUDE_DIRS}")
-message("deal.II libraries: ${DEAL_II_LIBRARIES}")
+
 
 # This is necessary for Visual Studio - without this for some reason the linking hangs.
 IF(MSVC)
@@ -202,7 +200,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.5.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.9.5.2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)
