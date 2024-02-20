@@ -17,7 +17,6 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
 
 FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
 deal_ii_initialize_cached_variables()
-
 message("EIGEN deal.II: ${DEAL_II_VERSION}")
 
 # Handle Qt.
