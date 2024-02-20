@@ -201,6 +201,10 @@ def python_pack():
     except:
         pass
     try:
+        shutil.rmtree('agrossuite/tests/__pycache__')
+    except:
+        pass
+    try:
         shutil.rmtree('agrossuite/.idea')
     except:
         pass
@@ -221,7 +225,7 @@ def python_pack():
                 shutil.copy("libs/" + file, "agrossuite/libs/" + file)
 
     # deal
-    shutil.copy("dealii/build/lib/libdeal_II.so.9.4.2", "agrossuite/libs/libdeal_II.so.9.4.2")
+    shutil.copy("dealii/build/lib/libdeal_II.so.9.5.2", "agrossuite/libs/libdeal_II.so.9.5.2")
     # os.symlink("libdeal_II.so.9.0.1", "agrossuite/libs/libdeal_II.so")
 
 
@@ -239,6 +243,8 @@ def python_pack():
 
 def python_upload():
     call(['python3', '-m', 'twine', 'upload', 'dist/agrossuite*'])	  
+    # username: __token__
+    # password: pypi-AgEIcHlwaS5vcmcCJDI0NzlhZGFlLWY0ZTEtNGUxNy05Nzg0LTUyMTA4NmE4N2RlZgACElsxLFsiYWdyb3NzdWl0ZSJdXQACLFsyLFsiNzMzZTU2Y2UtZjcyMC00ZTg3LThiMWUtNjZhOTI3MjBhMjlkIl1dAAAGIHjObSJB8xAHTe2jMdSpmEnfYit_fg0VO2rXo5Qb6bkS
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

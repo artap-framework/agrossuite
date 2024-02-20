@@ -17,6 +17,8 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
 
 
 FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
+deal_ii_initialize_cached_variables()
+message("EIGEN deal.II: ${DEAL_II_VERSION}")
 
 # Handle Qt.
 SET(CMAKE_AUTOMOC TRUE)
@@ -27,10 +29,9 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_DLL)
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
-SET(DEAL_II_LIBRARIES ${CMAKE_SOURCE_DIR}/../dealii/build/lib/deal_II.g.lib)
-SET(ZLIB_LIBRARIES C:/agros_dependencies/64/lib/zlib.lib)
-message("===================================================================")
-message("${DEAL_II_LIBRARIES}")
-message("===================================================================")
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_LIBRARIES} Qt6::Core ${ZLIB_LIBRARIES})
+SET(ZLIB_LIBRARIES C:/agros_dependencies/64/lib/zlib.lib)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_TARGET} Qt6::Core ${ZLIB_LIBRARIES} Qt6::Core)
+
+

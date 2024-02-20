@@ -48,7 +48,7 @@ bool isPluginDir(const QString &path)
     QDir dir(path);
 
     QStringList filters;
-    filters << "libagros_plugin_*.so" << "agros_plugin_*.dll";
+    filters << "libagros_plugin_*.so" << "agros_plugin_*.dll" << "libsolver_plugin_*.so" << "solver_plugin_*.dll";
     QStringList list = dir.entryList(filters);
 
     return (list.size() > 0);
