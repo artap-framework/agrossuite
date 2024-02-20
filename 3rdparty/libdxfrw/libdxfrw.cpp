@@ -53,7 +53,7 @@ dxfRW::~dxfRW(){
 
 void dxfRW::setDebug(DRW::DBG_LEVEL lvl){
     switch (lvl){
-    case DRW::DEBUG:
+    case DRW::DBG:
         DRW_DBGSL(DRW_dbg::DEBUG);
         break;
     default:

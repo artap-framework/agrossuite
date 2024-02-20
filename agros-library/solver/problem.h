@@ -178,7 +178,7 @@ public:
 
     void synchronizeCouplings();
     inline QMap<QPair<QString, QString>, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
-    inline CouplingInfo *couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { assert (m_couplingInfos.contains(QPair<QString, QString>(sourceField, targetField)));
+    inline CouplingInfo *couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { assert (m_couplingInfos.contains(QPair<QString, QString>(sourceFieldId, targetFieldId)));
                                                                                                     return m_couplingInfos[QPair<QString, QString>(sourceFieldId, targetFieldId)]; }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return (m_couplingInfos.contains(QPair<QString, QString>(sourceFieldId, targetFieldId))); }
 

@@ -34,7 +34,7 @@ endif(APPLE)
 
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING 
       "Choose the type of build, options are: Debug Release 
       RelWithDebInfo MinSizeRel."
       FORCE)
@@ -55,8 +55,8 @@ ELSE()
 set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 ENDIF()
 #  experimental - testing Win compilation
-# set (BOOST_ROOT ../../dealii/bundled/boost-1.70.0)
-# set (BOOST_INCLUDEDIR ../../dealii/bundled/boost-1.70.0/include)
+set (BOOST_ROOT ../../dealii/bundled/boost-1.70.0)
+set (BOOST_INCLUDEDIR ../../dealii/bundled/boost-1.70.0/include)
 #  -------------------------------------  
 
 find_package( Boost REQUIRED )

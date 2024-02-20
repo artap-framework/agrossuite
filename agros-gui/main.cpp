@@ -60,10 +60,11 @@ public:
     {
         try
         {
-            // if (!receiver->objectName().isEmpty())
-            //     qDebug() << "receiver" << receiver->objectName() << event->type();
+            if (!receiver->objectName().isEmpty())
+               qDebug() << "receiver" << receiver->objectName() << event->type();
 
-            return QApplication::notify(receiver, event);
+            //return QApplication::notify(receiver, event);
+            return true;
         }
         catch (dealii::ExceptionBase &e)
         {
@@ -176,5 +177,9 @@ int main(int argc, char *argv[])
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         return 1;
+    }
+    catch (exception e)
+    {
+
     }
 }

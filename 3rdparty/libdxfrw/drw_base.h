@@ -96,7 +96,7 @@ BAD_READ_OBJECTS      /*!< error in objects read process. */
 
 enum DBG_LEVEL {
     NONE,
-    DEBUG
+    DBG
 };
 
 //! Special codes for colors

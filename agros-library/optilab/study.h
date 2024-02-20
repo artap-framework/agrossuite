@@ -30,7 +30,7 @@
 class Computation;
 class Study;
 
-Q_DECLARE_METATYPE(Study *)
+
 
 class Statistics
 {
@@ -375,5 +375,8 @@ public:
 private:
     QList<Study *> m_studies;
 };
+
+
+Q_DECLARE_METATYPE(Study*)
 
 #endif // STUDY_H

@@ -30,8 +30,6 @@ class FieldInfo;
 class ProblemBase;
 class Scene;
 
-Q_DECLARE_METATYPE(SceneMaterial *)
-Q_DECLARE_METATYPE(SceneBoundary *)
 
 template <typename MarkerType>
 class AGROS_LIBRARY_API MarkerContainer
@@ -135,5 +133,7 @@ class SceneMaterialContainer : public MarkerContainer<SceneMaterial>
 
 };
 
+Q_DECLARE_METATYPE(SceneMaterial*)
+Q_DECLARE_METATYPE(SceneBoundary*)
 
 #endif // SCENEMARKER_H
