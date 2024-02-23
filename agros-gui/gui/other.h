@@ -33,9 +33,6 @@ class Computation;
 // undo framework
 AGROS_LIBRARY_API QUndoStack *undoStack();
 
-// show page
-AGROS_LIBRARY_API void showPage(const QString &str = "");
-
 // get icon with respect to actual theme
 AGROS_LIBRARY_API QIcon iconAwesome(int character);
 AGROS_LIBRARY_API QIcon icon(const QString &name, const QString &defaultName = "");

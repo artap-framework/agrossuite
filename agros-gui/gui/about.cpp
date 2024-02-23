@@ -214,7 +214,7 @@ QWidget *AboutDialog::createSysinfo()
     layoutSystem->addWidget(new QLabel(tr("Number of threads:")), 11, 0);
     layoutSystem->addWidget(new QLabel(QString::number(SystemUtils::numberOfThreads())), 11, 1);
     layoutSystem->addWidget(new QLabel(tr("Memory:")), 12, 0);
-    layoutSystem->addWidget(new QLabel(QString("%1 MB").arg(SystemUtils::totalMemorySize() / 1024 / 1024)), 12, 1);
+    layoutSystem->addWidget(new QLabel(QString("%1 GB").arg(SystemUtils::totalMemorySize() / 1024  / 1024 / 1024)), 12, 1);
     layoutSystem->addWidget(new QLabel(tr("Screen resolution:")), 13, 0);
     layoutSystem->addWidget(new QLabel(QString("%1 x %2").
                                        arg(QGuiApplication::primaryScreen()->availableGeometry().width()).

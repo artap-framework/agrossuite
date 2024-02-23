@@ -219,15 +219,6 @@ void MainWindow::createActions()
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
-    actHelp = new QAction(tr("&Help"), this);
-    actHelp->setShortcut(QKeySequence::HelpContents);
-    // actHelp->setEnabled(false);
-    connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
-
-    actHelpShortCut = new QAction(tr("&Shortcuts"), this);
-    actHelpShortCut->setEnabled(false);
-    connect(actHelpShortCut, SIGNAL(triggered()), this, SLOT(doHelpShortCut()));
-
     actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
 
@@ -362,8 +353,6 @@ void MainWindow::createMenus()
     mnuSettings->addAction(actOptions);
 
     mnuHelp = menuBar()->addMenu(tr("&Help"));
-    mnuHelp->addAction(actHelp);
-    mnuHelp->addSeparator();
     mnuHelp->addAction(actCheckVersion);
     mnuHelp->addSeparator();
     mnuHelp->addAction(actAbout);   // will be added to "Agros" MacOSX menu
@@ -1099,16 +1088,6 @@ void MainWindow::setControls()
     optiLab->refresh();
 
     setUpdatesEnabled(true);
-}
-
-void MainWindow::doHelp()
-{
-    showPage("index.html");
-}
-
-void MainWindow::doHelpShortCut()
-{
-    showPage("getting_started/shortcut_keys.html");
 }
 
 void MainWindow::doCheckVersion()
