@@ -35,7 +35,7 @@
     m_moduleJson->read(content);
 
     // coupling sources{{#COUPLING_SOURCE}}
-    QByteArray content_{{COUPLING_SOURCE_ID}} = QByteArray::fromBase64("{{JSON_COUPLING_CONTENT}}"); 
+    QByteArray content_{{COUPLING_SOURCE_ID}} = QByteArray::fromBase64({{JSON_COUPLING_CONTENT}}); 
     PluginCoupling *plugin_{{COUPLING_SOURCE_ID}} = new PluginCoupling();
     plugin_{{COUPLING_SOURCE_ID}}->read(content_{{COUPLING_SOURCE_ID}});
     m_couplingsJson["{{COUPLING_SOURCE_ID}}"] = plugin_{{COUPLING_SOURCE_ID}};
