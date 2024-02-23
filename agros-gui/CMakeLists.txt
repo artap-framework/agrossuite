@@ -152,12 +152,14 @@ IF(WIN32)
 #  SET(CMAKE_MFC_FLAG 2)
 #  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:\"mainCRTStartup\" ")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /bigobj")
-SET(OPEN_GL_LIB OpenGl32.Lib)
+find_package(OpenGL REQUIRED)
 ENDIF(WIN32)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC})
-
-TARGET_LINK_LIBRARIES(  ${PROJECT_NAME} ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} Qt6::OpenGLWidgets Qt6::Svg Qt6::SvgWidgets ${OPEN_GL_LIB})
+message("-------------------------------------------------------------------")
+find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL OpenGLWidgets Widgets)
+message("-------------------------------------------------------------------")
+TARGET_LINK_LIBRARIES(  ${PROJECT_NAME} OpenGL::GL ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} Qt6::OpenGLWidgets Qt6::OpenGL Qt6::Svg Qt6::SvgWidgets)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

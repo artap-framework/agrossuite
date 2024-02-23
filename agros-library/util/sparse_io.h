@@ -298,7 +298,7 @@ public:
         char buf[16];
 
         // DEAL_II_WITH_64BIT_INDICES - std::sprintf(buf, "%llu", sz);
-        sprintf(buf, "%lu", max_len);
+        sprintf(buf, "%zu", max_len);
         strcat(buf, "\n[");
 
         out.write(buf, strlen(buf));

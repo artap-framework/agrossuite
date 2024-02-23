@@ -49,6 +49,8 @@
 #include "solver/solutiontypes.h"
 #include "solver/solutionstore.h"
 
+
+
 SceneViewPostInterface::SceneViewPostInterface(PostprocessorWidget *postprocessorWidget)
     : m_postprocessorWidget(postprocessorWidget), m_textureScalar(0), m_texScale(0.0), m_texShift(0.0)
 {
@@ -211,7 +213,7 @@ void SceneViewPostInterface::paletteCreate()
     }
 }
 
-void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView, double min, double max)
+void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon* sceneView, double min, double max)
 {
     if (!m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarColorBar).toBool()) return;
 
@@ -223,14 +225,14 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView
     // dimensions
     int textWidth = 9.5 * sceneView->m_labelPostSize;
     int textHeight = 1.8 * sceneView->m_labelPostSize;
-    Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // height() - 20.0
+    Point scaleSize = Point(45.0 + textWidth, 20 * textHeight); // height() - 20.0
     Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
     double scaleLeft = (sceneView->width() - (45.0 + textWidth));
     int numTicks = 11;
 
     // blended rectangle
     sceneView->drawBlend(Point(scaleLeft, scaleBorder.y), Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y),
-                         0.91, 0.91, 0.91);
+        0.91, 0.91, 0.91);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);

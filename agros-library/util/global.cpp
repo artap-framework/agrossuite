@@ -99,7 +99,7 @@ QStringList solverList(const QString &data)
     QDir dir(pluginPath);
 
     QStringList filters;
-    filters << "libsolver_plugin_*.so" << "solver_plugin_*.dll";
+    filters << "solver_plugin_*.dll" << "libsolver_plugin_*.so";
 
     QStringList list;
     foreach (QString entry, dir.entryList(filters))
@@ -333,6 +333,7 @@ void Agros::createSingleton(QSharedPointer<Log> log)
 
 Agros *Agros::singleton()
 {
+    qInfo() << "*Agros::singleton()" << m_singleton.data();
     return m_singleton.data();
 }
 

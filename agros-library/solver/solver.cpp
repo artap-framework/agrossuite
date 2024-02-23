@@ -233,7 +233,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
     case SOLVER_DEALII:
         linearSolver.solvedealii(system, rhs, sln);
         break;
-    case SOLVER_PLUGIN:
+    case SOLVER_PLUGIN:        
         linearSolver.solveExternalPlugin(system, rhs, sln);
         break;
     default:

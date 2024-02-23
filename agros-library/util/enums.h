@@ -37,7 +37,7 @@ Q_DECLARE_METATYPE(CoordinateType)
 enum AnalysisType
 {
     AnalysisType_Undefined = -1,
-    AnalysisType_SteadyState = 1,
+    AnalysisType_SteadyState = 0,
     AnalysisType_Transient = 2,
     AnalysisType_Harmonic = 3
 };

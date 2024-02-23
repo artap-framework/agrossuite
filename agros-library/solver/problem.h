@@ -23,7 +23,7 @@
 #undef signals
 #include <deal.II/base/point.h>
 #include <deal.II/numerics/data_out.h>
-#define signals public
+// #define signals public
 
 #include "util/util.h"
 #include "solutiontypes.h"
