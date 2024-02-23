@@ -51,50 +51,50 @@
 #include "../3rdparty/quazip/JlCompress.h"
 // #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-const QString VERSION = "version";
+#define VERSION "version"
 
-const QString LIST = "list";
-const QString ANGLE = "angle";
-const QString SEGMENTS = "segments";
-const QString X = "x";
-const QString Y = "y";
-const QString Z = "Z";
-const QString AREA = "area";
-const QString VALUE = "value";
+#define LIST "list"
+#define ANGLE "angle"
+#define SEGMENTS "segments"
+#define X "x"
+#define Y "y"
+#define Z "Z"
+#define AREA "area"
+#define VALUE "value"
 
-const QString ID = "id";
-const QString NAME = "name";
-const QString TYPE = "type";
-const QString GEOMETRY = "geometry";
-const QString NODES = "nodes";
-const QString FACES = "faces";
-const QString LABELS = "labels";
-const QString SETTINGS = "settings";
-const QString CONFIG = "config";
-const QString FIELDS = "fields";
-const QString FIELDID = "fieldid";
-const QString BOUNDARIES = "boundaries";
-const QString BOUNDARY_FACES = "boundary_faces";
-const QString BOUNDARY_TYPES = "boundary_types";
-const QString MATERIALS = "materials";
-const QString MATERIAL_LABELS = "material_labels";
-const QString MATERIAL_TYPES = "material_types";
-const QString REFINEMENT_NUMBER = "refinement_number";
-const QString REFINEMENT_ORDER = "refinement_order";
+#define ID "id"
+#define NAME "name"
+#define TYPE "type"
+#define GEOMETRY "geometry"
+#define NODES "nodes"
+#define FACES "faces"
+#define LABELS "labels"
+#define SETTINGS "settings"
+#define CONFIG "config"
+#define FIELDS "fields"
+#define FIELDID "fieldid"
+#define BOUNDARIES "boundaries"
+#define BOUNDARY_FACES "boundary_faces"
+#define BOUNDARY_TYPES "boundary_types"
+#define MATERIALS "materials"
+#define MATERIAL_LABELS "material_labels"
+#define MATERIAL_TYPES "material_types"
+#define REFINEMENT_NUMBER "refinement_number"
+#define REFINEMENT_ORDER "refinement_order"
 
-const QString COUPLINGS = "couplings";
-const QString SOURCE_FIELDID = "source_field";
-const QString TARGET_FIELDID = "target_field";
+#define COUPLINGS "couplings"
+#define SOURCE_FIELDID "source_field"
+#define TARGET_FIELDID "target_field"
 
-const QString STUDIES = "studies";
-const QString RECIPES = "recipes";
+#define STUDIES "studies"
+#define RECIPES "recipes"
 
 PostDeal::PostDeal(Computation *computation) :
     m_computation(computation),
+    m_isProcessed(false),
     m_activeViewField(nullptr),
     m_activeTimeStep(NOT_FOUND_SO_FAR),
-    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
-    m_isProcessed(false)
+    m_activeAdaptivityStep(NOT_FOUND_SO_FAR)
 {
     // connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
 }

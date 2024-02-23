@@ -20,12 +20,17 @@
 #ifndef STUDY_H
 #define STUDY_H
 
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
 #include "util/enums.h"
-#include "logview.h"
 #include "parameter.h"
 #include "functional.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
+
+#include <QtCore>
 
 class Computation;
 class Study;
@@ -102,12 +107,12 @@ private:
 class StatisticsCorrelation
 {
 public:
-    StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_correlation(0.0), m_covariance(0.0)
+    StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_covariance(0.0), m_correlation(0.0)
     {
         compute();
     }
 
-    StatisticsCorrelation(const QVector<double> x, const QVector<double> y) : m_statsX(Statistics(x)), m_statsY(Statistics(y)), m_correlation(0.0), m_covariance(0.0)
+    StatisticsCorrelation(const QVector<double> x, const QVector<double> y) : m_statsX(Statistics(x)), m_statsY(Statistics(y)), m_covariance(0.0), m_correlation(0.0)
     {
         compute();
     }

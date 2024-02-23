@@ -120,7 +120,8 @@ endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_BUILD_TYPE Release)
+  # SET(CMAKE_BUILD_TYPE Release)
+  SET(CMAKE_BUILD_TYPE Debug)
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
   SET(RELEASE_FLAGS "-DNDEBUG -g")
