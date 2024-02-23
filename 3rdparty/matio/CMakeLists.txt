@@ -29,6 +29,8 @@ SET(SOURCES endian.c
     matioConfig.h
 )
 
+message("MATIO ZLIB: ${ZLIB_LIBRARY}")
+
 IF (MSVC)
     ADD_LIBRARY(${PROJECT_NAME} STATIC ${SOURCES})
 ELSE()
