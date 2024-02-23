@@ -207,7 +207,7 @@ void MainWindow::createActions()
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
     actCreateFromModel = new QAction(iconAwesome(fa::fa_file_lines), tr("&Create script from model"), this);
-    actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
+    actCreateFromModel->setShortcut(QKeySequence("Ctrl+M"));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
     actExit = new QAction(tr("E&xit"), this);
@@ -245,7 +245,7 @@ void MainWindow::createActions()
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     actSolve = new QAction(icon("run"), tr("&Solve"), this);
-    actSolve->setShortcut(QKeySequence(tr("Alt+S")));
+    actSolve->setShortcut(QKeySequence("Alt+S"));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
     actSolveNewComputation = new QAction(icon("run-step"), tr("&Solve new"), this);

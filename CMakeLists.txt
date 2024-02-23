@@ -51,7 +51,21 @@ ENDIF()
 
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
+
+# languages
+# message("Translations")
+# FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")
+# foreach(LANGFILE ${lang_files})
+#   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
+#   add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
+
+#   # message("\tlrelease ${basefile}")
+
+#   ADD_CUSTOM_COMMAND(
+#         COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm
+#         OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
+# endforeach()
 
 # git revision
 #execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)

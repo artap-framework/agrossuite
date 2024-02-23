@@ -473,7 +473,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     externalSolverLayout->addWidget(new QLabel(tr("Parameters:")), 2, 0);
     externalSolverLayout->addWidget(txtExternalLinearSolverParameters, 2, 1);
 
-    QGroupBox *externalSolverGroup = new QGroupBox(tr("External)"));
+    QGroupBox *externalSolverGroup = new QGroupBox(tr("External"));
     externalSolverGroup->setLayout(externalSolverLayout);
 
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();

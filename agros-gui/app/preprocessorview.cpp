@@ -141,22 +141,22 @@ void PreprocessorWidget::createActions()
 
     // scene - add items
     actNewNode = new QAction(icon("scene-node"), tr("New &node..."), this);
-    actNewNode->setShortcut(tr("Alt+N"));
+    actNewNode->setShortcut(QKeySequence("Alt+N"));
     connect(actNewNode, SIGNAL(triggered()), this, SLOT(doNewNode()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewNode);
 
     actNewEdge = new QAction(icon("scene-edge"), tr("New &edge..."), this);
-    actNewEdge->setShortcut(tr("Alt+E"));
+    actNewEdge->setShortcut(QKeySequence("Alt+E"));
     connect(actNewEdge, SIGNAL(triggered()), this, SLOT(doNewEdge()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewEdge);
 
     actNewLabel = new QAction(icon("scene-label"), tr("New &label..."), this);
-    actNewLabel->setShortcut(tr("Alt+L"));
+    actNewLabel->setShortcut(QKeySequence("Alt+L"));
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewLabel);
 
     actNewBoundary = new QAction(tr("New &boundary condition..."), this);
-    actNewBoundary->setShortcut(tr("Alt+B"));
+    actNewBoundary->setShortcut(QKeySequence("Alt+B"));
     connect(actNewBoundary, SIGNAL(triggered()), this, SLOT(doNewBoundary()));
 
     // clear actions
@@ -175,7 +175,7 @@ void PreprocessorWidget::createActions()
     }
 
     actNewMaterial = new QAction(tr("New &material..."), this);
-    actNewMaterial->setShortcut(tr("Alt+M"));
+    actNewMaterial->setShortcut(QKeySequence("Alt+M"));
     connect(actNewMaterial, SIGNAL(triggered()), this, SLOT(doNewMaterial()));
 
     // clear actions

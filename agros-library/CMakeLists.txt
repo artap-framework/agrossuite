@@ -23,22 +23,7 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/bayesopt/include)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nlopt2/src/api)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga2)
 
-# languages
-message("Translations")
-FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")
-foreach(LANGFILE ${lang_files})
-  GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
-  add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
-
-  # message("\tlrelease ${basefile}")
-
-  ADD_CUSTOM_COMMAND(
-        COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm
-        OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
-endforeach()
-
 SET(SOURCES
-    # sceneview_vtk2d.cpp
     # ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
     # ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
     datatable.cpp
