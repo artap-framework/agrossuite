@@ -52,7 +52,21 @@ ENDIF()
 
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
+
+# languages
+# message("Translations")
+# FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")
+# foreach(LANGFILE ${lang_files})
+#   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
+#   add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
+
+#   # message("\tlrelease ${basefile}")
+
+#   ADD_CUSTOM_COMMAND(
+#         COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm
+#         OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
+# endforeach()
 
 # git revision
 #execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)
@@ -121,7 +135,8 @@ endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_BUILD_TYPE Release)
+  # SET(CMAKE_BUILD_TYPE Release)
+  SET(CMAKE_BUILD_TYPE Debug)
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
   # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
   SET(RELEASE_FLAGS "-DNDEBUG -g")

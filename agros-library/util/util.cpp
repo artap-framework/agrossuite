@@ -121,7 +121,7 @@ void setLocale(const QString &locale)
 {
     // non latin-1 chars
     QTranslator *qtTranslator = new QTranslator(QCoreApplication::instance());
-    QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
+    // QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
     QTranslator *pluginTranslator = new QTranslator(QCoreApplication::instance());
 
     QString country = locale.section('_',0,0);
@@ -132,12 +132,12 @@ void setLocale(const QString &locale)
     else
         qDebug() << "Qt locale file not found.";
 
-    if (QFile::exists(":/lang/" + locale + ".qm"))
-        auto ok = appTranslator->load(":/lang/" + locale + ".qm");
-    else if (QFile::exists(":/lang/en_US.qm"))
-        auto ok = appTranslator->load(":/lang/en_US.qm");
-    else
-        qDebug() << "Locale file not found.";
+    // if (QFile::exists(":/lang/" + locale + ".qm"))
+    //     auto ok = appTranslator->load(":/lang/" + locale + ".qm");
+    // else if (QFile::exists(":/lang/en_US.qm"))
+    //     auto ok = appTranslator->load(":/lang/en_US.qm");
+    // else
+    //     qDebug() << "Locale file not found.";
 
     if (QFile::exists(":/lang/plugin_" + locale + ".qm"))
         auto ok = pluginTranslator->load(":/lang/plugin_" + locale + ".qm");
@@ -147,7 +147,7 @@ void setLocale(const QString &locale)
         qDebug() << "Plugin locale file not found.";
 
     QCoreApplication::installTranslator(qtTranslator);
-    QCoreApplication::installTranslator(appTranslator);
+    // QCoreApplication::installTranslator(appTranslator);
     QCoreApplication::installTranslator(pluginTranslator);
 }
 

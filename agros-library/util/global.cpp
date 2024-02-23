@@ -203,7 +203,7 @@ QString findDataDir()
     return "";
 }
 
-static QSharedPointer<Agros> m_singleton;
+static Agros *m_singleton;
 
 Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 {
@@ -225,8 +225,8 @@ Agros::Agros(QSharedPointer<Log> log) : m_log(log)
 void Agros::readPlugins()
 {
     // set default datadir
-    if (m_singleton.data()->dataDir().isEmpty())
-        m_singleton.data()->setDataDir(findDataDir());
+    if (m_singleton->dataDir().isEmpty())
+        m_singleton->setDataDir(findDataDir());
 
     // plugins
     // read plugins
@@ -238,7 +238,7 @@ void Agros::readPlugins()
     }
 #else
     // plugins
-    foreach (QString pluginPath, pluginList(m_singleton.data()->dataDir()))
+    foreach (QString pluginPath, pluginList(m_singleton->dataDir()))
     {
         // load new plugin
         QPluginLoader *loader = new QPluginLoader(pluginPath);
@@ -257,13 +257,13 @@ void Agros::readPlugins()
 
         assert(loader->instance());
         PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
-        m_singleton.data()->m_plugins[plugin->fieldId()] = plugin;
+        m_singleton->m_plugins[plugin->fieldId()] = plugin;
 
         delete loader;
     }
 
     // solvers
-    foreach (QString pluginPath, solverList(m_singleton.data()->dataDir()))
+    foreach (QString pluginPath, solverList(m_singleton->dataDir()))
     {
         // load new plugin
         QPluginLoader *loader = new QPluginLoader(pluginPath);
@@ -283,7 +283,7 @@ void Agros::readPlugins()
 
         assert(loader->instance());
         PluginSolverInterface *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
-        m_singleton.data()->m_solvers[plugin->name()] = plugin;
+        m_singleton->m_solvers[plugin->name()] = plugin;
 
         delete loader;
     }
@@ -292,14 +292,15 @@ void Agros::readPlugins()
 
 Agros::~Agros()
 {
+    delete m_singleton;
 }
 
 void Agros::clear()
 {    
-    delete m_singleton.data()->m_problem;
-    m_singleton.data()->m_computations.clear();
+    delete m_singleton->m_problem;
+    m_singleton->m_computations.clear();
 
-    delete m_singleton.data()->m_configComputer;
+    delete m_singleton->m_configComputer;
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
@@ -328,13 +329,12 @@ void Agros::clearComputations()
 
 void Agros::createSingleton(QSharedPointer<Log> log)
 {
-    m_singleton = QSharedPointer<Agros>(new Agros(log));
+    m_singleton = new Agros(log);
 }
 
 Agros *Agros::singleton()
-{
-    qInfo() << "*Agros::singleton()" << m_singleton.data();
-    return m_singleton.data();
+{    
+    return m_singleton;
 }
 
 PluginInterface *Agros::loadPlugin(const QString &pluginName)
@@ -357,5 +357,5 @@ PluginSolverInterface *Agros::loadSolver(const QString &solverName)
 
 void Agros::setDataDir(const QString &dir)
 {
-    m_singleton.data()->m_dataDir = dir;
+    m_singleton->m_dataDir = dir;
 }

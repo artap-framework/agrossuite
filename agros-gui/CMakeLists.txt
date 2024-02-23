@@ -146,6 +146,10 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
 find_package(Qt6 COMPONENTS SvgWidgets REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
+find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Gui REQUIRED) 
+find_package(Qt6 COMPONENTS OpenGL REQUIRED)
 
 IF(WIN32)
 #  ADD_DEFINITIONS(-D_AFXDLL)
@@ -155,11 +159,25 @@ SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /bigobj")
 find_package(OpenGL REQUIRED)
 ENDIF(WIN32)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC})
-message("-------------------------------------------------------------------")
-find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL OpenGLWidgets Widgets)
-message("-------------------------------------------------------------------")
-TARGET_LINK_LIBRARIES(  ${PROJECT_NAME} OpenGL::GL ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} Qt6::OpenGLWidgets Qt6::OpenGL Qt6::Svg Qt6::SvgWidgets)
+
+# translations
+set(TS_FILES
+    "cs_CZ.ts"
+    "en_US.ts"
+    "pl_PL.ts"
+    "plugin_cs_CZ.ts"
+    "plugin_en_US.ts"
+    "plugin_pl_PL.ts")
+list(TRANSFORM TS_FILES PREPEND ${CMAKE_HOME_DIRECTORY}/resources_source/lang/)
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_HOME_DIRECTORY}/resources_source/lang/")
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC} ${QM_FILES})
+
+# translations
+qt_add_lupdate(${PROJECT_NAME} TS_FILES ${TS_FILES})
+qt_add_lrelease(${PROJECT_NAME} TS_FILES ${TS_FILES})
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} Qt6::OpenGLWidgets Qt6::Svg Qt6::SvgWidgets OpenGL::GL Qt6::OpenGL)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

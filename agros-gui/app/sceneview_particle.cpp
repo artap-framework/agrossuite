@@ -99,7 +99,7 @@ ProblemBase *SceneViewParticleTracing::problem() const
 void SceneViewParticleTracing::createActionsParticleTracing()
 {
     actSceneModeParticleTracing = new QAction(tr("Particle\nTracing"), this);
-    actSceneModeParticleTracing->setShortcut(tr("Ctrl+6"));
+    actSceneModeParticleTracing->setShortcut("Ctrl+6");
     actSceneModeParticleTracing->setCheckable(true);
 }
 

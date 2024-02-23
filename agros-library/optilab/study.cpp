@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "study.h"
+#include "logview.h"
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"

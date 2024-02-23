@@ -36,26 +36,26 @@
 tbb::mutex compileExpressionMutex;
 #endif
 
-const QString GENERAL = "general";
-const QString VERSION = "version";
-const QString NAME = "name";
-const QString DESCRIPTION = "description";
+#define GENERAL "general"
+#define VERSION "version"
+#define NAME "name"
+#define DESCRIPTION "description"
 
-const QString PROPERTIES = "properties";
-const QString SOURCE = "source";
-const QString TYPE = "type";
-const QString SHORTNAME = "shortname";
-const QString UNIT = "unit";
-const QString INDEPENDENT_SHORTNAME = "independent_shortname";
-const QString INDEPENDENT_UNIT = "independent_unit";
+#define PROPERTIES "properties"
+#define SOURCE "source"
+#define TYPE "type"
+#define SHORTNAME "shortname"
+#define UNIT "unit"
+#define INDEPENDENT_SHORTNAME "independent_shortname"
+#define INDEPENDENT_UNIT "independent_unit"
 
-const QString CONSTANT = "constant";
-const QString TABLE = "table";
-const QString KEYS = "keys";
-const QString VALUES = "values";
-const QString FUNCTION = "function";
-const QString LOWER = "lower";
-const QString UPPER = "upper";
+#define CONSTANT "constant"
+#define TABLE "table"
+#define KEYS "keys"
+#define VALUES "values"
+#define FUNCTION "function"
+#define LOWER "lower"
+#define UPPER "upper"
 
 void materialValues(const QString exprStr, double lower, double upper, int count, QVector<double> &keys, QVector<double> &values)
 {

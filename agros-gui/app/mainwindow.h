@@ -90,8 +90,6 @@ private slots:
     void doCopy();
     void doPaste();
 
-    void doHelp();
-    void doHelpShortCut();
     void doCheckVersion();
     void doAbout();
     void doStartedScript();

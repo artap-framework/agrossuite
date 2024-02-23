@@ -105,7 +105,7 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     createControls();
 
     actRunStudy = new QAction(icon("run"), tr("Run study"), this);
-    actRunStudy->setShortcut(QKeySequence(tr("Alt+S")));
+    actRunStudy->setShortcut(QKeySequence("Alt+S"));
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
 }
 

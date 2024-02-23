@@ -318,7 +318,7 @@ public:
     void solve();
     void solve_dek();
 
-    virtual QString problemFileName() const;
+    virtual QString problemFileName() const override;
     void readFromProblem();
     inline QString problemDir() { return m_problemDir; }
 
@@ -327,17 +327,13 @@ public:
 
     inline PostDeal *postDeal() { return m_postDeal; }
 
-    virtual void clearFields();
+    virtual void clearFields() override;
     void clearSolution();
     void clearResults();
-    virtual void clearFieldsAndConfig();
+    virtual void clearFieldsAndConfig() override;
 
     void abortSolving();
-    /*
-signals:
-    void solved();
-    void cleared();
-*/
+
 
 protected:
     bool m_isSolving;
@@ -362,8 +358,8 @@ protected:
 
     void solveInit(); // called by solve, can throw SolverException
 
-    virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
-    virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson) override;
+    virtual void writeProblemToJsonInternal(QJsonObject &rootJson) override;
 
     // results
     ComputationResults *m_results;

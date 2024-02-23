@@ -21,6 +21,7 @@
 
 #include "study.h"
 #include "parameter.h"
+#include "logview.h"
 
 #include "util/global.h"
 #include "solver/problem.h"

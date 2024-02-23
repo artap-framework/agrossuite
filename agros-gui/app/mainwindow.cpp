@@ -207,7 +207,7 @@ void MainWindow::createActions()
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
     actCreateFromModel = new QAction(iconAwesome(fa::fa_file_lines), tr("&Create script from model"), this);
-    actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
+    actCreateFromModel->setShortcut(QKeySequence("Ctrl+M"));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
     actExit = new QAction(tr("E&xit"), this);
@@ -218,15 +218,6 @@ void MainWindow::createActions()
     actCopy = new QAction(iconAwesome(fa::fa_copy), tr("Copy image to clipboard"), this);
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
-
-    actHelp = new QAction(tr("&Help"), this);
-    actHelp->setShortcut(QKeySequence::HelpContents);
-    // actHelp->setEnabled(false);
-    connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
-
-    actHelpShortCut = new QAction(tr("&Shortcuts"), this);
-    actHelpShortCut->setEnabled(false);
-    connect(actHelpShortCut, SIGNAL(triggered()), this, SLOT(doHelpShortCut()));
 
     actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
@@ -254,7 +245,7 @@ void MainWindow::createActions()
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     actSolve = new QAction(icon("run"), tr("&Solve"), this);
-    actSolve->setShortcut(QKeySequence(tr("Alt+S")));
+    actSolve->setShortcut(QKeySequence("Alt+S"));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
     actSolveNewComputation = new QAction(icon("run-step"), tr("&Solve new"), this);
@@ -362,8 +353,6 @@ void MainWindow::createMenus()
     mnuSettings->addAction(actOptions);
 
     mnuHelp = menuBar()->addMenu(tr("&Help"));
-    mnuHelp->addAction(actHelp);
-    mnuHelp->addSeparator();
     mnuHelp->addAction(actCheckVersion);
     mnuHelp->addSeparator();
     mnuHelp->addAction(actAbout);   // will be added to "Agros" MacOSX menu
@@ -1099,16 +1088,6 @@ void MainWindow::setControls()
     optiLab->refresh();
 
     setUpdatesEnabled(true);
-}
-
-void MainWindow::doHelp()
-{
-    showPage("index.html");
-}
-
-void MainWindow::doHelpShortCut()
-{
-    showPage("getting_started/shortcut_keys.html");
 }
 
 void MainWindow::doCheckVersion()

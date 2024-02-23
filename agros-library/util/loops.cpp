@@ -19,6 +19,8 @@
 
 #include "loops.h"
 
+#include <cmath>
+
 #include "mesh/meshgenerator.h"
 
 #include "scene.h"
@@ -827,13 +829,13 @@ QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyl
     tri.clear();
 
     // delete structures
-    for (int i = 0; i < polylineP2T.size(); i++)
+    for (size_t i = 0; i < polylineP2T.size(); i++)
         delete polylineP2T.at(i);
     polylineP2T.clear();
 
     for (int i = 0; i < holesP2T.size(); i++)
     {
-        for (int j = 0; j < holesP2T.at(i).size(); j++)
+        for (size_t j = 0; j < holesP2T.at(i).size(); j++)
             delete holesP2T.at(i).at(j);
         holesP2T.at(i).clear();
     }

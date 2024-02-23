@@ -108,14 +108,6 @@ QIcon iconAlphabet(const QChar &letter, AlphabetColor color)
         return icon(QString("alphabet/%1/imageback").arg(directory));
 }
 
-void showPage(const QString &str)
-{
-    if (str.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(Agros::dataDir() + "/resources/help/index.html"));
-    else
-        QDesktopServices::openUrl(QUrl::fromLocalFile(Agros::dataDir() + "/resources/help/" + str));
-}
-
 // ************************************************************************************************************************
 
 void SolveThread::run()
