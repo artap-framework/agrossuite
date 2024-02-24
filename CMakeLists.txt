@@ -236,7 +236,6 @@ set(info resources_source/modules/acoustic.json
          resources_source/modules/flow.json
          resources_source/modules/heat.json
          resources_source/modules/magnetic.json
-         resources_source/modules/math_coeff.json
          resources_source/modules/rf_te.json
          resources_source/modules/rf_tm.json
          resources_source/couplings/current-heat.json

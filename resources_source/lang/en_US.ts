@@ -165,55 +165,55 @@
 <context>
     <name>Computation</name>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1868"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1873"/>
         <source>No field defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1875"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1880"/>
         <source>Total time is zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1877"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1882"/>
         <source>Time method tolerance is zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1879"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1884"/>
         <source>Initial step size is negative</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1912"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1917"/>
         <source>Could not create mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1931"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1937"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1936"/>
         <location filename="../../agros-library/solver/problem.cpp" line="1942"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="2002"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1947"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2007"/>
         <source>Solver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1931"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1936"/>
         <source>Space adaptivity for transient coupled problems not possible at the moment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1937"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1942"/>
         <source>No fields defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1942"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1947"/>
         <source>Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2002"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2007"/>
         <source>An unknown exception occurred in solver and has been ignored</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1765,30 +1765,94 @@
 <context>
     <name>MeshGeneratorTriangle</name>
     <message>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="530"/>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="550"/>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="555"/>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="823"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="490"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="510"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="515"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="783"/>
         <source>Mesh generator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="530"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="490"/>
         <source>Triangle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="550"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="510"/>
         <source>Invalid number of nodes (%1 &lt; 3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="555"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="515"/>
         <source>Invalid number of edges (%1 &lt; 3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="823"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="783"/>
+        <source>Some areas do not have a marker</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MeshGeneratorTriangleExternal</name>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="72"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="99"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="114"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="119"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="131"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="278"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="286"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="294"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="302"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="370"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="377"/>
+        <source>Mesh generator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="72"/>
+        <source>Could not start Triangle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="114"/>
+        <source>Invalid number of nodes (%1 &lt; 3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="119"/>
+        <source>Invalid number of edges (%1 &lt; 3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="131"/>
+        <source>Could not create Triangle poly mesh file (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="278"/>
+        <source>Could not read Triangle node file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="286"/>
+        <source>Could not read Triangle edge file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="294"/>
+        <source>Could not read Triangle elements file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="302"/>
+        <source>Could not read Triangle neighbors elements file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="370"/>
+        <location filename="../../agros-library/mesh/meshgenerator_triangle.cpp" line="377"/>
         <source>Some areas do not have a marker</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3351,31 +3415,31 @@
 <context>
     <name>Problem</name>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2259"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2264"/>
         <source>Loading solution from disk: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2275"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2280"/>
         <source>Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2275"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2280"/>
         <source>Initial mesh is corrupted (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2348"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2353"/>
         <source>A2D file is deprecated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="2259"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="2348"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="2364"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2264"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2353"/>
         <location filename="../../agros-library/solver/problem.cpp" line="2369"/>
         <location filename="../../agros-library/solver/problem.cpp" line="2374"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="2379"/>
         <source>Problem</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3384,9 +3448,9 @@
     <name>ProblemBase</name>
     <message>
         <location filename="../../agros-library/solver/problem.cpp" line="842"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="900"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="906"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="917"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="905"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="911"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="922"/>
         <source>Mesh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3396,48 +3460,48 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="869"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="874"/>
         <source>Mesh generator error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="869"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="874"/>
         <source>Mesh generator &apos;%1&apos; is not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="884"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="936"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="889"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="941"/>
         <source>Mesh Generator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="884"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="889"/>
         <source>Reading initial mesh from memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="894"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="899"/>
         <source>Geometry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="911"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="916"/>
         <source>Mesh (deal.II)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="917"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="922"/>
         <source>An unknown exception occurred and has been ignored</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="936"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="941"/>
         <source>Reading initial mesh from disk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1269"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1274"/>
         <source>Node with coordinates (%1, %2) is too close to an existing node.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4278,12 +4342,12 @@
         <location filename="../../agros-library/solver/linear_solver.cpp" line="142"/>
         <location filename="../../agros-library/solver/linear_solver.cpp" line="159"/>
         <location filename="../../agros-library/solver/linear_solver.cpp" line="188"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1867"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1921"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1962"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1981"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1987"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1993"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1872"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1926"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1967"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1986"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1992"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1998"/>
         <location filename="../../agros-library/solver/solver.cpp" line="910"/>
         <location filename="../../agros-library/solver/solver.cpp" line="1225"/>
         <source>Solver</source>
@@ -4362,13 +4426,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1867"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1872"/>
         <source>No fields defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../agros-library/optilab/study.cpp" line="596"/>
-        <location filename="../../agros-library/solver/problem.cpp" line="1921"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1926"/>
         <source>Aborting calculation...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4389,12 +4453,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1962"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1967"/>
         <source>Elapsed time: %1 s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/problem.cpp" line="1974"/>
+        <location filename="../../agros-library/solver/problem.cpp" line="1979"/>
         <source>Geometry</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5226,11 +5290,6 @@ Tracing</source>
         <location filename="../../agros-gui/app/sceneview_particle.cpp" line="863"/>
         <location filename="../../agros-gui/app/sceneview_particle.cpp" line="871"/>
         <source>Particle tracing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/sceneview_particle.cpp" line="102"/>
-        <source>Ctrl+6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
