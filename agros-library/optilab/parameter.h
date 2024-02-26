@@ -22,7 +22,7 @@
 
 #include "util/util.h"
 
-class Parameter
+class AGROS_LIBRARY_API Parameter
 {
 public:
     Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
@@ -44,7 +44,7 @@ protected:
     double m_upperBound;
 };
 
-class ParameterSpace
+class AGROS_LIBRARY_API ParameterSpace
 {
 public:
     ParameterSpace(QList<Parameter> parameters);

@@ -23,7 +23,7 @@
 #include "util/util.h"
 #include "gui/other.h"
 
-class AGROS_LIBRARY_API AboutDialog : public QDialog
+class AboutDialog : public QDialog
 {
     Q_OBJECT
 

@@ -33,7 +33,7 @@ class FieldInfo;
 class SceneMaterial;
 class ParticleTracing;
 
-class ParticleTracingForce
+class AGROS_LIBRARY_API ParticleTracingForce
 {
 public:
     ParticleTracingForce(ParticleTracing *m_particleTracing);
@@ -47,7 +47,7 @@ protected:
 };
 
 // custom force
-class ParticleTracingForceCustom : public ParticleTracingForce
+class AGROS_LIBRARY_API ParticleTracingForceCustom : public ParticleTracingForce
 {
 public:
     ParticleTracingForceCustom(ParticleTracing *particleTracing) : ParticleTracingForce(particleTracing) {}
@@ -56,7 +56,7 @@ public:
 };
 
 // drag force
-class ParticleTracingForceDrag : public ParticleTracingForce
+class AGROS_LIBRARY_API ParticleTracingForceDrag : public ParticleTracingForce
 {
 public:
     ParticleTracingForceDrag(ParticleTracing *particleTracing) : ParticleTracingForce(particleTracing) {}
@@ -65,7 +65,7 @@ public:
 };
 
 // field force
-class ParticleTracingForceField : public ParticleTracingForce
+class AGROS_LIBRARY_API ParticleTracingForceField : public ParticleTracingForce
 {
 public:
     ParticleTracingForceField(ParticleTracing *m_particleTracing, QList<double> particleChargesList);
@@ -79,7 +79,7 @@ private:
 };
 
 // field p2p force
-class ParticleTracingForceFieldP2P : public ParticleTracingForce
+class AGROS_LIBRARY_API ParticleTracingForceFieldP2P : public ParticleTracingForce
 {
 public:
     ParticleTracingForceFieldP2P(ParticleTracing *m_particleTracing, QList<double> particleChargesList, QList<double> particleMassesList);

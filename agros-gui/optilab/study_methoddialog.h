@@ -31,7 +31,7 @@
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
 
-class AGROS_LIBRARY_API StudySweepDialog : public StudyDialog
+class StudySweepDialog : public StudyDialog
 {
 public:
     StudySweepDialog(Study *study, QWidget *parent = 0);
@@ -49,7 +49,7 @@ private:
     QComboBox *cmbInitMethod;
 };
 
-class AGROS_LIBRARY_API StudyNSGA2Dialog : public StudyDialog
+class StudyNSGA2Dialog : public StudyDialog
 {
 public:
     StudyNSGA2Dialog(Study *study, QWidget *parent = 0);
@@ -73,7 +73,7 @@ private:
     QRadioButton *radCrowdObjective;
 };
 
-class AGROS_LIBRARY_API StudyNLoptDialog : public StudyDialog
+class StudyNLoptDialog : public StudyDialog
 {
 public:
     StudyNLoptDialog(Study *study, QWidget *parent = 0);
@@ -95,7 +95,7 @@ private:
     QComboBox *cmbAlgorithm;
 };
 
-class AGROS_LIBRARY_API StudyBayesOptDialog : public StudyDialog
+class StudyBayesOptDialog : public StudyDialog
 {
 public:
     StudyBayesOptDialog(Study *study, QWidget *parent = 0);

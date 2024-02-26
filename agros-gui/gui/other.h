@@ -31,11 +31,11 @@
 class Computation;
 
 // undo framework
-AGROS_LIBRARY_API QUndoStack *undoStack();
+QUndoStack *undoStack();
 
 // get icon with respect to actual theme
-AGROS_LIBRARY_API QIcon iconAwesome(int character);
-AGROS_LIBRARY_API QIcon icon(const QString &name, const QString &defaultName = "");
+QIcon iconAwesome(int character);
+QIcon icon(const QString &name, const QString &defaultName = "");
 enum AlphabetColor
 {
     AlphabetColor_Blue,
@@ -48,7 +48,7 @@ enum AlphabetColor
     AlphabetColor_Yellow
 };
 // get color icon with letter
-AGROS_LIBRARY_API QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
+QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
 
 class SolveThread : public QThread
 {

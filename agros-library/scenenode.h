@@ -26,7 +26,7 @@
 
 class QDomElement;
 
-class SceneNode : public SceneBasic
+class AGROS_LIBRARY_API SceneNode : public SceneBasic
 {
 public:
     SceneNode(Scene *scene, const Point &point);
@@ -54,7 +54,7 @@ private:
     PointValue m_point;
 };
 
-class SceneNodeContainer : public SceneBasicContainer<SceneNode>
+class AGROS_LIBRARY_API SceneNodeContainer : public SceneBasicContainer<SceneNode>
 {
 public:
     /// if container contains object with the same coordinates as node, returns it. Otherwise returns NULL

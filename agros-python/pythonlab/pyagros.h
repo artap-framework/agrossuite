@@ -20,6 +20,21 @@
 #ifndef PYAGROS_H
 #define PYAGROS_H
 
+// Windows DLL export/import definitions
+#ifdef Q_WS_WIN
+    // windows
+    // DLL build
+#ifdef AGROS_LIBRARY_DLL
+#define AGROS_LIBRARY_API __declspec(dllexport)
+// DLL usage
+#else
+#define AGROS_LIBRARY_API 
+#endif
+#else
+//// linux
+#define AGROS_LIBRARY_API
+#endif
+
 #include "util/util.h"
 #include "util/global.h"
 #include "util/conf.h"

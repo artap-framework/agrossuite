@@ -32,7 +32,7 @@ public:
     SolutionStore(Computation *parentProblem);
     ~SolutionStore();
 
-    class SolutionRunTimeDetails
+    class AGROS_LIBRARY_API SolutionRunTimeDetails
     {
     public:
         enum Type

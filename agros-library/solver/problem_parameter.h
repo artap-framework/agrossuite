@@ -29,7 +29,7 @@ class CouplingInfo;
 
 class ProblemBase;
 
-class ProblemParameter
+class AGROS_LIBRARY_API ProblemParameter
 {
 public:
     ProblemParameter(const QString &name = "", double value = 0.0) : m_name(name), m_value(value) {}
@@ -44,7 +44,7 @@ protected:
     double m_value;
 };
 
-class ProblemParameters
+class AGROS_LIBRARY_API ProblemParameters
 {
 public:
     ProblemParameters(const QList<ProblemParameter> parameters = QList<ProblemParameter>());

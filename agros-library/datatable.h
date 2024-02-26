@@ -24,7 +24,7 @@
 #include "util/enums.h"
 #include "util/spline.h"
 
-class PiecewiseLinear
+class AGROS_LIBRARY_API PiecewiseLinear
 {
 public:
     PiecewiseLinear(std::vector<double> points, std::vector<double> values);
@@ -42,7 +42,7 @@ private:
 };
 
 // for testing.. returns average value. Simple "linearization" of the problem
-class ConstantTable
+class AGROS_LIBRARY_API ConstantTable
 {
 public:
     ConstantTable(std::vector<double> points, std::vector<double> values);
@@ -53,7 +53,7 @@ private:
     double m_value;
 };
 
-class DataTable
+class AGROS_LIBRARY_API DataTable
 {
 public:
     DataTable();

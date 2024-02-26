@@ -32,7 +32,7 @@
 class FieldInfo;
 class SceneMaterial;
 
-class ParticleTracing : public QObject
+class AGROS_LIBRARY_API ParticleTracing : public QObject
 {
 public:
     ParticleTracing(Computation *computation, QList<double> particleMassesList, QObject *parent = 0);

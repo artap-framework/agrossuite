@@ -51,7 +51,7 @@ protected:
     double m_alpha[10];
 };
 
-class BDF2ATable : public BDF2Table
+class AGROS_LIBRARY_API BDF2ATable : public BDF2Table
 {
 public:
     BDF2ATable() : BDF2Table() { setOrderAndPreviousSteps(1, QList<double>()); }

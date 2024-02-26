@@ -55,15 +55,14 @@
 
 // Windows DLL export/import definitions
 #ifdef Q_WS_WIN
-//// windows
-#define AGROS_LIBRARY_API
-//// DLL build
-//#ifdef AGROS_LIBRARY_DLL
-//#define AGROS_LIBRARY_API __declspec(dllexport)
-//// DLL usage
-//#else
-//#define AGROS_LIBRARY_API __declspec(dllimport)
-//#endif
+    // windows
+    // DLL build
+    #ifdef AGROS_LIBRARY_DLL
+        #define AGROS_LIBRARY_API __declspec(dllexport)
+        // DLL usage
+    #else
+        #define AGROS_LIBRARY_API 
+#endif
 #else
 //// linux
 #define AGROS_LIBRARY_API

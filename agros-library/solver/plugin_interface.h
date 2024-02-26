@@ -38,9 +38,9 @@
 #define signals public
 
 
-class PositionInfo;
+class AGROS_LIBRARY_API PositionInfo;
 
-struct LocalPointValue
+struct AGROS_LIBRARY_API LocalPointValue
 {
     LocalPointValue()
     {
@@ -61,7 +61,7 @@ struct LocalPointValue
     const Material *material;
 };
 
-class LocalValue
+class AGROS_LIBRARY_API LocalValue
 {
 public:
     LocalValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
@@ -93,7 +93,7 @@ protected:
     QMap<QString, LocalPointValue> m_values;
 };
 
-class IntegralValue
+class AGROS_LIBRARY_API IntegralValue
 {
 public:
     IntegralValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
@@ -146,7 +146,7 @@ protected:
     QMap<QString, double> m_values;
 };
 
-class ForceValue
+class AGROS_LIBRARY_API ForceValue
 {
 public:
     ForceValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
@@ -165,7 +165,7 @@ protected:
 };
 
 // plugin module
-class PluginFunctions
+class AGROS_LIBRARY_API PluginFunctions
 {
 public:
     // static methods

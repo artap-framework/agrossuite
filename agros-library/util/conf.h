@@ -26,7 +26,22 @@
 #include <QSettings>
 #include <QString>
 
-class Config : public QObject
+// Windows DLL export/import definitions
+#ifdef _MSC_VER
+    // windows
+    // DLL build
+#ifdef AGROS_LIBRARY_DLL
+#define AGROS_LIBRARY_API __declspec(dllexport)
+// DLL usage
+#else
+#define AGROS_LIBRARY_API 
+#endif
+#else
+//// linux
+#define AGROS_LIBRARY_API
+#endif
+
+class AGROS_LIBRARY_API Config : public QObject
 {
 public:
     Config();

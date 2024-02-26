@@ -17,12 +17,29 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+
+// Windows DLL export/import definitions
+#ifdef _MSC_VER
+    // windows
+    // DLL build
+#ifdef AGROS_LIBRARY_DLL
+#define AGROS_LIBRARY_API __declspec(dllexport)
+// DLL usage
+#else
+#define AGROS_LIBRARY_API 
+#endif
+#else
+//// linux
+#define AGROS_LIBRARY_API
+#endif
+
+
 #ifndef SCRIPTGENERATOR_H
 #define SCRIPTGENERATOR_H
 
 #include "QString"
 
-class ScriptGenerator
+class AGROS_LIBRARY_API ScriptGenerator
 {
 public:
     ScriptGenerator();

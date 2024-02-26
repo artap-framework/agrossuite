@@ -46,7 +46,7 @@ class SceneViewWidget;
 class LogStdOut;
 class Computation;
 
-class AGROS_LIBRARY_API MainWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 

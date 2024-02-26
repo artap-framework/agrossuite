@@ -114,7 +114,7 @@ private:
 
 // *************************************************************************************************************************************
 
-class SceneFaceContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneFace>
+class AGROS_LIBRARY_API SceneFaceContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneFace>
 {
 public:
     void removeConnectedToNode(SceneNode* node);

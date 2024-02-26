@@ -25,9 +25,9 @@
 #include <QtNetwork>
 
 // check for new version
-AGROS_LIBRARY_API void checkForNewVersion(bool quiet = false, bool isSolver = false);
+void checkForNewVersion(bool quiet = false, bool isSolver = false);
 
-class AGROS_LIBRARY_API CheckVersion : public QObject
+class CheckVersion : public QObject
 {
     Q_OBJECT
 public:

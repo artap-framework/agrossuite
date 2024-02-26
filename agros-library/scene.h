@@ -50,7 +50,7 @@ class Log;
 
 class PluginInterface;
 
-QString generateSvgGeometry(QList<SceneFace *> edges);
+QString AGROS_LIBRARY_API generateSvgGeometry(QList<SceneFace *> edges);
 
 class AGROS_LIBRARY_API Scene : public QObject
 {

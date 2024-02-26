@@ -25,7 +25,7 @@
 #include <QtGui>
 #include <QtWidgets>
 
-class AGROS_LIBRARY_API LineEditDouble : public QLineEdit
+class LineEditDouble : public QLineEdit
 {
     Q_OBJECT
 public:

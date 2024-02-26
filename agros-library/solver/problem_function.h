@@ -24,7 +24,7 @@
 #include "value.h"
 #include "solutiontypes.h"
 
-class ProblemFunction
+class AGROS_LIBRARY_API ProblemFunction
 {
 public:
     ProblemFunction(const QString &name);
@@ -51,7 +51,7 @@ protected:
     double m_upperBound;
 };
 
-class ProblemFunctionAnalytic : public ProblemFunction
+class AGROS_LIBRARY_API ProblemFunctionAnalytic : public ProblemFunction
 {
 public:
     ProblemFunctionAnalytic(const QString &name = "", const QString &expr = "");
@@ -77,7 +77,7 @@ protected:
     mutable double m_value;
 };
 
-class ProblemFunctions
+class AGROS_LIBRARY_API ProblemFunctions
 {
 public:
     ProblemFunctions(QList<ProblemFunction *> items = QList<ProblemFunction *>());

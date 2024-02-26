@@ -34,7 +34,7 @@ class Study;
 class Computation;
 class SceneViewSimpleGeometry;
 
-class AGROS_LIBRARY_API OptiLabWidget : public QWidget
+class OptiLabWidget : public QWidget
 {
     Q_OBJECT
 public:

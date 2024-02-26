@@ -37,7 +37,7 @@ class Study;
 
 
 
-class Statistics
+class AGROS_LIBRARY_API Statistics
 {
 public:
     Statistics(const QVector<double> x) : m_values(x), m_min(0.0), m_max(0.0), m_sum(0.0), m_mean(0.0), m_meanError(0.0), m_median(0.0), m_variance(0.0), m_stdDev(0.0)
@@ -104,7 +104,7 @@ private:
     double m_stdDev;
 };
 
-class StatisticsCorrelation
+class AGROS_LIBRARY_API StatisticsCorrelation
 {
 public:
     StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_covariance(0.0), m_correlation(0.0)
@@ -143,7 +143,7 @@ private:
     double m_correlation;
 };
 
-class SolutionUncertainty
+class AGROS_LIBRARY_API SolutionUncertainty
 {
 public:
     SolutionUncertainty() : lowerBound(0.0), upperBound(0.0), uncertainty(0.0) {}
@@ -153,7 +153,7 @@ public:
     double uncertainty;
 };
 
-class ComputationParameterCompare
+class AGROS_LIBRARY_API ComputationParameterCompare
 {
 public:
     ComputationParameterCompare(const QString &parameterName) : m_parameterName(parameterName) {}
@@ -167,7 +167,7 @@ protected:
     QString m_parameterName;
 };
 
-class ComputationSet
+class AGROS_LIBRARY_API ComputationSet
 {
 public:
     ComputationSet(QList<QSharedPointer<Computation> > set = QList<QSharedPointer<Computation> >(), const QString &name = "");
@@ -193,7 +193,7 @@ protected:
 
 using StudyUpdate = std::function<void(QSharedPointer<Computation>, SolutionUncertainty)>;
 
-class Study : public QObject
+class AGROS_LIBRARY_API Study : public QObject
 {
 public:
     enum ResultType
@@ -360,7 +360,7 @@ protected:
     friend class SwigStudyBayesOpt;
 };
 
-class Studies : public QObject
+class AGROS_LIBRARY_API Studies : public QObject
 {
 public:
     Studies(QObject *parent = 0);

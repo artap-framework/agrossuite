@@ -66,7 +66,7 @@ struct PostTriangle
     double values[3];
 };
 
-class PostDataOut : public dealii::DataOut<2>
+class AGROS_LIBRARY_API PostDataOut : public dealii::DataOut<2>
 {
 public:
     PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem);
@@ -82,7 +82,7 @@ private:
                       const unsigned int n_subdivisions);
 };
 
-class PostDeal : public QObject
+class AGROS_LIBRARY_API PostDeal : public QObject
 {
 public:
     PostDeal(Computation *computation);

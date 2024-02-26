@@ -26,7 +26,7 @@ class SceneFace;
 
 #include "util/point.h"
 
-class LoopsInfo : public QObject
+class AGROS_LIBRARY_API LoopsInfo : public QObject
 {
 public:
     LoopsInfo(Scene *scene);

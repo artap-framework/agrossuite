@@ -23,7 +23,7 @@
 #include "util/util.h"
 #include "gui/other.h"
 
-class AGROS_LIBRARY_API SystemOutputWidget : public QDialog
+class SystemOutputWidget : public QDialog
 {
     Q_OBJECT
 public:

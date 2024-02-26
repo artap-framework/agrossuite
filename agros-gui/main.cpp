@@ -33,7 +33,7 @@
 #include <deal.II/base/exceptions.h>
 #include <deal.II/base/multithread_info.h>
 
-class AGROS_LIBRARY_API AgrosApplication : public QApplication
+class AgrosApplication : public QApplication
 {
 public:
     AgrosApplication(int& argc, char ** argv) : QApplication(argc, argv)

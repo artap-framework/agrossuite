@@ -42,7 +42,7 @@ private:
     LogWidget *m_logWidget;
 };
 
-class AGROS_LIBRARY_API LogWidget : public QWidget
+class LogWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -95,7 +95,7 @@ private slots:
     void showDebug();
 };
 
-class AGROS_LIBRARY_API LogView : public QWidget
+class LogView : public QWidget
 {
     Q_OBJECT
 public:
@@ -113,7 +113,7 @@ private:
     ConnectLog *m_connectLog;
 };
 
-class AGROS_LIBRARY_API LogDialog : public QDialog
+class LogDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -166,7 +166,7 @@ private slots:
     void addIcon(const QIcon &icn, const QString &label);
 };
 
-class AGROS_LIBRARY_API ConnectLog : public QObject
+class ConnectLog : public QObject
 {
     Q_OBJECT
 
@@ -190,7 +190,7 @@ signals:
     void addIcon(const QIcon &icn, const QString &label);
 };
 
-class AGROS_LIBRARY_API LogGui : public Log
+class LogGui : public Log
 {
 public:
     LogGui();

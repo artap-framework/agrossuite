@@ -28,7 +28,7 @@
 class SceneViewPreprocessor;
 class FieldInfo;
 
-class AGROS_LIBRARY_API NewMarkerAction : public QAction
+class NewMarkerAction : public QAction
 {
     Q_OBJECT
 

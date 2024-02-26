@@ -26,7 +26,7 @@
 
 #include "bayesopt/bayesopt.hpp"
 
-class StudyBayesOpt;
+class AGROS_LIBRARY_API StudyBayesOpt;
 
 class BayesOptProblem : public bayesopt::ContinuousModel
 {
@@ -41,7 +41,7 @@ private:
     int m_steps;
 };
 
-class StudyBayesOpt : public Study
+class AGROS_LIBRARY_API StudyBayesOpt : public Study
 {
 public:
     StudyBayesOpt();

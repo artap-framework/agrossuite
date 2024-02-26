@@ -39,7 +39,7 @@ extern "C"
 //    bool readTriangleMeshFormat();
 //};
 
-class MeshGeneratorTriangle : public MeshGenerator
+class AGROS_LIBRARY_API MeshGeneratorTriangle : public MeshGenerator
 {
 public:
     MeshGeneratorTriangle(ProblemBase *problem);

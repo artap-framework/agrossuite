@@ -33,7 +33,7 @@
 
 #include "nlopt.hpp"
 
-class PyStudy
+class AGROS_LIBRARY_API PyStudy
 {
 public:
     PyStudy();
@@ -83,7 +83,7 @@ protected:
     Study *m_study;
 };
 
-class PyStudyBayesOpt : public PyStudy
+class AGROS_LIBRARY_API PyStudyBayesOpt : public PyStudy
 {
 public:
     PyStudyBayesOpt(int index = -1);
@@ -106,7 +106,7 @@ public:
     void setLearningType(const std::string &learningType);
 };
 
-class PyStudyNLopt : public PyStudy
+class AGROS_LIBRARY_API PyStudyNLopt : public PyStudy
 {
 public:
     PyStudyNLopt(int index = -1);
@@ -119,7 +119,7 @@ public:
     void setAlgorithm(const std::string &algorithm);
 };
 
-class PyStudyNSGA2 : public PyStudy
+class AGROS_LIBRARY_API PyStudyNSGA2 : public PyStudy
 {
 public:
     PyStudyNSGA2(int index = -1);
@@ -129,7 +129,7 @@ public:
     virtual StudyNSGA2 *study() const { return static_cast<StudyNSGA2 *>(m_study); }
 };
 
-class PyStudySweep : public PyStudy
+class AGROS_LIBRARY_API PyStudySweep : public PyStudy
 {
 public:
     PyStudySweep(int index = -1);

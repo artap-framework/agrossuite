@@ -89,7 +89,7 @@ private:
     Marker& operator = (const Marker& );
 };
 
-class Boundary : public Marker
+class AGROS_LIBRARY_API Boundary : public Marker
 {
 public:
     Boundary(Scene *scene, const FieldInfo *m_fieldInfo, QString m_name = "", QString m_type = "",
@@ -108,7 +108,7 @@ private:
 
 };
 
-class Material : public Marker
+class AGROS_LIBRARY_API Material : public Marker
 {
 public:
     Material(Scene *scene, const FieldInfo *m_fieldInfo, QString m_name,

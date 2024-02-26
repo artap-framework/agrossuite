@@ -39,7 +39,7 @@ class Study;
 class QCustomPlot;
 class QCPGraph;
 
-class AGROS_LIBRARY_API LogOptimizationDialog : public QDialog
+class LogOptimizationDialog : public QDialog
 {
     Q_OBJECT
 public:

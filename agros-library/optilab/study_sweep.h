@@ -26,7 +26,7 @@
 
 #include "bayesopt/bayesopt.hpp"
 
-class StudySweep;
+class AGROS_LIBRARY_API StudySweep;
 
 class SweepProblem : public bayesopt::ContinuousModel
 {
@@ -41,7 +41,7 @@ private:
     int m_steps;
 };
 
-class StudySweep : public Study
+class AGROS_LIBRARY_API StudySweep : public Study
 {
 public:
     StudySweep();

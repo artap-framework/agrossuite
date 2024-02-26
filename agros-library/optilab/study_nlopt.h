@@ -26,7 +26,7 @@
 
 #include "nlopt.hpp"
 
-class StudyNLopt : public Study
+class AGROS_LIBRARY_API StudyNLopt : public Study
 {
 public:
     StudyNLopt();

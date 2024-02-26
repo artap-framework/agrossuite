@@ -147,7 +147,7 @@ public:
 // the evaluation point, this class consists only of the function that
 // implements assembling the right hand side.
 template <int dim>
-class PointValueEvaluation : public DualFunctionalBase<dim>
+class AGROS_LIBRARY_API PointValueEvaluation : public DualFunctionalBase<dim>
 {
 public:
     PointValueEvaluation (const dealii::Point<dim> &evaluation_point)

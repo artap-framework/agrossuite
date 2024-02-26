@@ -24,7 +24,7 @@
 #include "problem_config.h"
 #include "util/enums.h"
 
-class ResultRecipe : public QObject
+class AGROS_LIBRARY_API ResultRecipe : public QObject
 {
 public:
     ResultRecipe(const QString &name, const QString &fieldId, const QString &variable,
@@ -65,7 +65,7 @@ protected:
     int adaptivityStep(Computation *computation, FieldInfo *fieldInfo);
 };
 
-class LocalValueRecipe : public ResultRecipe
+class AGROS_LIBRARY_API LocalValueRecipe : public ResultRecipe
 {
 public:
     LocalValueRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
@@ -91,7 +91,7 @@ protected:
     PhysicFieldVariableComp m_variableComponent;
 };
 
-class SurfaceIntegralRecipe : public ResultRecipe
+class AGROS_LIBRARY_API SurfaceIntegralRecipe : public ResultRecipe
 {
 public:
     SurfaceIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
@@ -114,7 +114,7 @@ protected:
     QList<int> m_edges;
 };
 
-class VolumeIntegralRecipe : public ResultRecipe
+class AGROS_LIBRARY_API VolumeIntegralRecipe : public ResultRecipe
 {
 public:
     VolumeIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
@@ -137,7 +137,7 @@ protected:
     QList<int> m_labels;
 };
 
-class ResultRecipes
+class AGROS_LIBRARY_API ResultRecipes
 {
 public:
     ResultRecipes(QList<ResultRecipe *> items = QList<ResultRecipe *>());
@@ -157,7 +157,7 @@ protected:
     QList<ResultRecipe *> m_recipes;
 };
 
-class ComputationResults
+class AGROS_LIBRARY_API ComputationResults
 {
 public:
     ComputationResults(StringToDoubleMap items = StringToDoubleMap(),

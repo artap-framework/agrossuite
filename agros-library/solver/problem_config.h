@@ -40,7 +40,7 @@ class ProblemParameters;
 typedef QMap<QString, double> StringToDoubleMap;
 Q_DECLARE_METATYPE(StringToDoubleMap)
 
-class ProblemConfig : public QObject
+class AGROS_LIBRARY_API ProblemConfig : public QObject
 {
 public:
     enum Type
@@ -128,7 +128,7 @@ private:
     ProblemFunctions *m_functions;
 };
 
-class PostprocessorSetting : public QObject
+class AGROS_LIBRARY_API PostprocessorSetting : public QObject
 {
 public:
     enum Type

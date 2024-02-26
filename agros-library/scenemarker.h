@@ -87,7 +87,7 @@ protected:
     QMap<const FieldInfo*, MarkerType*> noneMarkers;
 };
 
-class SceneMaterial : public Material
+class AGROS_LIBRARY_API SceneMaterial : public Material
 {
 public:
     SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString name,
@@ -96,7 +96,7 @@ public:
     QVariant variant();
 };
 
-class SceneMaterialNone : public SceneMaterial
+class AGROS_LIBRARY_API SceneMaterialNone : public SceneMaterial
 {
 public:
     SceneMaterialNone(Scene *scene) : SceneMaterial(scene, NULL, "none") {}
@@ -106,7 +106,7 @@ public:
 };
 
 
-class SceneBoundary : public Boundary
+class AGROS_LIBRARY_API SceneBoundary : public Boundary
 {
 public:
     SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString name = "", QString type = "",
@@ -115,7 +115,7 @@ public:
     QVariant variant();
 };
 
-class SceneBoundaryNone : public SceneBoundary
+class AGROS_LIBRARY_API SceneBoundaryNone : public SceneBoundary
 {
 public:
     SceneBoundaryNone(Scene *scene) : SceneBoundary(scene, NULL, "none") {}
@@ -123,12 +123,12 @@ public:
     QString script() { return ""; }
 };
 
-class SceneBoundaryContainer : public MarkerContainer<SceneBoundary>
+class AGROS_LIBRARY_API SceneBoundaryContainer : public MarkerContainer<SceneBoundary>
 {
 
 };
 
-class SceneMaterialContainer : public MarkerContainer<SceneMaterial>
+class AGROS_LIBRARY_API SceneMaterialContainer : public MarkerContainer<SceneMaterial>
 {
 
 };

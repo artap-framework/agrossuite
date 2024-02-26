@@ -61,7 +61,7 @@ private:
     double m_area;
 };
 
-class SceneLabelContainer : public MarkedSceneBasicContainer<SceneMaterial, SceneLabel>
+class AGROS_LIBRARY_API SceneLabelContainer : public MarkedSceneBasicContainer<SceneMaterial, SceneLabel>
 {
 public:
     /// if container contains object with the same coordinates as label, returns it. Otherwise returns NULL

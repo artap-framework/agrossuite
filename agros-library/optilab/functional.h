@@ -25,7 +25,7 @@
 
 class Computation;
 
-class Functional
+class AGROS_LIBRARY_API Functional
 {
 public:
     Functional(const QString &name = "", const QString &expression = "", int weight = 100);

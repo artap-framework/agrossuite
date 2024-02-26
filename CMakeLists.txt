@@ -164,7 +164,7 @@ ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/build/include/")
-# INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/kokkos-3.7.00/core/src/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/kokkos-3.7.00/tpls/desul/include/")
