@@ -67,7 +67,7 @@ void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matr
     Ap[0] = 0;
     for (int row = 1; row <= N; ++row)
         Ap[row] = Ap[row - 1] + matrix.get_row_length(row - 1);
-    assert(static_cast<int>(Ap.back()) == Ai.size(), ExcInternalError());
+    assert(static_cast<int>(Ap.back()) == Ai.size());
 
     // then copy over matrix elements. note that for sparse matrices,
     // iterators are sorted so that they traverse each row from start to end
@@ -97,7 +97,7 @@ void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matr
 
         // at the end, we should have written all rows completely
         for (int i = 0; i < Ap.size() - 1; ++i)
-            assert(row_pointers[i] == Ap[i + 1], ExcInternalError());
+            assert(row_pointers[i] == Ap[i + 1]);
     }
 
     // make sure that the elements in each row are sorted. we have to be more

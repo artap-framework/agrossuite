@@ -12,20 +12,6 @@ FIND_PACKAGE(deal.II HINTS ${DEAL_II_DIR})
 deal_ii_initialize_cached_variables()
 message("deal.II: ${DEAL_II_VERSION}")
 
-
-# This is necessary for Visual Studio - without this for some reason the linking hangs.
-IF(MSVC)
-#  SET (CMAKE_EXE_LINKER_FLAGS "/machine:X64")
-#  SET (CMAKE_SHARED_LINKER_FLAGS "/machine:X64")
-#  SET (CMAKE_MODULE_LINKER_FLAGS "/machine:X64")
-#  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD")
-#  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MDd")
-#  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
-#  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG")
-#  SET(CMAKE_SHARED_LINKER_FLAGS	 "${CMAKE_SHARED_LINKER_FLAGS} /LTCG")
-#  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
-ENDIF(MSVC)
-
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
@@ -47,30 +33,13 @@ set(CMAKE_AUTORCC ON)
 IF(MSVC)
     FIND_PACKAGE(OpenGL REQUIRED)
     FIND_PACKAGE(ZLIB REQUIRED)
-        INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 ENDIF()
 
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
-
-# languages
-# message("Translations")
-# FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")
-# foreach(LANGFILE ${lang_files})
-#   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
-#   add_custom_target(${basefile} ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.ts ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
-
-#   # message("\tlrelease ${basefile}")
-
-#   ADD_CUSTOM_COMMAND(
-#         COMMAND   lrelease ARGS ${LANGFILE} -qm ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm
-#         OUTPUT   ${CMAKE_HOME_DIRECTORY}/resources_source/lang/${basefile}.qm)
-# endforeach()
-
-# git revision
-#execute_process(COMMAND git rev-list HEAD --count OUTPUT_VARIABLE NUMBER_OF_COMMITS)
-#STRING(REGEX REPLACE "(\r?\n)+$" "" VERSION_GIT "${NUMBER_OF_COMMITS}")
 
 # date
 string(TIMESTAMP RESULT %y%m%d)

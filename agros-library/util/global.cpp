@@ -334,7 +334,6 @@ void Agros::createSingleton(QSharedPointer<Log> log)
 
 Agros* Agros::singleton()
 {
-    qInfo() << "Agros::singleton()" << m_singleton;
     return m_singleton;
 }
 
