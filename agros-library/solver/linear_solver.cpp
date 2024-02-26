@@ -91,7 +91,6 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
                                              dealii::Vector<double> &rhs,
                                              dealii::Vector<double> &sln)
 {
-    qInfo() << "agros solvers" << Agros::solvers();
     QStringList solvers = Agros::solvers().keys();
 
     QString solver = m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
