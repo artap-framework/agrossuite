@@ -33,489 +33,449 @@
 
 #include <QThread>
 
-//MeshGeneratorTriangleExternal::MeshGeneratorTriangleExternal(Computation *computation)
-//    : MeshGenerator(computation)
-//{
-//}
+MeshGeneratorTriangleExternal::MeshGeneratorTriangleExternal(ProblemBase *problem)
+   : MeshGenerator(problem)
+{
+}
 
-//bool MeshGeneratorTriangleExternal::mesh()
-//{
-//    // create triangle files
-//    if (prepare() && writeToTriangle())
-//    {
-//        // exec triangle
-//        QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
-//        process->setStandardOutputFile(tempProblemFileName() + ".triangle.out");
-//        process->setStandardErrorFile(tempProblemFileName() + ".triangle.err");
+bool MeshGeneratorTriangleExternal::mesh()
+{
+    // create triangle files
+    if (prepare() && writeToTriangle())
+    {
+        // exec triangle
+       QSharedPointer<QProcess> process = QSharedPointer<QProcess>(new QProcess());
+       process->setStandardOutputFile(tempProblemFileName() + ".triangle.out");
+       process->setStandardErrorFile(tempProblemFileName() + ".triangle.err");
 
-//        QString triangleBinary = "triangle";
-//        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
-//            triangleBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
-//        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle"))
-//            triangleBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "triangle";
+       QString triangleBinary = "triangle";
+       if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
+           triangleBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
+       if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle"))
+           triangleBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "triangle";
 
-//        QString command = "%1 -p -P -q31.0 -e -A -a -z -Q -I -n -o2 \"%2\"";
-//        process->start(command.
-//                       arg(triangleBinary).
-//                       arg(tempProblemFileName()), QIODevice::ReadOnly);
+       QString command = QString("%1").arg(triangleBinary);
+       QStringList args;
+       args.append("-pPq31.0eAazQIno2");
+       args.append(QString("%2").arg(tempProblemFileName()));
 
-//        if (!process->waitForStarted())
-//        {
-//            Agros::log()->printError(tr("Mesh generator"), tr("Could not start Triangle"));
-//            process->kill();
-//            process->close();
+       // Windows - could you try?
+       // args.append(QString("\"%2\"").arg(tempProblemFileName()));
 
-//            return false;
-//        }
+       // qInfo().noquote() << command;
+       // qInfo().noquote() << args[0];
+       // qInfo().noquote() << args[1];
+       process->start(command, args, QIODeviceBase::ReadOnly);
 
-//        if (process->waitForFinished(-1))
-//        {
-//            if ((process->exitCode() == 0) && readTriangleMeshFormat())
-//            {
-//                //  remove triangle temp files
-//                QFile::remove(tempProblemFileName() + ".poly");
-//                QFile::remove(tempProblemFileName() + ".node");
-//                QFile::remove(tempProblemFileName() + ".edge");
-//                QFile::remove(tempProblemFileName() + ".ele");
-//                QFile::remove(tempProblemFileName() + ".neigh");
-//                QFile::remove(tempProblemFileName() + ".triangle.out");
-//                QFile::remove(tempProblemFileName() + ".triangle.err");
+       if (!process->waitForStarted())
+       {
+           Agros::log()->printError(tr("Mesh generator"), tr("Could not start Triangle"));
+           process->kill();
+           process->close();
 
-//                return true;
-//            }
-//            else
-//            {
-//                QString errorMessage = readFileContent(tempProblemFileName() + ".triangle.err");
-//                errorMessage.insert(0, "\n");
-//                errorMessage.append("\n");
-//                Agros::log()->printError(tr("Mesh generator"), errorMessage);
+           return false;
+       }
 
-//                return false;
-//            }
-//        }
-//    }
+       if (process->waitForFinished(-1))
+       {
+           if ((process->exitCode() == 0) && readTriangleMeshFormat())
+           {
+               //  remove triangle temp files
+               QFile::remove(tempProblemFileName() + ".poly");
+               QFile::remove(tempProblemFileName() + ".node");
+               QFile::remove(tempProblemFileName() + ".edge");
+               QFile::remove(tempProblemFileName() + ".ele");
+               QFile::remove(tempProblemFileName() + ".neigh");
+               QFile::remove(tempProblemFileName() + ".triangle.out");
+               QFile::remove(tempProblemFileName() + ".triangle.err");
 
-//    return false;
-//}
+               return true;
+           }
+           else
+           {
+               QString errorMessage = readFileContent(tempProblemFileName() + ".triangle.err");
+               errorMessage.insert(0, "\n");
+               errorMessage.append("\n");
+               Agros::log()->printError(tr("Mesh generator"), errorMessage);
 
-//bool MeshGeneratorTriangleExternal::writeToTriangle()
-//{
-//    // basic check
-//    if (m_problem->scene()->nodes->length() < 3)
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
-//        return false;
-//    }
-//    if (m_problem->scene()->faces->length() < 3)
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
-//        return false;
-//    }
+               return false;
+           }
+       }
+   }
 
-//    // save current locale
-//    // char *plocale = setlocale (LC_NUMERIC, "");
-//    // setlocale (LC_NUMERIC, "C");
+   return false;
+}
 
-//    QFile file(tempProblemFileName() + ".poly");
+bool MeshGeneratorTriangleExternal::writeToTriangle()
+{
+   // basic check
+   if (m_problem->scene()->nodes->length() < 3)
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+       return false;
+   }
+   if (m_problem->scene()->faces->length() < 3)
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+       return false;
+   }
 
-//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Could not create Triangle poly mesh file (%1)").arg(file.errorString()));
-//        return false;
-//    }
-//    QTextStream out(&file);
+   // save current locale
+   // char *plocale = setlocale (LC_NUMERIC, "");
+   // setlocale (LC_NUMERIC, "C");
+
+   QFile file(tempProblemFileName() + ".poly");
+
+   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Could not create Triangle poly mesh file (%1)").arg(file.errorString()));
+       return false;
+   }
+   QTextStream out(&file);
 
 
-//    // nodes
-//    QString outNodes;
-//    int nodesCount = 0;
-//    for (int i = 0; i < m_problem->scene()->nodes->length(); i++)
-//    {
-//        outNodes += QString("%1  %2  %3  %4\n").
-//                arg(i).
-//                arg(m_problem->scene()->nodes->at(i)->point().x, 0, 'f', 10).
-//                arg(m_problem->scene()->nodes->at(i)->point().y, 0, 'f', 10).
-//                arg(0);
-//        nodesCount++;
-//    }
+   // nodes
+   QString outNodes;
+   int nodesCount = 0;
+   for (int i = 0; i < m_problem->scene()->nodes->length(); i++)
+   {
+       outNodes += QString("%1  %2  %3  %4\n").
+               arg(i).
+               arg(m_problem->scene()->nodes->at(i)->point().x, 0, 'f', 10).
+               arg(m_problem->scene()->nodes->at(i)->point().y, 0, 'f', 10).
+               arg(0);
+       nodesCount++;
+   }
 
-//    // edges
-//    QString outEdges;
-//    int edgesCount = 0;
-//    for (int i = 0; i < m_problem->scene()->faces->length(); i++)
-//    {
-//        if (fabs(m_problem->scene()->faces->at(i)->angle()) < EPS_ZERO)
-//        {
-//            // line
-//            outEdges += QString("%1  %2  %3  %4\n").
-//                    arg(edgesCount).
-//                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart())).
-//                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd())).
-//                    arg(i+1);
-//            edgesCount++;
-//        }
-//        else
-//        {
-//            // arc
-//            // add pseudo nodes
-//            Point center = m_problem->scene()->faces->at(i)->center();
-//            double radius = m_problem->scene()->faces->at(i)->radius();
-//            double startAngle = atan2(center.y - m_problem->scene()->faces->at(i)->nodeStart()->point().y,
-//                                      center.x - m_problem->scene()->faces->at(i)->nodeStart()->point().x) - M_PI;
+   // edges
+   QString outEdges;
+   int edgesCount = 0;
+   for (int i = 0; i < m_problem->scene()->faces->length(); i++)
+   {
+       if (fabs(m_problem->scene()->faces->at(i)->angle()) < EPS_ZERO)
+       {
+           // line
+           outEdges += QString("%1  %2  %3  %4\n").
+                   arg(edgesCount).
+                   arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart())).
+                   arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd())).
+                   arg(i+1);
+           edgesCount++;
+       }
+       else
+       {
+           // arc
+           // add pseudo nodes
+           Point center = m_problem->scene()->faces->at(i)->center();
+           double radius = m_problem->scene()->faces->at(i)->radius();
+           double startAngle = atan2(center.y - m_problem->scene()->faces->at(i)->nodeStart()->point().y,
+                                     center.x - m_problem->scene()->faces->at(i)->nodeStart()->point().x) - M_PI;
 
-//            int segments = m_problem->scene()->faces->at(i)->segments();
-//            double theta = deg2rad(m_problem->scene()->faces->at(i)->angle()) / double(segments);
+           int segments = m_problem->scene()->faces->at(i)->segments();
+           double theta = deg2rad(m_problem->scene()->faces->at(i)->angle()) / double(segments);
 
-//            int nodeStartIndex = 0;
-//            int nodeEndIndex = 0;
-//            for (int j = 0; j < segments; j++)
-//            {
-//                double arc = startAngle + j*theta;
+           int nodeStartIndex = 0;
+           int nodeEndIndex = 0;
+           for (int j = 0; j < segments; j++)
+           {
+               double arc = startAngle + j*theta;
 
-//                double x = radius * cos(arc);
-//                double y = radius * sin(arc);
+               double x = radius * cos(arc);
+               double y = radius * sin(arc);
 
-//                nodeEndIndex = nodesCount+1;
-//                if (j == 0)
-//                {
-//                    nodeStartIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart());
-//                    nodeEndIndex = nodesCount;
-//                }
-//                if (j == segments - 1)
-//                {
-//                    nodeEndIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd());
-//                }
-//                if ((j > 0) && (j < segments))
-//                {
-//                    outNodes += QString("%1  %2  %3  %4\n").
-//                            arg(nodesCount).
-//                            arg(center.x + x, 0, 'f', 10).
-//                            arg(center.y + y, 0, 'f', 10).
-//                            arg(0);
-//                    nodesCount++;
-//                }
-//                outEdges += QString("%1  %2  %3  %4\n").
-//                        arg(edgesCount).
-//                        arg(nodeStartIndex).
-//                        arg(nodeEndIndex).
-//                        arg(i+1);
-//                edgesCount++;
-//                nodeStartIndex = nodeEndIndex;
-//            }
-//        }
-//    }
+               nodeEndIndex = nodesCount+1;
+               if (j == 0)
+               {
+                   nodeStartIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart());
+                   nodeEndIndex = nodesCount;
+               }
+               if (j == segments - 1)
+               {
+                   nodeEndIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd());
+               }
+               if ((j > 0) && (j < segments))
+               {
+                   outNodes += QString("%1  %2  %3  %4\n").
+                           arg(nodesCount).
+                           arg(center.x + x, 0, 'f', 10).
+                           arg(center.y + y, 0, 'f', 10).
+                           arg(0);
+                   nodesCount++;
+               }
+               outEdges += QString("%1  %2  %3  %4\n").
+                       arg(edgesCount).
+                       arg(nodeStartIndex).
+                       arg(nodeEndIndex).
+                       arg(i+1);
+               edgesCount++;
+               nodeStartIndex = nodeEndIndex;
+           }
+       }
+   }
 
-//    // holes
-//    int holesCount = 0;
-//    foreach (SceneLabel *label, m_problem->scene()->labels->items())
-//        if (label->markersCount() == 0)
-//            holesCount++;
+   // holes
+   int holesCount = 0;
+   foreach (SceneLabel *label, m_problem->scene()->labels->items())
+       if (label->markersCount() == 0)
+           holesCount++;
 
-//    QString outHoles = QString("%1\n").arg(holesCount);
-//    holesCount = 0;
-//    foreach (SceneLabel *label, m_problem->scene()->labels->items())
-//    {
-//        if (label->markersCount() == 0)
-//        {
-//            outHoles += QString("%1  %2  %3\n").
-//                    arg(holesCount).
-//                    // arg(Agros::problem()->scene()->labels->items().indexOf(label) + 1).
-//                    arg(label->point().x, 0, 'f', 10).
-//                    arg(label->point().y, 0, 'f', 10);
+   QString outHoles = QString("%1\n").arg(holesCount);
+   holesCount = 0;
+   foreach (SceneLabel *label, m_problem->scene()->labels->items())
+   {
+       if (label->markersCount() == 0)
+       {
+           outHoles += QString("%1  %2  %3\n").
+                   arg(holesCount).
+                   // arg(Agros::problem()->scene()->labels->items().indexOf(label) + 1).
+                   arg(label->point().x, 0, 'f', 10).
+                   arg(label->point().y, 0, 'f', 10);
 
-//            holesCount++;
-//        }
-//    }
+           holesCount++;
+       }
+   }
 
-//    // labels
-//    QString outLabels;
-//    int labelsCount = 0;
-//    foreach (SceneLabel *label, m_problem->scene()->labels->items())
-//    {
-//        if (label->markersCount() > 0)
-//        {
-//            outLabels += QString("%1  %2  %3  %4  %5\n").
-//                    arg(labelsCount).
-//                    arg(label->point().x, 0, 'f', 10).
-//                    arg(label->point().y, 0, 'f', 10).
-//                    // arg(labelsCount + 1). // triangle returns zero region number for areas without marker, markers must start from 1
-//                    arg(m_problem->scene()->labels->items().indexOf(label) + 1).
-//                    arg(label->area());
-//            labelsCount++;
-//        }
-//    }
+   // labels
+   QString outLabels;
+   int labelsCount = 0;
+   foreach (SceneLabel *label, m_problem->scene()->labels->items())
+   {
+       if (label->markersCount() > 0)
+       {
+           outLabels += QString("%1  %2  %3  %4  %5\n").
+                   arg(labelsCount).
+                   arg(label->point().x, 0, 'f', 10).
+                   arg(label->point().y, 0, 'f', 10).
+                   // arg(labelsCount + 1). // triangle returns zero region number for areas without marker, markers must start from 1
+                   arg(m_problem->scene()->labels->items().indexOf(label) + 1).
+                   arg(label->area());
+           labelsCount++;
+       }
+   }
 
-//    outNodes.insert(0, QString("%1 2 0 1\n").
-//                    arg(nodesCount)); // + additional Agros::problem()->scene()->nodes
-//    out << outNodes;
-//    outEdges.insert(0, QString("%1 1\n").
-//                    arg(edgesCount)); // + additional edges
-//    out << outEdges;
-//    out << outHoles;
-//    outLabels.insert(0, QString("%1 1\n").
-//                     arg(labelsCount)); // - holes
-//    out << outLabels;
+   outNodes.insert(0, QString("%1 2 0 1\n").
+                   arg(nodesCount)); // + additional Agros::problem()->scene()->nodes
+   out << outNodes;
+   outEdges.insert(0, QString("%1 1\n").
+                   arg(edgesCount)); // + additional edges
+   out << outEdges;
+   out << outHoles;
+   outLabels.insert(0, QString("%1 1\n").
+                    arg(labelsCount)); // - holes
+   out << outLabels;
 
-//    file.waitForBytesWritten(0);
-//    file.close();
+   file.waitForBytesWritten(0);
+   file.close();
 
-//    return true;
-//}
+   return true;
+}
 
-//bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
-//{
-//    QFile fileNode(tempProblemFileName() + ".node");
-//    if (!fileNode.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle node file"));
-//        return false;
-//    }
-//    QTextStream inNode(&fileNode);
+bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
+{
+   QFile fileNode(tempProblemFileName() + ".node");
+   if (!fileNode.open(QIODevice::ReadOnly | QIODevice::Text))
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle node file"));
+       return false;
+   }
+   QTextStream inNode(&fileNode);
 
-//    QFile fileEdge(tempProblemFileName() + ".edge");
-//    if (!fileEdge.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle edge file"));
-//        return false;
-//    }
-//    QTextStream inEdge(&fileEdge);
+   QFile fileEdge(tempProblemFileName() + ".edge");
+   if (!fileEdge.open(QIODevice::ReadOnly | QIODevice::Text))
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle edge file"));
+       return false;
+   }
+   QTextStream inEdge(&fileEdge);
 
-//    QFile fileEle(tempProblemFileName() + ".ele");
-//    if (!fileEle.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle elements file"));
-//        return false;
-//    }
-//    QTextStream inEle(&fileEle);
+   QFile fileEle(tempProblemFileName() + ".ele");
+   if (!fileEle.open(QIODevice::ReadOnly | QIODevice::Text))
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle elements file"));
+       return false;
+   }
+   QTextStream inEle(&fileEle);
 
-//    QFile fileNeigh(tempProblemFileName() + ".neigh");
-//    if (!fileNeigh.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle neighbors elements file"));
-//        return false;
-//    }
-//    QTextStream inNeigh(&fileNeigh);
+   QFile fileNeigh(tempProblemFileName() + ".neigh");
+   if (!fileNeigh.open(QIODevice::ReadOnly | QIODevice::Text))
+   {
+       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle neighbors elements file"));
+       return false;
+   }
+   QTextStream inNeigh(&fileNeigh);
 
-//    // white chars
-//    QRegExp whiteChar("\\s+");
+   // white chars
+   QRegularExpression whiteChar("\\s+");
 
-//    // triangle nodes
-//    QString lineNode = inNode.readLine().trimmed();
-//    int numberOfNodes = lineNode.split(whiteChar).at(0).toInt();
-//    for (int i = 0; i < numberOfNodes; i++)
-//    {
-//        // suspisious code, causes the "Concave element ...." exception
-//        QStringList parsedLine = inNode.readLine().trimmed().split(whiteChar);
+   // triangle nodes
+   QString lineNode = inNode.readLine().trimmed();
+   int numberOfNodes = lineNode.split(whiteChar).at(0).toInt();
+   for (int i = 0; i < numberOfNodes; i++)
+   {
+       // suspisious code, causes the "Concave element ...." exception
+       QStringList parsedLine = inNode.readLine().trimmed().split(whiteChar);
 
-//        nodeList.append(Point(parsedLine.at(1).toDouble(),
-//                              parsedLine.at(2).toDouble()));
-//    }
+       nodeList.append(Point(parsedLine.at(1).toDouble(),
+                             parsedLine.at(2).toDouble()));
+   }
 
-//    // triangle edges
-//    QString lineEdge = inEdge.readLine().trimmed();
-//    int numberOfEdges = lineEdge.split(whiteChar).at(0).toInt();
+   // triangle edges
+   QString lineEdge = inEdge.readLine().trimmed();
+   int numberOfEdges = lineEdge.split(whiteChar).at(0).toInt();
 
-//    // for curvature
-//    std::map<std::pair<int, int>, Point> centers;
-//    std::map<std::pair<int, int>, double> sizes;
-//    for (int i = 0; i < numberOfEdges; i++)
-//    {
-//        QStringList parsedLine = inEdge.readLine().trimmed().split(whiteChar);
+   // for curvature
+   std::map<std::pair<int, int>, Point> centers;
+   std::map<std::pair<int, int>, double> sizes;
+   for (int i = 0; i < numberOfEdges; i++)
+   {
+       QStringList parsedLine = inEdge.readLine().trimmed().split(whiteChar);
 
-//        // marker conversion from triangle, where it starts from 1
-//        edgeList.append(MeshEdge(parsedLine.at(1).toInt(),
-//                                 parsedLine.at(2).toInt(),
-//                                 parsedLine.at(3).toInt() - 1));
+       // marker conversion from triangle, where it starts from 1
+       edgeList.append(MeshEdge(parsedLine.at(1).toInt(),
+                                parsedLine.at(2).toInt(),
+                                parsedLine.at(3).toInt() - 1));
 
-//        if (parsedLine.at(3).toInt() > 0)
-//        {
-//            SceneFace* sceneEdge = m_problem->scene()->faces->at(parsedLine.at(3).toInt() - 1);
+       if (parsedLine.at(3).toInt() > 0)
+       {
+           SceneFace* sceneEdge = m_problem->scene()->faces->at(parsedLine.at(3).toInt() - 1);
 
-//            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
-//            {
-//                int node_indices[2] = { parsedLine.at(1).toInt(), parsedLine.at(2).toInt() };
+           if (sceneEdge->angle() > 0.0)
+           {
+               int node_indices[2] = { parsedLine.at(1).toInt(), parsedLine.at(2).toInt() };
 
-//                centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
-//                sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
+               centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
+               sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
 
-//                for (int node_i = 0; node_i < 2; node_i++)
-//                {
-//                    Point p = nodeList[node_indices[node_i]];
-//                    Point c = sceneEdge->center();
-//                    double r = sceneEdge->radius();
-//                    nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
-//                }
-//            }
-//        }
-//    }
-//    int edgeCountLinear = edgeList.count();
+               for (int node_i = 0; node_i < 2; node_i++)
+               {
+                   Point p = nodeList[node_indices[node_i]];
+                   Point c = sceneEdge->center();
+                   double r = sceneEdge->radius();
+                   nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
+               }
+           }
+       }
+   }
+   int edgeCountLinear = edgeList.count();
 
-//    // triangle elements
-//    QString lineElement = inEle.readLine().trimmed();
-//    int numberOfElements = lineElement.split(whiteChar).at(0).toInt();
-//    QSet<int> labelMarkersCheck;
-//    for (int i = 0; i < numberOfElements; i++)
-//    {
-//        QStringList parsedLine = inEle.readLine().trimmed().split(whiteChar);
-//        if (parsedLine.count() == 7)
-//        {
-//            Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
-//            return false;
-//        }
-//        int marker = parsedLine.at(7).toInt();
+   // triangle elements
+   QString lineElement = inEle.readLine().trimmed();
+   int numberOfElements = lineElement.split(whiteChar).at(0).toInt();
+   QSet<int> labelMarkersCheck;
+   for (int i = 0; i < numberOfElements; i++)
+   {
+       QStringList parsedLine = inEle.readLine().trimmed().split(whiteChar);
+       if (parsedLine.count() == 7)
+       {
+           Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
+           return false;
+       }
+       int marker = parsedLine.at(7).toInt();
 
-//        if (marker == 0)
-//        {
-//            Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
-//            return false;
-//        }
+       if (marker == 0)
+       {
+           Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
+           return false;
+       }
 
-//        // vertices
-//        int nodeA = parsedLine.at(1).toInt();
-//        int nodeB = parsedLine.at(2).toInt();
-//        int nodeC = parsedLine.at(3).toInt();
-//        // 2nd order nodes (in the middle of edges)
-//        int nodeNA = parsedLine.at(4).toInt();
-//        int nodeNB = parsedLine.at(5).toInt();
-//        int nodeNC = parsedLine.at(6).toInt();
+       // vertices
+       int nodeA = parsedLine.at(1).toInt();
+       int nodeB = parsedLine.at(2).toInt();
+       int nodeC = parsedLine.at(3).toInt();
+       // 2nd order nodes (in the middle of edges)
+       int nodeNA = parsedLine.at(4).toInt();
+       int nodeNB = parsedLine.at(5).toInt();
+       int nodeNC = parsedLine.at(6).toInt();
 
-//        // handle curvature
-//        int endpoints_to_midpoints[6][3] = {
-//            { nodeA, nodeB, nodeNC },
-//            { nodeB, nodeA, nodeNC },
-//            { nodeC, nodeB, nodeNA },
-//            { nodeB, nodeC, nodeNA },
-//            { nodeA, nodeC, nodeNB },
-//            { nodeC, nodeA, nodeNB }
-//        };
+       // handle curvature
+       int endpoints_to_midpoints[6][3] = {
+           { nodeA, nodeB, nodeNC },
+           { nodeB, nodeA, nodeNC },
+           { nodeC, nodeB, nodeNA },
+           { nodeB, nodeC, nodeNA },
+           { nodeA, nodeC, nodeNB },
+           { nodeC, nodeA, nodeNB }
+       };
 
-//        for (int test_i = 0; test_i < 6; test_i++)
-//        {
-//            if (centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1])) != centers.end())
-//            {
-//                Point p = nodeList[endpoints_to_midpoints[test_i][2]];
-//                Point c = centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
-//                double r = sizes.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
-//                nodeList[endpoints_to_midpoints[test_i][2]] = prolong_point_to_arc(p, c, r);
-//            }
-//        }
+       for (int test_i = 0; test_i < 6; test_i++)
+       {
+           if (centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1])) != centers.end())
+           {
+               Point p = nodeList[endpoints_to_midpoints[test_i][2]];
+               Point c = centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+               double r = sizes.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+               nodeList[endpoints_to_midpoints[test_i][2]] = prolong_point_to_arc(p, c, r);
+           }
+       }
 
-//        if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-//        {
-//            // add additional node - centroid
-//            nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
-//                                  (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
+       if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
+       {
+           // add additional node - centroid
+           nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
+                                 (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
 
-//            // add three quad elements
-//            elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-//            elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-//            elementList.append(MeshElement(nodeNA, nodeC, nodeNB, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-//        }
+           // add three quad elements
+           elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
+           elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
+           elementList.append(MeshElement(nodeNA, nodeC, nodeNB, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
+       }
 
-//        if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadJoin ||
-//                Agros::problem()->config()->meshType() == MeshType_Triangle_QuadRoughDivision)
-//        {
-//            elementList.append(MeshElement(nodeA, nodeB, nodeC, marker - 1)); // marker conversion from triangle, where it starts from 1
-//        }
+       labelMarkersCheck.insert(marker - 1);
+   }
+   // update number of elements
+   numberOfElements = elementList.count();
 
-//        labelMarkersCheck.insert(marker - 1);
-//    }
-//    // update number of elements
-//    numberOfElements = elementList.count();
+   // triangle neigh
+   QString lineNeigh = inNeigh.readLine().trimmed();
+   int numberOfNeigh = lineNeigh.split(whiteChar).at(0).toInt();
+   for (int i = 0; i < numberOfNeigh; i++)
+   {
+       QStringList parsedLine = inNeigh.readLine().trimmed().split(whiteChar);
 
-//    // triangle neigh
-//    QString lineNeigh = inNeigh.readLine().trimmed();
-//    int numberOfNeigh = lineNeigh.split(whiteChar).at(0).toInt();
-//    for (int i = 0; i < numberOfNeigh; i++)
-//    {
-//        QStringList parsedLine = inNeigh.readLine().trimmed().split(whiteChar);
+       elementList[i].neigh[0] = parsedLine.at(1).toInt();
+       elementList[i].neigh[1] = parsedLine.at(2).toInt();
+       elementList[i].neigh[2] = parsedLine.at(3).toInt();
+   }
 
-//        elementList[i].neigh[0] = parsedLine.at(1).toInt();
-//        elementList[i].neigh[1] = parsedLine.at(2).toInt();
-//        elementList[i].neigh[2] = parsedLine.at(3).toInt();
-//    }
+   fileNode.close();
+   fileEdge.close();
+   fileEle.close();
+   fileNeigh.close();
 
-//    fileNode.close();
-//    fileEdge.close();
-//    fileEle.close();
-//    fileNeigh.close();
+   // heterogeneous mesh
+   // element division
+   if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
+   {
+       for (int i = 0; i < edgeCountLinear; i++)
+       {
+           if (edgeList[i].marker != -1)
+           {
+               for (int j = 0; j < elementList.count() / 3; j++)
+               {
+                   for (int k = 0; k < 3; k++)
+                   {
+                       if (edgeList[i].node[0] == elementList[3*j + k].node[1] && edgeList[i].node[1] == elementList[3*j + (k + 1) % 3].node[1])
+                       {
+                           edgeList.append(MeshEdge(edgeList[i].node[0], elementList[3*j + (k + 1) % 3].node[0], edgeList[i].marker));
+                           edgeList[i].node[0] = elementList[3*j + (k + 1) % 3].node[0];
+                       }
+                   }
+               }
+           }
+       }
+   }
 
-//    // heterogeneous mesh
-//    // element division
-//    if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-//    {
-//        for (int i = 0; i < edgeCountLinear; i++)
-//        {
-//            if (edgeList[i].marker != -1)
-//            {
-//                for (int j = 0; j < elementList.count() / 3; j++)
-//                {
-//                    for (int k = 0; k < 3; k++)
-//                    {
-//                        if (edgeList[i].node[0] == elementList[3*j + k].node[1] && edgeList[i].node[1] == elementList[3*j + (k + 1) % 3].node[1])
-//                        {
-//                            edgeList.append(MeshEdge(edgeList[i].node[0], elementList[3*j + (k + 1) % 3].node[0], edgeList[i].marker));
-//                            edgeList[i].node[0] = elementList[3*j + (k + 1) % 3].node[0];
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+   fillNeighborStructures();
+   // moveNodesOnCurvedEdges();
 
-//    if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadRoughDivision)
-//    {
-//        for (int i = 0; i < numberOfElements; i++)
-//        {
-//            // check same material
-//            if (elementList[i].isActive &&
-//                    (elementList[i].neigh[0] != -1) &&
-//                    (elementList[i].neigh[1] != -1) &&
-//                    (elementList[i].neigh[2] != -1) &&
-//                    elementList[elementList[i].neigh[0]].isActive &&
-//                    elementList[elementList[i].neigh[1]].isActive &&
-//                    elementList[elementList[i].neigh[2]].isActive &&
-//                    (elementList[i].marker == elementList[elementList[i].neigh[0]].marker) &&
-//                    (elementList[i].marker == elementList[elementList[i].neigh[1]].marker) &&
-//                    (elementList[i].marker == elementList[elementList[i].neigh[2]].marker))
-//            {
-//                // add additional node
-//                nodeList.append(Point((nodeList[elementList[i].node[0]].x + nodeList[elementList[i].node[1]].x + nodeList[elementList[i].node[2]].x) / 3.0,
-//                        (nodeList[elementList[i].node[0]].y + nodeList[elementList[i].node[1]].y + nodeList[elementList[i].node[2]].y) / 3.0));
+   writeTodealii();
 
-//                // add three quad elements
-//                for (int nd = 0; nd < 3; nd++)
-//                    for (int neigh = 0; neigh < 3; neigh++)
-//                        for (int neigh_nd = 0; neigh_nd < 3; neigh_nd++)
-//                            if ((elementList[i].node[(nd + 0) % 3] == elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 1) % 3]) &&
-//                                    (elementList[i].node[(nd + 1) % 3] == elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 0) % 3]))
-//                                elementList.append(MeshElement(elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 1) % 3],
-//                                        elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 2) % 3],
-//                                        elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 0) % 3],
-//                                        nodeList.count() - 1, elementList[i].marker));
+   nodeList.clear();
+   edgeList.clear();
+   elementList.clear();
 
-//                elementList[i].isUsed = false;
-//                elementList[i].isActive = false;
-//                for (int k = 0; k < 3; k++)
-//                {
-//                    elementList[elementList[i].neigh[k]].isUsed = false;
-//                    elementList[elementList[i].neigh[k]].isActive = false;
-//                }
-//            }
-//        }
-//    }
-
-//    fillNeighborStructures();
-//    // moveNodesOnCurvedEdges();
-
-//    writeTodealii();
-
-//    nodeList.clear();
-//    edgeList.clear();
-//    elementList.clear();
-
-//    return true;
-//}
+   return true;
+}
 
 // ****************************************************************************
 
@@ -794,7 +754,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         {
             SceneFace* sceneEdge = m_problem->scene()->faces->at(triOut.edgemarkerlist[i] - 1);
 
-            if (sceneEdge->angle() > 0.0) // TODO: isCurv ?
+            if (sceneEdge->angle() > 0.0)
             {
                 int node_indices[2] = { triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1] };
 
@@ -909,71 +869,6 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         }
     }
 
-    //if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadRoughDivision)
-    //{
-    //    for (int i = 0; i < elementCountLinear; i++)
-    //    {
-    //        for (int i = 0; i < elementCountLinear; i++)
-    //        {
-    //            // check same material
-    //            if (elementList[i].isActive)
-    //            {
-    //                // add quad elements
-    //                for (int nd = 0; nd < 3; nd++)
-    //                {
-    //                    for (int neigh = 0; neigh < 3; neigh++)
-    //                    {
-    //                        for (int neigh_nd = 0; neigh_nd < 3; neigh_nd++)
-    //                        {
-    //                            if (elementList[i].isActive &&
-    //                                    elementList[i].neigh[neigh] != -1 &&
-    //                                    elementList[elementList[i].neigh[neigh]].isActive &&
-    //                                    elementList[i].marker == elementList[elementList[i].neigh[neigh]].marker)
-    //                            {
-    //                                if ((elementList[i].node[(nd + 0) % 3] == elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 1) % 3]) &&
-    //                                        (elementList[i].node[(nd + 1) % 3] == elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 0) % 3]))
-    //                                {
-    //                                    int tmp_node[3];
-    //                                    for (int k = 0; k < 3; k++)
-    //                                        tmp_node[k] = elementList[i].node[k];
-
-    //                                    Point quad_check[4];
-    //                                    quad_check[0] = nodeList[tmp_node[(nd + 1) % 3]];
-    //                                    quad_check[1] = nodeList[tmp_node[(nd + 2) % 3]];
-    //                                    quad_check[2] = nodeList[tmp_node[(nd + 0) % 3]];
-    //                                    quad_check[3] = nodeList[elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 2) % 3]];
-
-
-    //                                    elementList[i].node[0] = tmp_node[(nd + 1) % 3];
-    //                                    elementList[i].node[1] = tmp_node[(nd + 2) % 3];
-    //                                    elementList[i].node[2] = tmp_node[(nd + 0) % 3];
-    //                                    elementList[i].node[3] = elementList[elementList[i].neigh[neigh]].node[(neigh_nd + 2) % 3];
-
-    //                                    elementList[i].isActive = false;
-
-    //                                    elementList[elementList[i].neigh[neigh]].isUsed = false;
-    //                                    elementList[elementList[i].neigh[neigh]].isActive = false;
-
-    //                                    break;
-    //                                }
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    // second
-    //    for (int i = 0; i < elementCountLinear; i++)
-    //    {
-    //        // check same material
-    //        if (elementList[i].isUsed && elementList[i].node[3] == -1)
-    //        {
-    //            qInfo() << i << elementList[i].node[3];
-    //        }
-    //    }
-    //}
 
     free(triOut.pointlist);
     free(triOut.pointmarkerlist);
@@ -995,173 +890,3 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
 
     return true;
 }
-
-/*
-bool MeshGeneratorTriangle::readTriangleMeshFormat()
-{
-    // triangle nodes
-    int numberOfNodes = triOut.numberofpoints;
-    for (int i = 0; i < numberOfNodes; i++)
-    {
-        nodeList.append(Point(triOut.pointlist[2 * i],
-                        triOut.pointlist[2 * i + 1]));
-    }
-
-    // triangle edges
-    int numberOfEdges = triOut.numberofedges;
-    // for curvature
-    std::map<std::pair<int, int>, Point> centers;
-    std::map<std::pair<int, int>, double> sizes;
-    for (int i = 0; i < numberOfEdges; i++)
-    {
-        // marker conversion from triangle, where it starts from 1
-        edgeList.append(MeshEdge(triOut.edgelist[2 * i],
-                        triOut.edgelist[2 * i + 1],
-                triOut.edgemarkerlist[i] - 1));
-
-        if (triOut.edgemarkerlist[i] > 0)
-        {
-            SceneFace* sceneEdge = m_problem->scene()->faces->at(triOut.edgemarkerlist[i] - 1);
-
-            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
-            {
-                int node_indices[2] = { triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1] };
-
-                centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
-                sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
-
-                for (int node_i = 0; node_i < 2; node_i++)
-                {
-                    Point p = nodeList[node_indices[node_i]];
-                    Point c = sceneEdge->center();
-                    double r = sceneEdge->radius();
-                    nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
-                }
-            }
-        }
-    }
-    int edgeCountLinear = edgeList.count();
-
-    // triangle elements
-    int numberOfElements = triOut.numberoftriangles;
-    for (int i = 0; i < numberOfElements; i++)
-    {
-        int marker = triOut.triangleattributelist[i];
-        if (marker == 0)
-        {
-            Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
-            return false;
-        }
-
-        // vertices
-        int nodeA = triOut.trianglelist[6 * i];
-        int nodeB = triOut.trianglelist[6 * i + 1];
-        int nodeC = triOut.trianglelist[6 * i + 2];
-        // 2nd order nodes (in the middle of edges)
-        int nodeNA = triOut.trianglelist[6 * i + 3];
-        int nodeNB = triOut.trianglelist[6 * i + 4];
-        int nodeNC = triOut.trianglelist[6 * i + 5];
-
-        // handle curvature
-        int endpoints_to_midpoints[6][3] = {
-            { nodeA, nodeB, nodeNC },
-            { nodeB, nodeA, nodeNC },
-            { nodeC, nodeB, nodeNA },
-            { nodeB, nodeC, nodeNA },
-            { nodeA, nodeC, nodeNB },
-            { nodeC, nodeA, nodeNB }
-        };
-
-        for (int test_i = 0; test_i < 6; test_i++)
-        {
-            if (centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1])) != centers.end())
-            {
-                Point p = nodeList[endpoints_to_midpoints[test_i][2]];
-                Point c = centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
-                double r = sizes.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
-                nodeList[endpoints_to_midpoints[test_i][2]] = prolong_point_to_arc(p, c, r);
-            }
-        }
-
-        // if (Agros::problem()->config()->meshType() == MeshType_Triangle ||
-        //        Agros::problem()->config()->meshType() == MeshType_Triangle_QuadJoin ||
-        //        Agros::problem()->config()->meshType() == MeshType_Triangle_QuadRoughDivision)
-        // {
-        //      elementList.append(MeshElement(nodeA, nodeB, nodeC, marker - 1)); // marker conversion from triangle, where it starts from 1
-        // }
-
-        // if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-        {
-            // add additional node
-            // nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
-            //                       (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
-
-            // add additional node - incenter
-
-            double a = (nodeList[nodeB] - nodeList[nodeC]).magnitude();
-            double b = (nodeList[nodeC] - nodeList[nodeA]).magnitude();
-            double c = (nodeList[nodeA] - nodeList[nodeB]).magnitude();
-            nodeList.append(Point((a * nodeList[nodeA].x + b * nodeList[nodeB].x + c * nodeList[nodeC].x) / (a + b + c),
-                                  (a * nodeList[nodeA].y + b * nodeList[nodeB].y + c * nodeList[nodeC].y) / (a + b + c)));
-
-            // add three quad elements
-            elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-            elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-            elementList.append(MeshElement(nodeNA, nodeC, nodeNB, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-        }
-    }
-    int elementCountLinear = elementList.count();
-
-    // triangle neigh
-    for (int i = 0; i < triOut.numberoftriangles; i++)
-    {
-        elementList[i].neigh[0] = triOut.neighborlist[3*i];
-        elementList[i].neigh[1] = triOut.neighborlist[3*i+1];
-        elementList[i].neigh[2] = triOut.neighborlist[3*i+2];
-    }
-
-    // heterogeneous mesh
-    // element division
-    // if (Agros::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-    {
-        for (int i = 0; i < edgeCountLinear; i++)
-        {
-            if (edgeList[i].marker != -1)
-            {
-                for (int j = 0; j < elementList.count() / 3; j++)
-                {
-                    for (int k = 0; k < 3; k++)
-                    {
-                        if (edgeList[i].node[0] == elementList[3*j + k].node[1] && edgeList[i].node[1] == elementList[3*j + (k + 1) % 3].node[1])
-                        {
-                            edgeList.append(MeshEdge(edgeList[i].node[0], elementList[3*j + (k + 1) % 3].node[0], edgeList[i].marker));
-                            edgeList[i].node[0] = elementList[3*j + (k + 1) % 3].node[0];
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    free(triOut.pointlist);
-    free(triOut.pointmarkerlist);
-    free(triOut.trianglelist);
-    free(triOut.triangleattributelist);
-    free(triOut.neighborlist);
-    free(triOut.segmentlist);
-    free(triOut.segmentmarkerlist);
-    free(triOut.edgelist);
-    free(triOut.edgemarkerlist);
-
-    this->fillNeighborStructures();
-    // this->moveNodesOnCurvedEdges();
-
-    writeTodealii();
-
-    nodeList.clear();
-    edgeList.clear();
-    elementList.clear();
-
-    return true;
-}
-*/

@@ -52,7 +52,6 @@
         <file alias="fields/flow.png">images/fields/flow.png</file>
         <file alias="fields/rf_te.png">images/fields/rf_te.png</file>
         <file alias="fields/rf_tm.png">images/fields/rf_tm.png</file>
-        <file alias="fields/math_coeff.png">images/fields/math_coeff.png</file>        
         <file alias="alphabet/blue/a.png">images/alphabet/blue/a.png</file>
         <file alias="alphabet/blue/b.png">images/alphabet/blue/b.png</file>
         <file alias="alphabet/blue/c.png">images/alphabet/blue/c.png</file>
