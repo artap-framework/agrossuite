@@ -47,7 +47,6 @@
 #include "solver/module.h"
 
 #include "solver/problem.h"
-#include "ctemplate/template.h"
 
 NewMarkerAction::NewMarkerAction(QObject* parent, QString field) :
     QAction(Module::availableModules()[field], parent),

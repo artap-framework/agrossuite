@@ -18,7 +18,7 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
 
 FIND_PACKAGE(deal.II HINTS "${CMAKE_SOURCE_DIR}/../dealii/build" REQUIRED)
 deal_ii_initialize_cached_variables()
-message("EIGEN deal.II: ${DEAL_II_VERSION}")
+# message("EIGEN deal.II: ${DEAL_II_VERSION}")
 
 # Handle Qt.
 SET(CMAKE_AUTOMOC TRUE)
@@ -34,6 +34,7 @@ IF(MSVC)
     SET(ZLIB_LIBRARIES C:/agros_dependencies/64/lib/zlib.lib)
 ENDIF(MSVC)
 
+DEAL_II_SETUP_TARGET(${PROJECT_NAME})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_TARGET} Qt6::Core ${ZLIB_LIBRARIES})
 
 
