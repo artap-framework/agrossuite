@@ -54,7 +54,7 @@
 #endif
 
 // Windows DLL export/import definitions
-#ifdef Q_WS_WIN
+#ifdef _MSC_BUILD
     // windows
     // DLL build
     #ifdef AGROS_LIBRARY_DLL

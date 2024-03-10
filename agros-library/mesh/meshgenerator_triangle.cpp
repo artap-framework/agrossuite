@@ -49,8 +49,8 @@ bool MeshGeneratorTriangleExternal::mesh()
        process->setStandardErrorFile(tempProblemFileName() + ".triangle.err");
 
        QString triangleBinary = "triangle";
-       if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
-           triangleBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
+       if (QFile::exists(QCoreApplication::applicationDirPath() + "/" + "triangle.exe"))
+           triangleBinary = QCoreApplication::applicationDirPath() + "/" + "triangle.exe";
        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle"))
            triangleBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "triangle";
 
@@ -59,12 +59,9 @@ bool MeshGeneratorTriangleExternal::mesh()
        args.append("-pPq31.0eAazQIno2");
        args.append(QString("%2").arg(tempProblemFileName()));
 
-       // Windows - could you try?
-       // args.append(QString("\"%2\"").arg(tempProblemFileName()));
+        // Windows - could you try?
+        args.append(QString("%2").arg(tempProblemFileName()));
 
-       // qInfo().noquote() << command;
-       // qInfo().noquote() << args[0];
-       // qInfo().noquote() << args[1];
        process->start(command, args, QIODeviceBase::ReadOnly);
 
        if (!process->waitForStarted())

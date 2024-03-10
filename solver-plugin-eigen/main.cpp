@@ -41,7 +41,7 @@ public:
                        dealii::Vector<double> &rhs,
                        dealii::Vector<double> &sln)
     {
-        this->prepare_crs(system);
+        prepare_crs(system);
 
         // number of unknowns
         int n = rhs.size();
