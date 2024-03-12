@@ -63,7 +63,11 @@ test:
     - ln -sfn ../libs/ agrossuite/libs
     - ln -sfn ../dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
     - cd agrossuite/tests    
-    - pytest-3 --disable-warnings --durations=0 -v
+    - pytest-3 --junitxml=report.xml --disable-warnings --durations=0 -v
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
     
 build-windows:
   stage: build
