@@ -28,8 +28,8 @@ build-linux:
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
     - make -j12
     - cd ../../
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++     
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++     
     - cmake . 
     - make -j12    
     # generator
