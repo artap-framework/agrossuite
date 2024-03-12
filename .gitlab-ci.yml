@@ -4,7 +4,7 @@ variables:
   # GIT_CLEAN_FLAGS: -ffdx -e dealii/build
   GIT_CLEAN_FLAGS: none
 
-build:
+build-linux:
   tags:
     - agros
   
@@ -51,4 +51,15 @@ build:
     - ln -sfn ../libs/ agrossuite/libs
     - ln -sfn ../dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
     - cd agrossuite/tests    
-    - pytest-3 --disable-warnings --durations=0 -v
+    - pytest-3 --disable-warnings --durations=0 -v   
+    
+build-windows:
+  tags:
+    - agros-windows
+ before_script:
+    # TODO
+  after_script:
+    # TODO
+  script: 
+    # TODO
+
