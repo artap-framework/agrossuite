@@ -54,7 +54,7 @@ build-linux:
     # - cd agrossuite/tests    
     # - pytest-3 --disable-warnings --durations=0 -v
     
-test:
+test-linux:
   stage: test
   tags:
     - agros
