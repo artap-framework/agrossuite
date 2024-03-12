@@ -61,7 +61,7 @@ test:
 
   script: 
     - cd agrossuite/tests    
-    - pytest-3 --junitxml=report.xml --disable-warnings --durations=0 -v
+    - pytest-3 --junitxml=../../report.xml --disable-warnings --durations=0 -v
   artifacts:
     when: always
     reports:
