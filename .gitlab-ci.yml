@@ -4,7 +4,7 @@ variables:
   # GIT_CLEAN_FLAGS: -ffdx -e dealii/build
   GIT_CLEAN_FLAGS: none
 
-build:
+build-linux:
   stage: build
   tags:
     - agros
@@ -65,15 +65,18 @@ test:
     - cd agrossuite/tests    
     - pytest-3 --disable-warnings --durations=0 -v
     
-build:
+build-windows:
   stage: build
   tags:
     - agros-windows
-    
- before_script:
+
+  before_script:
+    - dir
     # TODO
   after_script:
+    - dir
     # TODO
-  script: 
+  script:
+    - dir
     # TODO
 
