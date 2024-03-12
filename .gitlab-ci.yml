@@ -69,18 +69,14 @@ test:
     reports:
       junit: report.xml
     
-build-windows:
-  stage: build
-  tags:
-    - agros-windows
-
-  before_script:
-    - dir
-    # TODO
-  after_script:
-    - dir
-    # TODO
-  script:
-    - dir
-    # TODO
-
+# build-windows:
+#   stage: build
+#   tags:
+#    - agros-windows
+#
+#  before_script:
+#    - dir    
+#  after_script:
+#    - dir
+#    script:
+#    - dir   
