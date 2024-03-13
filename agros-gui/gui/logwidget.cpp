@@ -30,7 +30,30 @@ LogGui::LogGui()
      qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
 }
 
+void LogGui::printHeading(const QString &message)
+{
+    emit m_connectLog->headingMsg(message);
+}
 
+void LogGui::printMessage(const QString &module, const QString &message)
+{
+    emit m_connectLog->messageMsg(module, message);
+}
+
+void LogGui::printError(const QString &module, const QString &message)
+{
+    emit m_connectLog->errorMsg(module, message);
+}
+
+void LogGui::printWarning(const QString &module, const QString &message)
+{
+    emit m_connectLog->warningMsg(module, message);
+}
+
+void LogGui::printDebug(const QString &module, const QString &message)
+{
+    emit m_connectLog->debugMsg(module, message);
+}
 
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
     : QWidget(logWidget), m_logWidget(logWidget)
@@ -131,7 +154,7 @@ void LogWidget::printHeading(const QString &message)
 }
 
 void LogWidget::printMessage(const QString &module, const QString &message)
-{
+{    
     print(module, message, "black");
 }
 

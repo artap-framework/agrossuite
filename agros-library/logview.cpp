@@ -21,6 +21,7 @@
 
 #include "util/global.h"
 #include "util/constants.h"
+#include "util/conf.h"
 
 #include "scene.h"
 #include "solver/problem_config.h"
@@ -29,36 +30,21 @@
 #include "solver/solver.h"
 #include "solver/solutionstore.h"
 
-// #include "../3rdparty/spdlog/spdlog.h"
-
-
-/* void Log::printMessage(const QString &module, const QString &message)
-{
-    m_console->info((QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString());
-    m_handler(module, message);
-} */
-
-
 
 LogStdOut::LogStdOut()
 {
-    /* m_console = spdlog::stdout_color_mt("console");
-    qRegisterMetaType<QVector<double> >("QVector<double>");
-    qRegisterMetaType<SolverAgros::Phase>("SolverAgros::Phase");
-    size_t q_size = 4096; //queue size must be power of 2
-    spdlog::set_async_mode(q_size);
-    auto async_file = spdlog::daily_logger_st("async_file_logger", "async_log.txt");
-    async_file->info("Pokus"); */
 }
 
 void LogStdOut::printHeading(const QString &message)
 {
-    std::cout << (QString("%1").arg(message).toLatin1()).toStdString() << std::endl;
+    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
+        std::cout << (QString("%1").arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printMessage(const QString &module, const QString &message)
 {
-    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
+    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
+        std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printError(const QString &module, const QString &message)
@@ -68,10 +54,12 @@ void LogStdOut::printError(const QString &module, const QString &message)
 
 void LogStdOut::printWarning(const QString &module, const QString &message)
 {
-    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
+    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
+        std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printDebug(const QString &module, const QString &message)
 {
-    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
+    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
+        std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }

@@ -56,45 +56,6 @@ public:
 
     virtual ~AgrosApplication() {}
 
-    //bool notify(QObject *receiver, QEvent *event)
-    //{
-    //    try
-    //    {
-    //        if (!receiver->objectName().isEmpty())
-    //           qDebug() << "receiver" << receiver->objectName() << event->type();
-
-    //        //return QApplication::notify(receiver, event);
-    //        return true;
-    //    }
-    //    catch (dealii::ExceptionBase &e)
-    //    {
-    //        qCritical() << "deal.II exception thrown: " << e.what();
-    //        throw;
-    //    }
-    //    catch (boost::archive::archive_exception &e)
-    //    {
-    //        qCritical() << "boost exception thrown: " << e.what();
-    //        throw;
-    //    }
-    //    catch (std::exception &e)
-    //    {
-    //        qCritical() << "Standard exception thrown: " << e.what();
-    //        throw;
-    //    }
-    //    catch (AgrosException &e)
-    //    {
-    //        qCritical() << "Agros exception thrown: " << e.what();
-    //        throw;
-    //    }
-    //    catch (...)
-    //    {
-    //        qCritical() << "Unknown exception thrown";
-    //        throw;
-    //    }
-
-    //    return false;
-    //}
-
     LogGui *log;
 };
 

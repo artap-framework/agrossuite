@@ -145,6 +145,9 @@ cdef extern from "../../agros-python/pythonlab/pyagros.h":
         string getDumpFormat()
         void setDumpFormat(string format) except +
 
+        bool getStdOutLog()
+        void setStdOutLog(bool enabled)
+
 def open_file(file, open_with_solution = False):
     openFile(file.encode(), open_with_solution)
 
@@ -203,5 +206,11 @@ cdef class __Options__:
             return self.thisptr.getDumpFormat().decode()
         def __set__(self, format):
             self.thisptr.setDumpFormat(format.encode())
+
+    property log_stdout:
+        def __get__(self):
+            return self.thisptr.getStdOutLog()
+        def __set__(self, enabled):
+            self.thisptr.setStdOutLog(enabled)
 
 options = __Options__()

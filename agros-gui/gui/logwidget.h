@@ -77,8 +77,6 @@ private:
 
     void createActions();
 
-
-
 private slots:
     void contextMenu(const QPoint &pos);
 
@@ -196,11 +194,11 @@ public:
     LogGui();
 
     void setConnectLog(ConnectLog *connectLog) { m_connectLog = connectLog; }
-    void printHeading(const QString &message) {emit m_connectLog->headingMsg(message);}
-    void printMessage(const QString &module, const QString &message){emit m_connectLog->messageMsg(module, message);}
-    void printError(const QString &module, const QString &message){emit m_connectLog->errorMsg(module, message);}
-    void printWarning(const QString &module, const QString &message){emit m_connectLog->warningMsg(module, message);}
-    void printDebug(const QString &module, const QString &message){emit m_connectLog->debugMsg(module, message);}
+    void printHeading(const QString &message);
+    void printMessage(const QString &module, const QString &message);
+    void printError(const QString &module, const QString &message);
+    void printWarning(const QString &module, const QString &message);
+    void printDebug(const QString &module, const QString &message);
 
     inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {emit  m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
     inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {emit m_connectLog->updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep);}

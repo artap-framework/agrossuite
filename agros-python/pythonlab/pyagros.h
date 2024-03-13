@@ -63,6 +63,10 @@ struct PyOptions
     inline int getCacheSize() const { return Agros::configComputer()->value(Config::Config_CacheSize).toInt(); }
     void setCacheSize(int size);
 
+    // log
+    inline int getStdOutLog() const { return Agros::configComputer()->value(Config::Config_LogStdOut).toBool(); }
+    void setStdOutLog(bool enabled) { Agros::configComputer()->setValue(Config::Config_LogStdOut, enabled); }
+
     // save matrix and rhs
     inline bool getSaveMatrixRHS() const { return Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
     inline void setSaveMatrixRHS(bool save) { Agros::configComputer()->setValue(Config::Config_LinearSystemSave, save); }
