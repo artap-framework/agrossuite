@@ -168,7 +168,13 @@ set(TS_FILES
 list(TRANSFORM TS_FILES PREPEND ${CMAKE_HOME_DIRECTORY}/resources_source/lang/)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_HOME_DIRECTORY}/resources_source/lang/")
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC} ${QM_FILES})
+
+IF(WIN32)
+set(WINDOWS_FLAG WIN32)
+ENDIF(WIN32)
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${WINDOWS_FLAG} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC} ${QM_FILES})
+
 
 # translations
 qt_add_lupdate(${PROJECT_NAME} TS_FILES ${TS_FILES})
