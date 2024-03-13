@@ -29,13 +29,13 @@
 #define HAVE_COPYSIGN
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-/* #undef HAVE_DLFCN_H */
+#define HAVE_DLFCN_H
 
 /* Define if the fpclassify() function/macro is available. */
-/* #undef HAVE_FPCLASSIFY */
+#define HAVE_FPCLASSIFY
 
 /* Define to 1 if you have the <getopt.h> header file. */
-/* #undef HAVE_GETOPT_H */
+#define HAVE_GETOPT_H
 
 /* Define to 1 if you have the `getpid' function. */
 #define HAVE_GETPID
@@ -44,16 +44,16 @@
 #undef HAVE_GETTID_SYSCALL
 
 /* Define to 1 if you have the `gettimeofday' function. */
-/* #undef HAVE_GETTIMEOFDAY */
+#define HAVE_GETTIMEOFDAY
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H
 
 /* Define if the isinf() function/macro is available. */
-/* #undef HAVE_ISINF */
+#define HAVE_ISINF
 
 /* Define if the isnan() function/macro is available. */
-/* #undef HAVE_ISNAN */
+#define HAVE_ISNAN
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
@@ -62,7 +62,7 @@
 #define HAVE_MEMORY_H
 
 /* Define to 1 if you have the `qsort_r' function. */
-/* #undef HAVE_QSORT_R */
+#define HAVE_QSORT_R
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H
@@ -71,7 +71,7 @@
 #define HAVE_STDLIB_H
 
 /* Define to 1 if you have the <strings.h> header file. */
-/* #undef HAVE_STRINGS_H */
+#define HAVE_STRINGS_H
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H
@@ -83,7 +83,7 @@
 #define HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-/* #undef HAVE_SYS_TIME_H */
+#define HAVE_SYS_TIME_H
 
 /* Define to 1 if you have the `time' function. */
 #define HAVE_TIME
@@ -92,7 +92,7 @@
 #define HAVE_UINT32_T
 
 /* Define to 1 if you have the <unistd.h> header file. */
-/* #undef HAVE_UNISTD_H */
+#define HAVE_UNISTD_H
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -132,21 +132,18 @@
 #define SIZEOF_UNSIGNED_INT 4
 
 /* The size of `unsigned long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG 4
+#define SIZEOF_UNSIGNED_LONG 8
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Define to C thread-local keyword, or to nothing if this is not supported in
    your compiler. */
-#ifdef _MSC_VER
-	#define THREADLOCAL 
-#else
-	#define THREADLOCAL  __declspec(thread)
-#endif
+
+#define THREADLOCAL 
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-/* #undef TIME_WITH_SYS_TIME */
+#define TIME_WITH_SYS_TIME
 
 /* Version number of package */
 #undef VERSION

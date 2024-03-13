@@ -95,13 +95,15 @@ void setDataDir(std::string str)
 void readPlugins()
 {
     Agros::readPlugins();
+    // disable stdout log
+    Agros::configComputer()->setValue(Config::Config_LogStdOut, false);
 }
 
 // ************************************************************************************
 
 void PyOptions::setCacheSize(int size)
 {
-    if (size < 2 || size > 50)
+    if ((size < 2) || (size > 50))
         throw out_of_range(QObject::tr("Cache size is out of range (2 - 50).").toStdString());
 
     Agros::configComputer()->setValue(Config::Config_CacheSize, size);

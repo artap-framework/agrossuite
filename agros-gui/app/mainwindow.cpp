@@ -69,8 +69,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     m_startupExecute = false;
 
     // log stdout
-//    if (Agros::configComputer()->value(Config::Config_LogStdOut).toBool())
-        logStdOut = new LogStdOut();
+    logStdOut = new LogStdOut();
 
     // scene
     sceneViewProblem = new SceneViewPreprocessor(this);

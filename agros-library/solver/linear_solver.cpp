@@ -98,13 +98,23 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QString parameters = m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString();
     if (solver.isEmpty() || solver.endsWith(".ext"))
     {
-        if (solvers.contains("EIGEN"))
+        if (solvers.contains("MUMPS"))
+        {
+            solver = "MUMPS";
+            method = "none";
+            parameters = "";
+        }
+        else if (solvers.contains("EIGEN"))
         {
             solver = "Eigen";
             method = "none";
             parameters = "";
         }
-        else if (solvers.contains("MUMPS"))
+    }
+    else
+    {
+        // failsafe solution - Eigen
+        if (solvers.contains("MUMPS") && solver == "MUMPS")
         {
             solver = "MUMPS";
             method = "none";
@@ -112,7 +122,7 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
         }
         else
         {
-            solver = "";
+            solver = "Eigen";
             method = "none";
             parameters = "";
         }

@@ -4,7 +4,8 @@ variables:
   # GIT_CLEAN_FLAGS: -ffdx -e dealii/build
   GIT_CLEAN_FLAGS: none
 
-build:
+build-linux:
+  stage: build
   tags:
     - agros
   
@@ -27,8 +28,8 @@ build:
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
     - make -j12
     - cd ../../
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++     
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++     
     - cmake . 
     - make -j12    
     # generator
@@ -47,8 +48,33 @@ build:
     # - mkdir -p ~/appimage/$CI_BUILD_REF
     # - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
     # - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:hjS888jj9888jhhg7g;@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
-    # test    
+    # test        
     - ln -sfn ../libs/ agrossuite/libs
-    - ln -sfn ../dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
+    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
+    # - cd agrossuite/tests    
+    # - pytest-3 --disable-warnings --durations=0 -v
+    
+test-linux:
+  stage: test
+  tags:
+    - agros
+
+  script: 
     - cd agrossuite/tests    
-    - pytest-3 --disable-warnings --durations=0 -v
+    - pytest-3 --junitxml=../../report.xml --disable-warnings --durations=0 -v
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+    
+# build-windows:
+#   stage: build
+#   tags:
+#    - agros-windows
+#
+#  before_script:
+#    - dir    
+#  after_script:
+#    - dir
+#    script:
+#    - dir   
