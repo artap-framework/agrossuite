@@ -39,7 +39,7 @@ QStringList PluginSolverInterface::methods() const
 
 void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matrix)
 {
-    const int N = matrix.m();
+    const size_t N = matrix.m();
 
     // copy over the data from the matrix to the data structures UMFPACK
     // wants. note two things: first, UMFPACK wants compressed column storage
@@ -65,7 +65,7 @@ void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matr
 
     // first fill row lengths array
     Ap[0] = 0;
-    for (int row = 1; row <= N; ++row)
+    for (size_t row = 1; row <= N; ++row)
         Ap[row] = Ap[row - 1] + matrix.get_row_length(row - 1);
     assert(static_cast<int>(Ap.back()) == Ai.size());
 
@@ -96,7 +96,7 @@ void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matr
         }
 
         // at the end, we should have written all rows completely
-        for (int i = 0; i < Ap.size() - 1; ++i)
+        for (size_t i = 0; i < Ap.size() - 1; ++i)
             assert(row_pointers[i] == Ap[i + 1]);
     }
 
@@ -115,7 +115,7 @@ void PluginSolverInterface::sort_arrays(const dealii::SparseMatrix<double> &matr
     // column index of the second entry in a row
     //
     // ignore rows with only one or no entry
-    for (int row = 0; row < matrix.m(); ++row)
+    for (size_t row = 0; row < matrix.m(); ++row)
     {
         // we may have to move some elements that are left of the diagonal
         // but presently after the diagonal entry to the left, whereas the
