@@ -79,7 +79,6 @@
 #define MATERIALS "materials"
 #define MATERIAL_LABELS "material_labels"
 #define MATERIAL_TYPES "material_types"
-#define REFINEMENT_NUMBER "refinement_number"
 #define REFINEMENT_ORDER "refinement_order"
 
 #define COUPLINGS "couplings"
@@ -1330,16 +1329,6 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
         fieldInfo->load(settingsJson);
 
-        // label refinement
-        QJsonArray labelRefinementJson = fieldJson[REFINEMENT_NUMBER].toArray();
-        for (int i = 0; i < labelRefinementJson.size(); i++)
-        {
-            QJsonObject refinement = labelRefinementJson[i].toObject();
-
-            // if (label.refinement_label_id() != -1)
-            fieldInfo->setLabelRefinement(m_scene->labels->items().at(refinement[ID].toInt()), refinement[VALUE].toInt());
-        }
-
         // polynomial order
         QJsonArray labelOrderJson = fieldJson[REFINEMENT_ORDER].toArray();
         for (int i = 0; i < labelOrderJson.size(); i++)
@@ -1540,21 +1529,6 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         QJsonObject settingsJson;
         fieldInfo->save(settingsJson);
         fieldJson[SETTINGS] = settingsJson;
-
-        // label refinement
-        QJsonArray labelRefinementJson;
-        QMapIterator<SceneLabel *, int> labelIterator(fieldInfo->labelsRefinement());
-        while (labelIterator.hasNext())
-        {
-            labelIterator.next();
-
-            QJsonObject refinement;
-            refinement[ID] = m_scene->labels->items().indexOf(labelIterator.key());
-            refinement[VALUE] = labelIterator.value();
-
-            labelRefinementJson.append(refinement);
-        }
-        fieldJson[REFINEMENT_NUMBER] = labelRefinementJson;
 
         // polynomial order
         QJsonArray labelOrderJson;
