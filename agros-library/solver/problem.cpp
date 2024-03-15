@@ -1549,7 +1549,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             labelIterator.next();
 
             QJsonObject refinement;
-            refinement[ID] = QString::number(m_scene->labels->items().indexOf(labelIterator.key()));
+            refinement[ID] = m_scene->labels->items().indexOf(labelIterator.key());
             refinement[VALUE] = labelIterator.value();
 
             labelRefinementJson.append(refinement);
@@ -1564,7 +1564,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             labelOrderIterator.next();
 
             QJsonObject order;
-            order[ID] = QString::number(m_scene->labels->items().indexOf(labelOrderIterator.key()));
+            order[ID] = m_scene->labels->items().indexOf(labelOrderIterator.key());
             order[VALUE] = labelOrderIterator.value();
 
             labelOrderJson.append(order);

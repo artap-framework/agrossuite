@@ -79,8 +79,7 @@ const double COLORNOTCONNECTED[3] = { 255 / 255.0, 0 / 255.0, 0 / 255.0 };
 
 const double COLORCONTOURS[3] = { 10 / 255.0, 10 / 255.0, 10 / 255.0 };
 const double COLORVECTORS[3] = { 0 / 255.0, 0 / 255.0, 0 / 255.0 };
-const double COLORINITIALMESH[3] = { 28 / 255.0, 13 / 255.0, 140 / 255.0 };
-const double COLORSOLUTIONMESH[3] = { 20 / 255.0, 20 / 255.0, 20 / 255.0 };
+const double COLORMESH[3] = { 150 / 255.0, 70 / 255.0, 0 / 255.0 };
 
 const int LABELSIZE = 6;
 const int EDGEWIDTH = 2;

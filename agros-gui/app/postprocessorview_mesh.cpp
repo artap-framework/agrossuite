@@ -54,17 +54,25 @@ PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PhysicalFieldWidget *
 void PostprocessorSceneMeshWidget::createControls()
 {
     // layout mesh
-    chkShowInitialMeshView = new QCheckBox(tr("Initial mesh"));
-    chkShowSolutionMeshView = new QCheckBox(tr("Solution mesh"));
-    QGroupBox *groupBox = new QGroupBox(tr("View"));
+    QGroupBox *groupBoxMesh = new QGroupBox(tr("Mesh"));
+    rbShowInitialMeshView = new QRadioButton(tr("Initial mesh"));
+    rbShowSolutionMeshView = new QRadioButton(tr("Solution mesh"));
+
+    QVBoxLayout *vboxMesh = new QVBoxLayout;
+    vboxMesh->addWidget(rbShowInitialMeshView);
+    vboxMesh->addWidget(rbShowSolutionMeshView);
+    vboxMesh->addStretch(1);
+    groupBoxMesh->setLayout(vboxMesh);
+
+    QGroupBox *groupBoxVolume = new QGroupBox(tr("View"));
     rbShowOrderView = new QRadioButton(tr("Polynomial order"));
     rbShowErrorView = new QRadioButton(tr("Error estimate"));
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-         vbox->addWidget(rbShowOrderView);
-         vbox->addWidget(rbShowErrorView);
-         vbox->addStretch(1);
-         groupBox->setLayout(vbox);
+    QVBoxLayout *vboxVolume = new QVBoxLayout;
+    vboxVolume->addWidget(rbShowOrderView);
+    vboxVolume->addWidget(rbShowErrorView);
+    vboxVolume->addStretch(1);
+    groupBoxVolume->setLayout(vboxVolume);
 
     connect(rbShowOrderView, SIGNAL(clicked(bool)), this, SLOT(refresh()));
     connect(rbShowErrorView, SIGNAL(clicked(bool)), this, SLOT(refresh()));
@@ -74,9 +82,8 @@ void PostprocessorSceneMeshWidget::createControls()
     txtOrderComponent->setVisible(false); // NOT IMPLEMENTED
 
     QGridLayout *gridLayoutMesh = new QGridLayout();
-    gridLayoutMesh->addWidget(chkShowInitialMeshView, 0, 0, 1, 2);
-    gridLayoutMesh->addWidget(chkShowSolutionMeshView, 1, 0, 1, 2);
-    gridLayoutMesh->addWidget(groupBox, 2, 0, 1, 2);
+    gridLayoutMesh->addWidget(groupBoxMesh, 0, 0, 1, 2);
+    gridLayoutMesh->addWidget(groupBoxVolume, 1, 0, 1, 2);
     // gridLayoutMesh->addWidget(new QLabel(tr("Component:")), 3, 0);
     // gridLayoutMesh->addWidget(txtOrderComponent, 3, 1);
 
@@ -88,15 +95,13 @@ void PostprocessorSceneMeshWidget::createControls()
     foreach (QString key, paletteTypeStringKeys())
         cmbOrderPaletteOrder->addItem(paletteTypeString(paletteTypeFromStringKey(key)), paletteTypeFromStringKey(key));
 
-    chkShowOrderColorbar = new QCheckBox(tr("Show colorbar"), this);
-    chkOrderLabel = new QCheckBox(tr("Show labels"), this);
+    chkShowOrderColorbar = new QCheckBox(tr("Show colorbar"), this);    
 
     QGridLayout *gridLayoutOrder = new QGridLayout();
     gridLayoutOrder->setColumnStretch(1, 1);
     gridLayoutOrder->addWidget(new QLabel(tr("Palette:")), 0, 0);
     gridLayoutOrder->addWidget(cmbOrderPaletteOrder, 0, 1);
     gridLayoutOrder->addWidget(chkShowOrderColorbar, 0, 2);
-    gridLayoutOrder->addWidget(chkOrderLabel, 2, 2);
 
     QGroupBox *grpShowOrder = new QGroupBox(tr("Polynomial order"));
     grpShowOrder->setLayout(gridLayoutOrder);
@@ -131,14 +136,18 @@ void PostprocessorSceneMeshWidget::refresh()
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
-    // mesh and order
-    chkShowInitialMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
-    chkShowSolutionMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    // mesh and order   
+    if (rbShowInitialMeshView->isChecked())
+        rbShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+    else
+        rbShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+
     if (rbShowOrderView->isChecked())
         rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
     else
         rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
-    txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (rbShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
+
+    txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (rbShowOrderView->isChecked() || rbShowSolutionMeshView->isChecked()));
     txtOrderComponent->setMaximum(m_fieldWidget->selectedField()->numberOfSolutions());
 }
 
@@ -148,8 +157,8 @@ void PostprocessorSceneMeshWidget::load()
         return;
 
     // show
-    chkShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
-    chkShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
+    rbShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
+    rbShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
     rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
     rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool());
     txtOrderComponent->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderComponent).toInt());
@@ -157,7 +166,6 @@ void PostprocessorSceneMeshWidget::load()
     // order view
     chkShowOrderColorbar->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool());
     cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderPaletteOrderType).toInt()));
-    chkOrderLabel->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool());
 
     // mesh and polynomial info
     int dofs = 0;
@@ -184,8 +192,8 @@ void PostprocessorSceneMeshWidget::load()
 
 void PostprocessorSceneMeshWidget::save()
 {
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowInitialMeshView, chkShowInitialMeshView->isChecked());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowInitialMeshView, rbShowInitialMeshView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowSolutionMeshView, rbShowSolutionMeshView->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderView, rbShowOrderView->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowErrorView, rbShowErrorView->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderComponent, txtOrderComponent->value());
@@ -193,6 +201,5 @@ void PostprocessorSceneMeshWidget::save()
     // order view
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderColorBar, chkShowOrderColorbar->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderLabel, chkOrderLabel->isChecked());
 }
 

@@ -294,7 +294,7 @@ void SceneViewMesh::paintInitialMesh()
         loadProjection2d(true);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glColor3d(COLORINITIALMESH[0], COLORINITIALMESH[1], COLORINITIALMESH[2]);
+        glColor3d(COLORMESH[0], COLORMESH[1], COLORMESH[2]);
         glLineWidth(1.3);
 
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -339,7 +339,7 @@ void SceneViewMesh::paintSolutionMesh()
         loadProjection2d(true);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glColor3d(COLORSOLUTIONMESH[0], COLORSOLUTIONMESH[1], COLORSOLUTIONMESH[2]);
+        glColor3d(COLORMESH[0], COLORMESH[1], COLORMESH[2]);
         glLineWidth(1.3);
 
         glEnableClientState(GL_VERTEX_ARRAY);
@@ -412,50 +412,7 @@ void SceneViewMesh::paintOrder()
         glDisableClientState(GL_COLOR_ARRAY);
 
         glDisable(GL_POLYGON_OFFSET_FILL);
-    }
-
-    // paint labels
-    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
-    {
-        loadProjectionViewPort();
-
-        glColor3d(1.0, 1.0, 1.0);
-        glScaled(2.0 / width(), 2.0 / height(), 1.0);
-        glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
-
-        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
-
-        for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
-        {
-            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
-            for (; cell_int != endc_int; ++cell_int)
-            {
-                if (cell_int->active_fe_index() == 0)
-                    continue;
-
-                // coordinates
-                dealii::Point<2> point0 = cell_int->vertex(0);
-                dealii::Point<2> point1 = cell_int->vertex(1);
-                dealii::Point<2> point2 = cell_int->vertex(2);
-                dealii::Point<2> point3 = cell_int->vertex(3);
-
-                // polynomial degree
-                int degree = cell_int->get_fe().degree;
-
-                // average value
-                dealii::Point<2> point = point0 + point1 + point2 + point3;
-
-                point[0] /= 4;
-                point[1] /= 4;
-
-                Point scr = untransform(point[0], point[1]);
-
-                printPostAt(scr.x - 1.5*m_labelPostSize,
-                            scr.y - 1.5*m_labelPostSize,
-                            QString::number(degree));
-            }
-        }
-    }
+    }    
 }
 
 void SceneViewMesh::paintError()
@@ -542,49 +499,6 @@ void SceneViewMesh::paintError()
         glDisableClientState(GL_COLOR_ARRAY);
 
         glDisable(GL_POLYGON_OFFSET_FILL);
-    }
-
-    // paint labels
-    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
-    {
-        loadProjectionViewPort();
-
-        glColor3d(1.0, 1.0, 1.0);
-        glScaled(2.0 / width(), 2.0 / height(), 1.0);
-        glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
-
-        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
-
-        for (int level = 0; level <= ma.doFHandler().get_triangulation().n_levels() - 1; level++)
-        {
-            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
-            for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
-            {
-                if (cell_int->active_fe_index() == 0)
-                    continue;
-
-                // coordinates
-                dealii::Point<2> point0 = cell_int->vertex(0);
-                dealii::Point<2> point1 = cell_int->vertex(1);
-                dealii::Point<2> point2 = cell_int->vertex(2);
-                dealii::Point<2> point3 = cell_int->vertex(3);
-
-                // polynomial degree
-                double error = m_estimated_error_per_cell[i];
-
-                // average value
-                dealii::Point<2> point = point0 + point1 + point2 + point3;
-
-                point[0] /= 4;
-                point[1] /= 4;
-
-                Point scr = untransform(point[0], point[1]);
-
-                printPostAt(scr.x - 1.5*m_labelPostSize,
-                            scr.y - 1.5*m_labelPostSize,
-                            QString::number(error));
-            }
-        }
     }
 }
 

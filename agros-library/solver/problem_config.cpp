@@ -301,7 +301,6 @@ void PostprocessorSetting::setStringKeys()
     m_settingKey[ShowOrderView] = "ShowOrderView";
     m_settingKey[ShowErrorView] = "ShowErrorView";
     m_settingKey[OrderComponent] = "OrderComponent";
-    m_settingKey[ShowOrderLabel] = "ShowOrderLabel";
     m_settingKey[ShowOrderColorBar] = "ShowOrderColorBar";
     m_settingKey[ShowErrorColorBar] = "ShowErrorColorBar";
     m_settingKey[OrderPaletteOrderType] = "OrderPaletteOrderType";
@@ -392,7 +391,6 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[OrderComponent] = 1;
     m_settingDefault[ShowOrderView] = true;
     m_settingDefault[ShowErrorView] = false;
-    m_settingDefault[ShowOrderLabel] = false;
     m_settingDefault[ShowOrderColorBar] = true;
     m_settingDefault[OrderPaletteOrderType] = Palette_Paruly;
     m_settingDefault[ParticleButcherTableType] = Explicit_FEHLBERG_6_45_embedded;

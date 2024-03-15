@@ -38,16 +38,16 @@ private:
     QWidget *basic;
 
     // show
-    QCheckBox *chkShowInitialMeshView;
-    QCheckBox *chkShowSolutionMeshView;
-    QGroupBox *groupBox;
+    QGroupBox *groupBoxMesh;
+    QRadioButton *rbShowInitialMeshView;
+    QRadioButton *rbShowSolutionMeshView;
+    QGroupBox *groupBoxVolume;
     QRadioButton *rbShowOrderView;
     QRadioButton *rbShowErrorView;
 
     // polynomial order
     QCheckBox *chkShowOrderColorbar;
     QComboBox *cmbOrderPaletteOrder;
-    QCheckBox *chkOrderLabel;
     QSpinBox *txtOrderComponent;
 
     // mesh and polynomial info
