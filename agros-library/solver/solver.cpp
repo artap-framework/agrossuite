@@ -177,12 +177,12 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
         if (cell->active_fe_index() != 0)
             std::cout << "assert" << std::endl;
 
-        //std::cout << "material id " << cell->material_id() - 1 << std::endl;
-        if (m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) != m_computation->scene()->materials->getNone(m_fieldInfo))
+        SceneLabel *label = m_computation->scene()->labels->at(cell->material_id() - 1);
+        if (label->marker(m_fieldInfo) != m_computation->scene()->materials->getNone(m_fieldInfo))
         {
             // set default polynomial order
-            // cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
-            int order = m_fieldInfo->labelPolynomialOrder(m_computation->scene()->labels->at(cell->material_id() - 1));
+            // int order = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt();
+            int order = m_fieldInfo->labelPolynomialOrder(label);
             cell->set_active_fe_index(order);
         }
     }
