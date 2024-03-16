@@ -181,8 +181,8 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
         if (label->marker(m_fieldInfo) != m_computation->scene()->materials->getNone(m_fieldInfo))
         {
             // set default polynomial order
-            // int order = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt();
-            int order = m_fieldInfo->labelPolynomialOrder(label);
+            int order = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt();
+            // int order = m_fieldInfo->labelPolynomialOrder(label);
             cell->set_active_fe_index(order);
         }
     }
