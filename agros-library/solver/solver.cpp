@@ -182,7 +182,8 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
         {
             // set default polynomial order
             // cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
-            cell->set_active_fe_index(m_fieldInfo->labelPolynomialOrder(m_computation->scene()->labels->at(cell->material_id() - 1)));
+            int order = m_fieldInfo->labelPolynomialOrder(m_computation->scene()->labels->at(cell->material_id() - 1));
+            cell->set_active_fe_index(order);
         }
     }
 
@@ -1134,7 +1135,7 @@ void SolverDeal::solveTransient()
                     solutionTrans = dealii::SolutionTransfer<2>(primal->doFHandler);
                     previousSolutions.clear();
                     // all previous solutions
-                    for (int i = 0; i < solutions.size(); i++)
+                    for (size_t i = 0; i < solutions.size(); i++)
                         previousSolutions.push_back(solutions[i]);
                     // add current solution
                     previousSolutions.push_back(primal->solution);
@@ -1150,7 +1151,7 @@ void SolverDeal::solveTransient()
                     // reinit system
                     primal->setup(true);
 
-                    for (int i = 0; i < solutions.size(); i++)
+                    for (size_t i = 0; i < solutions.size(); i++)
                         solutions[i].reinit(primal->doFHandler.n_dofs());
                     // prepare for interpolating current solution
                     solutions.push_back(dealii::Vector<double>(primal->doFHandler.n_dofs()));
