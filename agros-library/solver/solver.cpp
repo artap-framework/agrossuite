@@ -181,7 +181,8 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
         if (m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) != m_computation->scene()->materials->getNone(m_fieldInfo))
         {
             // set default polynomial order
-            cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
+            // cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
+            cell->set_active_fe_index(m_fieldInfo->labelPolynomialOrder(m_computation->scene()->labels->at(cell->material_id() - 1)));
         }
     }
 
@@ -534,78 +535,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     {
         estimated_error_per_cell.add(1.0);
     }
-        break;
-        /*
-    case AdaptivityEstimator_ReferenceOrder:
-    case AdaptivityEstimator_ReferenceSpatialAndOrder:
-    case AdaptivityEstimator_ReferenceSpatial:
-    {
-        // increase order
-        int orderIncrease = 1;
-
-        dealii::Triangulation<2> tria;
-        tria.copy_triangulation(m_computation->calculationMesh());
-        // tria.refine_global();
-
-        dual = createAssembleBase(tria);
-
-        std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
-        boost::archive::binary_oarchive sboDoF(fsDoF);
-        primal->doFHandler.save(sboDoF, 0);
-
-        // std::cout << "Number of degrees of freedom (before load): " << dual->doFHandler.n_dofs() << std::endl;
-        boost::archive::binary_iarchive sbiDoF(fsDoF);
-        dual->doFHandler.load(sbiDoF, 0);
-        // std::cout << "Number of degrees of freedom (after load): " << dual->doFHandler.n_dofs() << std::endl;
-
-        dealii::DoFHandler<2>::active_cell_iterator cellHandler;
-        dealii::DoFHandler<2>::active_cell_iterator endcHandler;
-        cellHandler = dual->doFHandler.begin_active();
-        endcHandler = dual->doFHandler.end();
-
-        // std::stringstream refineHistory(std::ios::out | std::ios::in | std::ios::binary);
-        // std::stringstream coarsenHistory(std::ios::out | std::ios::in | std::ios::binary);
-        // Agros::problem()->calculationMesh().save_refine_flags(refineHistory);
-        // Agros::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
-
-        std::cout << "Number of degrees of freedom: " << dual->doFHandler.n_dofs() << std::endl;
-
-        for (unsigned int index = 0; cellHandler != endcHandler; ++cellHandler, ++index)
-        {
-            if ((estimator == AdaptivityEstimator_ReferenceOrder) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
-                if (cellHandler->active_fe_index() < DEALII_MAX_ORDER - 1)
-                    cellHandler->set_active_fe_index(cellHandler->active_fe_index() + orderIncrease);
-            if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
-                cellHandler->set_refine_flag();
-        }
-
-        // execute refinement
-        if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
-            tria.execute_coarsening_and_refinement();
-
-        // std::cout << "Number of degrees of freedom (before solve): " << dual->doFHandler.n_dofs() << std::endl;
-        dual->solve();
-
-        // std::cout << "Number of degrees of freedom (after solve): " << dual->doFHandler.n_dofs() << ", primal: " << primal->doFHandler.n_dofs() << std::endl;
-
-        dealii::Vector<double> dualInterpolation(primal->doFHandler.n_dofs());
-        dealii::FETools::interpolate(dual->doFHandler,
-                                     dual->solution,
-                                     primal->doFHandler,
-                                     primal->constraintsAll,
-                                     dualInterpolation);
-
-        DifferenceErrorEstimator::estimate(primal->doFHandler,
-                                           primal->solution,
-                                           dualInterpolation,
-                                           estimated_error_per_cell);
-
-        // qDebug() << "estimated_error_per_cell";
-        // for (int i = 0; i < estimated_error_per_cell.size(); i++)
-        //     qDebug() << estimated_error_per_cell[i];
-    }
-        break;
-    */
+        break;       
     default:
         assert(0);
     }
@@ -808,12 +738,12 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
 void SolverDeal::solveSteadyState()
 {
     shared_ptr<SolverDeal::AssembleBase> primal = createAssembleBase(m_computation->calculationMesh());
-    // shared_ptr<SolverDeal::AssembleBase> dual = nullptr;
 
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
     {
         // no adaptivity
         primal->solve();
+
 
         FieldSolutionID solutionID(m_fieldInfo->fieldId(), m_computation->timeLastStep(), 0);
         SolutionStore::SolutionRunTimeDetails runTime;
@@ -834,17 +764,7 @@ void SolverDeal::solveSteadyState()
         case AdaptivityEstimator_Uniform:
         {
         }
-            break;
-            /*
-        case AdaptivityEstimator_ReferenceOrder:
-        case AdaptivityEstimator_ReferenceSpatial:
-        case AdaptivityEstimator_ReferenceSpatialAndOrder:
-        {
-            // reference solution
-            dual = createAssembleBase(m_computation->calculationMesh());
-        }
-            break;
-        */
+            break;          
         default:
             assert(0);
         }
@@ -864,8 +784,6 @@ void SolverDeal::solveSteadyState()
 
             if (adaptiveStep > 0)
             {
-                //
-
                 // prepare for transfer solution
                 solutionTrans = dealii::SolutionTransfer<2>(primal->doFHandler);
                 previousSolution = primal->solution;
@@ -916,23 +834,6 @@ void SolverDeal::solveSteadyState()
             adaptiveSteps.append(adaptiveStep + 1);
             adaptiveDOFs.append(primal->doFHandler.n_dofs());
             adaptiveError.append(relChangeSol);
-
-            // Python callback
-            /*
-            double cont = 1.0;
-            QString command = QString("(agros2d.problem().field(\"%1\").adaptivity_callback(agros2d.computation('%2'), %3) if (agros2d.problem().field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.problem().field(\"%1\").adaptivity_callback, '__call__')) else True)").
-                    arg(m_fieldInfo->fieldId()).
-                    arg(m_computation->problemDir()).
-                    arg(adaptiveStep);
-            bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
-            if (!successfulRun)
-            {
-                ErrorResult result = currentPythonEngine()->parseError();
-                Agros::log()->printError(QObject::tr("Adaptivity callback"), result.error());
-            }
-            if (!cont)
-                break;
-            */
 
             // stopping criterium
             if ((relChangeSol < m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble())
