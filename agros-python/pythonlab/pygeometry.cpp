@@ -43,7 +43,7 @@ int PyGeometry::addNode(std::string x, std::string y)
     PointValue point = PointValue(Value(Agros::problem(), QString::fromStdString(x)),
                                   Value(Agros::problem(), QString::fromStdString(y)));
 
-    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && (point.numberX() < 0.0))
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     foreach (SceneNode *node, Agros::problem()->scene()->nodes->items())
@@ -56,8 +56,7 @@ int PyGeometry::addNode(std::string x, std::string y)
     return Agros::problem()->scene()->nodes->items().indexOf(node);
 }
 
-int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments,
-                        const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, const map<std::string, std::string> &boundaries)
 {
     PointValue pointStart = PointValue(Value(Agros::problem(), QString::fromStdString(x1)),
                                        Value(Agros::problem(), QString::fromStdString(y1)));
@@ -65,8 +64,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
                                      Value(Agros::problem(), QString::fromStdString(y2)));
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
-    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric &&
-            (pointStart.numberX() < 0.0 || pointEnd.numberX() < 0.0))
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && ((pointStart.numberX() < 0.0) || (pointEnd.numberX() < 0.0)))
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     testAngle(valueAngle.number());
@@ -75,9 +73,9 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
     {
         if (almostEqualRelAndAbs(edge->nodeStart()->point().x, pointStart.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeEnd()->point().x, pointEnd.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeStart()->point().y, pointStart.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeEnd()->point().y, pointEnd.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO))
+            almostEqualRelAndAbs(edge->nodeEnd()->point().x, pointEnd.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
+            almostEqualRelAndAbs(edge->nodeStart()->point().y, pointStart.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
+            almostEqualRelAndAbs(edge->nodeEnd()->point().y, pointEnd.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO))
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
@@ -102,8 +100,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     return Agros::problem()->scene()->faces->items().indexOf(edge);
 }
 
-int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments,
-                               const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
@@ -124,7 +121,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
     foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
     {
         if (Agros::problem()->scene()->nodes->items().indexOf(edge->nodeStart()) == nodeStartIndex &&
-                Agros::problem()->scene()->nodes->items().indexOf(edge->nodeEnd()) == nodeEndIndex)
+            Agros::problem()->scene()->nodes->items().indexOf(edge->nodeEnd()) == nodeEndIndex)
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
@@ -148,7 +145,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
     return Agros::problem()->scene()->faces->items().indexOf(edge);
 }
 
-void PyGeometry::modifyEdge(int index, std::string angle, int segments, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+void PyGeometry::modifyEdge(int index, std::string angle, int segments, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(Agros::problem(), QString::fromStdString(angle));
 
@@ -173,13 +170,13 @@ void PyGeometry::modifyEdge(int index, std::string angle, int segments, const ma
 
 void PyGeometry::testAngle(double angle) const
 {
-    if (angle < 0.0 || angle > 90.0)
+    if ((angle < 0.0) || (angle > 90.0))
         throw out_of_range(QObject::tr("Angle '%1' is out of range.").arg(angle).toStdString());
 }
 
 void PyGeometry::testSegments(int segments) const
 {
-    if (segments < 3 || segments > 20)
+    if ((segments < 3) || (segments > 20))
         throw out_of_range(QObject::tr("Segments '%1' is out of range.").arg(segments).toStdString());
 }
 
@@ -209,8 +206,7 @@ void PyGeometry::setBoundaries(SceneFace *edge, const map<std::string, std::stri
     }
 }
 
-int PyGeometry::addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
-                         const map<std::string, int> &orders, const map<std::string, std::string> &materials)
+int PyGeometry::addLabel(std::string x, std::string y, double area, const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
     PointValue point = PointValue(Value(Agros::problem(), QString::fromStdString(x)),
                                   Value(Agros::problem(), QString::fromStdString(y)));
@@ -232,7 +228,6 @@ int PyGeometry::addLabel(std::string x, std::string y, double area, const map<st
     try
     {
         setMaterials(label, materials);
-        setRefinements(label, refinements);
         setPolynomialOrders(label, orders);
     }
     catch (std::exception& e)
@@ -246,8 +241,7 @@ int PyGeometry::addLabel(std::string x, std::string y, double area, const map<st
     return Agros::problem()->scene()->labels->items().indexOf(label);
 }
 
-void PyGeometry::modifyLabel(int index, double area, const map<std::string, int> &refinements,
-                             const map<std::string, int> &orders, const map<std::string, std::string> &materials)
+void PyGeometry::modifyLabel(int index, double area, const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
     if (Agros::problem()->scene()->labels->isEmpty())
         throw out_of_range(QObject::tr("No labels are defined.").toStdString());
@@ -262,7 +256,6 @@ void PyGeometry::modifyLabel(int index, double area, const map<std::string, int>
 
     label->setArea(area);
     setMaterials(label, materials);
-    setRefinements(label, refinements);
     setPolynomialOrders(label, orders);
 
     Agros::problem()->scene()->invalidate();
@@ -298,23 +291,6 @@ void PyGeometry::setMaterials(SceneLabel *label, const map<std::string, std::str
     }
 }
 
-void PyGeometry::setRefinements(SceneLabel *label, const map<std::string, int> &refinements)
-{
-    for (map<std::string, int>::const_iterator i = refinements.begin(); i != refinements.end(); ++i)
-    {
-        QString field = QString::fromStdString((*i).first);
-        int refinement = (*i).second;
-
-        if (!Agros::problem()->hasField(field))
-            throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
-
-        if ((refinement < 0) || (refinement > 10))
-            throw out_of_range(QObject::tr("Number of refinements '%1' is out of range (0 - 10).").arg(refinement).toStdString());
-
-        Agros::problem()->fieldInfo(field)->setLabelRefinement(label, refinement);
-    }
-}
-
 void PyGeometry::setPolynomialOrders(SceneLabel *label, const map<std::string, int> &orders)
 {
     for (map<std::string, int>::const_iterator i = orders.begin(); i != orders.end(); ++i)
@@ -333,7 +309,7 @@ void PyGeometry::setPolynomialOrders(SceneLabel *label, const map<std::string, i
 }
 
 void PyGeometry::removeNodes(const vector<int> &nodes)
-{    
+{
     vector<int> tmp = nodes;
     if (tmp.empty())
     {

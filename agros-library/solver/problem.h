@@ -219,7 +219,7 @@ protected:
     bool m_isMeshing;
 
     // read initial meshes
-    void readInitialMeshFromFile(const QString &problemDir, bool emitMeshed);
+    void readInitialMeshFromFile(const QString &problemDir);
 
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);

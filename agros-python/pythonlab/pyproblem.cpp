@@ -623,20 +623,16 @@ void PySolution::setSolution(int timeStep, int adaptivityStep, vector<double> &s
     {
         MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
 
-        // qInfo() << "OK 1";
         dealii::Vector<double> solution = ma.solution();
         for (unsigned int i = 0; i < sln.size(); i++)
             solution[i] = sln[i];
 
-        // qInfo() << solution[0];
         // set solution
         ma.setSolution(solution);
         m_computation->solutionStore()->replaceSolution(fsid, ma);
-        // qInfo() << ma.solution()[0];
-        MultiArray ma2 = m_computation->solutionStore()->multiArray(fsid);
-        // qInfo() << ma2.solution()[0];
 
-        // qInfo() << "OK 2";
+        MultiArray ma2 = m_computation->solutionStore()->multiArray(fsid);
+
         return;
     }
 

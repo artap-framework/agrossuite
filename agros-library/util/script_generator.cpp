@@ -487,27 +487,6 @@ QString ScriptGenerator::createPythonFromModel()
             if (label->area() > 0.0)
                 str += ", area = " + QString::number(label->area());
 
-            // refinements
-            if (Agros::problem()->fieldInfos().count() > 0)
-            {
-                int refinementsCount = 0;
-                QString refinements = ", refinements = {";
-                foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
-                {
-                    if (fieldInfo->labelRefinement(label) > 0)
-                    {
-                        refinements += QString("\"%1\" : %2, ").
-                                arg(fieldInfo->fieldId()).
-                                arg(fieldInfo->labelRefinement(label));
-
-                        refinementsCount++;
-                    }
-                }
-                refinements = (refinements.endsWith(", ") ? refinements.left(refinements.length() - 2) : refinements) + "}";
-                if (refinementsCount > 0)
-                    str += refinements;
-            }
-
             // orders
             if (Agros::problem()->fieldInfos().count() > 0)
             {

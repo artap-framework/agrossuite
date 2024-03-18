@@ -124,13 +124,8 @@ public:
     // number of solutions
     inline int numberOfSolutions() const { return m_numberOfSolutions; }
 
-    const QMap<SceneLabel *, int> labelsRefinement() const { return m_labelsRefinement; }
-    int labelRefinement(SceneLabel *label) const;
-    void setLabelRefinement(SceneLabel *label, int refinement) { m_labelsRefinement[label] = refinement; }
-    void removeLabelRefinement(SceneLabel *label) { m_labelsRefinement.remove(label); }
-
     const QMap<SceneLabel *, int> labelsPolynomialOrder() { return m_labelsPolynomialOrder; }
-    int labelPolynomialOrder(SceneLabel *label);
+    int labelPolynomialOrder(SceneLabel *label) const;
     void setLabelPolynomialOrder(SceneLabel *label, int order) { m_labelsPolynomialOrder[label] = order; }
     void removeLabelPolynomialOrder(SceneLabel *label) { m_labelsPolynomialOrder.remove(label); }
 
@@ -228,7 +223,6 @@ private:
     // linearity
     QList<LinearityType> m_availableLinearityTypes;
 
-    QMap<SceneLabel *, int> m_labelsRefinement;
     QMap<SceneLabel *, int> m_labelsPolynomialOrder;
 
     QMap<Type, QVariant> m_setting;

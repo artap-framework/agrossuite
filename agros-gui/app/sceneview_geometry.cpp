@@ -429,14 +429,11 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
             if (label)
             {
                 // assigned materials
-                QString str, polynomial_order, area_refinement;
+                QString str, polynomial_order;
                 foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
                     str = str + QString("%1 (%2), ").
                             arg(label->hasMarker(fieldInfo) ? label->marker(fieldInfo)->name() : "-").
-                            arg(fieldInfo->name());
-                    area_refinement = area_refinement + QString("%1 (%2), ").
-                            arg(fieldInfo->labelRefinement(label)).
                             arg(fieldInfo->name());
                     polynomial_order = polynomial_order + QString("%1 (%2), ").
                             arg(fieldInfo->labelPolynomialOrder(label)).
@@ -474,12 +471,11 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
                 }
 
                 label->setHighlighted(true);
-                setToolTip(tr("<h3>Label</h3><b>Point:</b> [%1; %2]<br/><b>Area:</b> %3<br/><b>Material:</b> %4<br/><b>Area refinement:</b> %5<br/><b>Polynomial order:</b> %6<br/><b>Index:</b> %7").
+                setToolTip(tr("<h3>Label</h3><b>Point:</b> [%1; %2]<br/><b>Area:</b> %3<br/><b>Material:</b> %4<br/><b>Polynomial order:</b> %5<br/><b>Index:</b> %6").
                            arg(label->point().x, 0, 'g', 3).
                            arg(label->point().y, 0, 'g', 3).
                            arg(QString("[%1; %2], [%3; %4], %5").arg(boundingBox.start.x).arg(boundingBox.start.y).arg(boundingBox.end.x).arg(boundingBox.end.y).arg(area)).
                            arg(str).
-                           arg(area_refinement).
                            arg(polynomial_order).
                            arg(Agros::problem()->scene()->labels->items().indexOf(label)));
                 update();

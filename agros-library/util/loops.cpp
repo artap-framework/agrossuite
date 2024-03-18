@@ -75,7 +75,7 @@ LoopsInfo::LoopsNodeEdgeData LoopsInfo::LoopsNode::startLoop()
 LoopsInfo::LoopsNodeEdgeData LoopsInfo::LoopsNode::continueLoop(int previousNode)
 {
     LoopsNodeEdgeData previousNED;
-    int index;
+    int index = -1;
     for (int i = 0; i < nodeEdges.size(); i++){
         LoopsNodeEdgeData ned = nodeEdges.at(i);
         if(ned.node == previousNode){

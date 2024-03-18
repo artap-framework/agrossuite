@@ -110,20 +110,8 @@ QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
     return availableLinearityTypes;
 }
 
-int FieldInfo::labelRefinement(SceneLabel *label) const
-{
-    QMapIterator<SceneLabel *, int> i(m_labelsRefinement);
-    while (i.hasNext()) {
-        i.next();
-        if (i.key() == label)
-            return i.value();
-    }
 
-    return 0;
-}
-
-
-int FieldInfo::labelPolynomialOrder(SceneLabel *label)
+int FieldInfo::labelPolynomialOrder(SceneLabel *label) const
 {
     QMapIterator<SceneLabel *, int> i(m_labelsPolynomialOrder);
     while (i.hasNext()) {
@@ -141,7 +129,6 @@ void FieldInfo::clear()
     setDefaultValues();
     m_setting = m_settingDefault;
 
-    m_labelsRefinement.clear();
     m_labelsPolynomialOrder.clear();
 }
 

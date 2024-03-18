@@ -66,7 +66,7 @@ bool MeshGeneratorTriangleExternal::mesh()
 
        if (!process->waitForStarted())
        {
-           Agros::log()->printError(tr("Mesh generator"), tr("Could not start Triangle"));
+           Agros::log()->printError(tr("Mesh Generator"), tr("Could not start Triangle"));
            process->kill();
            process->close();
 
@@ -93,7 +93,7 @@ bool MeshGeneratorTriangleExternal::mesh()
                QString errorMessage = readFileContent(tempProblemFileName() + ".triangle.err");
                errorMessage.insert(0, "\n");
                errorMessage.append("\n");
-               Agros::log()->printError(tr("Mesh generator"), errorMessage);
+               Agros::log()->printError(tr("Mesh Generator"), errorMessage);
 
                return false;
            }
@@ -108,12 +108,12 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
    // basic check
    if (m_problem->scene()->nodes->length() < 3)
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
        return false;
    }
    if (m_problem->scene()->faces->length() < 3)
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
        return false;
    }
 
@@ -125,7 +125,7 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
 
    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Could not create Triangle poly mesh file (%1)").arg(file.errorString()));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Could not create Triangle poly mesh file (%1)").arg(file.errorString()));
        return false;
    }
    QTextStream out(&file);
@@ -272,7 +272,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
    QFile fileNode(tempProblemFileName() + ".node");
    if (!fileNode.open(QIODevice::ReadOnly | QIODevice::Text))
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle node file"));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Could not read Triangle node file"));
        return false;
    }
    QTextStream inNode(&fileNode);
@@ -280,7 +280,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
    QFile fileEdge(tempProblemFileName() + ".edge");
    if (!fileEdge.open(QIODevice::ReadOnly | QIODevice::Text))
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle edge file"));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Could not read Triangle edge file"));
        return false;
    }
    QTextStream inEdge(&fileEdge);
@@ -288,7 +288,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
    QFile fileEle(tempProblemFileName() + ".ele");
    if (!fileEle.open(QIODevice::ReadOnly | QIODevice::Text))
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle elements file"));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Could not read Triangle elements file"));
        return false;
    }
    QTextStream inEle(&fileEle);
@@ -296,7 +296,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
    QFile fileNeigh(tempProblemFileName() + ".neigh");
    if (!fileNeigh.open(QIODevice::ReadOnly | QIODevice::Text))
    {
-       Agros::log()->printError(tr("Mesh generator"), tr("Could not read Triangle neighbors elements file"));
+       Agros::log()->printError(tr("Mesh Generator"), tr("Could not read Triangle neighbors elements file"));
        return false;
    }
    QTextStream inNeigh(&fileNeigh);
@@ -364,14 +364,14 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
        QStringList parsedLine = inEle.readLine().trimmed().split(whiteChar);
        if (parsedLine.count() == 7)
        {
-           Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
+           Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
            return false;
        }
        int marker = parsedLine.at(7).toInt();
 
        if (marker == 0)
        {
-           Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
+           Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
            return false;
        }
 
@@ -484,12 +484,12 @@ MeshGeneratorTriangle::MeshGeneratorTriangle(ProblemBase *problem)
 
 bool MeshGeneratorTriangle::mesh()
 {
-    Agros::log()->printMessage(tr("Mesh generator"), tr("Triangle"));
+    Agros::log()->printMessage(tr("Mesh Generator"), tr("Triangle"));
 
     // create triangle files
     if (prepare() && writeToTriangle())
     {
-        // Agros::log()->printDebug(tr("Mesh generator"), tr("Mesh files were created"));
+        // Agros::log()->printDebug(tr("Mesh Generator"), tr("Mesh files were created"));
 
         // convert triangle mesh to hermes mesh
         if (readTriangleMeshFormat())
@@ -504,12 +504,12 @@ bool MeshGeneratorTriangle::writeToTriangle()
     // basic check
     if (m_problem->scene()->nodes->length() < 3)
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
         return false;
     }
     if (m_problem->scene()->faces->length() < 3)
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
         return false;
     }
 
@@ -777,7 +777,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         int marker = triOut.triangleattributelist[i];
         if (marker == 0)
         {
-            Agros::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
+            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
             return false;
         }
 

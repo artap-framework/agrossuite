@@ -926,7 +926,7 @@ bool ProblemBase::mesh()
     return false;
 }
 
-void ProblemBase::readInitialMeshFromFile(const QString &problemDir, bool emitMeshed)
+void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
 {
     // load initial mesh file
     QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir);
@@ -1696,14 +1696,6 @@ void Computation::readFromProblem()
         FieldInfo *fieldInfo = new FieldInfo(fieldId);
         fieldInfo->copy(originFieldInfo);
 
-        // label refinement
-        foreach (SceneLabel *originLabel, originFieldInfo->labelsRefinement().keys())
-        {
-            SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
-
-            fieldInfo->setLabelRefinement(label, originFieldInfo->labelsRefinement()[originLabel]);
-        }
-
         // polynomial order
         foreach (SceneLabel *originLabel, originFieldInfo->labelsPolynomialOrder().keys())
         {
@@ -1918,7 +1910,9 @@ void Computation::solve()
     }
 
     if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
+    {
         Agros::log()->printWarning(tr("Solver"), tr("Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings."));
+    }
 
     try
     {
@@ -1942,8 +1936,6 @@ void Computation::solve()
 
         m_abort = false;
         m_isSolving = false;
-
-        // emit solved();
 
         // evaluate results recipes
         Agros::problem()->recipes()->evaluate(this);
@@ -2035,8 +2027,6 @@ void Computation::clearSolution()
 
     m_calculationMesh.clear();
     m_solutionStore->clear();
-
-    // emit cleared();
 }
 
 void Computation::clearResults()
@@ -2245,7 +2235,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
                 // read mesh file
                 try
                 {
-                    computation->readInitialMeshFromFile(computation->problemDir(), true);
+                    computation->readInitialMeshFromFile(computation->problemDir());
                     computation->setCalculationMesh(computation->initialMesh());
                 }
                 catch (AgrosException& e)

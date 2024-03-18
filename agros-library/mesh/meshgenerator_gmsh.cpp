@@ -41,7 +41,7 @@ MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemBase *problem)
 
 bool MeshGeneratorGMSH::mesh()
 {
-    Agros::log()->printMessage(tr("Mesh generator"), tr("GMSH"));
+    Agros::log()->printMessage(tr("Mesh Generator"), tr("GMSH"));
 
     // create gmsh files
     if (prepare(true) && writeToGmsh())
@@ -62,7 +62,7 @@ bool MeshGeneratorGMSH::mesh()
 
         if (!process->waitForStarted())
         {
-            Agros::log()->printError(tr("Mesh generator"), tr("Could not start GMSH"));
+            Agros::log()->printError(tr("Mesh Generator"), tr("Could not start GMSH"));
             process->kill();
             process->close();
 
@@ -85,7 +85,7 @@ bool MeshGeneratorGMSH::mesh()
                 QString errorMessage = readFileContent(tempProblemFileName() + ".gmsh.err");
                 errorMessage.insert(0, "\n");
                 errorMessage.append("\n");
-                Agros::log()->printError(tr("Mesh generator"), errorMessage);
+                Agros::log()->printError(tr("Mesh Generator"), errorMessage);
             }
 
         }
@@ -116,12 +116,12 @@ bool MeshGeneratorGMSH::writeToGmsh()
     // basic check
     if (m_problem->scene()->nodes->length() < 3)
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
         return false;
     }
     if (m_problem->scene()->faces->length() < 3)
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
         return false;
     }
 
@@ -135,7 +135,7 @@ bool MeshGeneratorGMSH::writeToGmsh()
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Could not create GMSH geometry file (%1)").arg(file.errorString()));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Could not create GMSH geometry file (%1)").arg(file.errorString()));
         return false;
     }
     QTextStream out(&file);
@@ -245,7 +245,7 @@ bool MeshGeneratorGMSH::writeToGmsh()
     //    }
     //    catch (AgrosMeshException& ame)
     //    {
-    //        Agros::log()->printError(tr("Mesh generator"), ame.toString());
+    //        Agros::log()->printError(tr("Mesh Generator"), ame.toString());
     //        std::cout << "Missing Label";
     //        return false;
     //    }
@@ -363,7 +363,7 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
     QFile fileGMSH(tempProblemFileName() + ".msh");
     if (!fileGMSH.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        Agros::log()->printError(tr("Mesh generator"), tr("Could not read GMSH mesh file"));
+        Agros::log()->printError(tr("Mesh Generator"), tr("Could not read GMSH mesh file"));
         return false;
     }
     QTextStream inGMSH(&fileGMSH);
@@ -435,7 +435,7 @@ bool MeshGeneratorGMSH::readGmshMeshFile()
         /*
         if (marker == 0)
         {
-            Agros::log()->printError(tr("Mesh generator"), tr("Some areas have no label marker"));
+            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas have no label marker"));
             return false;
         }
         */

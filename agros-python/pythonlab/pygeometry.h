@@ -28,65 +28,59 @@
 
 class PyGeometry
 {
-    public:
-        PyGeometry() {}
-        ~PyGeometry() {}
+public:
+    PyGeometry() {}
+    ~PyGeometry() {}
 
-        void activate();
+    void activate();
 
-        // add operations
-        int addNode(std::string x, std::string y);
-        int addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments,
-                    const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries);
-        int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments,
-                           const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries);
-        int addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
-                     const map<std::string, int> &orders, const map<std::string, std::string> &materials);
+    // add operations
+    int addNode(std::string x, std::string y);
+    int addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, const map<std::string, std::string> &boundaries);
+    int addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, const map<std::string, std::string> &boundaries);
+    int addLabel(std::string x, std::string y, double area, const map<std::string, int> &orders, const map<std::string, std::string> &materials);
 
-        int nodesCount() const;
-        int edgesCount() const;
-        int labelsCount() const;
+    int nodesCount() const;
+    int edgesCount() const;
+    int labelsCount() const;
 
-        // modify operations
-        void modifyEdge(int index, std::string angle, int segments, const map<std::string, int> &refinements,
-                        const map<std::string, std::string> &boundaries);
-        void modifyLabel(int index, double area, const map<std::string, int> &refinements,
-                         const map<std::string, int> &orders, const map<std::string, std::string> &materials);
+    // modify operations
+    void modifyEdge(int index, std::string angle, int segments, const map<std::string, std::string> &boundaries);
+    void modifyLabel(int index, double area, const map<std::string, int> &orders, const map<std::string, std::string> &materials);
 
-        // remove operations
-        void removeNodes(const vector<int> &nodes);
-        void removeEdges(const vector<int> &edges);
-        void removeLabels(const vector<int> &labels);
+    // remove operations
+    void removeNodes(const vector<int> &nodes);
+    void removeEdges(const vector<int> &edges);
+    void removeLabels(const vector<int> &labels);
 
-        // select operations
-        void selectNodes(const vector<int> &nodes);
-        void selectEdges(const vector<int> &edges);
-        void selectLabels(const vector<int> &labels);
+    // select operations
+    void selectNodes(const vector<int> &nodes);
+    void selectEdges(const vector<int> &edges);
+    void selectLabels(const vector<int> &labels);
 
-        void selectNodeByPoint(double x, double y);
-        void selectEdgeByPoint(double x, double y);
-        void selectLabelByPoint(double x, double y);
+    void selectNodeByPoint(double x, double y);
+    void selectEdgeByPoint(double x, double y);
+    void selectLabelByPoint(double x, double y);
 
-        void selectNone();
+    void selectNone();
 
-        // transform operations
-        void moveSelection(double dx, double dy, bool copy, bool withMarkers);
-        void rotateSelection(double x, double y, double angle, bool copy, bool withMarkers);
-        void scaleSelection(double x, double y, double scale, bool copy, bool withMarkers);
-        void removeSelection();
+    // transform operations
+    void moveSelection(double dx, double dy, bool copy, bool withMarkers);
+    void rotateSelection(double x, double y, double angle, bool copy, bool withMarkers);
+    void scaleSelection(double x, double y, double scale, bool copy, bool withMarkers);
+    void removeSelection();
 
-        // vtk
-        void exportVTK(const std::string &fileName) const;
-        void exportSVG(const std::string &fileName) const;
-        std::string exportSVG() const;
+    // vtk
+    void exportVTK(const std::string &fileName) const;
+    void exportSVG(const std::string &fileName) const;
+    std::string exportSVG() const;
 
 private:
-        void testAngle(double angle) const;
-        void testSegments(int segments) const;
-        void setBoundaries(SceneFace *edge, const map<std::string, std::string> &boundaries);
-        void setMaterials(SceneLabel *label, const map<std::string, std::string> &materials);
-        void setRefinements(SceneLabel *label, const map<std::string, int> &refinements);
-        void setPolynomialOrders(SceneLabel *label, const map<std::string, int> &orders);
+    void testAngle(double angle) const;
+    void testSegments(int segments) const;
+    void setBoundaries(SceneFace *edge, const map<std::string, std::string> &boundaries);
+    void setMaterials(SceneLabel *label, const map<std::string, std::string> &materials);
+    void setPolynomialOrders(SceneLabel *label, const map<std::string, int> &orders);
 };
 
 #endif // PYTHONLABGEOMETRY_H
