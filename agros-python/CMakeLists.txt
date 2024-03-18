@@ -45,18 +45,6 @@ SET(HEADERS pythonlab/pyfield.h
     pythonlab/pystudy.h
     pythonlab/pyagros.h)
 
-# other files
-MACRO(ADD_INFO_FILES)
-   FOREACH(_it ${ARGN})
-     IF(NOT IS_DIRECTORY ${_it})
-       GET_FILENAME_COMPONENT(name ${_it} NAME)
-       IF(NOT ${_it} MATCHES "^/\\\\..*$;~$")
-         SET_SOURCE_FILES_PROPERTIES(${_it} PROPERTIES HEADER_FILE_ONLY TRUE)
-       ENDIF()
-     ENDIF()
-   ENDFOREACH()
-ENDMACRO()
-
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${AGROS_LIBRARY} Qt6::Core Qt6::Network)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "" OUTPUT_NAME agros_python)
