@@ -17,13 +17,6 @@ build-linux:
     - export CCACHE_COMPILERCHECK=content
     - ccache --zero-stats || true
     - ccache --show-stats || true
-    # create python env
-    - cd agros-python 
-    - python3 -m venv env
-    - source env/bin/activate
-    - pip install cython
-    - pip install scikit-build
-    - cd ..
   after_script:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats  
@@ -47,6 +40,16 @@ build-linux:
     - cmake .
     - make -j12
     - cd ..
+    # pip package
+    # create python env
+    - cd agros-python 
+    - python3 -m venv env
+    - source env/bin/activate
+    - pip install cython
+    - pip install scikit-build
+    - cd agrossuite
+    - pip install .
+    - cd ..
     # appimage 
     # - cd ..
     # - strip libs/*.so
@@ -66,9 +69,8 @@ test-linux:
 
   script: 
     - cd agros-python
-    - source env/bin/activate
+    - source env/bin/activate    
     - cd agrossuite
-    - pip install .
     - cd _skbuild/linux-x86_64-3.12/setuptools/lib.linux-x86_64-cpython-312/agrossuite/tests
     - pytest-3 --junitxml=../../report.xml --disable-warnings --durations=0 -v
   artifacts:
