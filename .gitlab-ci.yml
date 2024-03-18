@@ -47,9 +47,9 @@ build-linux:
     - source env/bin/activate
     - pip install cython
     - pip install scikit-build
-    - cd agrossuite
-    - pip install .
-    - cd ..
+    - pip install pytest
+    - pip install numpy
+    - pip install agrossuite/.
     # appimage 
     # - cd ..
     # - strip libs/*.so
@@ -70,9 +70,8 @@ test-linux:
   script: 
     - cd agros-python
     - source env/bin/activate    
-    - cd agrossuite
-    - cd _skbuild/linux-x86_64-3.12/setuptools/lib.linux-x86_64-cpython-312/agrossuite/tests
-    - pytest-3 --junitxml=../../../../../../../../report.xml --disable-warnings --durations=0 -v
+    - cd tests
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
   artifacts:
     when: always
     reports:
