@@ -72,7 +72,7 @@ test-linux:
     - source env/bin/activate    
     - cd agrossuite
     - cd _skbuild/linux-x86_64-3.12/setuptools/lib.linux-x86_64-cpython-312/agrossuite/tests
-    - pytest-3 --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - pytest-3 --junitxml=../../../../../../../../report.xml --disable-warnings --durations=0 -v
   artifacts:
     when: always
     reports:
