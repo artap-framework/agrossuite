@@ -1,3 +1,5 @@
+# distutils: language = c++
+
 # imports
 from libcpp cimport bool
 from libcpp.pair cimport pair

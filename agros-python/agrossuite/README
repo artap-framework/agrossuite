@@ -1,0 +1,28 @@
+Agros Suite - An application for solution of physical fields
+============================================================
+
+Agros Suite is a multiplatform application for the solution of physical problems based on the deal.II library, developed by the group at the University of West Bohemia in Pilsen. Agros Suite is distributed under the GNU General Public License.
+
+Supported Physical fields
+-------------------------
+- Electrostatics
+- Electric Currents
+- Magnetic field
+- Heat Transfer
+- Structural Mechanics
+- Acoustics
+- Incompressible Flow
+- RF Field
+
+Key Features
+------------
+- Coupled field solution with the possibility of weak and hard coupling
+- Newton and Picard solvers for nonlinear problems
+- Steady state, harmonic, or transient analysis
+- Automatic space (h, p and hp) and time adaptivity
+- Triangle and quad meshing using Triangle or GMSH
+- Curvilinear elements and arbitrary level hanging nodes
+- Computing of the trajectory of charged particles in electromagnetic field
+- intuitive and powerful preprocessor and postprocessor
+- visualization of field variables, calculations of local values, surface and volume integrals
+- scripting using Python

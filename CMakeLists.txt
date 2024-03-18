@@ -11,7 +11,7 @@ SET(DEAL_II_DIR "dealii/build")
 FIND_PACKAGE(deal.II HINTS ${DEAL_II_DIR})
 deal_ii_initialize_cached_variables()
 message("deal.II: ${DEAL_II_VERSION}")
-message("deal.II: ${DEAL_II_LIBRARIES}")
+message("deal.II: ${DEAL_II_TARGET}")
 
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
@@ -163,10 +163,10 @@ IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
 ENDIF()
 
 ADD_SUBDIRECTORY(agros-generator)
-# Python interface
-ADD_SUBDIRECTORY(agros-python)
 # GUI
 ADD_SUBDIRECTORY(agros-gui)
+# Python interface
+ADD_SUBDIRECTORY(agros-python)
 
 message("\nagros Configuration results")
 message("---------------------")

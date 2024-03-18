@@ -1,4 +1,4 @@
-#include "../resources_source/python/_agros.cpp"
+// #include "../resources_source/python/_agros.cpp"
 
 #include <QCoreApplication>
 

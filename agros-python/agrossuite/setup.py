@@ -3,6 +3,7 @@ import os
 import datetime
 from glob import glob
 import shutil
+from skbuild import setup
 
 # long description
 # with open(base_dir + "/README", "r") as fh:
@@ -11,7 +12,7 @@ with open("README", "r") as fh:
 
 dt = datetime.datetime.now()
 
-setuptools.setup(
+setup(
     name="agrossuite",
     version="{}.{}".format(dt.strftime('%Y.%m.%d'), dt.hour*60*60+dt.minute*60+dt.second),
     author=u"Agros Suite",
@@ -22,8 +23,10 @@ setuptools.setup(
     url="http://www.agros2d.org/",
     python_requires='>3.11',
     license="License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
-    packages=setuptools.find_packages(),
+    packages=["agrossuite"],
+    package_dir={"agrossuite": "src"},
     include_package_data=True,
+    # data_files=[("", ["tests/*"])],
     # data_files=local_data_files,
     # install_requires=requirements,    
     classifiers=[
