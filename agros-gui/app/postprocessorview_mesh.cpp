@@ -55,10 +55,12 @@ void PostprocessorSceneMeshWidget::createControls()
 {
     // layout mesh
     QGroupBox *groupBoxMesh = new QGroupBox(tr("Mesh"));
+    rbShowNone = new QRadioButton(tr("None"));
     rbShowInitialMeshView = new QRadioButton(tr("Initial mesh"));
     rbShowSolutionMeshView = new QRadioButton(tr("Solution mesh"));
 
     QVBoxLayout *vboxMesh = new QVBoxLayout;
+    vboxMesh->addWidget(rbShowNone);
     vboxMesh->addWidget(rbShowInitialMeshView);
     vboxMesh->addWidget(rbShowSolutionMeshView);
     vboxMesh->addStretch(1);
@@ -136,16 +138,13 @@ void PostprocessorSceneMeshWidget::refresh()
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
-    // mesh and order   
-    if (rbShowInitialMeshView->isChecked())
-        rbShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
-    else
-        rbShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+    // mesh
+    rbShowInitialMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    rbShowSolutionMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
 
-    if (rbShowOrderView->isChecked())
-        rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
-    else
-        rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+    // order
+    rbShowOrderView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    rbShowErrorView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
 
     txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (rbShowOrderView->isChecked() || rbShowSolutionMeshView->isChecked()));
     txtOrderComponent->setMaximum(m_fieldWidget->selectedField()->numberOfSolutions());
@@ -156,9 +155,13 @@ void PostprocessorSceneMeshWidget::load()
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
-    // show
+    // show mesh
+    // default
+    rbShowNone->setChecked(true);
     rbShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
     rbShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
+
+    // show order
     rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
     rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool());
     txtOrderComponent->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderComponent).toInt());

@@ -96,7 +96,8 @@ void SceneViewMesh::refresh()
 
     setControls();
 
-    SceneViewCommon::refresh();
+    if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
+        SceneViewCommon2D::refresh();
 }
 
 void SceneViewMesh::clearGLLists()

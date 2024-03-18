@@ -39,6 +39,7 @@ private:
 
     // show
     QGroupBox *groupBoxMesh;
+    QRadioButton *rbShowNone;
     QRadioButton *rbShowInitialMeshView;
     QRadioButton *rbShowSolutionMeshView;
     QGroupBox *groupBoxVolume;
