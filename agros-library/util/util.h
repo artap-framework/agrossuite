@@ -54,15 +54,8 @@
 #endif
 
 // Windows DLL export/import definitions
-#ifdef _MSC_BUILD
-    // windows
-    // DLL build
-    #ifdef AGROS_LIBRARY_DLL
-        #define AGROS_LIBRARY_API __declspec(dllexport)
-        // DLL usage
-    #else
-        #define AGROS_LIBRARY_API 
-#endif
+#ifdef _MSC_VER
+   #define AGROS_LIBRARY_API __declspec(dllexport)
 #else
 //// linux
 #define AGROS_LIBRARY_API
