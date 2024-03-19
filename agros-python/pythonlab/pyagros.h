@@ -21,17 +21,9 @@
 #define PYAGROS_H
 
 // Windows DLL export/import definitions
-#ifdef Q_WS_WIN
-    // windows
-    // DLL build
-#ifdef AGROS_LIBRARY_DLL
-#define AGROS_LIBRARY_API __declspec(dllexport)
-// DLL usage
+#ifdef _MSC_VER
+    #define AGROS_LIBRARY_API __declspec(dllexport)
 #else
-#define AGROS_LIBRARY_API 
-#endif
-#else
-//// linux
 #define AGROS_LIBRARY_API
 #endif
 
@@ -39,25 +31,25 @@
 #include "util/global.h"
 #include "util/conf.h"
 
-class Solution;
+class AGROS_LIBRARY_API Solution;
 
 // ************************************************************************************
 
-void openFile(const std::string &file, bool openWithSolution);
-void saveFile(const std::string &file, bool saveWithSolution);
-std::string getScriptFromModel();
+void AGROS_LIBRARY_API openFile(const std::string &file, bool openWithSolution);
+void AGROS_LIBRARY_API saveFile(const std::string &file, bool saveWithSolution);
+std::string AGROS_LIBRARY_API getScriptFromModel();
 
-inline std::string tempDir() { return tempProblemDir().toStdString(); }
-inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
+inline std::string AGROS_LIBRARY_API tempDir() { return tempProblemDir().toStdString(); }
+inline std::string AGROS_LIBRARY_API cacheDir() { return cacheProblemDir().toStdString(); }
 
 // functions
-std::string pyVersion();
+std::string  AGROS_LIBRARY_API pyVersion();
 
-std::string dataDir();
-void setDataDir(std::string str);
-void readPlugins();
+std::string AGROS_LIBRARY_API dataDir();
+void AGROS_LIBRARY_API setDataDir(std::string str);
+void AGROS_LIBRARY_API readPlugins();
 
-struct PyOptions
+ struct AGROS_LIBRARY_API PyOptions
 {
     // cache size
     inline int getCacheSize() const { return Agros::configComputer()->value(Config::Config_CacheSize).toInt(); }

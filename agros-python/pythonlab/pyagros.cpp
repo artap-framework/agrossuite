@@ -39,7 +39,7 @@ tbb::mutex runPythonHeaderMutex;
 
 // ************************************************************************************
 
-void openFile(const std::string &file, bool openWithSolution)
+void AGROS_LIBRARY_API openFile(const std::string &file, bool openWithSolution)
 {
     try
     {
@@ -54,7 +54,7 @@ void openFile(const std::string &file, bool openWithSolution)
     }
 }
 
-void saveFile(const std::string &file, bool saveWithSolution)
+ void AGROS_LIBRARY_API saveFile(const std::string &file, bool saveWithSolution)
 {
     try
     {
@@ -69,25 +69,25 @@ void saveFile(const std::string &file, bool saveWithSolution)
     }
 }
 
-std::string getScriptFromModel()
+std::string AGROS_LIBRARY_API getScriptFromModel()
 {
     auto scriptGenerator = ScriptGenerator();
 
     return scriptGenerator.createPythonFromModel().toStdString();
 }
 
-std::string pyVersion()
+std::string AGROS_LIBRARY_API pyVersion()
 {
     return const_cast<char*>(QCoreApplication::applicationVersion().toStdString().c_str());
 }
 
-std::string dataDir()
+ std::string AGROS_LIBRARY_API dataDir()
 {
     QString path = QFileInfo(Agros::dataDir()).absoluteFilePath();
     return compatibleFilename(path).toStdString();
 }
 
-void setDataDir(std::string str)
+void AGROS_LIBRARY_API setDataDir(std::string str)
 {    
     Agros::setDataDir(QString::fromStdString(str));    
 }

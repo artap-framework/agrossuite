@@ -20,13 +20,16 @@
 #ifndef PYTHONLABGEOMETRY_H
 #define PYTHONLABGEOMETRY_H
 
+
 #include "util/global.h"
 #include "scene.h"
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-class PyGeometry
+// Windows DLL export/import definitions
+
+class AGROS_LIBRARY_API PyGeometry
 {
 public:
     PyGeometry() {}

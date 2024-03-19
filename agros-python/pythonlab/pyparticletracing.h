@@ -25,7 +25,7 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-class PyParticleTracing
+class AGROS_LIBRARY_API PyParticleTracing
 {
 public:
     PyParticleTracing() {}

@@ -23,7 +23,7 @@
 #include "util/global.h"
 #include "solver/field.h"
 
-class PyField
+class AGROS_LIBRARY_API PyField
 {
     public:
         PyField(std::string fieldId);

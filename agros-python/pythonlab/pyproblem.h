@@ -27,7 +27,7 @@
 
 #include "optilab/study.h"
 
-class PyProblemBase
+ class AGROS_LIBRARY_API PyProblemBase
 {
 public:
     PyProblemBase() {}
@@ -83,7 +83,7 @@ protected:
     void checkExistingFields(const QString &sourceField, const QString &targetField) const;
 };
 
-class PyProblem : public PyProblemBase
+class AGROS_LIBRARY_API PyProblem : public PyProblemBase
 {
 public:
     PyProblem(bool clearProblem);
@@ -110,7 +110,7 @@ public:
     std::string typeOfStudyAtIndex(int index);
 };
 
-class PyComputation : public PyProblemBase
+class AGROS_LIBRARY_API PyComputation : public PyProblemBase
 {
 public:
     PyComputation(bool newComputation);
@@ -136,7 +136,7 @@ public:
     void setResult(const std::string &key, double value);
 };
 
-class PySolution
+class AGROS_LIBRARY_API PySolution
 {
 public:
     PySolution() {}
