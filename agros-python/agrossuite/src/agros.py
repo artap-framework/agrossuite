@@ -3,7 +3,9 @@ import ctypes
 
 # import libs
 path = os.path.dirname(os.path.realpath(__file__))
+# os.environ['LD_LIBRARY_PATH'] = path + "/libs" 
 
+ctypes.cdll.LoadLibrary(path + "/libs/libagros_python.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_triangle.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_dxflib.so")
 ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_poly2tri.so")

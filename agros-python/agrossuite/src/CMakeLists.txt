@@ -22,15 +22,7 @@ INCLUDE_DIRECTORIES(${Qt6Core_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${Qt6Network_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${Qt6Core5Compat_INCLUDE_DIRS})
 
-set(AGROS_PYTHON ${CMAKE_HOME_DIRECTORY}/../build/agros_python.so)
-
-# copy files
-# file(COPY ${AGROS_PYTHON} DESTINATION ${CMAKE_HOME_DIRECTORY}/src)
-#file(COPY ${CMAKE_HOME_DIRECTORY}/../../libs DESTINATION ${CMAKE_HOME_DIRECTORY}/src)
-#file(COPY ${CMAKE_HOME_DIRECTORY}/../../dealii/build/lib/ DESTINATION ${CMAKE_HOME_DIRECTORY}/src/libs)
-#file(GLOB DEAL ${CMAKE_HOME_DIRECTORY}/../../dealii/build/lib/*deal_II*)
-#file(COPY ${DEAL} DESTINATION ${CMAKE_HOME_DIRECTORY}/src/libs)
-
+set(AGROS_PYTHON ${CMAKE_HOME_DIRECTORY}/../../libs/libagros_python.so)
 
 add_cython_target(_agros CXX PY3 OUTPUT_VAR X)
 add_library(_agros MODULE ${X})
@@ -39,7 +31,6 @@ python_extension_module(_agros)
 
 install(TARGETS _agros LIBRARY DESTINATION src) 
 install(FILES __init__.py DESTINATION src)
-install(FILES ${AGROS_PYTHON} DESTINATION src)
 install(FILES agros.py DESTINATION src)
 install(FILES vtk_tools.py DESTINATION src)
 install(DIRECTORY ../../tests DESTINATION src)
