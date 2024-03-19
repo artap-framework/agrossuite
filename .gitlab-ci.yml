@@ -17,11 +17,6 @@ build-linux:
     - export CCACHE_COMPILERCHECK=content
     - ccache --zero-stats || true
     - ccache --show-stats || true
-    # create python env
-    - python3 -m venv env
-    - source env/bin/activate
-    - pip install cython
-    - pip install scikit-build
   after_script:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats  
@@ -33,6 +28,8 @@ build-linux:
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
     - make -j12
     - cd ../../
+    # copy deal
+    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
     # - export CC=/usr/bin/clang
     # - export CXX=/usr/bin/clang++     
     - cmake . 
@@ -43,6 +40,16 @@ build-linux:
     - cmake .
     - make -j12
     - cd ..
+    # pip package
+    # create python env
+    - cd agros-python 
+    - python3 -m venv env
+    - source env/bin/activate
+    - pip install cython
+    - pip install scikit-build
+    - pip install pytest
+    - pip install numpy
+    - pip install agrossuite/.
     # appimage 
     # - cd ..
     # - strip libs/*.so
@@ -53,9 +60,7 @@ build-linux:
     # - mkdir -p ~/appimage/$CI_BUILD_REF
     # - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
     # - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:hjS888jj9888jhhg7g;@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
-    # test        
-    - ln -sfn ../libs/ agrossuite/libs
-    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
+    # - ln -sfn ../libs/ agrossuite/libs    
     
 test-linux:
   stage: test
@@ -63,8 +68,10 @@ test-linux:
     - agros
 
   script: 
-    - cd agrossuite/tests    
-    - pytest-3 --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd agros-python
+    - source env/bin/activate    
+    - cd tests
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
   artifacts:
     when: always
     reports:
