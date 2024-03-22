@@ -38,7 +38,7 @@ if (WIN32)
 else()
 	add_cython_target(_agros CXX PY3 OUTPUT_VAR X)
 	add_library(_agros MODULE ${X})
-if (WIN32)endif()
+endif()
 
 if (WIN32)
     TARGET_LINK_LIBRARIES(_agros ${AGROS_PYTHON} ${AGROS_LIBRARY} ${DEAL_LIBRARY} ${ZLIB_LIBRARY}  Qt6::Core Qt6::Network)
