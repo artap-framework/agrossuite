@@ -33,12 +33,11 @@ else()
     set(AGROS_PYTHON ${CMAKE_HOME_DIRECTORY}/../../libs/libagros_python.so)
 endif()
 
-#add_cython_target(cy_agros _agros.pyx)
-message("*****************************************************")
-message("${cy_agros}")
-message("*****************************************************")
-
+if (WIN32)
 add_library(_agros MODULE _agros.cpp)
+else()
+add_cython_target(cy_agros _agros.pyx)
+endif()
 
 if (WIN32)
     TARGET_LINK_LIBRARIES(_agros ${AGROS_PYTHON} ${AGROS_LIBRARY} ${DEAL_LIBRARY} ${ZLIB_LIBRARY}  Qt6::Core Qt6::Network)
