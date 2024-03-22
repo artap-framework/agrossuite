@@ -10,9 +10,9 @@ SET(WITH_QT6 YES)
 SET(CMAKE_PREFIX_PATH "c:/Qt/6.6.1/msvc2019_64")
 SET(CMAKE_LIBRARY_PATH "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x64" )
 
-SET(PYTHON_INCLUDE_DIR "c:/Python311/include" )
-SET(PYTHON_LIBRARY "c:/Python311/libs/python311.lib" )
-SET(PYTHON_LIBRARIES "c:/Python311/libs/python311.lib" )
+SET(PYTHON_INCLUDE_DIR "c:/Python312/include" )
+SET(PYTHON_LIBRARY "c:/Python312/libs/python312.lib" )
+SET(PYTHON_LIBRARIES "c:/Python312/libs/python312.lib" )
 
 SET(XercesC_LIBRARIES "C:/agros_dependencies/source/xerces-c/Build/Win64/VC12/Release/xerces-c_3.lib")
 SET(XercesC_LIBRARY "C:/agros_dependencies/source/xerces-c/Build/Win64/VC12/Release/xerces-c_3.lib")
