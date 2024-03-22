@@ -34,16 +34,18 @@ else()
 endif()
 
 if (WIN32)
-add_library(_agros MODULE _agros.cpp)
+	add_library(_agros MODULE _agros.cpp)
 else()
-add_cython_target(cy_agros _agros.pyx)
-endif()
+	add_cython_target(_agros CXX PY3 OUTPUT_VAR X)
+	add_library(_agros MODULE ${X})
+if (WIN32)endif()
 
 if (WIN32)
     TARGET_LINK_LIBRARIES(_agros ${AGROS_PYTHON} ${AGROS_LIBRARY} ${DEAL_LIBRARY} ${ZLIB_LIBRARY}  Qt6::Core Qt6::Network)
 else()
     TARGET_LINK_LIBRARIES(_agros ${AGROS_PYTHON} Qt6::Core Qt6::Network)
 endif()
+
 python_extension_module(_agros)
 
 install(TARGETS _agros LIBRARY DESTINATION src) 
