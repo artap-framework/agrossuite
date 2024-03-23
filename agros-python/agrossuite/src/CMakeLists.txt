@@ -34,6 +34,7 @@ else()
 endif()
 
 if (WIN32)
+	add_custom_command(OUTPUT "C:/Users/vboxuser/Documents/Release/agros2d/agros-python/agrossuite/src/_agros.cpp" COMMAND cython --cplus "C:/Users/vboxuser/Documents/Release/agros2d/agros-python/agrossuite/src/_agros.pyx" -o "C:/Users/vboxuser/Documents/Release/agros2d/agros-python/agrossuite/src/_agros.cpp" DEPENDS _agros.pyx)
 	add_library(_agros MODULE _agros.cpp)
 else()
 	add_cython_target(_agros CXX PY3 OUTPUT_VAR X)
