@@ -1,26 +1,31 @@
 import os
 import ctypes
+import platform
 
 # import libs
 path = os.path.dirname(os.path.realpath(__file__))
 # os.environ['LD_LIBRARY_PATH'] = path + "/libs" 
 
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_python.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_triangle.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_dxflib.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_poly2tri.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_quazip.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_matio.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nlopt2.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_bayesopt.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga2.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_ctemplate.so")
-ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.5.2")
-ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
-if os.path.isfile(path + "/libs/libsolver_plugin_EIGEN.so"):
-    ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_EIGEN.so")
-if os.path.isfile(path + "/libs/libsolver_plugin_MUMPS.so"):
-    ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_MUMPS.so")
+
+if platform.system() == 'Windows':
+	pass
+else:
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_python.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_triangle.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_dxflib.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_poly2tri.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_quazip.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_matio.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nlopt2.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_bayesopt.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_nsga2.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_3rdparty_ctemplate.so")
+	ctypes.cdll.LoadLibrary(path + "/libs/libdeal_II.so.9.5.2")
+	ctypes.cdll.LoadLibrary(path + "/libs/libagros_library.so")
+	if os.path.isfile(path + "/libs/libsolver_plugin_EIGEN.so"):
+		ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_EIGEN.so")
+	if os.path.isfile(path + "/libs/libsolver_plugin_MUMPS.so"):
+		ctypes.cdll.LoadLibrary(path + "/libs/libsolver_plugin_MUMPS.so")
 
 from . import _agros
 
