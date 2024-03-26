@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# set current dir
+if [ -z "${APPDIR}" ]; then APPDIR=$PWD; fi
+
+# change current dir
+cd $APPDIR
+export LD_LIBRARY_PATH=$APPDIR/libs/ 
+
+echo "Running Agros Suite in " $APPDIR
+
+# run
+if [ $# -eq 0 ]; then
+    # run agros
+    ./agros
+elif [ $1 = "agros" ]; then
+    # shift args and run agros
+    shift
+    ./agros "$@"    
