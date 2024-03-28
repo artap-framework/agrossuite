@@ -110,6 +110,8 @@ deploy-linux:
     - appimagetool-x86_64.AppImage  appimage/
     
     # upload to agros2d
+    - echo "user: $export agros2d_ftp_user"
+    - echo "password: $agros2d_ftp_password"
     - curl -T Agros_Suite-x86_64.AppImage -u "$export agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
       
 # build-windows:
