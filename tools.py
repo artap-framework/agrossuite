@@ -243,8 +243,6 @@ def python_pack():
 
 def python_upload():
     call(['python3', '-m', 'twine', 'upload', 'dist/agrossuite*'])	  
-    # username: __token__
-    # password: pypi-AgEIcHlwaS5vcmcCJDI0NzlhZGFlLWY0ZTEtNGUxNy05Nzg0LTUyMTA4NmE4N2RlZgACElsxLFsiYWdyb3NzdWl0ZSJdXQACLFsyLFsiNzMzZTU2Y2UtZjcyMC00ZTg3LThiMWUtNjZhOTI3MjBhMjlkIl1dAAAGIHjObSJB8xAHTe2jMdSpmEnfYit_fg0VO2rXo5Qb6bkS
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -31,4 +31,4 @@ linuxdeploy-x86_64.AppImage --appdir appimage/ --executable agros --plugin qt --
 rm -rf appimage/usr/share/metainfo
 
 # build appimage
-appimagetool-x86_64.AppImage  appimage/
+appimagetool-x86_64.AppImage appimage/
