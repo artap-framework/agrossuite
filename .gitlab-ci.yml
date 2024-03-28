@@ -50,18 +50,7 @@ build-linux:
     - pip install scikit-build
     - pip install pytest
     - pip install numpy
-    - pip install agrossuite/.
-    # appimage 
-    # - cd ..
-    # - strip libs/*.so
-    # - strip agros
-    # - strip agros_solver
-    # - strip pythonlab
-    # - ./tools.py appimage
-    # - mkdir -p ~/appimage/$CI_BUILD_REF
-    # - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
-    # - curl -T Agros-x86_64.AppImage --ftp-create-dirs ftp://agros2d.org-www-version-builds:hjS888jj9888jhhg7g;@agros2d.org/$CI_BUILD_REF/Agros-x86_64.AppImage
-    # - ln -sfn ../libs/ agrossuite/libs    
+    - pip install agrossuite/. 
     
 test-linux:
   stage: test
@@ -74,11 +63,52 @@ test-linux:
     - source env/bin/activate    
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..
   artifacts:
     when: always
     reports:
       junit: report.xml
     
+deploy-linux:
+  stage: deploy
+  tags:
+    - agros
+    - linux
+
+  script: 
+    # rm files
+    - rm -rf appimage 
+
+    # create dirs
+    - mkdir appimage
+    - mkdir appimage/usr
+    - mkdir appimage/usr/bin
+    - mkdir appimage/usr/lib
+    - mkdir appimage/usr/share
+    - mkdir appimage/usr/share/agrossuite
+
+    # copy binary files
+    - cp agros appimage/usr/bin/
+    - cp -r resources appimage/usr/share/agrossuite/resources/
+    - cp libs/libagros_plugin_*.so appimage/usr/lib/
+
+    # copy resources
+    - cp -r resources_source/appimage/* appimage
+
+    # strip
+    - strip appimage/usr/bin/*
+    - strip appimage/usr/lib/*
+
+    # qt 
+    - export QMAKE=/usr/bin/qmake6 
+    - linuxdeploy-x86_64.AppImage --appdir appimage/ --executable agros --plugin qt --desktop-file resources_source/appimage/usr/share/applications/agros.desktop
+
+    # rm metainfo
+    - rm -rf appimage/usr/share/metainfo
+
+    # build appimage
+    - appimagetool-x86_64.AppImage  appimage/
+      
 # build-windows:
 #   stage: build
 #   tags:
