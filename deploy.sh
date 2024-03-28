@@ -1,38 +1,34 @@
-#!/usr/bin/python3
-
-from shutil import copytree, ignore_patterns
-import os
-import shutil
-
-# dest = 'Agros.AppDir'
-dest = 'appimage'
+#/bin/sh
 
 # rm files
-shutil.rmtree(dest) 
+rm -rf appimage 
 
 # create dirs
-os.mkdir(dest)
-os.mkdir(dest + '/bin')
-# os.mkdir(dest + '/lib')
-os.mkdir(dest + '/share')
-os.mkdir(dest + '/share/agrossuite')
+mkdir appimage
+mkdir appimage/usr
+mkdir appimage/usr/bin
+mkdir appimage/usr/lib
+mkdir appimage/usr/share
+mkdir appimage/usr/share/agrossuite
 
 # copy binary files
-shutil.copy('agros', dest + '/bin/agros')
-shutil.copytree('resources', dest + '/share/agrossuite/resources')
-shutil.copytree('libs', dest + '/lib', ignore=ignore_patterns('*.a'))
-# os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
-# shutil.copy('dealii/build/lib/libdeal_II.so.9.4.2', dest + '/libs/libdeal_II.so.9.4.2')
+cp agros appimage/usr/bin/
+cp -r resources appimage/usr/share/agrossuite/resources/
+cp libs/libagros_plugin_*.so appimage/usr/lib/
 
 # copy resources
-shutil.copytree('resources_source/appimage', dest + '/', dirs_exist_ok=True)
+cp -r resources_source/appimage/* appimage
 
 # strip
-os.system("strip " + dest + "/bin/*")
-os.system("strip " + dest + "/lib/*")
+strip appimage/usr/bin/*
+strip appimage/usr/lib/*
 
-# qt path
-os.system("PATH=/usr/bin:$PATH")
-os.system("cd " + dest)
-os.system("linuxdeployqt-continuous-x86_64.AppImage --unsupported-allow-new-glibc agros")
-os.system("cd ..")
+# qt 
+export QMAKE=/usr/bin/qmake6 
+linuxdeploy-x86_64.AppImage --appdir appimage/ --executable agros --plugin qt --desktop-file resources_source/appimage/usr/share/applications/agros.desktop
+
+# rm metainfo
+rm -rf appimage/usr/share/metainfo
+
+# build appimage
+appimagetool-x86_64.AppImage  appimage/
