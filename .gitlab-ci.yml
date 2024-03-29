@@ -30,9 +30,7 @@ build-linux:
     - make -j12
     - cd ../../
     # copy deal
-    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
-    # - export CC=/usr/bin/clang
-    # - export CXX=/usr/bin/clang++     
+    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2 
     - cmake . 
     - make -j12    
     # generator
