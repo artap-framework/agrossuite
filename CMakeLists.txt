@@ -98,10 +98,19 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # Configure CCache if available
-find_program(CCACHE_FOUND ccache)
-if(CCACHE_FOUND)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    message(NOTICE "Selected CCache: ${CCACHE_PROGRAM}")
+
+    set(ENV{CCACHE_BASEDIR} "${PROJECT_SOURCE_DIR}")
+    set(ENV{CCACHE_DIR} "${PROJECT_SOURCE_DIR}/ccache")
+    set(ENV{CCACHE_COMPILERCHECK} "content")
+
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM} base_dir=${PROJECT_SOURCE_DIR})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM} base_dir=${PROJECT_SOURCE_DIR})
+
+    # set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 # Enable debugging symbols for all files all the time:

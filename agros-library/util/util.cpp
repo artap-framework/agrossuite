@@ -372,24 +372,40 @@ QString readFileContent(const QString &fileName)
         file.close();
         return content;
     }
-    return NULL;
+    return nullptr;
 }
 
-void writeStringContent(const QString &fileName, QString content)
+void writeStringContent(const QString &fileName, QString content, bool force)
 {
-    writeStringContent(fileName, &content);
+    writeStringContent(fileName, &content, force);
 }
 
-void writeStringContent(const QString &fileName, QString *content)
+void writeStringContent(const QString &fileName, QString *content, bool force)
 {
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly))
+    bool write = true;
+
+    // check hash and decide if write
+    if (!force)
     {
-        QTextStream stream(&file);
-        stream << *content;
+        QString contentDisk = readFileContent(fileName);
+        if (contentDisk != nullptr)
+        {
+            write = (contentDisk != (*content).replace("\r", ""));
+        }
+    }
 
-        file.waitForBytesWritten(0);
-        file.close();
+    if (write)
+    {
+        qInfo() << "write";
+        QFile file(fileName);
+        if (file.open(QIODevice::WriteOnly))
+        {
+            QTextStream stream(&file);
+            stream << *content;
+
+            file.waitForBytesWritten(0);
+            file.close();
+        }
     }
 }
 
