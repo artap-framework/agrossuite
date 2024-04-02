@@ -372,7 +372,7 @@ SceneFaceMarker::SceneFaceMarker(SceneFace *edge, FieldInfo *fieldInfo, QWidget 
     cmbBoundary = new QComboBox();
     connect(cmbBoundary, SIGNAL(currentIndexChanged(int)), this, SLOT(doBoundaryChanged(int)));
 
-    btnBoundary = new QPushButton(iconAwesome(fa::fa_caret_up), "");
+    btnBoundary = new QPushButton(icon("up-arrow"), "");
     btnBoundary->setMaximumSize(btnBoundary->sizeHint());
     connect(btnBoundary, SIGNAL(clicked()), this, SLOT(doBoundaryClicked()));
 
@@ -871,7 +871,7 @@ SceneLabelMarker::SceneLabelMarker(SceneLabel *label, FieldInfo *fieldInfo, QWid
     cmbMaterial = new QComboBox();
     connect(cmbMaterial, SIGNAL(currentIndexChanged(int)), this, SLOT(doMaterialChanged(int)));
 
-    btnMaterial = new QPushButton(iconAwesome(fa::fa_caret_up), "");
+    btnMaterial = new QPushButton(icon("up-arrow"), "");
     btnMaterial->setMaximumSize(btnMaterial->sizeHint());
     connect(btnMaterial, SIGNAL(clicked()), this, SLOT(doMaterialClicked()));
 

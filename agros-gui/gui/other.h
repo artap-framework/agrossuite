@@ -26,7 +26,6 @@
 #include <QtSvg/QtSvg>
 
 #include "util/util.h"
-#include "../3rdparty/QtAwesome/QtAwesome.h"
 
 class Computation;
 
@@ -34,7 +33,6 @@ class Computation;
 QUndoStack *undoStack();
 
 // get icon with respect to actual theme
-QIcon iconAwesome(int character);
 QIcon icon(const QString &name, const QString &defaultName = "");
 enum AlphabetColor
 {

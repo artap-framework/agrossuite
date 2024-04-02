@@ -162,15 +162,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::createActions()
 {
-    actDocumentNew = new QAction(iconAwesome(fa::fa_file), tr("&New..."), this);
+    actDocumentNew = new QAction(icon("document-new"), tr("&New..."), this);
     actDocumentNew->setShortcuts(QKeySequence::New);
     connect(actDocumentNew, SIGNAL(triggered()), this, SLOT(doDocumentNew()));
 
-    actDocumentOpen = new QAction(iconAwesome(fa::fa_folder_open), tr("&Open..."), this);
+    actDocumentOpen = new QAction(icon("document-open"), tr("&Open..."), this);
     actDocumentOpen->setShortcuts(QKeySequence::Open);
     connect(actDocumentOpen, SIGNAL(triggered()), this, SLOT(doDocumentOpen()));
 
-    actDocumentSave = new QAction(iconAwesome(fa::fa_floppy_disk), tr("&Save"), this);
+    actDocumentSave = new QAction(icon("document-save"), tr("&Save"), this);
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
@@ -183,7 +183,7 @@ void MainWindow::createActions()
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
     connect(actDocumentSaveAs, SIGNAL(triggered()), this, SLOT(doDocumentSaveAs()));
 
-    actDocumentClose = new QAction(iconAwesome(fa::fa_folder_closed), tr("&Close"), this);
+    actDocumentClose = new QAction(tr("&Close"), this);
     actDocumentClose->setShortcuts(QKeySequence::Close);
     connect(actDocumentClose, SIGNAL(triggered()), this, SLOT(doDocumentClose()));
 
@@ -205,7 +205,7 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateFromModel = new QAction(iconAwesome(fa::fa_file_lines), tr("&Create script from model"), this);
+    actCreateFromModel = new QAction(tr("&Create script from model"), this);
     actCreateFromModel->setShortcut(QKeySequence("Ctrl+M"));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
@@ -214,7 +214,7 @@ void MainWindow::createActions()
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
 
-    actCopy = new QAction(iconAwesome(fa::fa_copy), tr("Copy image to clipboard"), this);
+    actCopy = new QAction(tr("Copy image to clipboard"), this);
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
@@ -233,7 +233,7 @@ void MainWindow::createActions()
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
 
-    actFullScreen = new QAction(iconAwesome(fa::fa_expand), tr("Fullscreen mode"), this);
+    actFullScreen = new QAction(tr("Fullscreen mode"), this);
     actFullScreen->setShortcut(QKeySequence(tr("F11")));
     connect(actFullScreen, SIGNAL(triggered()), this, SLOT(doFullScreen()));
 
@@ -253,16 +253,16 @@ void MainWindow::createActions()
 
     // zoom actions (geometry, post2d and post3d)
     // scene - zoom
-    actSceneZoomIn = new QAction(iconAwesome(fa::fa_square_plus), tr("Zoom in"), this);
+    actSceneZoomIn = new QAction(tr("Zoom in"), this);
     actSceneZoomIn->setShortcut(QKeySequence::ZoomIn);
 
-    actSceneZoomOut = new QAction(iconAwesome(fa::fa_square_minus), tr("Zoom out"), this);
+    actSceneZoomOut = new QAction(tr("Zoom out"), this);
     actSceneZoomOut->setShortcut(QKeySequence::ZoomOut);
 
-    actSceneZoomBestFit = new QAction(iconAwesome(fa::fa_square_arrow_up_right), tr("Zoom best fit"), this);
+    actSceneZoomBestFit = new QAction(tr("Zoom best fit"), this);
     actSceneZoomBestFit->setShortcut(tr("Ctrl+0"));
 
-    actSceneZoomRegion = new QAction(iconAwesome(fa::fa_square), tr("Zoom region"), this);
+    actSceneZoomRegion = new QAction(tr("Zoom region"), this);
     actSceneZoomRegion->setCheckable(true);
 
     actSceneModeGroup = new QActionGroup(this);
@@ -272,7 +272,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
     actSceneModeGroup->addAction(logView->actLog);
 
-    actHideControlPanel = new QAction(iconAwesome(fa::fa_gear), tr("Show/hide control panel"), this);
+    actHideControlPanel = new QAction(icon("gear"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
     connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
@@ -375,7 +375,7 @@ void MainWindow::createToolBars()
     QToolButton *toolButton = new QToolButton();
     toolButton->setIconSize(QSize(20, 20));
     toolButton->setMenu(menu);
-    toolButton->setIcon(iconAwesome(fa::fa_toggle_on));
+    toolButton->setIcon(icon("zoom-fit"));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     problemWidget->toolBar->addSeparator();

@@ -22,7 +22,6 @@
 #include "logview.h"
 
 static QUndoStack *m_undoStack = nullptr;
-static fa::QtAwesome *m_awesome = nullptr;
 static QMap<QString, QIcon> *m_iconCache = nullptr;
 
 // undo framework
@@ -31,17 +30,6 @@ QUndoStack *undoStack()
     if (!m_undoStack)
         m_undoStack = new QUndoStack();
     return  m_undoStack;
-}
-
-QIcon iconAwesome(int character)
-{
-    if (!m_awesome)
-    {
-        m_awesome = new fa::QtAwesome(qApp);
-        m_awesome->initFontAwesome();
-    }
-
-    return m_awesome->icon(fa::fa_regular, character);
 }
 
 QIcon icon(const QString &name, const QString &defaultName)

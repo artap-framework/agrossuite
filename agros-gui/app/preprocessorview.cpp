@@ -112,10 +112,10 @@ void PreprocessorWidget::createActions()
 
     actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
-    actDeleteSelected = new QAction(iconAwesome(fa::fa_trash), tr("Delete selected objects"), this);
+    actDeleteSelected = new QAction(icon("trash"), tr("Delete selected objects"), this);
     connect(actDeleteSelected, SIGNAL(triggered()), m_sceneViewPreprocessor, SLOT(doDeleteSelected()));
 
-    actTransform = new QAction(iconAwesome(fa::fa_calculator), tr("&Transform"), this);
+    actTransform = new QAction(icon("calculator"), tr("&Transform"), this);
 
     actNewParameter = new QAction(tr("New parameter..."), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
@@ -222,12 +222,12 @@ void PreprocessorWidget::createControls()
 
     // undo framework
     actUndo = undoStack()->createUndoAction(this);
-    actUndo->setIcon(iconAwesome(fa::fa_rotate_left));
+    actUndo->setIcon(icon("undo"));
     actUndo->setIconText(tr("&Undo"));
     actUndo->setShortcuts(QKeySequence::Undo);
 
     actRedo = undoStack()->createRedoAction(this);
-    actRedo->setIcon(iconAwesome(fa::fa_rotate_right));
+    actRedo->setIcon(icon("redo"));
     actRedo->setIconText(tr("&Redo"));
     actRedo->setShortcuts(QKeySequence::Redo);
 
