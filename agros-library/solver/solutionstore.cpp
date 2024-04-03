@@ -31,8 +31,10 @@
 
 #include <boost/config.hpp>
 #include <boost/archive/tmpdir.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+// #include <boost/archive/binary_iarchive.hpp>
+// #include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 
 // consts
 const QString SOLUTIONS = "solutions";
@@ -179,7 +181,7 @@ MultiArray &SolutionStore::multiArray(FieldSolutionID solutionID)
         if (!QFile::exists(fnMesh))
             assert(0); // return MultiArray();
         std::ifstream ifsMesh(fnMesh.toStdString());
-        boost::archive::binary_iarchive sbiMesh(ifsMesh);
+        boost::archive::text_iarchive sbiMesh(ifsMesh);
         triangulation->load(sbiMesh, 0);
 
         // dof handler
@@ -189,7 +191,7 @@ MultiArray &SolutionStore::multiArray(FieldSolutionID solutionID)
         if (!QFile::exists(fnDoF))
             assert(0); // return MultiArray();
         std::ifstream ifsDoF(fnDoF.toStdString());
-        boost::archive::binary_iarchive sbiDoF(ifsDoF);
+        boost::archive::text_iarchive sbiDoF(ifsDoF);
         doFHandler->load(sbiDoF, 0);
 
         // solution vector
@@ -198,7 +200,7 @@ MultiArray &SolutionStore::multiArray(FieldSolutionID solutionID)
         if (!QFile::exists(fnSol))
             assert(0); // return MultiArray();
         std::ifstream ifsSol(fnSol.toStdString());
-        boost::archive::binary_iarchive sbiSol(ifsSol);
+        boost::archive::text_iarchive sbiSol(ifsSol);
         solution.load(sbiSol, 0);
 
         // insert to the cache
@@ -254,19 +256,19 @@ void SolutionStore::addSolution(FieldSolutionID solutionID,
         {
             QString fnMesh = QString("%1.msh").arg(baseFN);
             std::ofstream ofsMesh(fnMesh.toStdString());
-            boost::archive::binary_oarchive sbMesh(ofsMesh);
+            boost::archive::text_oarchive sbMesh(ofsMesh);
             doFHandler.get_triangulation().save(sbMesh, 0);
         }
     }
 
     QString fnDoF = QString("%1.dof").arg(baseFN);
     std::ofstream ofsDoF(fnDoF.toStdString());
-    boost::archive::binary_oarchive sbDoF(ofsDoF);
+    boost::archive::text_oarchive sbDoF(ofsDoF);
     doFHandler.save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
     std::ofstream ofsSol(fnSol.toStdString());
-    boost::archive::binary_oarchive sbSol(ofsSol);
+    boost::archive::text_oarchive sbSol(ofsSol);
     solution.save(sbSol, 0);
 
     // append multisolution
@@ -289,12 +291,12 @@ void SolutionStore::replaceSolution(FieldSolutionID solutionID, MultiArray &ma)
 
     QString fnDoF = QString("%1.dof").arg(baseFN);
     std::ofstream ofsDoF(fnDoF.toStdString());
-    boost::archive::binary_oarchive sbDoF(ofsDoF);
+    boost::archive::text_oarchive sbDoF(ofsDoF);
     ma.doFHandler().save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
     std::ofstream ofsSol(fnSol.toStdString());
-    boost::archive::binary_oarchive sbSol(ofsSol);
+    boost::archive::text_oarchive sbSol(ofsSol);
     ma.solution().save(sbSol, 0);
 
     // replace the cache
@@ -374,13 +376,13 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
 
     // dof handler
     std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
-    boost::archive::binary_oarchive sboDoF(fsDoF);
+    boost::archive::text_oarchive sboDoF(fsDoF);
     doFHandler.save(sboDoF, 0);
     // new handler
     dealii::DoFHandler<2> *newDoFHandler = new dealii::DoFHandler<2>(*newTriangulation);
     newDoFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
     // load
-    boost::archive::binary_iarchive sbiDoF(fsDoF);
+    boost::archive::text_iarchive sbiDoF(fsDoF);
     newDoFHandler->load(sbiDoF, 0);
 
     assert(!m_multiSolutionDealCache.contains(solutionID));

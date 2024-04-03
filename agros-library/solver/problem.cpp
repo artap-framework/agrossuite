@@ -19,8 +19,10 @@
 
 #include <boost/config.hpp>
 #include <boost/archive/tmpdir.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+// #include <boost/archive/binary_iarchive.hpp>
+// #include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 
 #include "problem.h"
 #include "problem_config.h"
@@ -928,16 +930,24 @@ bool ProblemBase::mesh()
 
 void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
 {
-    // load initial mesh file
-    QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir);
-    std::ifstream ifsMesh(fnMesh.toStdString());
-    boost::archive::binary_iarchive sbiMesh(ifsMesh);
-    m_initialMesh.load(sbiMesh, 0);
+    try
+        {
+        // load initial mesh file
+        QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir);
+        std::ifstream ifsMesh(fnMesh.toStdString());
+        // boost::archive::binary_iarchive sbiMesh(ifsMesh);
+        boost::archive::text_iarchive sbiMesh(ifsMesh);
+        m_initialMesh.load(sbiMesh, 0);
 
-    // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
-    m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
+        // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
+        m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
-    Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
+        Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
+    }
+    catch (boost::archive::archive_exception e)
+    {
+        qInfo() << e.what();
+    }
 }
 
 void ProblemBase::readProblemFromJson(const QString &fileName)
@@ -1866,7 +1876,7 @@ void Computation::solveInit()
         // save initial mesh
         QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(m_problemDir);
         std::ofstream ofsMesh(fnMesh.toStdString());
-        boost::archive::binary_oarchive sbMesh(ofsMesh);
+        boost::archive::text_oarchive sbMesh(ofsMesh);
         m_initialMesh.save(sbMesh, 0);
 
         // set calculation mesh

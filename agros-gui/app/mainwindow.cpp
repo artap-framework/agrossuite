@@ -57,8 +57,7 @@
 
 #include <boost/config.hpp>
 #include <boost/archive/tmpdir.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent),
     logDialog(nullptr), logStdOut(nullptr)
@@ -1104,7 +1103,7 @@ void MainWindow::doDocumentExportMeshFile()
         if (Agros::problem()->mesh())
         {
             std::ofstream ofsMesh(fileName.toStdString());
-            boost::archive::binary_oarchive sbMesh(ofsMesh);
+            boost::archive::text_oarchive sbMesh(ofsMesh);
             Agros::problem()->initialMesh().save(sbMesh, 0);
 
             // if (!isMeshed)
