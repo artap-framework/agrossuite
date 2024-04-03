@@ -79,19 +79,17 @@ public:
     QAction *actDeleteSelected;
     QAction *actTransform;
 
-    QToolBar *toolBar;
+    QToolBar *toolBarAdd;
 
     QAction *actNewNode;
     QAction *actNewEdge;
     QAction *actNewLabel;
 
-    QAction *actNewBoundary;
     QMap<QString, QAction*> actNewBoundaries;
-
-    QAction *actNewMaterial;
     QMap<QString, QAction*> actNewMaterials;
 
-    QMenu *mnuBoundariesAndMaterials;
+    QMenu *mnuBoundaries;
+    QMenu *mnuMaterials;
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -165,9 +163,7 @@ private slots:
     void doNewEdge();
     void doNewLabel(const Point &point = Point());
 
-    void doNewBoundary();
     void doNewBoundary(QString field);
-    void doNewMaterial();
     void doNewMaterial(QString field);
 };
 

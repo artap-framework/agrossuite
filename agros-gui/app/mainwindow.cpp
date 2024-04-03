@@ -162,15 +162,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::createActions()
 {
-    actDocumentNew = new QAction(icon("document-new"), tr("&New..."), this);
+    actDocumentNew = new QAction(tr("&New..."), this);
     actDocumentNew->setShortcuts(QKeySequence::New);
     connect(actDocumentNew, SIGNAL(triggered()), this, SLOT(doDocumentNew()));
 
-    actDocumentOpen = new QAction(icon("document-open"), tr("&Open..."), this);
+    actDocumentOpen = new QAction(tr("&Open..."), this);
     actDocumentOpen->setShortcuts(QKeySequence::Open);
     connect(actDocumentOpen, SIGNAL(triggered()), this, SLOT(doDocumentOpen()));
 
-    actDocumentSave = new QAction(icon("document-save"), tr("&Save"), this);
+    actDocumentSave = new QAction(tr("&Save"), this);
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
@@ -335,7 +335,8 @@ void MainWindow::createMenus()
 
     mnuProblem = menuBar()->addMenu(tr("&Problem"));
     mnuProblem->addMenu(mnuProblemAddGeometry);
-    mnuProblem->addMenu(problemWidget->mnuBoundariesAndMaterials);
+    mnuProblem->addMenu(problemWidget->mnuBoundaries);
+    mnuProblem->addMenu(problemWidget->mnuMaterials);
     mnuProblem->addSeparator();
     mnuProblem->addAction(actSolve);
     mnuProblem->addAction(actSolveNewComputation);
@@ -360,11 +361,6 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolBars()
 {
-    // main toolbar
-    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentSave);
-    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentOpen);
-    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentNew);
-
     // zoom toolbar
     QMenu *menu = new QMenu(this);
     menu->addAction(actSceneZoomBestFit);
@@ -373,13 +369,13 @@ void MainWindow::createToolBars()
     menu->addAction(actSceneZoomOut);
 
     QToolButton *toolButton = new QToolButton();
-    toolButton->setIconSize(QSize(20, 20));
+    toolButton->setIconSize(QSize(24, 24));
     toolButton->setMenu(menu);
     toolButton->setIcon(icon("zoom-fit"));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    problemWidget->toolBar->addSeparator();
-    problemWidget->toolBar->addWidget(toolButton);
+    problemWidget->toolBarAdd->addSeparator();
+    problemWidget->toolBarAdd->addWidget(toolButton);
 }
 
 void MainWindow::createMain()

@@ -53,9 +53,6 @@
         <file alias="trash.png">images/general/trash.png</file>
         <file alias="undo.png">images/general/undo.png</file>
         <file alias="redo.png">images/general/redo.png</file>
-        <file alias="document-new.png">images/general/document-new.png</file>
-        <file alias="document-open.png">images/general/document-open.png</file>
-        <file alias="document-save.png">images/general/document-save.png</file>
         <file alias="plus.png">images/general/plus.png</file>
         <file alias="minus.png">images/general/minus.png</file>
         <file alias="zoom-fit.png">images/general/zoom-fit.png</file>
