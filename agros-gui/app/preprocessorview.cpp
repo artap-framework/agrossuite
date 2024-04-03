@@ -27,6 +27,7 @@
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
 #include "gui/recipedialog.h"
+#include "gui/other.h"
 #include "app/scenegeometrydialog.h"
 
 #include "solver/problem_config.h"
@@ -48,16 +49,16 @@
 
 #include "solver/problem.h"
 
-NewMarkerAction::NewMarkerAction(QObject* parent, QString field) :
-    QAction(Module::availableModules()[field], parent),
-    field(field)
+StringAction::StringAction(QObject* parent, const QString &k, const QString &v) :
+    QAction(v, parent),
+    m_key(k), m_value(v)
 {
     connect(this, SIGNAL(triggered()), this, SLOT(doTriggered()));
 }
 
-void NewMarkerAction::doTriggered()
+void StringAction::doTriggered()
 {
-    emit triggered(field);
+    emit triggered(m_key);
 }
 
 PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent): QWidget(parent)
@@ -71,6 +72,8 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 
     // context menu
     mnuPreprocessor = new QMenu(this);
+    mnuFields = new QMenu(tr("New fields"), this);
+    mnuStudies = new QMenu(tr("New studies"), this);
     mnuMaterials = new QMenu(tr("New materials"), this);
     mnuBoundaries = new QMenu(tr("New boundaries"), this);
     sceneTransformDialog = new SceneTransformDialog(m_sceneViewPreprocessor, this);
@@ -96,6 +99,16 @@ PreprocessorWidget::~PreprocessorWidget()
     settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
     settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
 
+    // clear fields
+    foreach (QAction *action, actNewFields.values())
+        delete action;
+    actNewFields.clear();
+
+    // clear studies
+    foreach (QAction *action, actNewStudies.values())
+        delete action;
+    actNewStudies.clear();
+
     // clear actions
     foreach (QAction *action, actNewBoundaries.values())
         delete action;
@@ -118,19 +131,13 @@ void PreprocessorWidget::createActions()
 
     actTransform = new QAction(icon("calculator"), tr("&Transform"), this);
 
-    actNewParameter = new QAction(iconAlphabet('P', AlphabetColor_Green), tr("New parameter..."), this);
+    actNewParameter = new QAction(iconAlphabet('P', AlphabetColor_Green), tr("Parameter"), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
     actNewFunctionAnalytic = new QAction(tr("New analytic function..."), this);
     connect(actNewFunctionAnalytic, SIGNAL(triggered()), this, SLOT(doNewFunctionAnalytic()));
-    actNewFunctionInterpolation = new QAction(tr("New interpolation function..."), this);
-    connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
-
-    actNewField = new QAction(iconAlphabet('F', AlphabetColor_Green), tr("New field..."), this);
-    connect(actNewField, SIGNAL(triggered()), this, SLOT(doNewField()));
-
-    actNewStudy = new QAction(iconAlphabet('S', AlphabetColor_Green), tr("New study..."), this);
-    connect(actNewStudy, SIGNAL(triggered()), this, SLOT(doNewStudy()));
+    // actNewFunctionInterpolation = new QAction(tr("New interpolation function..."), this);
+    // connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
 
     actNewRecipeLocalValue = new QAction(tr("Local value recipe..."), this);
     connect(actNewRecipeLocalValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
@@ -156,37 +163,54 @@ void PreprocessorWidget::createActions()
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewLabel);
 
     // actNewBoundary->setShortcut(QKeySequence("Alt+B"));
+    // actNewMaterial->setShortcut(QKeySequence("Alt+M"));
 
-    // clear actions
-    foreach (QAction *action, actNewBoundaries.values())
+    // clear fields
+    foreach (StringAction *action, actNewFields.values())
+        delete action;
+    actNewFields.clear();
+
+    // clear studies
+    foreach (StringAction *action, actNewStudies.values())
+        delete action;
+    actNewStudies.clear();
+
+    // clear boundaries
+    foreach (StringAction *action, actNewBoundaries.values())
         delete action;
     actNewBoundaries.clear();
 
-    QMapIterator<QString, QString> iEdge(Module::availableModules());
-    while (iEdge.hasNext())
-    {
-        iEdge.next();
-
-        NewMarkerAction* action = new NewMarkerAction(this, iEdge.key());
-        connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
-        actNewBoundaries[iEdge.key()] = action;
-    }
-
-    // actNewMaterial->setShortcut(QKeySequence("Alt+M"));
-
-    // clear actions
-    foreach (QAction *action, actNewMaterials.values())
+    // clear materials
+    foreach (StringAction *action, actNewMaterials.values())
         delete action;
     actNewMaterials.clear();
 
-    QMapIterator<QString, QString> iLabel(Module::availableModules());
-    while (iLabel.hasNext())
+    QMapIterator<QString, QString> it(Module::availableModules());
+    while (it.hasNext())
     {
-        iLabel.next();
+        it.next();
 
-        NewMarkerAction *action = new NewMarkerAction(this, iLabel.key());
-        connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
-        actNewMaterials[iLabel.key()] = action;
+        StringAction* actionField = new StringAction(this, it.key(), it.value());
+        actionField->setIcon(icon("fields/" + it.key()));
+        connect(actionField, SIGNAL(triggered(QString)), this, SLOT(doNewField(QString)));
+        actNewFields[it.key()] = actionField;
+
+        StringAction* actionBoundary = new StringAction(this, it.key(), it.value());
+        connect(actionBoundary, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
+        actNewBoundaries[it.key()] = actionBoundary;
+
+        StringAction* actionMaterial = new StringAction(this, it.key(), it.value());
+        connect(actionMaterial, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
+        actNewMaterials[it.key()] = actionMaterial;
+    }
+
+    foreach (QString name, studyTypeStringKeys())
+    {
+        QString label = studyTypeString(studyTypeFromStringKey(name));
+
+        StringAction* actionStudy = new StringAction(this, name, label);
+        connect(actionStudy, SIGNAL(triggered(QString)), this, SLOT(doNewStudy(QString)));        
+        actNewStudies[name] = actionStudy;
     }
 }
 
@@ -194,7 +218,7 @@ void PreprocessorWidget::createMenu()
 {
     mnuPreprocessor->clear();
 
-    mnuPreprocessor->addAction(actNewField);
+    mnuPreprocessor->addMenu(mnuFields);
     mnuPreprocessor->addAction(actNewParameter);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addMenu(mnuMaterials);
@@ -202,14 +226,14 @@ void PreprocessorWidget::createMenu()
     mnuPreprocessor->addSeparator();
     QMenu *mnuFunctions = new QMenu(tr("New function"));
     mnuFunctions->addAction(actNewFunctionAnalytic);
-    mnuFunctions->addAction(actNewFunctionInterpolation);
+    // mnuFunctions->addAction(actNewFunctionInterpolation);
     mnuPreprocessor->addMenu(mnuFunctions);
     QMenu *mnuRecipe = new QMenu(tr("New recipe"));
     mnuRecipe->addAction(actNewRecipeLocalValue);
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
     mnuPreprocessor->addMenu(mnuRecipe);
-    mnuPreprocessor->addAction(actNewStudy);
+    mnuPreprocessor->addMenu(mnuStudies);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addAction(actProperties);
@@ -231,11 +255,31 @@ void PreprocessorWidget::createControls()
     actRedo->setShortcuts(QKeySequence::Redo);
 
     // main toolbar
+    toolBar = new QToolBar();
+    toolBar->setIconSize(QSize(24, 24));
+    // toolBar->addSeparator();
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnEdges);
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnLabels);
+    toolBar->addSeparator();
+    toolBar->addAction(actDeleteSelected);
     // toolBar->addAction(m_sceneViewPreprocessor->actSceneViewSelectRegion);
     // toolBar->addAction(actTransform);
 
+    QToolButton *toolButtonFields = new QToolButton();
+    toolButtonFields->setIconSize(QSize(24, 24));
+    toolButtonFields->setText(tr("Fields"));
+    toolButtonFields->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolButtonFields->setToolTip(tr("New fields"));
+    toolButtonFields->setMenu(mnuFields);
+    toolButtonFields->setAutoRaise(true);
+    toolButtonFields->setIcon(iconAlphabet('F', AlphabetColor_Red));
+    toolButtonFields->setPopupMode(QToolButton::InstantPopup);
+
     QToolButton *toolButtonMaterials = new QToolButton();
     toolButtonMaterials->setIconSize(QSize(24, 24));
+    toolButtonMaterials->setText(tr("Materials"));
+    toolButtonMaterials->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonMaterials->setToolTip(tr("New material"));
     toolButtonMaterials->setMenu(mnuMaterials);
     toolButtonMaterials->setAutoRaise(true);
@@ -244,6 +288,8 @@ void PreprocessorWidget::createControls()
 
     QToolButton *toolButtonBoundaries = new QToolButton();
     toolButtonBoundaries->setIconSize(QSize(24, 24));
+    toolButtonBoundaries->setText(tr("Boundaries"));
+    toolButtonBoundaries->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonBoundaries->setToolTip(tr("New boundary"));
     toolButtonBoundaries->setMenu(mnuBoundaries);
     toolButtonBoundaries->setAutoRaise(true);
@@ -252,15 +298,19 @@ void PreprocessorWidget::createControls()
 
     QToolButton *toolButtonFunctions = new QToolButton();
     toolButtonFunctions->setIconSize(QSize(24, 24));
+    toolButtonFunctions->setText(tr("Functions"));
+    toolButtonFunctions->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonFunctions->setToolTip(tr("New function"));
     toolButtonFunctions->addAction(actNewFunctionAnalytic);
-    toolButtonFunctions->addAction(actNewFunctionInterpolation);
+    // toolButtonFunctions->addAction(actNewFunctionInterpolation);
     toolButtonFunctions->setAutoRaise(true);
     toolButtonFunctions->setIcon(iconAlphabet('C', AlphabetColor_Bluegray));
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
     QToolButton *toolButtonRecipes = new QToolButton();
     toolButtonRecipes->setIconSize(QSize(24, 24));
+    toolButtonRecipes->setText(tr("Recipes"));
+    toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonRecipes->setToolTip(tr("New recipe"));
     toolButtonRecipes->addAction(actNewRecipeLocalValue);
     toolButtonRecipes->addAction(actNewRecipeSurfaceIntegral);
@@ -269,9 +319,24 @@ void PreprocessorWidget::createControls()
     toolButtonRecipes->setIcon(iconAlphabet('R', AlphabetColor_Bluegray));
     toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
 
+    QToolButton *toolButtonStudies = new QToolButton();
+    toolButtonStudies->setIconSize(QSize(24, 24));
+    toolButtonStudies->setText(tr("Studies"));
+    toolButtonStudies->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolButtonStudies->setToolTip(tr("New studies"));
+    toolButtonStudies->setMenu(mnuStudies);
+    toolButtonStudies->setAutoRaise(true);
+    toolButtonStudies->setIcon(iconAlphabet('S', AlphabetColor_Red));
+    toolButtonStudies->setPopupMode(QToolButton::InstantPopup);
+
     toolBarAdd = new QToolBar();
-    toolBarAdd->setIconSize(QSize(24, 24));
-    toolBarAdd->addAction(actNewField);
+    QFont fnt = toolBarAdd->font();
+    fnt.setPointSize(fnt.pointSize()-3);
+    toolBarAdd->setIconSize(QSize(48, 48));
+    toolBarAdd->setFont(fnt);
+    toolBarAdd->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    toolBarAdd->addWidget(toolButtonFields);
     toolBarAdd->addAction(actNewParameter);
     toolBarAdd->addSeparator();
     toolBarAdd->addWidget(toolButtonMaterials);
@@ -279,13 +344,7 @@ void PreprocessorWidget::createControls()
     toolBarAdd->addSeparator();
     toolBarAdd->addWidget(toolButtonFunctions);
     toolBarAdd->addWidget(toolButtonRecipes);
-    toolBarAdd->addAction(actNewStudy);
-    toolBarAdd->addSeparator();
-    toolBarAdd->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
-    toolBarAdd->addAction(m_sceneViewPreprocessor->actOperateOnEdges);
-    toolBarAdd->addAction(m_sceneViewPreprocessor->actOperateOnLabels);
-    toolBarAdd->addSeparator();
-    toolBarAdd->addAction(actDeleteSelected);
+    toolBarAdd->addWidget(toolButtonStudies);
 
     trvWidget = new QTreeWidget(this);
     trvWidget->setExpandsOnDoubleClick(false);
@@ -335,6 +394,7 @@ void PreprocessorWidget::createControls()
     QGridLayout *layoutTreeView = new QGridLayout();
     layoutTreeView->setContentsMargins(2, 2, 2, 3);
     layoutTreeView->addWidget(trvWidget, 1, 0, 1, 4);
+    // layoutTreeView->addWidget(toolBar, 2, 0, 1, 4);
     layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 3, 0);
     layoutTreeView->addWidget(txtGridStep, 3, 1);
     layoutTreeView->addWidget(chkSnapToGrid, 3, 2);
@@ -354,6 +414,7 @@ void PreprocessorWidget::createControls()
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 3);
+    layoutMain->addWidget(toolBar);
     layoutMain->addWidget(toolBarAdd);
     layoutMain->addWidget(splitter);
 
@@ -662,15 +723,26 @@ void PreprocessorWidget::refresh()
     trvWidget->setUpdatesEnabled(true);
     trvWidget->blockSignals(false);
 
-    // multiple boundaries
+    // boundaries
     mnuMaterials->clear();
     foreach(FieldInfo* fieldInfo, Agros::problem()->fieldInfos())
         mnuMaterials->addAction(actNewMaterials[fieldInfo->fieldId()]);
 
-    // multiple materials
+    // materials
     mnuBoundaries->clear();
     foreach(FieldInfo* fieldInfo, Agros::problem()->fieldInfos())
         mnuBoundaries->addAction(actNewBoundaries[fieldInfo->fieldId()]);
+
+    // fields
+    mnuFields->clear();
+    foreach(StringAction *fieldAction, actNewFields.values())
+        if (!Agros::problem()->fieldInfos().keys().contains(fieldAction->key()))
+            mnuFields->addAction(fieldAction);
+
+    // studies
+    mnuStudies->clear();
+    foreach(StringAction *studyAction, actNewStudies.values())
+        mnuStudies->addAction(studyAction);
 }
 
 void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
@@ -1221,54 +1293,41 @@ void PreprocessorWidget::doNewFunctionInterpolation()
             */
 }
 
-void PreprocessorWidget::doNewField()
+void PreprocessorWidget::doNewField(const QString &field)
 {
-    // select field dialog
-    FieldSelectDialog dialog(Agros::problem()->fieldInfos().keys(), this);
-    if (dialog.exec() == QDialog::Accepted)
+    // add field
+    FieldInfo *fieldInfo = new FieldInfo(field);
+
+    FieldDialog fieldDialog(fieldInfo, this);
+    if (fieldDialog.exec() == QDialog::Accepted)
     {
-        // add field
-        FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());
+        Agros::problem()->addField(fieldInfo);
 
-        FieldDialog fieldDialog(fieldInfo, this);
-        if (fieldDialog.exec() == QDialog::Accepted)
-        {
-            Agros::problem()->addField(fieldInfo);
-
-            refresh();
-            emit refreshGUI();
-        }
-        else
-        {
-            delete fieldInfo;
-        }
+        refresh();
+        emit refreshGUI();
+    }
+    else
+    {
+        delete fieldInfo;
     }
 }
 
-void PreprocessorWidget::doNewStudy()
+void PreprocessorWidget::doNewStudy(const QString &name)
 {
-    // select study dialog
-    StudySelectDialog dialog(this);
-    if (dialog.exec() == QDialog::Accepted)
+    // add study
+    Study *study = Study::factory(studyTypeFromStringKey(name));
+
+    StudyDialog *studyDialog = StudyDialog::factory(study, this);
+    if (studyDialog->showDialog() == QDialog::Accepted)
     {
-        // add study
-        if (dialog.selectedStudyType() != StudyType_Undefined)
-        {
-            Study *study = Study::factory(dialog.selectedStudyType());
+        Agros::problem()->studies()->addStudy(study);
 
-            StudyDialog *studyDialog = StudyDialog::factory(study, this);
-            if (studyDialog->showDialog() == QDialog::Accepted)
-            {
-                Agros::problem()->studies()->addStudy(study);
-
-                refresh();
-                emit refreshGUI();
-            }
-            else
-            {
-                delete study;
-            }
-        }
+        refresh();
+        emit refreshGUI();
+    }
+    else
+    {
+        delete study;
     }
 }
 
@@ -1395,7 +1454,7 @@ void PreprocessorWidget::doNewLabel(const Point &point)
         delete label;
 }
 
-void PreprocessorWidget::doNewBoundary(QString field)
+void PreprocessorWidget::doNewBoundary(const QString &field)
 {
     // first boundary as default
     QList<Module::BoundaryType> boundaryTypes = Agros::problem()->fieldInfo(field)->boundaryTypes();
@@ -1429,7 +1488,7 @@ void PreprocessorWidget::doNewBoundary(QString field)
     }
 }
 
-void PreprocessorWidget::doNewMaterial(QString field)
+void PreprocessorWidget::doNewMaterial(const QString &field)
 {
     SceneMaterial *material = new SceneMaterial(Agros::problem()->scene(),
                                                 Agros::problem()->fieldInfo(field),

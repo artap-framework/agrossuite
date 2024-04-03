@@ -28,12 +28,14 @@
 class SceneViewPreprocessor;
 class FieldInfo;
 
-class NewMarkerAction : public QAction
+class StringAction : public QAction
 {
     Q_OBJECT
 
 public:
-    NewMarkerAction(QObject* parent, QString field);
+    StringAction(QObject* parent, const QString &k, const QString &v);
+    inline QString key() const { return m_key; }
+    inline QString value() const { return m_value; }
 
 public slots:
     void doTriggered();
@@ -42,7 +44,8 @@ signals:
     void triggered(QString);
 
 private:
-    QString field;
+    QString m_key;
+    QString m_value;
 };
 
 class PreprocessorWidget : public QWidget
@@ -62,8 +65,6 @@ public slots:
     void doNewParameter();
     void doNewFunctionAnalytic();
     void doNewFunctionInterpolation();
-    void doNewField();
-    void doNewStudy();
     void doNewRecipeLocalValue();
     void doNewRecipeSurfaceIntegral();
     void doNewRecipeVolumeIntegral();
@@ -79,15 +80,20 @@ public:
     QAction *actDeleteSelected;
     QAction *actTransform;
 
+    QToolBar *toolBar;
     QToolBar *toolBarAdd;
 
     QAction *actNewNode;
     QAction *actNewEdge;
     QAction *actNewLabel;
 
-    QMap<QString, QAction*> actNewBoundaries;
-    QMap<QString, QAction*> actNewMaterials;
+    QMap<QString, StringAction*> actNewFields;
+    QMap<QString, StringAction*> actNewStudies;
+    QMap<QString, StringAction*> actNewBoundaries;
+    QMap<QString, StringAction*> actNewMaterials;
 
+    QMenu *mnuFields;
+    QMenu *mnuStudies;
     QMenu *mnuBoundaries;
     QMenu *mnuMaterials;
 
@@ -128,9 +134,7 @@ private:
     QAction *actDelete;
     QAction *actNewParameter;
     QAction *actNewFunctionAnalytic;
-    QAction *actNewFunctionInterpolation;
-    QAction *actNewField;
-    QAction *actNewStudy;
+    // QAction *actNewFunctionInterpolation;
     QAction *actNewRecipeLocalValue;
     QAction *actNewRecipeSurfaceIntegral;
     QAction *actNewRecipeVolumeIntegral;
@@ -159,12 +163,15 @@ private slots:
     void doApply();
     void doTransform();
 
+    void doNewField(const QString &field);
+    void doNewStudy(const QString &name);
+
     void doNewNode(const Point &point = Point());
     void doNewEdge();
     void doNewLabel(const Point &point = Point());
 
-    void doNewBoundary(QString field);
-    void doNewMaterial(QString field);
+    void doNewBoundary(const QString &field);
+    void doNewMaterial(const QString &field);
 };
 
 #endif // PREPROCESSORVIEW_H

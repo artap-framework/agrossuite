@@ -374,8 +374,8 @@ void MainWindow::createToolBars()
     toolButton->setIcon(icon("zoom-fit"));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    problemWidget->toolBarAdd->addSeparator();
-    problemWidget->toolBarAdd->addWidget(toolButton);
+    problemWidget->toolBar->addSeparator();
+    problemWidget->toolBar->addWidget(toolButton);
 }
 
 void MainWindow::createMain()
@@ -589,29 +589,11 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::doDocumentNew()
 {
-    FieldSelectDialog dialog(QList<QString>(), this);
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        // clear preprocessor
-        Agros::problem()->clearFieldsAndConfig();
+    // clear preprocessor
+    Agros::problem()->clearFieldsAndConfig();
 
-        // add field
-        try
-        {
-            FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());
-
-            Agros::problem()->addField(fieldInfo);
-
-            sceneViewProblem->actSceneModeProblem->trigger();
-            sceneViewProblem->doZoomBestFit();
-        }
-        catch (AgrosPluginException& e)
-        {
-            Agros::problem()->scene()->clear();
-
-            Agros::log()->printError(tr("Problem"), e.toString());
-        }
-    }
+    sceneViewProblem->actSceneModeProblem->trigger();
+    sceneViewProblem->doZoomBestFit();
 }
 
 void MainWindow::doDocumentOpen(const QString &fileName)

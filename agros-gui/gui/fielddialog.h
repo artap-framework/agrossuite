@@ -28,25 +28,6 @@ class FieldInfo;
 class LineEditDouble;
 class ValueLineEdit;
 
-class FieldSelectDialog : public QDialog
-{
-    Q_OBJECT
-public:
-    FieldSelectDialog(QList<QString> fields, QWidget *parent);
-
-    inline QString selectedFieldId() { return m_selectedFieldId; }
-
-private slots:
-    void doItemSelected(QListWidgetItem *item);
-    void doItemDoubleClicked(QListWidgetItem *item);
-
-private:
-    QListWidget *lstFields;
-    QString m_selectedFieldId;
-
-    QDialogButtonBox *buttonBox;
-};
-
 class FieldWidget : public QWidget
 {
     Q_OBJECT
