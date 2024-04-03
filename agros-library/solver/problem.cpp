@@ -931,11 +931,10 @@ bool ProblemBase::mesh()
 void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
 {
     try
-        {
+    {
         // load initial mesh file
         QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir);
         std::ifstream ifsMesh(fnMesh.toStdString());
-        // boost::archive::binary_iarchive sbiMesh(ifsMesh);
         boost::archive::text_iarchive sbiMesh(ifsMesh);
         m_initialMesh.load(sbiMesh, 0);
 
@@ -947,6 +946,7 @@ void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
     catch (boost::archive::archive_exception e)
     {
         qInfo() << e.what();
+        throw AgrosException(tr("Reading initial mesh from disk failed: %1").arg(e.what()));
     }
 }
 
