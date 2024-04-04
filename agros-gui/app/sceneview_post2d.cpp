@@ -361,32 +361,6 @@ void SceneViewPost2D::paintScalarField()
     else
     {
         glCallList(m_listScalarField);
-
-        /*
-        glLineWidth(1.0);
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        glBegin(GL_TRIANGLES);
-        foreach (PostTriangle triangle, m_postprocessorWidget->currentComputation()->postDeal()->scalarValues())
-        {
-            for (int j = 0; j < 3; j++)
-                glVertex2d(triangle.vertices[j][0], triangle.vertices[j][1]);
-        }
-        glEnd();
-        */
-        /*
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glColorPointer(3, GL_FLOAT, 0, m_arrayScalarFieldColors.constData());
-        glVertexPointer(2, GL_FLOAT, 0, m_arrayScalarField.constData());
-
-        glDrawArrays(GL_TRIANGLES, 0, m_arrayScalarField.size());
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_COLOR_ARRAY);
-        */
     }
 }
 

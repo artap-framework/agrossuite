@@ -484,8 +484,11 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // int& elem_marker = it.get_marker();
 
                 // find marker
-                // SceneLabel *label = Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
-                SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
+                Point center((triangle.vertices[0][0] + triangle.vertices[1][0] + triangle.vertices[2][0]) / 3.0,
+                             (triangle.vertices[0][1] + triangle.vertices[1][1] + triangle.vertices[2][1]) / 3.0);
+                SceneLabel *label = SceneLabel::findClosestLabel(m_postprocessorWidget->currentComputation()->scene(), center);
+
+                // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
                 SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                 // hide material
@@ -540,7 +543,11 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // if ((linTrisBoundaries.contains(linTris[i][0]) || linTrisBoundaries.contains(linTris[i][1]) || linTrisBoundaries.contains(linTris[i][2])))
                 {
                     // find marker
-                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(linTrisMarkers[i]).marker.c_str()));
+                    Point center((triangle.vertices[0][0] + triangle.vertices[1][0] + triangle.vertices[2][0]) / 3.0,
+                                 (triangle.vertices[0][1] + triangle.vertices[1][1] + triangle.vertices[2][1]) / 3.0);
+                    SceneLabel *label = SceneLabel::findClosestLabel(m_postprocessorWidget->currentComputation()->scene(), center);
+
+                    // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
                     SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                     // hide material
@@ -582,8 +589,11 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 // int& elem_marker = it.get_marker();
 
                 // find marker
-                // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
-                SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
+                Point center((triangle.vertices[0][0] + triangle.vertices[1][0] + triangle.vertices[2][0]) / 3.0,
+                             (triangle.vertices[0][1] + triangle.vertices[1][1] + triangle.vertices[2][1]) / 3.0);
+                SceneLabel *label = SceneLabel::findClosestLabel(m_postprocessorWidget->currentComputation()->scene(), center);
+
+                // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0);
                 SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                 // hide material
@@ -620,14 +630,14 @@ void SceneViewPost3D::paintScalarField3DSolid()
 
             foreach (PostTriangle triangle, m_postprocessorWidget->currentComputation()->postDeal()->scalarValues())
             {
-                // int& elem_marker = it.get_marker();
-                int elem_marker = 0;
-
                 // boundary element
                 // if ((linTrisBoundaries.contains(linTris[i][0]) || linTrisBoundaries.contains(linTris[i][1]) || linTrisBoundaries.contains(linTris[i][2])))
                 {
                     // find marker
-                    SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
+                    Point center((triangle.vertices[0][0] + triangle.vertices[1][0] + triangle.vertices[2][0]) / 3.0,
+                                 (triangle.vertices[0][1] + triangle.vertices[1][1] + triangle.vertices[2][1]) / 3.0);
+                    SceneLabel *label = SceneLabel::findClosestLabel(m_postprocessorWidget->currentComputation()->scene(), center);
+                    // SceneLabel *label = m_postprocessorWidget->currentComputation()->scene()->labels->at(0); // m_postprocessorWidget->currentComputation()->scene()->labels->at(atoi(postDeal()->activeViewField()->initialMesh()->get_element_markers_conversion().get_user_marker(elem_marker).marker.c_str()));
                     SceneMaterial *material = label->marker(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField());
 
                     // hide material
