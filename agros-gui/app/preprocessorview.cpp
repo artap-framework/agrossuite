@@ -1396,7 +1396,8 @@ void PreprocessorWidget::doTransform()
 
 void PreprocessorWidget::doNewNode(const Point &point)
 {
-    SceneNode *node = new SceneNode(Agros::problem()->scene(), PointValue(Agros::problem(), point));
+    SceneNode *node = new SceneNode(Agros::problem()->scene(),
+                                    PointValue(Agros::problem(), point));
     SceneNodeDialog *dialog = new SceneNodeDialog(node, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
@@ -1411,12 +1412,17 @@ void PreprocessorWidget::doNewNode(const Point &point)
         emit refreshGUI();
     }
     else
+    {
         delete node;
+    }
 }
 
 void PreprocessorWidget::doNewEdge()
 {
-    SceneFace *edge = new SceneFace(Agros::problem()->scene(), Agros::problem()->scene()->nodes->at(0), Agros::problem()->scene()->nodes->at(1), Value(Agros::problem(), 0.0));
+    SceneFace *edge = new SceneFace(Agros::problem()->scene(),
+                                    Agros::problem()->scene()->nodes->at(0),
+                                    Agros::problem()->scene()->nodes->at(1),
+                                    Value(Agros::problem(), 0.0));
     SceneFaceDialog *dialog = new SceneFaceDialog(edge, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
@@ -1431,12 +1437,16 @@ void PreprocessorWidget::doNewEdge()
             undoStack()->push(getAddCommand(edge));
     }
     else
+    {
         delete edge;
+    }
 }
 
 void PreprocessorWidget::doNewLabel(const Point &point)
 {
-    SceneLabel *label = new SceneLabel(Agros::problem()->scene(), PointValue(Agros::problem(), point), 0.0);
+    SceneLabel *label = new SceneLabel(Agros::problem()->scene(),
+                                       PointValue(Agros::problem(), point),
+                                       0.0);
     SceneLabelDialog *dialog = new SceneLabelDialog(label, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
@@ -1451,7 +1461,9 @@ void PreprocessorWidget::doNewLabel(const Point &point)
         emit refreshGUI();
     }
     else
+    {
         delete label;
+    }
 }
 
 void PreprocessorWidget::doNewBoundary(const QString &field)
@@ -1464,23 +1476,15 @@ void PreprocessorWidget::doNewBoundary(const QString &field)
                                                 Agros::problem()->fieldInfo(field),
                                                 tr("new boundary"),
                                                 boundaryTypes.first().id());
-
     SceneBoundaryDialog *dialog = new SceneBoundaryDialog(boundary, this);
-    if (dialog)
-    {
-        if (dialog->exec() == QDialog::Accepted)
-        {
-            Agros::problem()->scene()->addBoundary(boundary);
-            Agros::problem()->scene()->invalidate();
 
-            refresh();
-            emit refreshGUI();
-        }
-        else
-        {
-            delete boundary;
-            QMessageBox::information(QApplication::activeWindow(), QObject::tr(""), QObject::tr("Boundary dialog doesn't exists."));
-        }
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        Agros::problem()->scene()->addBoundary(boundary);
+        Agros::problem()->scene()->invalidate();
+
+        refresh();
+        emit refreshGUI();
     }
     else
     {
@@ -1495,21 +1499,14 @@ void PreprocessorWidget::doNewMaterial(const QString &field)
                                                 tr("new material"));
 
     SceneMaterialDialog *dialog = new SceneMaterialDialog(material, this);
-    if (dialog)
-    {
-        if (dialog->exec() == QDialog::Accepted)
-        {
-            Agros::problem()->scene()->addMaterial(material);
-            Agros::problem()->scene()->invalidate();
 
-            refresh();
-            emit refreshGUI();
-        }
-        else
-        {
-            delete material;
-            // QMessageBox::information(QApplication::activeWindow(), QObject::tr(""), QObject::tr("Material dialog doesn't exists."));
-        }
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        Agros::problem()->scene()->addMaterial(material);
+        Agros::problem()->scene()->invalidate();
+
+        refresh();
+        emit refreshGUI();
     }
     else
     {
