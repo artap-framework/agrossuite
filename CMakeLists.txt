@@ -98,7 +98,7 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # Configure CCache if available
 find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
+IF(CCACHE_PROGRAM)
     message(NOTICE "Selected CCache: ${CCACHE_PROGRAM}")
 
     set(ENV{CCACHE_BASEDIR} "${PROJECT_SOURCE_DIR}")
@@ -110,7 +110,7 @@ if(CCACHE_PROGRAM)
 
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE_FOUND)
+ENDIF()
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
