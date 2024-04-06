@@ -1,7 +1,3 @@
-# Klonování repozitáře
-git clone git@gitlab.fel.zcu.cz:agros/agros2d.git
-Set-Location .\agros2d
-
 # Inicializace a aktualizace podmodulů
 git submodule init
 git submodule update
@@ -43,14 +39,17 @@ python -m venv env
 Set-Location .\env\Scripts
 .\activate
 
+Set-Location ../..
+
 # Instalace Python balíčků
 pip install cython
 pip install scikit-build
 pip install pytest
 pip install numpy
-pip install agrossuite/.
-Set-Location ..
-Set-Location ..
+Set-Location ./agrossuite
+pip install .
+Set-Location ../..
+
 
 # Kopírování souborů
 Copy-Item "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" "C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite"
@@ -63,8 +62,7 @@ Copy-Item "C:\Users\vboxuser\Documents\Release\install\zlib.dll" "C:\Users\vboxu
 # Spuštění testů
 Set-Location .\tests
 pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-Set-Location ..
-Set-Location ..
+Set-Location ../..
 
-# Spuštění kompilace
+# Build install 
 Compil32.exe /cc agros.iss
