@@ -116,9 +116,9 @@ build-windows:
     - win11
 
   before_script:
-    - dir    
+    export CXXFLAGS="-std=c++14"
   after_script:
-    - dir
+    
 
   script:    
     - git submodule init
