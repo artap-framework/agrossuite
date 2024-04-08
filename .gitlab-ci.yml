@@ -147,6 +147,7 @@ test-windows:
   stage: test
   tags:
     - agros
+    - win11
   
   script:
     - cd agros-python 
