@@ -116,7 +116,7 @@ build-windows:
     - win11
 
   before_script:
-    export CXXFLAGS="-std=c++14"
+    env:CXXFLAGS = "-std=c++14"
   after_script:
     
 
