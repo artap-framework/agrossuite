@@ -127,10 +127,9 @@ build-windows:
     # Build DEAL
     - cd dealii
     - mkdir build
-    - cd ..
-    - cd .\dealii\build
+    - cd build
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/source/zlib131/zlib-1.3.1" -DZLIB_LIBRARY="C:/agros_dependencies/source/zlib131/zlib-1.3.1/Release/zlib.lib" .. 
-    - cmake --build . 
+    - cmake --build . --config Release
     # Build Agros
     - cd ..
     - cd ..
