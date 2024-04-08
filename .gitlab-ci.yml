@@ -113,7 +113,7 @@ deploy-linux:
 build-windows:
   stage: build
   tags:
-    - agros-windows
+    - win11
 
   before_script:
     - dir    
