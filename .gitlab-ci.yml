@@ -123,7 +123,7 @@ build-windows:
   script:
     - git submodule init
     - git submodule update
-    # - xcopy "C:\agros_dependencies\source\boost_1_70_0\boost_1_70_0\boost\ptr_container"  "C:\Users\vboxuserREM\Documents\Release\agros2d\dealii\bundled\boost-1.70.0\include\boost\ptr_container\" /s /e  
+    - xcopy "C:\agros_dependencies\source\boost_1_70_0\boost_1_70_0\boost\ptr_container"  "C:\Users\vboxuserREM\Documents\Release\agros2d\dealii\bundled\boost-1.70.0\include\boost\ptr_container\" /s /e /Y 
     # Build DEAL
     - cd dealii
     - mkdir build
