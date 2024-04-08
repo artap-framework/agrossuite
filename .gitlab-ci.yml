@@ -116,7 +116,8 @@ build-windows:
     - win11
 
   before_script:
-    env:CXXFLAGS = "-std=c++14"
+    
+
   after_script:
     
 
@@ -128,7 +129,7 @@ build-windows:
     - cd dealii
     - mkdir build
     - cd build
-    - cmake -DCMAKE_CXX_STANDARD=14 -DCMAKE_CXX_FLAGS="/RTC1-" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/source/zlib131/zlib-1.3.1" -DZLIB_LIBRARY="C:/agros_dependencies/source/zlib131/zlib-1.3.1/Release/zlib.lib" .. 
+    - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/source/zlib131/zlib-1.3.1" -DZLIB_LIBRARY="C:/agros_dependencies/source/zlib131/zlib-1.3.1/Release/zlib.lib" .. 
     - cmake --build . --config Release
     # Build Agros
     - cd ..
