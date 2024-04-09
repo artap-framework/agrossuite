@@ -164,6 +164,7 @@ test-windows:
     - pip install pytest
     - pip install numpy
     - cd agrossuite
+    - cd src
     - pip install .
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
