@@ -16,8 +16,8 @@ build-linux:
     - export CCACHE_BASEDIR="$PWD"
     - export CCACHE_DIR="$PWD/ccache"
     - export CCACHE_COMPILERCHECK=content
-    - ccache --zero-stats || true
-    - ccache --show-stats || true
+    - ccache --zero-stats 
+    - ccache --show-stats 
   after_script:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats  
