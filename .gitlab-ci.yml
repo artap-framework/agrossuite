@@ -141,7 +141,8 @@ build-windows:
     - cd plugins
     - cmake .
     - cmake --build . --config Release | Out-Null
-    - copy ".\agros2d\dealii\build\lib\deal_II.lib" ".\libs"
+    - cd ..
+    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y 
     
 test-windows:
   stage: test
