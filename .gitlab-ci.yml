@@ -163,16 +163,18 @@ test-windows:
     - pip install scikit-build
     - pip install pytest
     - pip install numpy
-    - pip install agrossuite/.
+    - cd agrossuite
+    - pip install .
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\triangle.exe" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\gmsh.exe" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" C:\Users\vboxuser\\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
+    - cd ..
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-    - cd..
+    - cd ..
     - cd ..
 
 deploy-windows:
