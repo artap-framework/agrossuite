@@ -118,7 +118,7 @@ build-windows:
   before_script:
     - $env:CCACHE_BASEDIR="$PWD"
     - $env:CCACHE_DIR="$PWD/ccache"
-    - $env:CCACHE_COMPILERCHECK=content
+    - $env:CCACHE_COMPILERCHECK="content"
     - ccache --zero-stats
     - ccache --show-stats
 
