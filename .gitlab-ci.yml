@@ -157,6 +157,7 @@ build-windows:
     - pip install numpy
     - cd agrossuite
     - pip install .
+    - cd ..
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
