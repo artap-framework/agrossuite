@@ -148,14 +148,6 @@ build-windows:
     - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null
     - cd ..
     - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y 
-    
-test-windows:
-  stage: test
-  tags:
-    - agros
-    - win11
-  
-  script:
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
@@ -172,6 +164,17 @@ test-windows:
     - copy "C:\Users\vboxuser\Documents\Release\install\gmsh.exe" C:\Users\vboxuser\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" C:\Users\vboxuser\\Documents\Release\agros2d\agros-python\env\Lib\site-packages\agrossuite
     - cd ..
+    - cd ..
+    
+test-windows:
+  stage: test
+  tags:
+    - agros
+    - win11
+  
+  script:
+    - cd agros-python
+    - .\env\Scripts\activate 
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
