@@ -167,7 +167,7 @@ build-windows:
     - cd ..
     - Remove-Item -Path .\setup -Recurse
     - Compil32.exe /cc agros.iss
-    - curl -T ./setup/AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
+    - curl.exe -T ./setup/AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
     
 test-windows:
   stage: test
