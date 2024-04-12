@@ -190,5 +190,5 @@ deploy-windows:
       - agros  		
 
     script:
-      # - Compil32.exe /cc agros.iss
+      - dir
  
