@@ -168,7 +168,7 @@ build-windows:
     - cd ..
     - rmdir /s /q ./setup
     - Compil32.exe /cc agros.iss
-    - curl -T Agros_Suite-x86_64.AppImage -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
+    - curl -T ./setup/AgrosSuite.exe -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/windows/
     
 test-windows:
   stage: test
