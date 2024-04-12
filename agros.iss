@@ -1,24 +1,25 @@
 [Setup]
 
-#define AppName "Agros2D"
-#define AppVersion GetFileVersion("agros2d.exe")
+#define AppName "Agros Suite"
+#define AppVersion GetFileVersion("agros.exe")
 #define AppDate GetFileDateTimeString("agros.exe", "mm/dd/yyyy", "/", ":") 
-#define OutputBaseFileName "Agros2D" + "_" + AppVersion + "." + GetDateTimeString('yyyymmdd', '', '')
+; #define OutputBaseFileName "AgrosSuite" + "_" + AppVersion + "." + GetDateTimeString('yyyymmdd', '', '')
+#define OutputBaseFileName "AgrosSuite"
 
 AppName={#AppName}
 AppVerName={#AppName} {#AppVersion} ({#AppDate})
 OutputBaseFilename={#OutputBaseFileName}
-DefaultGroupName=Agros2D
+DefaultGroupName=Agros Suite
 LicenseFile=COPYING
 
-AppId=Agros2D
+AppId=Agros Suite
 AppPublisher=hpfem.org
 AppCopyright=hpfem.org
 AppPublisherURL=http://www.agros2d.org/
-AppMutex=Agros2D
+AppMutex=Agros Suite
 OutputDir=setup
-DefaultDirName={pf}\Agros2D
-UninstallDisplayIcon={app}\images\agros2d.ico
+DefaultDirName={pf}\Agros Suite
+UninstallDisplayIcon={app}\images\agros.ico
 Compression=lzma/max
 PrivilegesRequired=admin
 
