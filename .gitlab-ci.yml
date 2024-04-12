@@ -166,6 +166,9 @@ build-windows:
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
     - cd ..
     - cd ..
+    - rmdir /s /q ./setup
+    - Compil32.exe /cc agros.iss
+    - curl -T Agros_Suite-x86_64.AppImage -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
     
 test-windows:
   stage: test
@@ -187,5 +190,5 @@ deploy-windows:
       - agros  		
 
     script:
-      - Compil32.exe /cc agros.iss
+      # - Compil32.exe /cc agros.iss
  
