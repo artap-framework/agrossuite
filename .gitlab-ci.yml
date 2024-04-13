@@ -166,8 +166,7 @@ build-windows:
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
     - cd ..
     - Remove-Item -Path .\setup -Recurse
-    - Compil32.exe /cc agros.iss
-    - Start-Sleep -Seconds 300
+    - iscc.exe agros.iss
     - cd setup
     - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
     
