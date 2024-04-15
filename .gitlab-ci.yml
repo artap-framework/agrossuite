@@ -52,6 +52,7 @@ build-linux:
     
 test-linux:
   stage: test
+  needs: ["build-linux"]
   tags:
     - agros
     - linux
@@ -69,6 +70,7 @@ test-linux:
     
 deploy-linux:
   stage: deploy
+  needs: ["test-linux"]
   tags:
     - agros
     - linux
@@ -173,6 +175,7 @@ build-windows:
     
 test-windows:
   stage: test
+  needs: ["build-windows"]
   tags:
     - agros
     - win11
@@ -188,6 +191,7 @@ test-windows:
 
 deploy-windows:
     stage: deploy
+    needs: ["test-windows"]
     tags:      
       - agros  		
       - win11
