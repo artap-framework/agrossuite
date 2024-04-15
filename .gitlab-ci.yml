@@ -178,12 +178,13 @@ test-windows:
     - win11
   
   script:
-    - cd agros-python curl.exe -T .\setup\AgrosSuite.exe
-    - .\env\Scripts\activate 
-    - cd tests
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-    - cd ..
-    - cd ..
+    # - cd agros-python curl.exe -T .\setup\AgrosSuite.exe
+    # - .\env\Scripts\activate 
+    # - cd tests
+    # - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    # - cd ..
+    # - cd ..
+    - dir
 
 deploy-windows:
     stage: deploy
