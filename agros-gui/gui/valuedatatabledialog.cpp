@@ -19,31 +19,34 @@
 
 #include "valuedatatabledialog.h"
 
+#include "gui/chart.h"
+
 #include "app/materialbrowserdialog.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 ValueDataTableDialog::ValueDataTableDialog(DataTable table, QWidget *parent, const QString &labelX, const QString &labelY, const QString &title)
-    : QDialog(parent), m_labelX(labelX), m_labelY(labelY), m_table(table), m_title(title)
+    : QDialog(parent), labelX(labelX), labelY(labelY), m_table(table), title(title)
 {
     setWindowTitle(tr("Data Table"));
 
-
     createControls();
-    load();
-
-    processDataTable();
-    // doPlot();
-
     setMinimumSize(600, 400);
 
     QSettings settings;
     restoreGeometry(settings.value("DataTableDialog/Geometry", saveGeometry()).toByteArray());
     chkDerivative->setChecked(settings.value("DataTableDialog/Derivative", false).toBool());
     chkMarkers->setChecked(settings.value("DataTableDialog/Markers", true).toBool());
-    chkExtrapolation->setChecked(settings.value("DataTableDialog/Extrapolation", true).toBool());
 
-    chartDerivative->setVisible(chkDerivative->isChecked());
+    chartViewDerivative->setVisible(chkDerivative->isChecked());
+    chartViewDerivative->setEnabled(chkDerivative->isChecked());
+
+    load();
+    processDataTable();
+
+    // fit to chart
+    chartViewValue->fitToData();
+
+    // fit derivative
+    chartViewDerivative->fitToData();
 }
 
 ValueDataTableDialog::~ValueDataTableDialog()
@@ -51,8 +54,7 @@ ValueDataTableDialog::~ValueDataTableDialog()
     QSettings settings;
     settings.setValue("DataTableDialog/Geometry", saveGeometry());
     settings.setValue("DataTableDialog/Derivative", chkDerivative->isChecked());
-    settings.setValue("DataTableDialog/Markers", chkMarkers->isChecked());
-    settings.setValue("DataTableDialog/Extrapolation", chkExtrapolation->isChecked());
+    settings.setValue("DataTableDialog/Markers", chkMarkers->isChecked());    
 }
 
 void ValueDataTableDialog::processDataTable()
@@ -78,8 +80,8 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
 
     if (lstX->toPlainText().trimmed().isEmpty() && lstY->toPlainText().trimmed().isEmpty())
     {
-        chartValue->setEnabled(false);
-        chartDerivative->setEnabled(false);
+        chartViewValue->setEnabled(false);
+        chartViewDerivative->setEnabled(false);
 
         return false;
     }
@@ -104,8 +106,8 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
     double *keys = new double[count];
     double *values = new double[count];
 
-    chartValue->setEnabled(true);
-    chartDerivative->setEnabled(true);
+    chartViewValue->setEnabled(true);
+    chartViewDerivative->setEnabled(true);
 
     for (int i = 0; i < count; i++)
     {
@@ -115,7 +117,7 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
         if (!ok)
         {
             lblInfoError->setText(tr("%1: cannot parse number (line %2).")
-                                  .arg(m_labelX)
+                                  .arg(labelX)
                                   .arg(i+1));
             procesOK = false;
             break;
@@ -125,7 +127,7 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
             if ((i > 0) && (keys[i] < keys[i-1]))
             {
                 lblInfoError->setText(tr("%1: points must be in ascending order (line %2).")
-                                      .arg(m_labelX)
+                                      .arg(labelX)
                                       .arg(i+1));
 
                 procesOK = false;
@@ -137,7 +139,7 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
         if (!ok)
         {
             lblInfoError->setText(tr("%1: cannot parse number (line %2).")
-                                  .arg(m_labelY)
+                                  .arg(labelY)
                                   .arg(i+1));
             procesOK = false;
             break;
@@ -161,8 +163,8 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
 
 void ValueDataTableDialog::createControls()
 {
-    lblLabelX = new QLabel(m_labelX);
-    lblLabelY = new QLabel(m_labelY);
+    lblLabelX = new QLabel(labelX);
+    lblLabelY = new QLabel(labelY);
     lblInfoX = new QLabel();
     lblInfoY = new QLabel();
     lblInfoError = new QLabel();
@@ -172,29 +174,68 @@ void ValueDataTableDialog::createControls()
     lblInfoError->setPalette(palette);
 
     // chart
-    chartValue = new QCustomPlot(this);
-    chartValue->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    chartValue->xAxis->setLabel(m_labelX);
-    chartValue->yAxis->setLabel(m_labelY);
-    chartValue->addGraph();
-    chartValue->addGraph();
+    chartValue = new QChart();
+    chartValue->legend()->hide();
+    // chartValue->setTitle(tr("Nonlinear solver"));
 
-    chartValue->graph(0)->setLineStyle(QCPGraph::lsLine);
-    chartValue->graph(1)->setLineStyle(QCPGraph::lsNone);
-    chartValue->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 7));
-    chartValue->graph(1)->setPen(QPen(Qt::gray));
+    // axis x
+    axisX = new QValueAxis;
+    axisX->setLabelFormat("%g");
+    axisX->setGridLineVisible(true);
+    axisX->setTitleText(tr("%1").arg(labelX));
+    chartValue->addAxis(axisX, Qt::AlignBottom);
 
-    chartDerivative = new QCustomPlot(this);
-    chartDerivative->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    chartDerivative->xAxis->setLabel(m_labelX);
-    chartDerivative->yAxis->setLabel(QString("d%1/d%2").arg(m_labelY).arg(m_labelX));
-    chartDerivative->addGraph();
+    // axis y
+    axisY = new QValueAxis;
+    axisY->setLabelFormat("%g");
+    axisY->setGridLineVisible(true);
+    axisY->setTitleText(QString("%1").arg(labelY));
+    chartValue->addAxis(axisY, Qt::AlignLeft);
 
-    chartDerivative->graph(0)->setLineStyle(QCPGraph::lsLine);
+    // attach axis
+    valueSeries = new QLineSeries();
+    valueSeries->setUseOpenGL(true);
+    chartValue->addSeries(valueSeries);
+    valueSeries->attachAxis(axisX);
+    valueSeries->attachAxis(axisY);
+
+    valueMarkersSeries = new QScatterSeries();
+    valueMarkersSeries->setMarkerSize(12.0);
+    chartValue->addSeries(valueMarkersSeries);
+    valueMarkersSeries->attachAxis(axisX);
+    valueMarkersSeries->attachAxis(axisY);
+
+    // derivative
+    chartDerivative = new QChart();
+    chartDerivative->legend()->hide();
+
+    // axis x
+    axisDX = new QValueAxis;
+    axisDX->setLabelFormat("%g");
+    axisDX->setGridLineVisible(true);
+    axisDX->setTitleText(QString("%1").arg(labelX));
+    chartDerivative->addAxis(axisDX, Qt::AlignBottom);
+
+    // axis y
+    axisDY = new QValueAxis;
+    axisDY->setLabelFormat("%g");
+    axisDY->setGridLineVisible(true);
+    axisDY->setTitleText(QString("d%1/d%2").arg(labelY).arg(labelX));
+    chartDerivative->addAxis(axisDY, Qt::AlignLeft);
+
+    // attach axis
+    derivativeSeries = new QLineSeries();
+    derivativeSeries->setUseOpenGL(true);
+    chartDerivative->addSeries(derivativeSeries);
+    derivativeSeries->attachAxis(axisDX);
+    derivativeSeries->attachAxis(axisDY);
+
+    chartViewValue = new ChartView(chartValue);
+    chartViewDerivative = new ChartView(chartDerivative);
 
     QVBoxLayout *chartLayout = new QVBoxLayout();
-    chartLayout->addWidget(chartValue);
-    chartLayout->addWidget(chartDerivative);
+    chartLayout->addWidget(chartViewValue, 1);
+    chartLayout->addWidget(chartViewDerivative, 1);
 
     // interval
     lstX = new QPlainTextEdit();
@@ -211,9 +252,6 @@ void ValueDataTableDialog::createControls()
     chkMarkers = new QCheckBox(tr("Show markers"));
     connect(chkMarkers, SIGNAL(clicked()), this, SLOT(doPlot()));
 
-    chkExtrapolation = new QCheckBox(tr("Show extrapolation"));
-    connect(chkExtrapolation, SIGNAL(clicked()), this, SLOT(doPlot()));
-
     chkDerivative = new QCheckBox(tr("Derivative chart"));
     connect(chkDerivative, SIGNAL(clicked()), this, SLOT(doShowDerivativeClicked()));
     doShowDerivativeClicked();
@@ -224,7 +262,6 @@ void ValueDataTableDialog::createControls()
     cmbType->addItem(dataTableTypeString(DataTableType_Constant), DataTableType_Constant);
     cmbType->setCurrentIndex(m_table.type());
     connect(cmbType, SIGNAL(currentIndexChanged(int)), this, SLOT(doTypeChanged()));
-
 
     radFirstDerivative = new QRadioButton(tr("First"));
     radSecondDerivative = new QRadioButton(tr("Second"));
@@ -249,7 +286,6 @@ void ValueDataTableDialog::createControls()
     QVBoxLayout *layoutView = new QVBoxLayout();
     layoutView->addWidget(chkMarkers);
     layoutView->addWidget(chkDerivative);
-    layoutView->addWidget(chkExtrapolation);
     layoutView->addStretch();
 
     QGroupBox *grpView = new QGroupBox(tr("View"));
@@ -384,6 +420,10 @@ void ValueDataTableDialog::doPlot()
 {
     parseTable();
 
+    // block signals
+    chartValue->blockSignals(true);
+    chartDerivative->blockSignals(true);
+
     // points
     int count = m_table.size();
 
@@ -392,51 +432,41 @@ void ValueDataTableDialog::doPlot()
 
     if (chkMarkers->isChecked())
     {
-        QVector<QCPGraphData> dataMarkers;
-        for (int i = 0; i < m_table.size(); ++i)
-            dataMarkers.append(QCPGraphData(pointsVector[i], valuesVector[i]));
+        valueMarkersSeries->clear();
 
-        chartValue->graph(1)->data()->set(dataMarkers);
+        for (int i = 0; i < m_table.size(); ++i)
+            valueMarkersSeries->append(pointsVector[i], valuesVector[i]);
     }
     else
     {
-        chartValue->graph(1)->data()->clear();
+        valueMarkersSeries->clear();
     }
 
-    // interpolation
+    // plot
     int countSpline = count * 50;
     double keyLength = m_table.maxKey() - m_table.minKey();
     double keyStart = m_table.minKey();
-    if (chkExtrapolation->isChecked())
-    {
-        double overlap = 0.15;
-        keyStart -= keyLength * overlap;
-        keyLength *= (1 + 2 * overlap);
-    }
-
     double dx = keyLength / (countSpline - 1);
 
-    // spline
-    QVector<QCPGraphData> dataSpline;
-    QVector<QCPGraphData> dataSplineDerivative;
+    // plot
+    valueSeries->clear();
+    derivativeSeries->clear();
     for (int i = 0; i < countSpline; i++)
     {
-        dataSpline.append(QCPGraphData(keyStart + (i * dx), m_table.value(keyStart + (i * dx))));
-        dataSplineDerivative.append(QCPGraphData(keyStart + (i * dx), m_table.derivative(keyStart + (i * dx))));
+        valueSeries->append(keyStart + (i * dx), m_table.value(keyStart + (i * dx)));
+        derivativeSeries->append(keyStart + (i * dx), m_table.derivative(keyStart + (i * dx)));
     }
 
-    chartValue->graph(0)->data()->set(dataSpline);
-    chartValue->rescaleAxes();
-    chartValue->replot(QCustomPlot::rpQueuedRefresh);
-
-    chartDerivative->graph(0)->data()->set(dataSplineDerivative);
-    chartDerivative->rescaleAxes();
-    chartDerivative->replot(QCustomPlot::rpQueuedRefresh);
+    // unblock signals
+    chartValue->blockSignals(false);
+    chartDerivative->blockSignals(false);
 }
 
 void ValueDataTableDialog::doShowDerivativeClicked()
 {
-    chartDerivative->setVisible(chkDerivative->isChecked());
+    chartViewDerivative->setVisible(chkDerivative->isChecked());
+    chartViewDerivative->setEnabled(chkDerivative->isChecked());
+
     doPlot();
 }
 

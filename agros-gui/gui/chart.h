@@ -23,55 +23,61 @@
 #include "util/util.h"
 #include "util/enums.h"
 
-#include "qcustomplot/qcustomplot.h"
+#include <QtCharts>
 
-class ChartImage : public QCustomPlot
+void fitToDataChart(QChart *chart);
+
+class Crosshairs
 {
 public:
-    ChartImage(QWidget *parent = NULL);
+    Crosshairs(QChart *chart);
+    void updatePosition(QPointF position);
 
-    void setLabel(const QString &labelx, const QString &labely);    
-    void setData(const QVector<double> &x, const QVector<double> &y);
-
-    QString save(const QString &fileName = "");
-
-protected:
-    QCPGraph *m_line;
-
-    QFont fontChart;
-    QPen pen;
+private:
+    QGraphicsLineItem *m_xLine, *m_yLine;
+    QGraphicsTextItem *m_xText, *m_yText;
+    QChart *m_chart;
 };
 
-class ChartNonlinearImage : public ChartImage
+class ChartView : public QChartView
 {
 public:
-    ChartNonlinearImage(QWidget *parent = NULL);
+    ChartView(QChart *chart = nullptr, QWidget *parent = nullptr);
 
-    void setError(const QVector<double> &x, const QVector<double> &y) { setData(x, y); }
-};
-
-class ChartAdaptivityImage : public ChartImage
-{
-public:
-    ChartAdaptivityImage(QWidget *parent = NULL);
-
-    void setError(const QVector<double> &x, const QVector<double> &y) { setData(x, y); }
-    void setDOFs(const QVector<double> &x, const QVector<double> &y);
+    void fitToData();
 
 protected:
-    QCPGraph *m_dofs;
-};
-
-class ChartTransientImage : public ChartImage
-{
-public:
-    ChartTransientImage(QWidget *parent = NULL);
-
-    void setStepLength(const QVector<double> &x, const QVector<double> &y) { setData(x, y); }
-    void setTotalTime(const QVector<double> &x, const QVector<double> &y);
+    bool viewportEvent(QEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 protected:
-    QCPGraph *m_totalTime;
+    QChart *m_chart;
+
+    bool m_isTouching = false;
+    QPointF m_lastMousePos;
+
+    Crosshairs *m_crosshairs;
+};
+
+class ChartViewAxis : public ChartView
+{
+public:
+    ChartViewAxis(QChart *chart = nullptr, QWidget *parent = nullptr);
+
+    inline QValueAxis *axisX() { return m_axisX; }
+    inline QValueAxis *axisY() { return m_axisY; }
+    inline QLineSeries *series() { return m_series; }
+
+protected:
+    QValueAxis *m_axisX;
+    QValueAxis *m_axisY;
+    QLineSeries *m_series;
 };
 
 #endif // GUI_COMMON_H

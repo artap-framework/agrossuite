@@ -20,9 +20,8 @@
 #include "logwidget.h"
 
 #include "util/util.h"
+#include "gui/chart.h"
 #include "solver/solutionstore.h"
-
-#include "qcustomplot/qcustomplot.h"
 
 LogGui::LogGui()
 {
@@ -56,13 +55,13 @@ void LogGui::printDebug(const QString &module, const QString &message)
 }
 
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
-    : QWidget(logWidget), m_logWidget(logWidget)
+    : QWidget(logWidget), logWidget(logWidget)
 {
 
 }
 
 LogWidget::LogWidget(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
-    m_printCounter(0), m_connectLog(connectLog)
+    printCounter(0), m_connectLog(connectLog)
 {       
     plainLog = new QTextEdit(this);
     plainLog->setReadOnly(true);
@@ -244,16 +243,16 @@ LogView::LogView(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
     actLog->setShortcut(Qt::Key_F10);
     actLog->setCheckable(true);
 
-    m_logWidget = new LogWidget(this, m_connectLog);
-    m_logWidget->welcomeMessage();
+    logWidget = new LogWidget(this, connectLog);
+    logWidget->welcomeMessage();
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 2);
-    layoutMain->addWidget(m_logWidget);
+    layoutMain->addWidget(logWidget);
 
     setLayout(layoutMain);
 
-    m_logConfigWidget = new LogConfigWidget(m_logWidget);
+    m_logConfigWidget = new LogConfigWidget(logWidget);
 }
 
 LogView::~LogView()
@@ -263,10 +262,9 @@ LogView::~LogView()
 
 LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
-    m_nonlinearChart(nullptr), m_nonlinearErrorGraph(nullptr), m_nonlinearProgress(nullptr),
-    m_adaptivityChart(nullptr), m_adaptivityErrorGraph(nullptr), m_adaptivityDOFsGraph(nullptr), m_adaptivityProgress(nullptr),
-    m_timeChart(nullptr), m_timeTimeStepGraph(nullptr), m_timeProgress(nullptr),
-    m_progress(nullptr),
+    nonlinearChart(nullptr), nonlinearErrorSeries(nullptr), nonlinearProgress(nullptr),
+    adaptivityChart(nullptr), adaptivityErrorSeries(nullptr), adaptivityDOFsSeries(nullptr), adaptivityProgress(nullptr),
+    timeChart(nullptr), timeTimeStepSeries(nullptr), timeTimeTotalSeries(nullptr), timeProgress(nullptr),    
     m_connectLog(connectLog)
 {
     setModal(true);
@@ -276,8 +274,8 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
 
     createControls();
 
-    int w = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
-    int h = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
+    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -317,9 +315,8 @@ void LogDialog::createControls()
            this, SLOT(updateNonlinearChartInfo(SolverAgros::Phase, const QVector<double>, const QVector<double>)));
     connect(m_connectLog, SIGNAL(updateAdaptivityChart(const FieldInfo *, int, int)), this, SLOT(updateAdaptivityChartInfo(const FieldInfo *, int, int)));
     connect(m_connectLog, SIGNAL(updateTransientChart(double)), this, SLOT(updateTransientChartInfo(double)));
-    connect(m_connectLog, SIGNAL(addIcon(QIcon, QString)), this, SLOT(addIcon(QIcon, QString)));
 
-    m_logWidget = new LogWidget(this, m_connectLog);
+    logWidget = new LogWidget(this, m_connectLog);
 
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -330,20 +327,6 @@ void LogDialog::createControls()
 
     QFont fontProgress = font();
     fontProgress.setPointSize(fontSize);
-
-    m_progress = new QListWidget(this);
-    m_progress->setCurrentRow(0);
-    m_progress->setViewMode(QListView::IconMode);
-    m_progress->setResizeMode(QListView::Adjust);
-    m_progress->setMovement(QListView::Static);
-    m_progress->setResizeMode(QListView::Adjust);
-    m_progress->setFlow(QListView::LeftToRight);
-    m_progress->setIconSize(QSize(32, 32));
-    m_progress->setMinimumHeight(85);
-    m_progress->setMaximumHeight(85);
-    m_progress->setFont(fontProgress);
-    m_progress->setStyleSheet(QString("QListView { background-color: %1; border: 0px; padding: 0px; margin: 0px; }").
-                              arg(this->palette().color(QPalette::Window).name()));
 
     btnClose = new QPushButton(tr("Close"));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(closeLog()));
@@ -375,45 +358,64 @@ void LogDialog::createControls()
     // transient
     if (m_computation->isTransient())
     {
-        m_timeChart = new QCustomPlot(this);
-        QCPTextElement *timeTitle = new QCPTextElement(m_timeChart, tr("Transient problem"));
-        timeTitle->setFont(fontTitle);
-        m_timeChart->plotLayout()->insertRow(0);
-        m_timeChart->plotLayout()->addElement(0, 0, timeTitle);
-        m_timeChart->legend->setVisible(true);
-        m_timeChart->legend->setFont(fontChart);
+        timeChart = new QChart();
+        timeChart->legend()->hide();
+        timeChart->setTitle(tr("Transient problem"));
 
-        m_timeChart->xAxis->setTickLabelFont(fontChart);
-        m_timeChart->xAxis->setLabelFont(fontChart);
-        // m_timeChart->xAxis->setTickStep(1.0);
-        m_timeChart->xAxis->setLabel(tr("number of steps"));
+        // axis x
+        axisX = new QValueAxis;
+        axisX->setLabelFormat("%g");
+        axisX->setGridLineVisible(true);
+        axisX->setTitleText(tr("number of steps"));
+        timeChart->addAxis(axisX, Qt::AlignBottom);
 
-        m_timeChart->yAxis->setTickLabelFont(fontChart);
-        m_timeChart->yAxis->setLabelFont(fontChart);
-        m_timeChart->yAxis->setLabel(tr("step length"));
-        m_timeChart->yAxis2->setVisible(true);
-        m_timeChart->yAxis2->setTickLabelFont(fontChart);
-        m_timeChart->yAxis2->setLabelFont(fontChart);
-        m_timeChart->yAxis2->setLabel(tr("total time"));
+        // axis y
+        axisSteps = new QValueAxis;
+        axisSteps->setLabelFormat("%g");
+        axisSteps->setGridLineVisible(true);
+        axisSteps->setTitleText(tr("length of steps"));
+        timeChart->addAxis(axisSteps, Qt::AlignRight);
 
-        m_timeTimeStepGraph = m_timeChart->addGraph(m_timeChart->xAxis, m_timeChart->yAxis);
-        m_timeTimeStepGraph->setLineStyle(QCPGraph::lsLine);
-        // m_timeTimeStepGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
-        m_timeTimeStepGraph->setPen(pen);
-        m_timeTimeStepGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
-        m_timeTimeStepGraph->setName(tr("step length"));
-        m_timeTimeTotalGraph = m_timeChart->addGraph(m_timeChart->xAxis, m_timeChart->yAxis2);
-        m_timeTimeTotalGraph->setLineStyle(QCPGraph::lsLine);
-        m_timeTimeTotalGraph->setPen(pen);
-        m_timeTimeTotalGraph->setBrush(QBrush(QColor(255, 0, 0, 20)));
-        m_timeTimeTotalGraph->setName(tr("total time"));
+        axisTotal = new QValueAxis;
+        axisTotal->setLabelFormat("%g");
+        axisTotal->setGridLineVisible(true);
+        axisTotal->setTitleText(tr("total time"));
+        timeChart->addAxis(axisTotal, Qt::AlignLeft);
 
-        m_timeProgress = new QProgressBar(this);
-        m_timeProgress->setMaximum(10000);
+        // zeroSeries = new QLineSeries();
+        // zeroSeries->attachAxis(axisX);
+
+        // attach axis
+        timeTimeStepSeries = new QLineSeries();
+        timeChart->addSeries(timeTimeStepSeries);
+        timeTimeStepSeries->attachAxis(axisX);
+        timeTimeStepSeries->attachAxis(axisSteps);
+
+        timeTimeTotalSeries = new QLineSeries();
+        timeChart->addSeries(timeTimeTotalSeries);
+        timeTimeTotalSeries->attachAxis(axisX);
+        timeTimeTotalSeries->attachAxis(axisTotal);
+
+        //        auto seriesStep = new QAreaSeries(zeroSeries, timeTimeStepSeries);
+        //        seriesStep->setOpacity(0.5);
+        //        seriesStep->setPen(pen);
+        //        timeChart->addSeries(seriesStep);
+
+        //        auto seriesTotal = new QAreaSeries(zeroSeries, timeTimeTotalSeries);
+        //        seriesTotal->setOpacity(0.5);
+        //        seriesTotal->setPen(pen);
+        //        timeChart->addSeries(seriesTotal);
+
+        timeProgress = new QProgressBar(this);
+        timeProgress->setMaximum(10000);
+
+        QChartView *chartView = new QChartView();
+        chartView->setRenderHint(QPainter::Antialiasing);
+        chartView->setChart(timeChart);
 
         QVBoxLayout *layoutTime = new QVBoxLayout();
-        layoutTime->addWidget(m_timeChart, 1);
-        layoutTime->addWidget(m_timeProgress);
+        layoutTime->addWidget(chartView, 1);
+        layoutTime->addWidget(timeProgress);
 
         layoutHorizontal->addLayout(layoutTime, 1);
     }
@@ -421,34 +423,48 @@ void LogDialog::createControls()
     // nonlinear
     if (m_computation->determineIsNonlinear())
     {
-        m_nonlinearChart = new QCustomPlot(this);
-        QCPTextElement *nonlinearTitle = new QCPTextElement(m_nonlinearChart, tr("Nonlinear solver"));
-        nonlinearTitle->setFont(fontTitle);
-        m_nonlinearChart->plotLayout()->insertRow(0);
-        m_nonlinearChart->plotLayout()->addElement(0, 0, nonlinearTitle);
-        m_nonlinearChart->setFont(fontChart);
+        nonlinearChart = new QChart();
+        nonlinearChart->legend()->hide();
+        nonlinearChart->setTitle(tr("Nonlinear solver"));
 
-        m_nonlinearChart->xAxis->setTickLabelFont(fontChart);
-        m_nonlinearChart->xAxis->setLabelFont(fontChart);
-        // m_nonlinearChart->xAxis->setTickStep(1.0);
-        m_nonlinearChart->xAxis->setLabel(tr("number of iterations"));
+        // axis x
+        axisX = new QValueAxis;
+        axisX->setLabelFormat("%g");
+        axisX->setGridLineVisible(true);
+        axisX->setTitleText(tr("number of iterations"));
+        nonlinearChart->addAxis(axisX, Qt::AlignBottom);
 
-        m_nonlinearChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-        m_nonlinearChart->yAxis->setTickLabelFont(fontChart);
-        m_nonlinearChart->yAxis->setLabelFont(fontChart);
-        m_nonlinearChart->yAxis->setLabel(tr("rel. change of sln. (%)"));
+        // axis y
+        nonlinearAxis = new QLogValueAxis;
+        nonlinearAxis->setLabelFormat("%g");
+        nonlinearAxis->setGridLineVisible(true);
+        nonlinearAxis->setTitleText(tr("rel. change of sln. (%)"));
+        nonlinearChart->addAxis(nonlinearAxis, Qt::AlignLeft);
 
-        m_nonlinearErrorGraph = m_nonlinearChart->addGraph(m_nonlinearChart->xAxis, m_nonlinearChart->yAxis);
-        m_nonlinearErrorGraph->setLineStyle(QCPGraph::lsLine);
-        m_nonlinearErrorGraph->setPen(pen);
-        m_nonlinearErrorGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
+        // zeroSeries = new QLineSeries();
+        // zeroSeries->attachAxis(axisX);
 
-        m_nonlinearProgress = new QProgressBar(this);
-        m_nonlinearProgress->setMaximum(10000);
+        // attach axis
+        nonlinearErrorSeries = new QLineSeries();
+        nonlinearChart->addSeries(nonlinearErrorSeries);
+        nonlinearErrorSeries->attachAxis(axisX);
+        nonlinearErrorSeries->attachAxis(nonlinearAxis);       
+
+    //        auto seriesError = new QAreaSeries(zeroSeries, nonlinearErrorSeries);
+    //        seriesError->setOpacity(0.5);
+    //        seriesError->setPen(pen);
+    //        nonlinearChart->addSeries(seriesError);
+
+        nonlinearProgress = new QProgressBar(this);
+        nonlinearProgress->setMaximum(10000);
+
+        QChartView *chartView = new QChartView();
+        chartView->setRenderHint(QPainter::Antialiasing);
+        chartView->setChart(nonlinearChart);
 
         QVBoxLayout *layoutNonlinear = new QVBoxLayout();
-        layoutNonlinear->addWidget(m_nonlinearChart, 1);
-        layoutNonlinear->addWidget(m_nonlinearProgress);
+        layoutNonlinear->addWidget(chartView, 1);
+        layoutNonlinear->addWidget(nonlinearProgress);
 
         layoutHorizontal->addLayout(layoutNonlinear, 1);
     }
@@ -456,56 +472,78 @@ void LogDialog::createControls()
     // adaptivity
     if (m_computation->numAdaptiveFields() > 0)
     {
-        m_adaptivityChart = new QCustomPlot(this);
-        QCPTextElement *adaptivityTitle = new QCPTextElement(m_adaptivityChart, tr("Adaptivity"));
-        adaptivityTitle->setFont(fontTitle);
-        m_adaptivityChart->plotLayout()->insertRow(0);
-        m_adaptivityChart->plotLayout()->addElement(0, 0, adaptivityTitle);
-        m_adaptivityChart->legend->setVisible(true);
-        m_adaptivityChart->legend->setFont(fontChart);
+        adaptivityChart = new QChart();
+        adaptivityChart->legend()->hide();
+        adaptivityChart->setTitle(tr("Adaptivity"));
 
-        m_adaptivityChart->xAxis->setTickLabelFont(fontChart);
-        m_adaptivityChart->xAxis->setLabelFont(fontChart);
-        // m_adaptivityChart->xAxis->setTickStep(1.0);
-        m_adaptivityChart->xAxis->setLabel(tr("number of iterations"));
+        // axis x
+        axisX = new QValueAxis;
+        axisX->setLabelFormat("%g");
+        axisX->setGridLineVisible(true);
+        axisX->setTitleText(tr("number of iterations"));
+        adaptivityChart->addAxis(axisX, Qt::AlignBottom);
 
-        m_adaptivityChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-        m_adaptivityChart->yAxis->setTickLabelFont(fontChart);
-        m_adaptivityChart->yAxis->setLabelFont(fontChart);
-        m_adaptivityChart->yAxis->setLabel(tr("error"));
-        m_adaptivityChart->yAxis2->setVisible(true);
-        m_adaptivityChart->yAxis2->setTickLabelFont(fontChart);
-        m_adaptivityChart->yAxis2->setLabelFont(fontChart);
-        m_adaptivityChart->yAxis2->setLabel(tr("number of DOFs"));
+        // axis y
+        axisError = new QLogValueAxis;
+        axisError->setLabelFormat("%g");
+        axisError->setGridLineVisible(true);
+        axisError->setTitleText(tr("error"));
+        adaptivityChart->addAxis(axisError, Qt::AlignRight);
 
-        m_adaptivityErrorGraph = m_adaptivityChart->addGraph(m_adaptivityChart->xAxis, m_adaptivityChart->yAxis);
-        m_adaptivityErrorGraph->setLineStyle(QCPGraph::lsLine);
-        m_adaptivityErrorGraph->setPen(pen);
-        m_adaptivityErrorGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
-        m_adaptivityErrorGraph->setName(tr("error"));
-        m_adaptivityDOFsGraph = m_adaptivityChart->addGraph(m_adaptivityChart->xAxis, m_adaptivityChart->yAxis2);
-        m_adaptivityDOFsGraph->setLineStyle(QCPGraph::lsLine);
-        m_adaptivityDOFsGraph->setPen(pen);
-        m_adaptivityDOFsGraph->setBrush(QBrush(QColor(255, 0, 0, 20)));
-        m_adaptivityDOFsGraph->setName(tr("DOFs"));
+        axisDOFs = new QValueAxis;
+        axisDOFs->setLabelFormat("%g");
+        axisDOFs->setGridLineVisible(true);
+        axisDOFs->setTitleText(tr("number of DOFs"));
+        adaptivityChart->addAxis(axisDOFs, Qt::AlignLeft);
 
-        m_adaptivityProgress = new QProgressBar(this);
-        m_adaptivityProgress->setMaximum(10000);
+        // zeroSeries = new QLineSeries();
+        // zeroSeries->attachAxis(axisX);
+
+        // attach axis
+        adaptivityErrorSeries = new QLineSeries();
+        adaptivityChart->addSeries(adaptivityErrorSeries);
+        adaptivityErrorSeries->attachAxis(axisX);
+        adaptivityErrorSeries->attachAxis(axisError);
+
+        adaptivityDOFsSeries = new QLineSeries();
+        adaptivityChart->addSeries(adaptivityDOFsSeries);
+        adaptivityDOFsSeries->attachAxis(axisX);
+        adaptivityDOFsSeries->attachAxis(axisDOFs);
+
+        //        auto seriesDOFs = new QAreaSeries(zeroSeries, adaptivityDOFsSeries);
+        //        seriesDOFs->setOpacity(0.5);
+        //        seriesDOFs->setPen(pen);
+        //        seriesDOFs->attachAxis(axisX);
+        //        seriesDOFs->attachAxis(axisDOFs);
+        //        adaptivityChart->addSeries(seriesDOFs);
+
+        //        auto seriesError = new QAreaSeries(zeroSeries, adaptivityErrorSeries);
+        //        seriesError->setOpacity(0.5);
+        //        seriesError->setPen(pen);
+        //        seriesError->attachAxis(axisX);
+        //        seriesError->attachAxis(axisError);
+        //        adaptivityChart->addSeries(seriesError);
+
+        adaptivityProgress = new QProgressBar(this);
+        adaptivityProgress->setMaximum(10000);
+
+        QChartView *chartView = new QChartView();
+        chartView->setRenderHint(QPainter::Antialiasing);
+        chartView->setChart(adaptivityChart);
 
         QVBoxLayout *layoutAdaptivity = new QVBoxLayout();
-        layoutAdaptivity->addWidget(m_adaptivityChart, 1);
-        layoutAdaptivity->addWidget(m_adaptivityProgress);
+        layoutAdaptivity->addWidget(chartView, 3);
+        layoutAdaptivity->addWidget(adaptivityProgress);
 
         layoutHorizontal->addLayout(layoutAdaptivity, 1);
     }
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(m_progress, 0);
     if (!layoutHorizontal->isEmpty())
         layout->addLayout(layoutHorizontal, 4);
     else
         delete layoutHorizontal;
-    layout->addWidget(m_logWidget, 1);
+    layout->addWidget(logWidget, 1);
     layout->addStretch();
     layout->addLayout(layoutStatus);
 
@@ -517,34 +555,53 @@ void LogDialog::printError(const QString &module, const QString &message)
     btnAbort->setEnabled(false);
     btnClose->setEnabled(true);
 
-    m_logWidget->setVisible(true);
+    logWidget->setVisible(true);
 }
 
 void LogDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions)
 {
-    if (!m_nonlinearErrorGraph)
+    if (!nonlinearErrorSeries)
         return;
 
-    m_nonlinearErrorGraph->setData(steps, relativeChangeOfSolutions);
-    m_nonlinearChart->rescaleAxes();
-    m_nonlinearChart->replot(QCustomPlot::rpImmediateRefresh);
+    // block signals
+    nonlinearChart->blockSignals(true);
+
+    // zeroSeries->clear();
+    nonlinearErrorSeries->clear();
+    for (int i = 0; i < steps.size(); i++)
+    {
+        // zeroSeries->append(steps[i], 0.0);
+        nonlinearErrorSeries->append(steps[i], relativeChangeOfSolutions[i]);
+    }
+
+    // fit
+    fitToDataChart(nonlinearChart);
+
+    // unblock signals
+    nonlinearChart->blockSignals(false);
 
     // progress bar
     if (phase == SolverAgros::Phase_Finished)
     {
-        m_nonlinearProgress->setValue(10000);
+        nonlinearProgress->setValue(10000);
     }
     else
     {
         double valueRelativeChange = pow(10000.0, ((relativeChangeOfSolutions.first() - relativeChangeOfSolutions.last()) / relativeChangeOfSolutions.first()));
-        m_nonlinearProgress->setValue(valueRelativeChange);
+        nonlinearProgress->setValue(valueRelativeChange);
     }
 }
 
 void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
-    if (!m_adaptivityErrorGraph)
+    if (!adaptivityErrorSeries)
         return;
+
+    if (!adaptivityDOFsSeries)
+        return;
+
+    // block signals
+    adaptivityChart->blockSignals(true);
 
     QVector<double> adaptiveSteps;
     QVector<double> adaptiveDOFs;
@@ -559,25 +616,62 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
         adaptiveError.append(runTime.value(SolutionStore::SolutionRunTimeDetails::AdaptivityError).toDouble());
     }
 
-    m_adaptivityErrorGraph->setData(adaptiveSteps, adaptiveError);
-    m_adaptivityDOFsGraph->setData(adaptiveSteps, adaptiveDOFs);
-    m_adaptivityChart->rescaleAxes();
-    m_adaptivityChart->replot(QCustomPlot::rpImmediateRefresh);
+    // zeroSeries->clear();
+    adaptivityDOFsSeries->clear();
+    adaptivityErrorSeries->clear();
+    for (int i = 0; i < adaptiveSteps.size(); i++)
+    {
+        // zeroSeries->append(adaptiveSteps[i], 0.0);
+        adaptivityDOFsSeries->append(adaptiveSteps[i], adaptiveDOFs[i]);
+        adaptivityErrorSeries->append(adaptiveSteps[i], adaptiveError[i]);
+    }
+    axisX->setTickCount(adaptiveSteps.size());
+
+//    QPen pen;
+//    pen.setWidth(2);
+
+//    auto seriesDOFs = new QAreaSeries(zeroSeries, adaptivityDOFsSeries);
+//    seriesDOFs->setOpacity(0.5);
+//    seriesDOFs->setPen(pen);
+//    seriesDOFs->attachAxis(axisX);
+//    seriesDOFs->attachAxis(axisDOFs);
+//    auto seriesError = new QAreaSeries(zeroSeries, adaptivityErrorSeries);
+//    seriesError->setOpacity(0.5);
+//    seriesError->setPen(pen);
+//    seriesError->attachAxis(axisX);
+//    seriesError->attachAxis(axisError);
+
+//    if (adaptivityChart->series().count() > 0)
+//        adaptivityChart->removeAllSeries();
+//    adaptivityChart->addSeries(seriesDOFs);
+//    adaptivityChart->addSeries(seriesError);
+
+    // fit
+    fitToDataChart(adaptivityChart);
+
+    // unblock signals
+    adaptivityChart->blockSignals(false);
 
     // progress bar
-    double valueSteps = 10000.0 * (adaptivityStep / fieldInfo->value(FieldInfo::AdaptivitySteps).toInt());
-    double valueTol = pow(10000.0, (adaptiveError.first() - adaptiveError.last()) / adaptiveError.first());
-    m_adaptivityProgress->setValue(qMax(valueSteps, valueTol));
+    double valueSteps = 10000.0 * ((double) adaptivityStep / fieldInfo->value(FieldInfo::AdaptivitySteps).toInt());
+    adaptivityProgress->setValue(valueSteps);
 }
 
 void LogDialog::updateTransientChartInfo(double actualTime)
 {
-    if (!m_timeTimeStepGraph)
+    if (!timeTimeStepSeries)
         return;
+
+    if (!timeTimeTotalSeries)
+        return;
+
+    // block signals
+    timeChart->blockSignals(true);
 
     QVector<double> timeSteps;
     QVector<double> timeLengths = m_computation->timeStepLengths().toVector();
     QVector<double> timeTotal;
+
     double maximum = 0.0;
     for (int i = 0; i < timeLengths.size(); i++)
     {
@@ -588,34 +682,24 @@ void LogDialog::updateTransientChartInfo(double actualTime)
         timeTotal.append((timeTotal.size() == 0 ? 0.0 : timeTotal.last()) + timeLengths[i]);
     }
 
-    m_timeTimeStepGraph->setData(timeSteps, timeLengths);
-    m_timeChart->yAxis->setRangeLower(0.0);
-    m_timeChart->yAxis->setRangeUpper(maximum);
-    m_timeTimeTotalGraph->setData(timeSteps, timeTotal);
-    m_timeChart->yAxis2->setRangeLower(0.0);
-    m_timeChart->yAxis2->setRangeUpper(timeTotal.last());
-    m_timeTimeStepGraph->rescaleKeyAxis();
-    m_timeChart->replot(QCustomPlot::rpImmediateRefresh);
-
-    // progress bar
-    m_timeProgress->setValue((10000.0 * actualTime / m_computation->config()->value(ProblemConfig::TimeTotal).toDouble()));
-}
-
-void LogDialog::addIcon(const QIcon &icn, const QString &label)
-{
-    static QString previousLabel;
-
-    if (previousLabel != label)
+    // zeroSeries->clear();
+    timeTimeStepSeries->clear();
+    timeTimeTotalSeries->clear();
+    for (int i = 0; i < timeLengths.size(); i++)
     {
-        QListWidgetItem *item = new QListWidgetItem(icn, label, m_progress);
-        item->setTextAlignment(Qt::AlignHCenter);
-
-        m_progress->addItem(item);
-        // m_progress->setCurrentItem(item);
-        m_progress->repaint();
+        // zeroSeries->append(timeSteps[i], 0.0);
+        timeTimeStepSeries->append(timeSteps[i], timeLengths[i]);
+        timeTimeTotalSeries->append(timeSteps[i], timeTotal[i]);
     }
 
-    previousLabel = label;
+    // fit
+    fitToDataChart(timeChart);
+
+    // unblock signals
+    timeChart->blockSignals(false);
+
+    // progress bar
+    timeProgress->setValue((10000.0 * actualTime / m_computation->config()->value(ProblemConfig::TimeTotal).toDouble()));
 }
 
 void LogDialog::closeLog()

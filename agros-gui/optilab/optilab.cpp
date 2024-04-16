@@ -520,54 +520,6 @@ void OptiLab::setStudy(Study *study)
 
 QWidget *OptiLab::createControlsDistChart()
 {
-    pdfChart = new QCustomPlot(this);
-    // pdfChart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-
-    QCPBars *pdfDataBars = new QCPBars(pdfChart->xAxis, pdfChart->yAxis);
-    pdfDataBars->setPen(QPen(QColor(255, 131, 0)));
-    pdfDataBars->setBrush(QColor(255, 131, 0, 50));
-    pdfDataBars->setName(tr("Data"));
-    pdfDataBars->addToLegend();
-
-    QCPItemStraightLine *pdfDataMeanLine = new QCPItemStraightLine(pdfChart);
-    pdfDataMeanLine->setPen(QPen(QBrush(QColor(40, 40, 140, 100)), 1, Qt::DashLine));
-
-    QCPGraph *pdfNormalGraph = pdfChart->addGraph(pdfChart->xAxis, pdfChart->yAxis2);
-    pdfNormalGraph->setName(tr("Normal"));
-    pdfNormalGraph->addToLegend();
-
-    pdfChart->xAxis->setTickLabelRotation(60);
-    pdfChart->xAxis->setLabel(tr("Samples"));
-    pdfChart->yAxis->setLabel(tr("Number of occurrences"));
-    pdfChart->yAxis2->setVisible(false);
-    // pdfChart->legend->setVisible(true);
-    // histogramChart->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    cdfChart = new QCustomPlot(this);
-    // cdfChart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-
-    QCPGraph *cdfDataGraph = cdfChart->addGraph(cdfChart->xAxis, cdfChart->yAxis);
-    cdfDataGraph->setName(tr("Data"));
-    cdfDataGraph->addToLegend();
-    // cdfGraph->setLineStyle(QCPGraph::lsNone);
-    QPen cdfPen;
-    cdfPen.setColor(QColor(255, 131, 0));
-    cdfPen.setStyle(Qt::DotLine);
-    cdfPen.setWidthF(2);
-    cdfDataGraph->setPen(cdfPen);
-    cdfDataGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(255, 131, 0), QColor(255, 131, 0, 50), 7));
-
-    QCPGraph *cdfNormalGraph = cdfChart->addGraph(cdfChart->xAxis, cdfChart->yAxis2);
-    cdfNormalGraph->setName(tr("Normal"));
-    cdfNormalGraph->addToLegend();
-
-    cdfChart->xAxis->setTickLabelRotation(60);
-    cdfChart->xAxis->setLabel(tr("Samples"));
-    cdfChart->yAxis->setLabel(tr("Count"));
-    cdfChart->yAxis2->setVisible(false);
-    // cdfChart->legend->setVisible(true);
-    cdfChart->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignRight);
-
     lblResultMin = new QLabel();
     lblResultMin->setMinimumWidth(90);
     lblResultMax = new QLabel();
@@ -602,8 +554,6 @@ QWidget *OptiLab::createControlsDistChart()
 
     QHBoxLayout *layoutDetails = new QHBoxLayout();
     layoutDetails->setContentsMargins(0, 0, 0, 0);
-    layoutDetails->addWidget(pdfChart, 1);
-    layoutDetails->addWidget(cdfChart, 1);
     layoutDetails->addLayout(layoutStatistics, 0);
 
     QWidget *widDist = new QWidget();
@@ -1329,13 +1279,6 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
     lblResultNormalCovariance->setText("-");
     lblResultNormalCorrelation->setText("-");
 
-    pdfChart->graph(0)->setVisible(showStats);
-    pdfChart->plottable(0)->setVisible(showStats);
-    pdfChart->item(0)->setVisible(showStats);
-
-    cdfChart->graph(0)->setVisible(showStats);
-    cdfChart->graph(1)->setVisible(showStats);
-
     if (showStats)
     {
         Study::ResultType type = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
@@ -1398,35 +1341,6 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
                         normalCDFCorrelation[i] = boost::math::cdf(normalDistribution, dataSteps[i]);
                 }
 
-                QCPBars *pdfDataBars = dynamic_cast<QCPBars *>(pdfChart->plottable(0));
-                pdfDataBars->setWidth(dataStep * 0.9);
-                pdfDataBars->setData(dataSteps, dataPDF);
-                QCPItemStraightLine *pdfDataMeanLine = dynamic_cast<QCPItemStraightLine *>(pdfChart->item(0));
-                pdfDataMeanLine->point1->setCoords(QPointF(stats.mean(), 0));
-                pdfDataMeanLine->point2->setCoords(QPointF(stats.mean(), 1));
-
-                // normal distribution
-                int normalCount = 100;
-                QVector<double> normalPDF(normalCount);
-                QVector<double> normalCDF(normalCount);
-                QVector<double> normalSteps(normalCount);
-                for (int i = 0; i < normalCount; i++)
-                {
-                    normalSteps[i] = stats.min() + (stats.max() - stats.min()) / (100 - 1) * i;
-                    normalPDF[i] = boost::math::pdf(normalDistribution, normalSteps[i]);
-                    normalCDF[i] = boost::math::cdf(normalDistribution, normalSteps[i]);
-                }
-                pdfChart->graph(0)->setData(normalSteps, normalPDF);
-
-                pdfChart->xAxis->setLabel(key);
-                pdfChart->rescaleAxes();
-
-                // cdf
-                cdfChart->xAxis->setLabel(key);
-                cdfChart->graph(0)->setData(dataSteps, dataCDF);
-                cdfChart->graph(1)->setData(normalSteps, normalCDF);
-                cdfChart->rescaleAxes();
-
                 // labels
                 lblResultMin->setText(QString::number(stats.min()));
                 lblResultMax->setText(QString::number(stats.max()));
@@ -1443,9 +1357,6 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
             }
         }
     }
-
-    pdfChart->replot(QCustomPlot::rpQueuedRefresh);
-    cdfChart->replot(QCustomPlot::rpQueuedRefresh);
 }
 
 void OptiLab::resultsFindMinimum(bool checked)

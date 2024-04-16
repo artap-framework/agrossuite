@@ -23,9 +23,8 @@
 #include "util/util.h"
 #include "gui/other.h"
 #include "logview.h"
+#include <QtCharts>
 
-class QCustomPlot;
-class QCPGraph;
 class LogWidget;
 class ConnectLog;
 
@@ -39,7 +38,7 @@ public:
     LogConfigWidget(LogWidget *logWidget);
 
 private:
-    LogWidget *m_logWidget;
+    LogWidget *logWidget;
 };
 
 class LogWidget : public QWidget
@@ -48,7 +47,7 @@ class LogWidget : public QWidget
 public:
     LogWidget(QWidget *parent = 0, ConnectLog *connectLog = 0);
     ~LogWidget();
-    void setConnectLog(ConnectLog * connectLog) { m_connectLog = connectLog; }
+    void setConnectLog(ConnectLog * connectLog) { connectLog = connectLog; }
 
     void welcomeMessage();
 
@@ -70,7 +69,7 @@ private:
     QAction *actShowDebug;
     QAction *actClear;
 
-    int m_printCounter;
+    int printCounter;
 
     ConnectLog *m_connectLog;
 
@@ -105,7 +104,7 @@ public:
     inline LogConfigWidget *logConfigWidget() { return m_logConfigWidget; }
 
 private:
-    LogWidget *m_logWidget;
+    LogWidget *logWidget;
     LogConfigWidget *m_logConfigWidget;
 
     ConnectLog *m_connectLog;
@@ -127,30 +126,38 @@ protected:
     virtual void reject();
 
 private:
-    LogWidget *m_logWidget;
+    LogWidget *logWidget;
 
     QPushButton *btnClose;
     QPushButton *btnAbort;
 
-    QCustomPlot *m_nonlinearChart;
-    QProgressBar *m_nonlinearProgress;
-    QCPGraph *m_nonlinearErrorGraph;
+    QValueAxis *axisX;
+    // QLineSeries *zeroSeries;
 
-    QCustomPlot *m_adaptivityChart;
-    QProgressBar *m_adaptivityProgress;
-    QCPGraph *m_adaptivityErrorGraph;
-    QCPGraph *m_adaptivityDOFsGraph;
+    QChart *nonlinearChart;
+    QProgressBar *nonlinearProgress;
+    QLineSeries *nonlinearErrorSeries;
+    QLogValueAxis *nonlinearAxis;
 
-    QCustomPlot *m_timeChart;
-    QProgressBar *m_timeProgress;
-    QCPGraph *m_timeTimeStepGraph;
-    QCPGraph *m_timeTimeTotalGraph;
+    QProgressBar *adaptivityProgress;
+    QChart *adaptivityChart;
+    QLineSeries *adaptivityErrorSeries;
+    QLineSeries *adaptivityDOFsSeries;
+    QValueAxis *axisDOFs;
+    QLogValueAxis *axisError;
 
-    QListWidget *m_progress;
+    QProgressBar *timeProgress;
+    QChart *timeChart;
+    QLineSeries *timeTimeStepSeries;
+    QLineSeries *timeTimeTotalSeries;
+    QValueAxis *axisSteps;
+    QValueAxis *axisTotal;
 
-    Computation *m_computation;
-
+    // log
     ConnectLog *m_connectLog;
+
+    // computation
+    Computation *m_computation;
 
     void createControls();
 
@@ -159,9 +166,7 @@ private slots:
 
     void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions);
     void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
-    void updateTransientChartInfo(double actualTime);
-
-    void addIcon(const QIcon &icn, const QString &label);
+    void updateTransientChartInfo(double actualTime);  
 };
 
 class ConnectLog : public QObject
@@ -184,8 +189,6 @@ signals:
 
     void appendImg(const QString &fileName);
     void appendHtm(const QString &html);
-
-    void addIcon(const QIcon &icn, const QString &label);
 };
 
 class LogGui : public Log
@@ -200,14 +203,12 @@ public:
     void printWarning(const QString &module, const QString &message);
     void printDebug(const QString &module, const QString &message);
 
-    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {emit  m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
+    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {emit m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
     inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {emit m_connectLog->updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep);}
     inline void updateTransientChartInfo(double actualTime) { emit m_connectLog->updateTransientChart(actualTime);}
 
     void appendImage(const QString &fileName) {emit m_connectLog->appendImg(fileName);}
     void appendHtml(const QString &html) {emit m_connectLog->appendHtm(html);}
-
-    inline void addIcon(const QIcon &icn, const QString &label) {emit m_connectLog->addIcon(icn, label);}
 
 protected:
     ConnectLog *m_connectLog;

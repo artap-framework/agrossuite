@@ -896,7 +896,7 @@ void MainWindow::doCopy()
         else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post3D)
             pixmap = postprocessorWidget->sceneViewPost3D()->renderScenePixmap();
         else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Chart)
-            pixmap = postprocessorWidget->sceneViewChart()->chart()->toPixmap();
+            pixmap = postprocessorWidget->sceneViewChart()->chartView()->grab();
     }
 
     QApplication::clipboard()->setImage(pixmap.toImage());

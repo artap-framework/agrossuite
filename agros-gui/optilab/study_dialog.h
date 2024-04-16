@@ -21,6 +21,7 @@
 #define STUDY_DIALOG_H
 
 #include <QWidget>
+#include <QtCharts>
 
 #include "gui/other.h"
 #include "util/enums.h"
@@ -36,8 +37,7 @@
 class LineEditDouble;
 class Computation;
 class Study;
-class QCustomPlot;
-class QCPGraph;
+
 
 class LogOptimizationDialog : public QDialog
 {
@@ -61,7 +61,17 @@ private:
     QPushButton *btnClose;
     QPushButton *btnAbort;
 
-    QCustomPlot *totalChart;
+    QChart *totalChart;
+    QLineSeries *totalObjectiveSeries;
+    QLineSeries *totalObjectiveUncertaintySeries;
+    QLineSeries *totalObjectiveUncertaintyLowerSeries;
+    QLineSeries *totalObjectiveUncertaintyUpperSeries;
+    QAreaSeries *totalObjectiveUncertaintyArea;
+
+    QValueAxis *axisX;
+    QValueAxis *axisObjective;
+    QValueAxis *axisUncertainty;     
+
     QTreeWidget *trvProgress;
     QTreeWidgetItem *currentStepNode;
     QTreeWidgetItem *currentParametersNode;
@@ -214,8 +224,6 @@ private:
     LineEditDouble *txtScale;
     LineEditDouble *txtMu;
     LineEditDouble *txtSigma;
-    QCustomPlot *m_chart;
-    QCPGraph *m_penaltyChart;
 
     void createControls();
 

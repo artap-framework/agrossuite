@@ -42,8 +42,6 @@
 
 #include "util/constants.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 QList<Point> ChartLine::getPoints()
 {
     if (numberOfPoints == 0)
@@ -357,8 +355,8 @@ void PostprocessorSceneChartWidget::load()
     else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
 
-    btnSaveImage->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
-    btnExportData->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
+    btnSaveImage->setEnabled(sceneChart->chartView()->chart()->series().size() > 0); // ; graph()->data()->size()
+    btnExportData->setEnabled(sceneChart->chartView()->chart()->series().size() > 0);
 }
 
 void PostprocessorSceneChartWidget::save()

@@ -137,9 +137,6 @@ private:
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
-    QCustomPlot *pdfChart;
-    QCustomPlot *cdfChart;
-
     QAction *actChartRescale;
     QAction *actChartLogHorizontal;
     QAction *actChartLogVertical;

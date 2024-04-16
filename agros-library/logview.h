@@ -50,8 +50,6 @@ public:
 
     virtual inline void appendImage(const QString &fileName) = 0;
     virtual inline void appendHtml(const QString &html) = 0;
-
-    virtual inline void addIcon(const QIcon &icn, const QString &label) = 0;
 };
 
 class AGROS_LIBRARY_API LogStdOut : public Log
@@ -72,8 +70,6 @@ public:
 
     virtual inline void appendImage(const QString &fileName) {}
     virtual inline void appendHtml(const QString &html) {}
-
-    virtual inline void addIcon(const QIcon &icn, const QString &label) {}
 
 private:
       // std::shared_ptr<spdlog::logger>  m_console;

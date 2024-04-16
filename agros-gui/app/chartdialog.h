@@ -23,18 +23,16 @@
 #include "util/util.h"
 #include "solver/plugin_interface.h"
 #include "gui/other.h"
+#include "gui/chart.h"
 
 #include <QtSvg/QSvgRenderer>
 #include <QtSvgWidgets/QSvgWidget>
+#include <QtCharts>
 
 class LineEditDouble;
 class LocalValue;
 class FieldInfo;
 class SceneViewPost2D;
-class QCustomPlot;
-class QCPBars;
-class QCPItemTracer;
-class QCPItemText;
 class ChartLine;
 class PostprocessorWidget;
 
@@ -45,7 +43,7 @@ class SceneViewChart : public QWidget
 public:
     SceneViewChart(PostprocessorWidget *postprocessorWidget);
 
-    inline QCustomPlot *chart() { return m_chart; }
+    inline ChartViewAxis *chartView()  { return m_chartView; }
 
 signals:
     void labelRight(const QString &right);
@@ -56,12 +54,9 @@ public slots:
     void doSaveImage();
     void doExportData();
 
-private slots:
-    void chartMouseMoved(QMouseEvent *event);
-
 private:
     PostprocessorWidget *m_postprocessorWidget;
-    QCustomPlot *m_chart;
+    ChartViewAxis *m_chartView;
 
     QVector<double> horizontalAxisValues(ChartLine *chartLine);
     void plotGeometry();

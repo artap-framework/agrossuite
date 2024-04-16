@@ -239,9 +239,6 @@ void PostDeal::processSolved()
     FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
     if (m_computation->solutionStore()->contains(fsid))
     {
-        // add icon to progress
-        // Agros::log()->addIcon(icon("scene-post2d"), tr("Postprocessor"));
-
         processRangeContour();
         processRangeScalar();
         processRangeVector();
@@ -876,9 +873,6 @@ bool ProblemBase::mesh()
             assert(0);
             break;
         }
-
-        // add icon to progress
-        // Agros::log()->addIcon(icon("scene-meshgen"), tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
 
         if (meshGenerator->mesh())
         {

@@ -25,8 +25,6 @@
 #include "solver/problem_result.h"
 #include "optilab/study.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 // *****************************************************************************************************
 
 StudySweepDialog::StudySweepDialog(Study *study, QWidget *parent)
