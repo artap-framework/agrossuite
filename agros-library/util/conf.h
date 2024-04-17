@@ -51,8 +51,7 @@ public:
         Config_MatrixSystemSave,
         Config_CacheSize,        
         Config_RulersFontPointSize,
-        Config_PostFontPointSize,
-        Config_ShowGrid,
+        Config_PostFontPointSize,        
         Config_ShowRulers,
         Config_ShowAxes
     };

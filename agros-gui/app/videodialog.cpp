@@ -43,7 +43,6 @@ VideoDialog::VideoDialog(SceneViewCommon *sceneView, Computation *computation, Q
     m_adaptiveStepStore = m_computation->postDeal()->activeAdaptivityStep();
 
     m_showRulersStore = Agros::configComputer()->value(Config::Config_ShowRulers).toBool();
-    m_showGridStore = Agros::configComputer()->value(Config::Config_ShowGrid).toBool();
     m_showAxesStore = Agros::configComputer()->value(Config::Config_ShowAxes).toBool();
 
     // timer create images
@@ -55,7 +54,6 @@ VideoDialog::VideoDialog(SceneViewCommon *sceneView, Computation *computation, Q
 VideoDialog::~VideoDialog()
 {
     QSettings settings;
-    settings.setValue("VideoDialog/ShowGrid", chkFigureShowGrid->isChecked());
     settings.setValue("VideoDialog/ShowRulers", chkFigureShowRulers->isChecked());
     settings.setValue("VideoDialog/ShowAxes", chkFigureShowAxes->isChecked());
     settings.setValue("VideoDialog/SaveImages", chkSaveImages->isChecked());
@@ -65,7 +63,6 @@ VideoDialog::~VideoDialog()
     m_computation->postDeal()->setActiveAdaptivityStep(m_adaptiveStepStore);
 
     Agros::configComputer()->setValue(Config::Config_ShowRulers, m_showRulersStore);
-    Agros::configComputer()->setValue(Config::Config_ShowGrid, m_showGridStore);
     Agros::configComputer()->setValue(Config::Config_ShowAxes, m_showAxesStore);
 
     m_computation->postDeal()->refresh();
@@ -158,8 +155,6 @@ void VideoDialog::createControls()
     chkSaveImages = new QCheckBox(tr("Save images to disk"));
     chkSaveImages->setChecked(settings.value("VideoDialog/SaveImages", true).toBool());
 
-    chkFigureShowGrid = new QCheckBox(tr("Show grid"));
-    chkFigureShowGrid->setChecked(settings.value("VideoDialog/ShowGrid", Agros::configComputer()->value(Config::Config_ShowGrid).toBool()).toBool());
     chkFigureShowRulers = new QCheckBox(tr("Show rulers"));
     chkFigureShowRulers->setChecked(settings.value("VideoDialog/ShowRulers", Agros::configComputer()->value(Config::Config_ShowRulers).toBool()).toBool());
     chkFigureShowAxes = new QCheckBox(tr("Show axes"));
@@ -173,7 +168,6 @@ void VideoDialog::createControls()
     layout->setColumnStretch(0, 1);
     layout->addWidget(tabType, 0, 0, 1, 2);
     layout->addWidget(chkSaveImages, 1, 0);
-    layout->addWidget(chkFigureShowGrid, 1, 1);
     layout->addWidget(chkFigureShowRulers, 2, 1);
     layout->addWidget(chkFigureShowAxes, 3, 1);
     layout->addLayout(layoutButton, 10, 0, 1, 2);
@@ -266,7 +260,6 @@ void VideoDialog::transientAnimateNextStep()
 void VideoDialog::setTransientStep(int transientStep)
 {
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
-    Agros::configComputer()->setValue(Config::Config_ShowGrid, chkFigureShowGrid->isChecked());
     Agros::configComputer()->setValue(Config::Config_ShowAxes, chkFigureShowAxes->isChecked());
 
     m_computation->postDeal()->setActiveTimeStep(transientStep);
@@ -317,7 +310,6 @@ void VideoDialog::adaptiveAnimateNextStep()
 void VideoDialog::setAdaptiveStep(int adaptiveStep)
 {
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
-    Agros::configComputer()->setValue(Config::Config_ShowGrid, chkFigureShowGrid->isChecked());
     Agros::configComputer()->setValue(Config::Config_ShowAxes, chkFigureShowAxes->isChecked());
 
     m_computation->postDeal()->setActiveAdaptivityStep(adaptiveStep - 1);

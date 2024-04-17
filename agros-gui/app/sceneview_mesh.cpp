@@ -194,7 +194,7 @@ void SceneViewMesh::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     // grid
-    if (Agros::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
+    // paintGrid();
 
     // view
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())

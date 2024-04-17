@@ -47,8 +47,7 @@ SceneViewWidget::SceneViewWidget(SceneViewCommon *widget, QWidget *parent) : QWi
 
     labelLeft(widget->labelView());
 
-    connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
-    connect(widget, SIGNAL(labelRight(QString)), this, SLOT(labelRight(QString)));
+    connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));    
 }
 
 SceneViewWidget::SceneViewWidget(SceneViewChart *widget, QWidget *parent) : QWidget(parent)
@@ -56,8 +55,7 @@ SceneViewWidget::SceneViewWidget(SceneViewChart *widget, QWidget *parent) : QWid
     createControls(widget);
     labelLeft(tr("Chart"));
 
-    connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
-    connect(widget, SIGNAL(labelRight(QString)), this, SLOT(labelRight(QString)));
+    connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));    
 }
 
 SceneViewWidget::SceneViewWidget(QWidget *widget, QWidget *parent) : QWidget(parent)

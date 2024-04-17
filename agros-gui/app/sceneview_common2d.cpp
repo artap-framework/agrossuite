@@ -30,8 +30,6 @@
 
 SceneViewCommon2D::SceneViewCommon2D(QWidget *parent) : SceneViewCommon(parent)
 {
-    connect(this, SIGNAL(mouseMoved(Point)), this, SLOT(updatePosition(Point)));
-
     clear();
 }
 
@@ -48,11 +46,6 @@ void SceneViewCommon2D::clear()
     m_offset2d = Point();
 
     m_nodeLast = NULL;
-}
-
-void SceneViewCommon2D::updatePosition(const Point &point)
-{
-    emit labelRight(tr("Position: [%1; %2]").arg(point.x, 8, 'f', 5).arg(point.y, 8, 'f', 5));
 }
 
 Point SceneViewCommon2D::transform(const Point &point) const
@@ -104,8 +97,6 @@ void SceneViewCommon2D::paintGrid()
     int heavyLine = 5;
 
     glLineWidth(1.0);
-    glEnable(GL_LINE_STIPPLE);
-    glLineStipple(1, 0x1C47);
     glBegin(GL_LINES);
 
     if ((((cornerMax.x-cornerMin.x)/problem()->config()->value(ProblemConfig::GridStep).toDouble() + (cornerMin.y-cornerMax.y)/problem()->config()->value(ProblemConfig::GridStep).toDouble()) < 200) &&
@@ -115,7 +106,7 @@ void SceneViewCommon2D::paintGrid()
         for (int i = cornerMin.x/problem()->config()->value(ProblemConfig::GridStep).toDouble() - 1; i < cornerMax.x/problem()->config()->value(ProblemConfig::GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
-                glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
+                glColor3d(COLORGRID[0] * 5.0/6.0, COLORGRID[1] * 5.0/6.0, COLORGRID[2] * 5.0/6.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
@@ -127,7 +118,7 @@ void SceneViewCommon2D::paintGrid()
         for (int i = cornerMax.y/problem()->config()->value(ProblemConfig::GridStep).toDouble() - 1; i < cornerMin.y/problem()->config()->value(ProblemConfig::GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
-                glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
+                glColor3d(COLORGRID[0] * 5.0/6.0, COLORGRID[1] * 5.0/6.0, COLORGRID[2] * 5.0/6.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
@@ -136,14 +127,12 @@ void SceneViewCommon2D::paintGrid()
         }
     }
     glEnd();
-    glDisable(GL_LINE_STIPPLE);
 
     if (problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
     {
         drawBlend(cornerMin,
                   Point(0, cornerMax.y),
-                  COLORGRID[0], COLORGRID[1], COLORGRID[2],
-                0.25);
+                  COLORGRID[0] * 2.0/3.0, COLORGRID[1] * 2.0/3.0, COLORGRID[2] * 2.0/3.0, 0.25);
     }
 
     glLineWidth(1.5);

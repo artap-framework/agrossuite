@@ -46,7 +46,6 @@ public:
     inline ChartViewAxis *chartView()  { return m_chartView; }
 
 signals:
-    void labelRight(const QString &right);
     void labelCenter(const QString &center);
 
 public slots:

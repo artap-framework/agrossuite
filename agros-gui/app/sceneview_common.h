@@ -78,7 +78,6 @@ signals:
     void mouseSceneModeChanged(MouseSceneMode mouseSceneMode);
 
     void labelCenter(const QString &center);
-    void labelRight(const QString &right);
 
 protected:
     QPoint m_lastPos; // last position of cursor

@@ -1007,7 +1007,7 @@ void SceneViewPreprocessor::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     // grid
-    if (Agros::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
+    paintGrid();
 
     // geometry
     paintGeometry();

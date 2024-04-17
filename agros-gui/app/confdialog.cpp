@@ -57,7 +57,6 @@ void ConfigComputerDialog::load()
     chkLogStdOut->setChecked(Agros::configComputer()->value(Config::Config_LogStdOut).toBool());
 
     // workspace
-    chkShowGrid->setChecked(Agros::configComputer()->value(Config::Config_ShowGrid).toBool());
     chkShowAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowAxes).toBool());
     chkShowRulers->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
 
@@ -88,7 +87,6 @@ void ConfigComputerDialog::save()
     Agros::configComputer()->setValue(Config::Config_LogStdOut, chkLogStdOut->isChecked());
 
     // workspace
-    Agros::configComputer()->setValue(Config::Config_ShowGrid, chkShowGrid->isChecked());
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
     Agros::configComputer()->setValue(Config::Config_ShowAxes, chkShowAxes->isChecked());
 
@@ -143,14 +141,12 @@ QWidget *ConfigComputerDialog::createMainWidget()
     grpOther->setLayout(layoutOther);
 
     // workspace
-    chkShowGrid = new QCheckBox(tr("Show grid"));
     chkShowRulers = new QCheckBox(tr("Show rulers"));
     chkShowAxes = new QCheckBox(tr("Show axes"));
 
     QGridLayout *layoutGrid = new QGridLayout();
-    layoutGrid->addWidget(chkShowGrid, 0, 0);
-    layoutGrid->addWidget(chkShowAxes, 1, 0);
-    layoutGrid->addWidget(chkShowRulers, 2, 0);
+    layoutGrid->addWidget(chkShowAxes, 0, 0);
+    layoutGrid->addWidget(chkShowRulers, 1, 0);
 
     QGroupBox *grpGrid = new QGroupBox(tr("Grid"));
     grpGrid->setLayout(layoutGrid);

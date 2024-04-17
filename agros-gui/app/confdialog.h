@@ -56,9 +56,6 @@ private:
     // cache
     QSpinBox *txtCacheSize;
 
-    // grid
-    QCheckBox *chkShowGrid;
-
     // scene font
     QSpinBox *txtRulersFontSizes;
     QSpinBox *txtPostFontSizes;
