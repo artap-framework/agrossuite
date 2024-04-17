@@ -331,7 +331,13 @@ void PreprocessorWidget::createControls()
 
     toolBarAdd = new QToolBar();
     QFont fnt = toolBarAdd->font();
-    fnt.setPointSize(fnt.pointSize()-3);
+#ifdef Q_WS_WIN
+    int fontSize = 9;
+#endif
+#ifdef Q_WS_X11
+    int fontSize = 8;
+#endif
+    fnt.setPointSize(fontSize);
     toolBarAdd->setIconSize(QSize(48, 48));
     toolBarAdd->setFont(fnt);
     toolBarAdd->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -348,15 +354,12 @@ void PreprocessorWidget::createControls()
 
     trvWidget = new QTreeWidget(this);
     trvWidget->setExpandsOnDoubleClick(false);
-    trvWidget->setHeaderHidden(false);
-    trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
-    // trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
-    trvWidget->setColumnCount(2);
+    trvWidget->setColumnCount(1);
     trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
-    trvWidget->setColumnWidth(1, settings.value("PreprocessorWidget/TreeColumnWidth1", 200).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     txtViewNodes = new QTextEdit(this);
@@ -474,8 +477,7 @@ void PreprocessorWidget::refresh()
         foreach (QString key, parameters.keys())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
-            item->setText(0, key);
-            item->setText(1, QString::number(parameters[key].value()));
+            item->setText(0, QString("%1 (%2)").arg(key).arg(parameters[key].value()));
             item->setData(0, Qt::UserRole, key);
             item->setData(1, Qt::UserRole, PreprocessorWidget::ModelParameter);
         }
@@ -515,10 +517,10 @@ void PreprocessorWidget::refresh()
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(fieldsNode);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
-        fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
+        // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
+        fieldNode->setIcon(0, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
-        fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));
-        fieldNode->setIcon(1, icon("fields/" + fieldInfo->fieldId()));
+        fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));        
         fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
 
@@ -558,8 +560,7 @@ void PreprocessorWidget::refresh()
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
 
-            item->setText(0, boundary->name());
-            item->setText(1, boundaryType.name());
+            item->setText(0, QString("%1 (%2)").arg(boundary->name()).arg(boundaryType.name()));
             if (Agros::problem()->scene()->faces->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, Agros::problem()->scene()->boundaries->items().indexOf(boundary));
@@ -585,11 +586,8 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(nodesNode);
 
-        item->setText(0, QString("[%1; %2]").
-                      arg(node->point().x, 0, 'e', 2).
-                      arg(node->point().y, 0, 'e', 2));
+        item->setText(0, QString("%1. [%2; %3] ").arg(inode).arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->nodes->items().indexOf(node));
-        item->setText(1, QString("%1").arg(inode));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryNode);
 
         inode++;
@@ -606,12 +604,9 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(edgesNode);
 
-        item->setText(0, QString("%1 m").
-                      arg((face->angle() < EPS_ZERO) ?
-                              (face->nodeEnd()->point() - face->nodeStart()->point()).magnitude() :
-                              face->radius() * face->angle() / 180.0 * M_PI, 0, 'e', 2));
+        item->setText(0, QString("%1. %2 m").
+                      arg(iface).arg((face->angle() < EPS_ZERO) ? (face->nodeEnd()->point() - face->nodeStart()->point()).magnitude() : face->radius() * face->angle() / 180.0 * M_PI, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->faces->items().indexOf(face));
-        item->setText(1, QString("%1").arg(iface));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryEdge);
 
         iface++;
@@ -628,11 +623,8 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(labelsNode);
 
-        item->setText(0, QString("[%1; %2]").
-                      arg(label->point().x, 0, 'e', 2).
-                      arg(label->point().y, 0, 'e', 2));
+        item->setText(0, QString("%1. [%2; %3]").arg(ilabel).arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->labels->items().indexOf(label));
-        item->setText(1, QString("%1").arg(ilabel));
         item->setData(1, Qt::UserRole, GeometryLabel);
 
         ilabel++;
@@ -657,10 +649,9 @@ void PreprocessorWidget::refresh()
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
 
-            item->setText(0, QString("%1").arg(recipe->name()));
+            item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
             item->setData(0, Qt::UserRole, recipe->name());
             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
-            item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
         }
     }
 
@@ -691,10 +682,9 @@ void PreprocessorWidget::refresh()
             {
                 QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
 
-                item->setText(0, QString("%1").arg(parameter.name()));
+                item->setText(0, QString("%1 (%2 - %3)").arg(parameter.name()).arg(parameter.lowerBound()).arg(parameter.upperBound()));
                 item->setData(0, Qt::UserRole, parameter.name());
-                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
-                item->setText(1, QString("%1 - %2").arg(parameter.lowerBound()).arg(parameter.upperBound()));
+                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);                
                 item->setData(2, Qt::UserRole, k);
             }
 
@@ -710,10 +700,10 @@ void PreprocessorWidget::refresh()
             {
                 QTreeWidgetItem *item = new QTreeWidgetItem(functionalsNode);
 
-                item->setText(0, QString("%1 (%2 %)").arg(functional.name()).arg(functional.weight()));
+                item->setText(0, QString("%1 (%2 %) %3").arg(functional.name()).arg(functional.weight()).
+                                 arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
                 item->setData(0, Qt::UserRole, functional.name());
-                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
-                item->setText(1, QString("%1").arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
+                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);                
                 item->setData(2, Qt::UserRole, k);
             }
         }
@@ -832,8 +822,7 @@ void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *
 QTreeWidgetItem *PreprocessorWidget::propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
 {
     QTreeWidgetItem *result = new QTreeWidgetItem(item);
-    result->setText(0, key);
-    result->setText(1, value);
+    result->setText(0, QString("%1 - %2").arg(key).arg(value));
     result->setForeground(0, QBrush(Qt::darkGray));
     result->setForeground(1, QBrush(Qt::darkGray));
     result->setData(0, Qt::UserRole, data);
