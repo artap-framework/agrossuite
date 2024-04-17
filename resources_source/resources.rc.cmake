@@ -8,8 +8,8 @@ FILEVERSION    ${VERSION_YEAR},${VERSION_MONTH},${VERSION_DAY}
  {
   BLOCK "040904E4"
   {
-   VALUE "CompanyName", "hpfem.org"
-   VALUE "ProductName", "Agros2D"
+   VALUE "CompanyName", "University of West Bohemia"
+   VALUE "ProductName", "AgrosSuite"
    VALUE "FileDescription", "Application for the solution of physical problems"
   }
  }
