@@ -842,7 +842,10 @@ void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *
 QTreeWidgetItem *PreprocessorWidget::propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
 {
     QTreeWidgetItem *result = new QTreeWidgetItem(item);
-    result->setText(0, QString("%1 - %2").arg(key).arg(value));
+    if (value.isEmpty())
+        result->setText(0, QString("%1").arg(key));
+    else
+        result->setText(0, QString("%1 - %2").arg(key).arg(value));
     result->setForeground(0, QBrush(Qt::darkGray));
     result->setForeground(1, QBrush(Qt::darkGray));
     result->setData(0, Qt::UserRole, data);
