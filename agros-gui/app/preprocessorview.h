@@ -139,6 +139,11 @@ private:
     QAction *actNewRecipeSurfaceIntegral;
     QAction *actNewRecipeVolumeIntegral;
 
+    QToolButton *toolButtonMaterials;
+    QToolButton *toolButtonBoundaries;
+    QToolButton *toolButtonRecipes;
+    QToolButton *toolButtonStudies;
+
     QMenu *mnuPreprocessor;
 
     QLineEdit *txtGridStep;

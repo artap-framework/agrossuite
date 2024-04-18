@@ -124,8 +124,7 @@ void setLocale(const QString &locale)
     QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
     QTranslator *pluginTranslator = new QTranslator(QCoreApplication::instance());
 
-    QString country = locale.section('_',0,0);
-    qInfo() << "country: " << country << locale;
+    QString country = locale.section('_',0,0);    
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))
         auto ok = qtTranslator->load(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm");
     else if (QFile::exists(":/lang/qt_" + locale + ".qm"))

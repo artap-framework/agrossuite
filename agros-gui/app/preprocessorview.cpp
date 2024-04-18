@@ -82,7 +82,6 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 
     // boundary conditions, materials and geometry information
     createControls();
-    // connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -220,23 +219,41 @@ void PreprocessorWidget::createMenu()
 
     mnuPreprocessor->addMenu(mnuFields);
     mnuPreprocessor->addAction(actNewParameter);
-    mnuPreprocessor->addSeparator();
+    mnuPreprocessor->addSeparator();       
     mnuPreprocessor->addMenu(mnuMaterials);
     mnuPreprocessor->addMenu(mnuBoundaries);
     mnuPreprocessor->addSeparator();
+
     QMenu *mnuFunctions = new QMenu(tr("New function"));
     mnuFunctions->addAction(actNewFunctionAnalytic);
     // mnuFunctions->addAction(actNewFunctionInterpolation);
     mnuPreprocessor->addMenu(mnuFunctions);
+
     QMenu *mnuRecipe = new QMenu(tr("New recipe"));
     mnuRecipe->addAction(actNewRecipeLocalValue);
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
+
     mnuPreprocessor->addMenu(mnuRecipe);
     mnuPreprocessor->addMenu(mnuStudies);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addAction(actProperties);
+
+    // enable
+    bool enabled = !Agros::problem()->fieldInfos().isEmpty();
+    // bool onlyOneField = (Agros::problem()->fieldInfos().size() == 1);
+
+    mnuMaterials->setEnabled(enabled);
+    mnuBoundaries->setEnabled(enabled);
+    mnuRecipe->setEnabled(enabled);
+    mnuStudies->setEnabled(enabled);
+
+    // toolbar
+    toolButtonMaterials->setEnabled(enabled);
+    toolButtonBoundaries->setEnabled(enabled);
+    toolButtonRecipes->setEnabled(enabled);
+    toolButtonStudies->setEnabled(enabled);
 }
 
 void PreprocessorWidget::createControls()
@@ -276,7 +293,7 @@ void PreprocessorWidget::createControls()
     toolButtonFields->setIcon(iconAlphabet('F', AlphabetColor_Red));
     toolButtonFields->setPopupMode(QToolButton::InstantPopup);
 
-    QToolButton *toolButtonMaterials = new QToolButton();
+    toolButtonMaterials = new QToolButton();
     toolButtonMaterials->setIconSize(QSize(24, 24));
     toolButtonMaterials->setText(tr("Materials"));
     toolButtonMaterials->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -286,7 +303,7 @@ void PreprocessorWidget::createControls()
     toolButtonMaterials->setIcon(iconAlphabet('M', AlphabetColor_Red));
     toolButtonMaterials->setPopupMode(QToolButton::InstantPopup);
 
-    QToolButton *toolButtonBoundaries = new QToolButton();
+    toolButtonBoundaries = new QToolButton();
     toolButtonBoundaries->setIconSize(QSize(24, 24));
     toolButtonBoundaries->setText(tr("Boundaries"));
     toolButtonBoundaries->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -307,7 +324,7 @@ void PreprocessorWidget::createControls()
     toolButtonFunctions->setIcon(iconAlphabet('C', AlphabetColor_Bluegray));
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
-    QToolButton *toolButtonRecipes = new QToolButton();
+    toolButtonRecipes = new QToolButton();
     toolButtonRecipes->setIconSize(QSize(24, 24));
     toolButtonRecipes->setText(tr("Recipes"));
     toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -319,7 +336,7 @@ void PreprocessorWidget::createControls()
     toolButtonRecipes->setIcon(iconAlphabet('R', AlphabetColor_Bluegray));
     toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
 
-    QToolButton *toolButtonStudies = new QToolButton();
+    toolButtonStudies = new QToolButton();
     toolButtonStudies->setIconSize(QSize(24, 24));
     toolButtonStudies->setText(tr("Studies"));
     toolButtonStudies->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -359,7 +376,7 @@ void PreprocessorWidget::createControls()
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
     trvWidget->setColumnCount(1);
-    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
+    // trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     txtViewNodes = new QTextEdit(this);
@@ -727,7 +744,10 @@ void PreprocessorWidget::refresh()
     mnuFields->clear();
     foreach(StringAction *fieldAction, actNewFields.values())
         if (!Agros::problem()->fieldInfos().keys().contains(fieldAction->key()))
+        {
+            fieldAction->setIcon(icon("fields/" + fieldAction->key()));
             mnuFields->addAction(fieldAction);
+        }
 
     // studies
     mnuStudies->clear();
