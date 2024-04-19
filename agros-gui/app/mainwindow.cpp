@@ -242,11 +242,11 @@ void MainWindow::createActions()
     actMaterialBrowser = new QAction(tr("Material browser..."), this);
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
-    actSolve = new QAction(icon("run"), tr("&Solve"), this);
+    actSolve = new QAction(icon("main_solve"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence("Alt+S"));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
-    actSolveNewComputation = new QAction(icon("run-step"), tr("&Solve new"), this);
+    actSolveNewComputation = new QAction(icon("main_solvenew"), tr("&Solve new"), this);
     actSolveNewComputation->setShortcut(QKeySequence(tr("Alt+Shift+S")));
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
 
@@ -370,7 +370,7 @@ void MainWindow::createToolBars()
     QToolButton *toolButton = new QToolButton();
     toolButton->setIconSize(QSize(24, 24));
     toolButton->setMenu(menu);
-    toolButton->setIcon(icon("zoom-fit"));
+    toolButton->setIcon(icon("geometry_zoom"));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     problemWidget->toolBar->addSeparator();
@@ -948,7 +948,7 @@ void MainWindow::setControls()
 
     postprocessorWidget->refresh();
 
-    sceneViewProblem->actSceneZoomRegion = NULL;
+    sceneViewProblem->actSceneZoomRegion = nullptr;
 
     bool showZoom = sceneViewProblem->actSceneModeProblem->isChecked() || postprocessorWidget->actSceneModeResults->isChecked();
 
@@ -956,8 +956,7 @@ void MainWindow::setControls()
     actSceneZoomOut->setVisible(showZoom);
     actSceneZoomBestFit->setVisible(showZoom);
     actSceneZoomRegion->setVisible(showZoom);
-    actSceneZoomRegion->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked() ||
-                                   postprocessorWidget->actSceneModeResults->isChecked());
+    actSceneZoomRegion->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked() || postprocessorWidget->actSceneModeResults->isChecked());
 
     // disconnect signals
     actSceneZoomIn->disconnect();

@@ -25,7 +25,6 @@
 #include "util/global.h"
 
 #include "gui/lineeditdouble.h"
-#include "gui/groupbox.h"
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 

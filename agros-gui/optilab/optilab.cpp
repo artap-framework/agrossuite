@@ -104,7 +104,7 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
 {
     createControls();
 
-    actRunStudy = new QAction(icon("run"), tr("Run study"), this);
+    actRunStudy = new QAction(icon("main_solve"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence("Alt+S"));
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
 }
@@ -482,7 +482,7 @@ void OptiLabWidget::doComputationContextMenu(const QPoint &pos)
 
 OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 {
-    actSceneModeOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
+    actSceneModeOptiLab = new QAction(icon("main_optilab"), tr("OptiLab"), this);
     actSceneModeOptiLab->setShortcut(Qt::Key_F8);
     actSceneModeOptiLab->setCheckable(true);
 

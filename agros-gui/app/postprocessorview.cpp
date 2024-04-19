@@ -27,7 +27,6 @@
 #include "util/global.h"
 
 #include "gui/lineeditdouble.h"
-#include "gui/groupbox.h"
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 
@@ -53,7 +52,7 @@
 PostprocessorWidget::PostprocessorWidget()
 {
     // scene mode
-    actSceneModeResults = new QAction(icon("results"), tr("Results"), this);
+    actSceneModeResults = new QAction(icon("main_results"), tr("Results"), this);
     actSceneModeResults->setShortcut(tr("Ctrl+3"));
     actSceneModeResults->setCheckable(true);
     actSceneModeResults->setEnabled(false);

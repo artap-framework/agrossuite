@@ -125,7 +125,7 @@ void PreprocessorWidget::createActions()
 
     actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
-    actDeleteSelected = new QAction(icon("trash"), tr("Delete selected objects"), this);
+    actDeleteSelected = new QAction(icon("geometry_trash"), tr("Delete selected objects"), this);
     connect(actDeleteSelected, SIGNAL(triggered()), m_sceneViewPreprocessor, SLOT(doDeleteSelected()));
 
     actTransform = new QAction(icon("calculator"), tr("&Transform"), this);
@@ -146,17 +146,17 @@ void PreprocessorWidget::createActions()
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 
     // scene - add items
-    actNewNode = new QAction(icon("scene-node"), tr("New &node..."), this);
+    actNewNode = new QAction(icon("geometry_node"), tr("New &node..."), this);
     actNewNode->setShortcut(QKeySequence("Alt+N"));
     connect(actNewNode, SIGNAL(triggered()), this, SLOT(doNewNode()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewNode);
 
-    actNewEdge = new QAction(icon("scene-edge"), tr("New &edge..."), this);
+    actNewEdge = new QAction(icon("geometry_edge"), tr("New &edge..."), this);
     actNewEdge->setShortcut(QKeySequence("Alt+E"));
     connect(actNewEdge, SIGNAL(triggered()), this, SLOT(doNewEdge()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewEdge);
 
-    actNewLabel = new QAction(icon("scene-label"), tr("New &label..."), this);
+    actNewLabel = new QAction(icon("geometry_label"), tr("New &label..."), this);
     actNewLabel->setShortcut(QKeySequence("Alt+L"));
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
     m_sceneViewPreprocessor->menuScene()->insertAction(m_sceneViewPreprocessor->menuScene()->actions().first(), actNewLabel);
@@ -290,8 +290,11 @@ void PreprocessorWidget::createControls()
     toolButtonFields->setToolTip(tr("New fields"));
     toolButtonFields->setMenu(mnuFields);
     toolButtonFields->setAutoRaise(true);
-    toolButtonFields->setIcon(iconAlphabet('F', AlphabetColor_Red));
+    toolButtonFields->setIcon(icon("menu_field"));
     toolButtonFields->setPopupMode(QToolButton::InstantPopup);
+
+    QAction *actButtonParameter = new QAction(icon("menu_parameter"), tr("Parameter"));
+    connect(actButtonParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
     toolButtonMaterials = new QToolButton();
     toolButtonMaterials->setIconSize(QSize(24, 24));
@@ -300,7 +303,7 @@ void PreprocessorWidget::createControls()
     toolButtonMaterials->setToolTip(tr("New material"));
     toolButtonMaterials->setMenu(mnuMaterials);
     toolButtonMaterials->setAutoRaise(true);
-    toolButtonMaterials->setIcon(iconAlphabet('M', AlphabetColor_Red));
+    toolButtonMaterials->setIcon(icon("menu_material"));
     toolButtonMaterials->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonBoundaries = new QToolButton();
@@ -310,7 +313,7 @@ void PreprocessorWidget::createControls()
     toolButtonBoundaries->setToolTip(tr("New boundary"));
     toolButtonBoundaries->setMenu(mnuBoundaries);
     toolButtonBoundaries->setAutoRaise(true);
-    toolButtonBoundaries->setIcon(iconAlphabet('B', AlphabetColor_Purple));
+    toolButtonBoundaries->setIcon(icon("menu_boundary"));
     toolButtonBoundaries->setPopupMode(QToolButton::InstantPopup);
 
     QToolButton *toolButtonFunctions = new QToolButton();
@@ -321,7 +324,7 @@ void PreprocessorWidget::createControls()
     toolButtonFunctions->addAction(actNewFunctionAnalytic);
     // toolButtonFunctions->addAction(actNewFunctionInterpolation);
     toolButtonFunctions->setAutoRaise(true);
-    toolButtonFunctions->setIcon(iconAlphabet('C', AlphabetColor_Bluegray));
+    toolButtonFunctions->setIcon(icon("menu_function"));
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonRecipes = new QToolButton();
@@ -333,7 +336,7 @@ void PreprocessorWidget::createControls()
     toolButtonRecipes->addAction(actNewRecipeSurfaceIntegral);
     toolButtonRecipes->addAction(actNewRecipeVolumeIntegral);
     toolButtonRecipes->setAutoRaise(true);
-    toolButtonRecipes->setIcon(iconAlphabet('R', AlphabetColor_Bluegray));
+    toolButtonRecipes->setIcon(icon("menu_recipe"));
     toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonStudies = new QToolButton();
@@ -343,7 +346,7 @@ void PreprocessorWidget::createControls()
     toolButtonStudies->setToolTip(tr("New studies"));
     toolButtonStudies->setMenu(mnuStudies);
     toolButtonStudies->setAutoRaise(true);
-    toolButtonStudies->setIcon(iconAlphabet('S', AlphabetColor_Red));
+    toolButtonStudies->setIcon(icon("menu_study"));
     toolButtonStudies->setPopupMode(QToolButton::InstantPopup);
 
     toolBarAdd = new QToolBar();
@@ -360,7 +363,7 @@ void PreprocessorWidget::createControls()
     toolBarAdd->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     toolBarAdd->addWidget(toolButtonFields);
-    toolBarAdd->addAction(actNewParameter);
+    toolBarAdd->addAction(actButtonParameter);
     toolBarAdd->addSeparator();
     toolBarAdd->addWidget(toolButtonMaterials);
     toolBarAdd->addWidget(toolButtonBoundaries);

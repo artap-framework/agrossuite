@@ -23,9 +23,7 @@ SET(SOURCES main.cpp
     gui/chart.cpp
     gui/common.cpp
     gui/fielddialog.cpp
-    # gui/filebrowser.cpp
     gui/functiondialog.cpp
-    gui/groupbox.cpp
     gui/htmledit.cpp
     gui/infowidget.cpp
     gui/lineeditdouble.cpp
@@ -38,7 +36,6 @@ SET(SOURCES main.cpp
     gui/resultsview.cpp
     gui/scenewidget.cpp
     gui/systemoutput.cpp
-    # gui/textedit.cpp
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
@@ -82,9 +79,7 @@ SET(HEADERS gui/about.h
     gui/chart.h
     gui/common.h
     gui/fielddialog.h
-    # gui/filebrowser.h
     gui/functiondialog.h
-    gui/groupbox.h
     gui/htmledit.h
     gui/infowidget.h
     gui/lineeditdouble.h
@@ -97,7 +92,6 @@ SET(HEADERS gui/about.h
     gui/resultsview.h
     gui/scenewidget.h
     gui/systemoutput.h
-    # gui/textedit.h
     gui/valuedatatabledialog.h
     gui/valuelineedit.h
     gui/valuetimedialog.h

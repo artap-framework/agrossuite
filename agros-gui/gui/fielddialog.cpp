@@ -34,7 +34,6 @@
 
 #include "gui/lineeditdouble.h"
 #include "gui/valuelineedit.h"
-#include "gui/groupbox.h"
 #include "gui/common.h"
 
 FieldWidget::FieldWidget(FieldInfo *fieldInfo, QWidget *parent)

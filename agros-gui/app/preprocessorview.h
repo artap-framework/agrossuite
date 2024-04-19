@@ -142,7 +142,7 @@ private:
     QToolButton *toolButtonMaterials;
     QToolButton *toolButtonBoundaries;
     QToolButton *toolButtonRecipes;
-    QToolButton *toolButtonStudies;
+    QToolButton *toolButtonStudies;    
 
     QMenu *mnuPreprocessor;
 

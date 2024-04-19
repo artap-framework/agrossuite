@@ -107,7 +107,7 @@ ExamplesWidget::~ExamplesWidget()
 
 void ExamplesWidget::createActions()
 {
-    actExamples = new QAction(icon("agros"), tr("Welcome"), this);
+    actExamples = new QAction(icon("main_welcome"), tr("Welcome"), this);
     actExamples->setShortcut(tr("Ctrl+1"));
     actExamples->setCheckable(true);
 }
@@ -302,25 +302,7 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
 
             // increase counter
             count++;
-        }
-        else if (fileInfo.suffix() == "py")
-        {
-            // skip ui python
-            if (QFile::exists(fileInfo.absoluteFilePath().left(fileInfo.absoluteFilePath().length() - 3) + ".ui"))
-                continue;
-
-            // skip problem.py
-            if (fileInfo.baseName() == "problem")
-                continue;
-
-            QTreeWidgetItem *examplePythonItem = new QTreeWidgetItem(parentItem);
-            examplePythonItem->setIcon(0, icon("script-python"));
-            examplePythonItem->setText(0, fileInfo.baseName());
-            examplePythonItem->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
-
-            // increase counter
-            count++;
-        }
+        }        
         else if (fileInfo.suffix() == "ui")
         {
             QTreeWidgetItem *exampleFormItem = new QTreeWidgetItem(parentItem);

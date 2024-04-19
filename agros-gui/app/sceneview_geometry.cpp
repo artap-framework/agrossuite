@@ -91,21 +91,21 @@ ProblemBase *SceneViewPreprocessor::problem() const
 
 void SceneViewPreprocessor::createActionsGeometry()
 {
-    actSceneModeProblem = new QAction(icon("problem"), tr("Problem"), this);
+    actSceneModeProblem = new QAction(icon("main_problem"), tr("Problem"), this);
     actSceneModeProblem->setShortcut(tr("Ctrl+2"));
     actSceneModeProblem->setCheckable(true);
 
     // scene - operate on items
-    actOperateOnNodes = new QAction(icon("scene-node"), tr("Operate on &nodes"), this);
+    actOperateOnNodes = new QAction(icon("geometry_node"), tr("Operate on &nodes"), this);
     actOperateOnNodes->setShortcut(Qt::Key_F2);
     actOperateOnNodes->setCheckable(true);
     actOperateOnNodes->setChecked(true);
 
-    actOperateOnEdges = new QAction(icon("scene-edge"), tr("Operate on &edges"), this);
+    actOperateOnEdges = new QAction(icon("geometry_edge"), tr("Operate on &edges"), this);
     actOperateOnEdges->setShortcut(Qt::Key_F3);
     actOperateOnEdges->setCheckable(true);
 
-    actOperateOnLabels = new QAction(icon("scene-label"), tr("Operate on &labels"), this);
+    actOperateOnLabels = new QAction(icon("geometry_label"), tr("Operate on &labels"), this);
     actOperateOnLabels->setShortcut(Qt::Key_F4);
     actOperateOnLabels->setCheckable(true);
 
