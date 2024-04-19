@@ -1130,19 +1130,24 @@ void SceneViewPreprocessor::paintGeometry()
     }
 
     // labels
+    double dxlabel = 2.5/width() * LABELSIZE/m_scale2d*aspect();
+    double dylabel = 2.5/height() * LABELSIZE/m_scale2d*aspect();
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         glColor3d(COLORLABEL[0], COLORLABEL[1], COLORLABEL[2]);
-        glPointSize(LABELSIZE);
-        glBegin(GL_POINTS);
-        glVertex2d(label->point().x, label->point().y);
+        glBegin(GL_TRIANGLES);
+        glVertex2d(label->point().x + dxlabel/2.0, label->point().y - dylabel/3.0);
+        glVertex2d(label->point().x - dxlabel/2.0, label->point().y - dylabel/3.0);
+        glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0);
         glEnd();
 
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
-        glPointSize(LABELSIZE - 2.0);
-        glBegin(GL_POINTS);
-        glVertex2d(label->point().x, label->point().y);
+        glBegin(GL_TRIANGLES);
+        glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+        glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+        glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
         glEnd();
+
 
         if ((label->isSelected()) || (label->isHighlighted()))
         {
@@ -1151,9 +1156,10 @@ void SceneViewPreprocessor::paintGeometry()
             if (label->isSelected())
                 glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
 
-            glPointSize(LABELSIZE - 2.0);
-            glBegin(GL_POINTS);
-            glVertex2d(label->point().x, label->point().y);
+            glBegin(GL_TRIANGLES);
+            glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+            glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+            glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
             glEnd();
         }
 
