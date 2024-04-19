@@ -94,21 +94,15 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QStringList solvers = Agros::solvers().keys();
 
     QString solver = m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
-    QString method = m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString();
-    QString parameters = m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString();
     if (solver.isEmpty() || solver.endsWith(".ext"))
     {
         if (solvers.contains("MUMPS"))
         {
             solver = "MUMPS";
-            method = "none";
-            parameters = "";
         }
         else if (solvers.contains("EIGEN"))
         {
             solver = "Eigen";
-            method = "none";
-            parameters = "";
         }
     }
     else
@@ -117,24 +111,18 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
         if (solvers.contains("MUMPS") && solver == "MUMPS")
         {
             solver = "MUMPS";
-            method = "none";
-            parameters = "";
         }
         else
         {
             solver = "Eigen";
-            method = "none";
-            parameters = "";
         }
     }
 
     if (!solver.isEmpty())
     {
-        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Solver - %1 (%2)").arg(solver).arg(method));
+        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Solver - %1").arg(solver));
 
         PluginSolverInterface *s = Agros::loadSolver(solver);
-        s->setMethod(method);
-        s->setParameters(parameters);
         s->solve(system, rhs, sln);
     }
     else

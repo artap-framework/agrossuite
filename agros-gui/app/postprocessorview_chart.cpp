@@ -175,7 +175,6 @@ void PostprocessorSceneChartWidget::createControls()
     layoutAxisPointsAndTimeStep->addWidget(new QLabel(tr("Points:")), 0, 0);
     layoutAxisPointsAndTimeStep->addWidget(txtHorizontalAxisPoints, 0, 1);
     layoutAxisPointsAndTimeStep->addWidget(chkHorizontalAxisReverse, 0, 2);
-    layoutAxisPointsAndTimeStep->setColumnStretch(1, 1);
 
     QGroupBox *grpAxisPointsAndTimeStep = new QGroupBox(tr("Points and time step"), this);
     grpAxisPointsAndTimeStep->setLayout(layoutAxisPointsAndTimeStep);

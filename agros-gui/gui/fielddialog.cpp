@@ -46,9 +46,8 @@ FieldWidget::FieldWidget(FieldInfo *fieldInfo, QWidget *parent)
 void FieldWidget::createContent()
 {
     // equations
-    // equationLaTeX = new LaTeXViewer(this);
-    // equationLaTeX->setMaximumWidth(400);
     equationImage = new QLabel();
+    fieldImage = new QLabel();
 
     cmbAdaptivityType = new QComboBox();
     cmbAnalysisType = new QComboBox();
@@ -113,10 +112,10 @@ void FieldWidget::createContent()
     layoutPanel->addLayout(layoutRight);
 
     // equation
-    QVBoxLayout *layoutEquation = new QVBoxLayout();
-    // layoutEquation->addWidget(equationLaTeX);
+    QHBoxLayout *layoutEquation = new QHBoxLayout();
     layoutEquation->addWidget(equationImage);
-    layoutEquation->addStretch();
+    layoutEquation->addStretch(1);
+    layoutEquation->addWidget(fieldImage);
 
     // tabs
     QTabWidget *tabWidget = new QTabWidget(this);
@@ -365,9 +364,6 @@ QWidget *FieldWidget::createLinearSolverWidget()
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
-    connect(cmbExternalLinearSolverCommand, SIGNAL(currentIndexChanged(int)), this, SLOT(doExternalSolverChanged(int)));
-    cmbExternalLinearSolverMethod = new QComboBox();
-    txtExternalLinearSolverParameters = new QLineEdit();
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
@@ -385,10 +381,6 @@ QWidget *FieldWidget::createLinearSolverWidget()
     QGridLayout *externalSolverLayout = new QGridLayout();
     externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
     externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
-    externalSolverLayout->addWidget(new QLabel(tr("Environment:")), 1, 0);
-    externalSolverLayout->addWidget(cmbExternalLinearSolverMethod, 1, 1);
-    externalSolverLayout->addWidget(new QLabel(tr("Parameters:")), 2, 0);
-    externalSolverLayout->addWidget(txtExternalLinearSolverParameters, 2, 1);
 
     QGroupBox *externalSolverGroup = new QGroupBox(tr("External"));
     externalSolverGroup->setLayout(externalSolverLayout);
@@ -502,10 +494,6 @@ void FieldWidget::load()
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
     if (cmbExternalLinearSolverCommand->currentIndex() == -1)
         cmbExternalLinearSolverCommand->setCurrentIndex(0);
-    cmbExternalLinearSolverMethod->setCurrentIndex(cmbExternalLinearSolverMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalMethod).toString()));
-    if (cmbExternalLinearSolverMethod->currentIndex() == -1)
-        cmbExternalLinearSolverMethod->setCurrentIndex(0);
-    txtExternalLinearSolverParameters->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalParameters).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -554,8 +542,6 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
     // external solver
     m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalMethod, cmbExternalLinearSolverMethod->itemData(cmbExternalLinearSolverMethod->currentIndex()).toString());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalParameters, txtExternalLinearSolverParameters->text());
 
     return true;
 }
@@ -610,14 +596,18 @@ void FieldWidget::doAnalysisTypeChanged(int index)
 
 void FieldWidget::doShowEquation()
 {
-    // equationLaTeX->setLatex(m_fieldInfo->equation());
-    QPixmap pixmap(QString("%1/resources/images/equations/%2_equation_%3.png").
+    QPixmap pixmapEquation(QString("%1/resources/images/equations/%2_equation_%3.png").
                    arg(Agros::dataDir()).
                    arg(m_fieldInfo->fieldId()).
                    arg(analysisTypeToStringKey((AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt())));
 
-    equationImage->setPixmap(pixmap);
-    equationImage->setMask(pixmap.mask());
+    equationImage->setPixmap(pixmapEquation);
+    equationImage->setMask(pixmapEquation.mask());
+
+    QPixmap pixmapField = icon(QString("fields/%1").arg(m_fieldInfo->fieldId())).pixmap(32, 32);
+
+    fieldImage->setPixmap(pixmapField);
+    // fieldImage->setMask(pixmapField.mask());
 }
 
 void FieldWidget::doAdaptivityChanged(int index)
@@ -681,8 +671,6 @@ void FieldWidget::doLinearSolverChanged(int index)
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
     cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_PLUGIN);
-    cmbExternalLinearSolverMethod->setEnabled(solverType == SOLVER_PLUGIN);
-    txtExternalLinearSolverParameters->setEnabled(solverType == SOLVER_PLUGIN);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)
@@ -723,24 +711,6 @@ void FieldWidget::doNonlinearResidual(int state)
 void FieldWidget::doNonlinearRelativeChangeOfSolutions(int state)
 {
     txtNonlinearRelativeChangeOfSolutions->setEnabled(((LinearityType) cmbLinearityType->itemData(cmbLinearityType->currentIndex()).toInt() != LinearityType_Linear) && chkNonlinearRelativeChangeOfSolutions->isChecked());
-}
-
-void FieldWidget::doExternalSolverChanged(int index)
-{
-    if (cmbExternalLinearSolverCommand->currentIndex() != -1)
-    {
-        QString solverName = QFileInfo(cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString()).fileName();
-
-        PluginSolverInterface *solver = Agros::loadSolver(solverName);
-
-        cmbExternalLinearSolverMethod->clear();
-        foreach (QString method, solver->methods())
-        {
-            cmbExternalLinearSolverMethod->addItem(method, method);
-        }
-        if (cmbExternalLinearSolverMethod->count() > 0)
-            cmbExternalLinearSolverMethod->setCurrentIndex(0);
-    }
 }
 
 // ********************************************************************************************

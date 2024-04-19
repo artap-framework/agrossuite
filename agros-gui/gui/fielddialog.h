@@ -102,12 +102,10 @@ private:
     QComboBox *cmbIterLinearSolverDealIIMethod;
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
     QComboBox *cmbExternalLinearSolverCommand;
-    QComboBox *cmbExternalLinearSolverMethod;
-    QLineEdit *txtExternalLinearSolverParameters;
 
     // equation
-    // LaTeXViewer *equationLaTeX;
     QLabel *equationImage;
+    QLabel *fieldImage;
 
     void fillComboBox();
 
@@ -128,8 +126,6 @@ private slots:
     void doAdaptivityTolerance(int state);
     void doNonlinearResidual(int state);
     void doNonlinearRelativeChangeOfSolutions(int state);
-
-    void doExternalSolverChanged(int index);
 };
 
 class FieldDialog : public QDialog
