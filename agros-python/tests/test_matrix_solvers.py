@@ -16,7 +16,7 @@ class TestMatrixSolversGeneral(AgrosTestCase):
     	pass
 
     @classmethod
-    def model(self, solver, matrix_solver="", matrix_solver_method="none", matrix_solver_parameters=""):
+    def model(self, solver, matrix_solver=""):
         problem = agros.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
@@ -30,8 +30,6 @@ class TestMatrixSolversGeneral(AgrosTestCase):
         electrostatic.solver = "linear"
 
         electrostatic.matrix_solver_parameters['external_solver'] = matrix_solver
-        electrostatic.matrix_solver_parameters['external_method'] = matrix_solver_method
-        electrostatic.matrix_solver_parameters['external_parameters'] = matrix_solver_parameters                
                 
         electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 1e9})
         electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
@@ -88,12 +86,12 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
         
     def test_external_eigen(self):
         # UMFPACK
-        sln = self.model("external_plugin", "Eigen", "none", "")        
+        sln = self.model("external_plugin", "Eigen")        
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "EIGEN (external) sln failed.")
 
     def test_external_mumps(self):
         # MUMPS
-        sln = self.model("external_plugin", "MUMPS", "none", "")        
+        sln = self.model("external_plugin", "MUMPS")        
         # print(len(self.reference_sln))
         # print(len(sln))        
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "MUMPS (external) sln failed.")
