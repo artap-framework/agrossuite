@@ -1,0 +1,46 @@
+/* LEFTBAR */
+
+QToolBar[leftbar="true"] { 
+  border: 0px;
+  color: #404142; 
+  background-color: #404142;
+}
+                                      
+QToolBar[leftbar="true"] > QToolButton { 
+  color: #bdc6be; 
+  font: bold; 
+  font-size: 8pt; 
+  width: 60px;
+  border-style: solid;  
+  border-width: 2px;
+  border-color: #404142 #404142 #404142 #404142; 
+}
+
+QToolBar[leftbar="true"] > QToolButton:disabled { 
+  /* background-color: rgba(255, 0, 0, 15%); */  
+  color: #616160;
+}
+
+QToolBar[leftbar="true"] > QToolButton:hover { 
+  background: #5e5f60; 
+}
+
+QToolBar[leftbar="true"] > QToolButton:checked {   
+  background: #212222;
+  border-style: solid;  
+  border-width: 2px; 
+  border-color: #404142 #404142 #404142 #c2c4c5;
+}
+
+/* PREPROCESSOR TOPBAR */
+
+QToolBar[topbar="true"] { 
+  border: 1px;
+  qproperty-iconSize: 52px;
+}
+
+QToolBar[topbar="true"] > QToolButton { 
+  /* font: bold; */  
+  font-size: 8pt;
+  width: 52px;  
+}

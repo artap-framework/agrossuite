@@ -272,7 +272,7 @@ void PreprocessorWidget::createControls()
     actRedo->setShortcuts(QKeySequence::Redo);
 
     // main toolbar
-    toolBar = new QToolBar();
+    toolBar = new QToolBar();    
     toolBar->setIconSize(QSize(24, 24));
     // toolBar->addSeparator();
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
@@ -284,7 +284,6 @@ void PreprocessorWidget::createControls()
     // toolBar->addAction(actTransform);
 
     QToolButton *toolButtonFields = new QToolButton();
-    toolButtonFields->setIconSize(QSize(24, 24));
     toolButtonFields->setText(tr("Fields"));
     toolButtonFields->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonFields->setToolTip(tr("New fields"));
@@ -297,7 +296,6 @@ void PreprocessorWidget::createControls()
     connect(actButtonParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
     toolButtonMaterials = new QToolButton();
-    toolButtonMaterials->setIconSize(QSize(24, 24));
     toolButtonMaterials->setText(tr("Materials"));
     toolButtonMaterials->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonMaterials->setToolTip(tr("New material"));
@@ -307,7 +305,6 @@ void PreprocessorWidget::createControls()
     toolButtonMaterials->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonBoundaries = new QToolButton();
-    toolButtonBoundaries->setIconSize(QSize(24, 24));
     toolButtonBoundaries->setText(tr("Boundaries"));
     toolButtonBoundaries->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonBoundaries->setToolTip(tr("New boundary"));
@@ -317,7 +314,6 @@ void PreprocessorWidget::createControls()
     toolButtonBoundaries->setPopupMode(QToolButton::InstantPopup);
 
     QToolButton *toolButtonFunctions = new QToolButton();
-    toolButtonFunctions->setIconSize(QSize(24, 24));
     toolButtonFunctions->setText(tr("Functions"));
     toolButtonFunctions->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonFunctions->setToolTip(tr("New function"));
@@ -328,7 +324,6 @@ void PreprocessorWidget::createControls()
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonRecipes = new QToolButton();
-    toolButtonRecipes->setIconSize(QSize(24, 24));
     toolButtonRecipes->setText(tr("Recipes"));
     toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonRecipes->setToolTip(tr("New recipe"));
@@ -340,7 +335,6 @@ void PreprocessorWidget::createControls()
     toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonStudies = new QToolButton();
-    toolButtonStudies->setIconSize(QSize(24, 24));
     toolButtonStudies->setText(tr("Studies"));
     toolButtonStudies->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonStudies->setToolTip(tr("New studies"));
@@ -350,16 +344,7 @@ void PreprocessorWidget::createControls()
     toolButtonStudies->setPopupMode(QToolButton::InstantPopup);
 
     toolBarAdd = new QToolBar();
-    QFont fnt = toolBarAdd->font();
-#ifdef Q_WS_WIN
-    int fontSize = 9;
-#endif
-#ifdef Q_WS_X11
-    int fontSize = 8;
-#endif
-    fnt.setPointSize(fontSize);
-    toolBarAdd->setIconSize(QSize(48, 48));
-    toolBarAdd->setFont(fnt);
+    toolBarAdd->setProperty("topbar", true);
     toolBarAdd->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     toolBarAdd->addWidget(toolButtonFields);
@@ -379,7 +364,6 @@ void PreprocessorWidget::createControls()
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
     trvWidget->setColumnCount(1);
-    // trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     txtViewNodes = new QTextEdit(this);

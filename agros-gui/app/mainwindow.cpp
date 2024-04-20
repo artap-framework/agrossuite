@@ -140,6 +140,13 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     doHideControlPanel();
 
     setControls();
+
+    // apply stylesheet
+    // QTimer *timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, &MainWindow::doApplyStyle);
+    // timer->start(1000);
+
+    doApplyStyle();
 }
 
 MainWindow::~MainWindow()
@@ -275,6 +282,10 @@ void MainWindow::createActions()
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
     connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
+
+    actApplyStyle = new QAction(icon("bookmark"), tr("Reload stylesheet"));
+    actApplyStyle->setShortcut(tr("Alt+R"));
+    connect(actApplyStyle, &QAction::triggered, this, &MainWindow::doApplyStyle);
 }
 
 void MainWindow::createMenus()
@@ -347,6 +358,7 @@ void MainWindow::createMenus()
 
     mnuSettings = menuBar()->addMenu(tr("S&ettings"));
     mnuSettings->addAction(actHideControlPanel);
+    mnuSettings->addAction(actApplyStyle);
     mnuSettings->addAction(actFullScreen);
     mnuSettings->addSeparator();
     mnuSettings->addAction(actOptions);
@@ -422,6 +434,7 @@ void MainWindow::createMain()
     // left toolbar
     QToolBar *tlbLeftBar = new QToolBar();
     tlbLeftBar->setOrientation(Qt::Vertical);
+    tlbLeftBar->setProperty("leftbar", true);
     // fancy layout
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -429,13 +442,6 @@ void MainWindow::createMain()
 #ifdef Q_WS_X11
     int fontSize = 8;
 #endif
-    tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
-                                      "QToolBar { background-color: rgba(64, 66, 68, 255); }"
-                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 60px; }"
-                                      "QToolButton:hover { border: 0px; background: rgba(150, 150, 150, 255); }"
-                                      "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
-    // system layout
-    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 75px; }");
 
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -912,10 +918,20 @@ void MainWindow::clear()
     setControls();
 }
 
-void MainWindow::doStartedScript()
+void MainWindow::doApplyStyle()
 {
-    // disable controls
-    setEnabledControls(false);
+    QFile f(QString("%1/resources/themes/theme.qss").arg(Agros::dataDir()));
+
+    if (!f.exists())
+    {
+        qInfo() << "Unable to set stylesheet, file not found";
+    }
+    else
+    {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
 }
 
 void MainWindow::setEnabledControls(bool state)

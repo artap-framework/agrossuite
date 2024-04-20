@@ -92,7 +92,7 @@ private slots:
 
     void doCheckVersion();
     void doAbout();
-    void doStartedScript();
+    void doApplyStyle();
     void setEnabledControls(bool state);
     void setControls();
     void clear();
@@ -131,6 +131,7 @@ private:
     QActionGroup *actDocumentOpenRecentGroup;
 
     QAction *actHideControlPanel;
+    QAction *actApplyStyle;
 
     QAction *actCopy;
 

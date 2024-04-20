@@ -133,8 +133,12 @@ SET(HEADERS gui/about.h
     optilab/study_methoddialog.h)
 
 # images
-SET(RESOURCES ../resources_source/resources.qrc)
+SET(RESOURCES_ICON ../resources_source/resources.rc)
+SET(RESOURCES ../resources_source/resources.qrc
+              # ../resources_source/themes/dark/darkstyle.qrc
+)
 QT_ADD_RESOURCES(RESOURCES_RCC ${RESOURCES})
+
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
@@ -168,7 +172,7 @@ IF(WIN32)
 set(WINDOWS_FLAG WIN32)
 ENDIF(WIN32)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${WINDOWS_FLAG} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC} ${QM_FILES})
+ADD_EXECUTABLE(${PROJECT_NAME} ${WINDOWS_FLAG} ${SOURCES} ${HEADERS} ${GUI} main.cpp  ${RESOURCES_RCC} ${RESOURCES_ICON} ${QM_FILES})
 
 
 # translations
