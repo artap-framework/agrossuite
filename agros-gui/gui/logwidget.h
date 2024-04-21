@@ -30,17 +30,6 @@ class ConnectLog;
 
 #define signals public
 
-class LogConfigWidget : public QWidget
-{
-    Q_OBJECT
-
-public:
-    LogConfigWidget(LogWidget *logWidget);
-
-private:
-    LogWidget *logWidget;
-};
-
 class LogWidget : public QWidget
 {
     Q_OBJECT
@@ -99,13 +88,10 @@ public:
     LogView(QWidget *parent = 0, ConnectLog *connectLog = 0);
     ~LogView();
 
-    QAction *actLog;
-
-    inline LogConfigWidget *logConfigWidget() { return m_logConfigWidget; }
+    QAction *actLog;    
 
 private:
     LogWidget *logWidget;
-    LogConfigWidget *m_logConfigWidget;
 
     ConnectLog *m_connectLog;
 };

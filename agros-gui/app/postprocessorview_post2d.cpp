@@ -71,6 +71,7 @@ void PostprocessorScenePost2DWidget::createControls()
     connect(m_scenePost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
 
     QVBoxLayout *layoutResults = new QVBoxLayout();
+    layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutResults->addWidget(toolBar);
     layoutResults->addWidget(resultsView);
 
@@ -83,6 +84,7 @@ void PostprocessorScenePost2DWidget::createControls()
     tabWidget->addTab(postVectorAdvancedWidget(), tr("Vector field"));
 
     QVBoxLayout *layoutArea = new QVBoxLayout();
+    layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutArea->addWidget(tabWidget);
     layoutArea->addWidget(widResults);
 

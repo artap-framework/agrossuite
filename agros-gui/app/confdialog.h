@@ -48,6 +48,7 @@ private:
 
     // log std out
     QCheckBox *chkLogStdOut;
+    QCheckBox *chkApplyStyle;
 
     // development
     QCheckBox *chkDiscreteSaveMatrixRHS;

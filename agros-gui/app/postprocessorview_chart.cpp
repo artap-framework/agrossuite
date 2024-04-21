@@ -261,6 +261,9 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
 
     if (cmbFieldVariableComp->currentIndex() == -1)
         cmbFieldVariableComp->setCurrentIndex(0);
+
+    createChartLine();
+    geometryViewer->doZoomBestFit();
 }
 
 void PostprocessorSceneChartWidget::createChartLine()
@@ -283,7 +286,6 @@ void PostprocessorSceneChartWidget::createChartLine()
     }
 
     geometryViewer->setChartLine(line);
-    geometryViewer->doZoomBestFit();
 }
 
 void PostprocessorSceneChartWidget::refresh()

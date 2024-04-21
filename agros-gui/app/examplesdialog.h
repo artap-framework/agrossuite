@@ -30,12 +30,12 @@ class ExamplesWidget : public QWidget
     Q_OBJECT
 
 public:
-    ExamplesWidget(QWidget *parent, InfoWidget *infoWidget);
+    ExamplesWidget(QWidget *parent);
     ~ExamplesWidget();
 
     QAction *actExamples;
 
-    void init(const QString &expandedGroup = "");
+    void initRecentFile();
 
 signals:
     void problemOpen(const QString &fileName);
@@ -51,7 +51,7 @@ private slots:
     void doExampleItemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
-    InfoWidget *m_infoWidget;
+    InfoWidget *infoWidget;
 
     QTreeWidget *trvRecentFiles;
     QTreeWidget *trvExamples;

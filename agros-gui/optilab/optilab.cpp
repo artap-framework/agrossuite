@@ -490,8 +490,6 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 
     createControls();
 
-    // connect(Agros::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
-
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
     connect(m_optiLabWidget, SIGNAL(chartRefreshed(QString)), this, SLOT(doChartRefreshed(QString)));
     connect(this, SIGNAL(computationSelected(QString)), m_optiLabWidget, SLOT(doComputationSelected(QString)));
@@ -685,11 +683,11 @@ QWidget *OptiLab::createControlsResults()
     mnuResults->addAction(actResultsFindMinimum);
     mnuResults->addAction(actResultsFindMaximum);
 
-    QVBoxLayout *layoutResults = new QVBoxLayout();
+    auto *layoutResults = new QVBoxLayout();
     layoutResults->addWidget(trvResults, 2);
     layoutResults->addWidget(geometryViewer, 1);
 
-    QWidget *widResults = new QWidget();
+    auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
     widResults->setLayout(layoutResults);
 
@@ -700,11 +698,11 @@ void OptiLab::createControls()
 {
     geometryViewer = new SceneViewSimpleGeometry(this);
 
-    QVBoxLayout *layoutCharts = new QVBoxLayout();
+    auto *layoutCharts = new QVBoxLayout();
     layoutCharts->addWidget(createControlsChart(), 2);
     layoutCharts->addWidget(createControlsDistChart(), 1);
 
-    QWidget *widCharts = new QWidget();
+    auto *widCharts = new QWidget();
     widCharts->setContentsMargins(0, 0, 0, 0);
     widCharts->setLayout(layoutCharts);
 
@@ -719,10 +717,16 @@ void OptiLab::createControls()
     splitter->restoreState(settings.value("OptiLab/SplitterState").toByteArray());
     splitter->restoreGeometry(settings.value("OptiLab/SplitterGeometry").toByteArray());
 
-    QHBoxLayout *layoutLab = new QHBoxLayout();
-    layoutLab->addWidget(splitter);
+    auto *layoutRight = new QHBoxLayout();
+    layoutRight->addWidget(splitter);
 
-    setLayout(layoutLab);
+    auto layoutMain = new QHBoxLayout();
+    layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->addWidget(m_optiLabWidget);
+    layoutMain->addLayout(layoutRight);
+    layoutMain->setStretch(1, 1);
+
+    setLayout(layoutMain);
 }
 
 void OptiLab::refresh()

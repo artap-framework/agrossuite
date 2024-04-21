@@ -54,12 +54,6 @@ void LogGui::printDebug(const QString &module, const QString &message)
     emit m_connectLog->debugMsg(module, message);
 }
 
-LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
-    : QWidget(logWidget), logWidget(logWidget)
-{
-
-}
-
 LogWidget::LogWidget(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
     printCounter(0), m_connectLog(connectLog)
 {       
@@ -251,13 +245,10 @@ LogView::LogView(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
     layoutMain->addWidget(logWidget);
 
     setLayout(layoutMain);
-
-    m_logConfigWidget = new LogConfigWidget(logWidget);
 }
 
 LogView::~LogView()
 {        
-    delete m_logConfigWidget;
 }
 
 LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),

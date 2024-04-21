@@ -29,12 +29,14 @@ class SceneFaceCommandRemove;
 class SceneLabelCommandAdd;
 class SceneLabelCommandRemove;
 class SceneNodeCommandRemove;
+class SceneTransformDialog;
+
 
 #ifndef signals
 #define signals public
 #endif
 
-class SceneViewPreprocessor : public SceneViewCommon2D
+class SceneViewProblem : public SceneViewCommon2D
 {
     Q_OBJECT
 signals:
@@ -43,16 +45,18 @@ signals:
 public slots:
     virtual void clear();
     virtual void refresh();
+    void refreshActions();
 
     void doSceneGeometryModeSet(QAction *action);
     void doSelectBasic();
     void doSceneObjectProperties();
     void doSceneEdgeSwapDirection();
     void doDeleteSelected();
+    void doTransform();
 
 public:
-    SceneViewPreprocessor(QWidget *parent = 0);
-    ~SceneViewPreprocessor();
+    SceneViewProblem(QWidget *parent = 0);
+    ~SceneViewProblem();
 
     QAction *actSceneViewSelectRegion;
 
@@ -63,13 +67,13 @@ public:
     QAction *actOperateOnEdges;
     QAction *actOperateOnLabels;
 
+    QAction *actSceneObjectDeleteSelected;
     QAction *actSceneObjectProperties;
     QAction *actSceneEdgeSwapDirection;
+    QAction *actTransform;
 
     inline SceneGeometryMode sceneMode() const { return m_sceneMode; }
     void saveGeometryToSvg(const QString &fileName);
-
-    virtual QString labelView() { return tr("Geometry editor"); }
 
     inline QMenu *menuScene() { return m_mnuScene; }
 
@@ -121,6 +125,9 @@ private:
     // helper for zoom region
     bool m_selectRegion;
     QPointF m_selectRegionPos;
+
+    // transform
+    SceneTransformDialog *sceneTransformDialog;
 
     void createActionsGeometry();
     void createMenuGeometry();

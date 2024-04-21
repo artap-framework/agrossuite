@@ -22,7 +22,8 @@
 
 #include "app/sceneview_common.h"
 
-class SceneViewPreprocessor;
+class QTextEdit;
+class SceneViewProblem;
 
 class InfoWidgetGeneral : public QWidget
 {

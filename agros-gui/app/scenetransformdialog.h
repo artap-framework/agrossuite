@@ -22,16 +22,17 @@
 
 #include "util/util.h"
 #include "sceneview_geometry.h"
+#include "gui/other.h"
 
 class Scene;
 class ValueLineEdit;
-class SceneViewPreprocessor;
+class SceneViewProblem;
 
 class SceneTransformDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SceneTransformDialog(SceneViewPreprocessor *sceneViewPreprocessor, QWidget *parent = 0);
+    SceneTransformDialog(SceneViewProblem *sceneViewPreprocessor, QWidget *parent = 0);
     ~SceneTransformDialog();
 
     void showDialog();
@@ -45,7 +46,7 @@ protected:
     void createControls();
 
 private:
-    SceneViewPreprocessor *m_sceneViewPreprocessor;
+    SceneViewProblem *m_sceneViewPreprocessor;
 
     QTabWidget *tabWidget;
 

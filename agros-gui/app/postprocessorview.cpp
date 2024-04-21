@@ -57,6 +57,31 @@ PostprocessorWidget::PostprocessorWidget()
     actSceneModeResults->setCheckable(true);
     actSceneModeResults->setEnabled(false);
 
+    actOperateOnMesh = new QAction(icon("geometry_node"), tr("Mesh"), this);
+    actOperateOnMesh->setShortcut(Qt::Key_F2);
+    actOperateOnMesh->setCheckable(true);
+
+    actOperateOnPost2D = new QAction(icon("geometry_edge"), tr("Post 2D"), this);
+    actOperateOnPost2D->setShortcut(Qt::Key_F3);
+    actOperateOnPost2D->setCheckable(true);
+    actOperateOnPost2D->setChecked(true);
+
+    actOperateOnPost3D = new QAction(icon("geometry_label"), tr("Post 3D"), this);
+    actOperateOnPost3D->setShortcut(Qt::Key_F4);
+    actOperateOnPost3D->setCheckable(true);
+
+    actOperateOnChart = new QAction(icon("geometry_label"), tr("Chart"), this);
+    actOperateOnChart->setShortcut(Qt::Key_F5);
+    actOperateOnChart->setCheckable(true);
+
+    actOperateGroup = new QActionGroup(this);
+    actOperateGroup->setExclusive(true);
+    actOperateGroup->addAction(actOperateOnMesh);
+    actOperateGroup->addAction(actOperateOnPost2D);
+    actOperateGroup->addAction(actOperateOnPost3D);
+    actOperateGroup->addAction(actOperateOnChart);
+    connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doPostModeSet(QAction *)));
+
     m_fieldWidget = new PhysicalFieldWidget(this);
     connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
 
@@ -72,8 +97,8 @@ PostprocessorWidget::PostprocessorWidget()
     m_sceneViewChart = new SceneViewChart(this);
     m_chartWidget = new PostprocessorSceneChartWidget(m_fieldWidget, m_sceneViewChart);
 
-    // m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
-    // m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(m_fieldWidget, m_sceneViewParticleTracing);
+    // default view
+    m_postMode = PostprocessorWidgetMode_Post2D;
 
     createControls();
 }
@@ -87,24 +112,72 @@ void PostprocessorWidget::createControls()
     btnCreateVideo = new QPushButton(tr("Create video"));
     connect(btnCreateVideo, SIGNAL(clicked()), SLOT(createVideo()));
 
-    QHBoxLayout *layoutButtons = new QHBoxLayout();
+    auto *layoutButtons = new QHBoxLayout();
+    layoutButtons->setContentsMargins(10, 2, 10, 6);
     layoutButtons->addWidget(btnCreateVideo);
     layoutButtons->addStretch();
     layoutButtons->addWidget(btnApply);
 
-    tabWidget = new QTabWidget();
-    tabWidget->addTab(m_meshWidget, tr("Mesh"));
-    tabWidget->addTab(m_post2DWidget, tr("2D view"));
-    tabWidget->addTab(m_post3DWidget, tr("3D view"));
-    // tabWidget->addTab(m_particleTracingWidget, tr("Part. tracing"));
-    tabWidget->addTab(m_chartWidget, tr("Chart"));
-    connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
+    tabControlWidgetLayout = new QStackedLayout();
+    tabControlWidgetLayout->addWidget(m_meshWidget);
+    tabControlWidgetLayout->addWidget(m_post2DWidget);
+    tabControlWidgetLayout->addWidget(m_post3DWidget);
+    tabControlWidgetLayout->addWidget(m_chartWidget);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);
-    layoutMain->addWidget(m_fieldWidget);
-    layoutMain->addWidget(tabWidget);
-    layoutMain->addLayout(layoutButtons);
+    auto *layoutLeft = new QVBoxLayout();
+    // layoutLeft->setContentsMargins(2, 2, 2, 3);
+    layoutLeft->setContentsMargins(0, 0, 0, 0);
+    layoutLeft->addWidget(m_fieldWidget);
+    layoutLeft->addLayout(tabControlWidgetLayout);
+    layoutLeft->addLayout(layoutButtons);
+
+    tabViewLayout = new QStackedLayout();
+    tabViewLayout->addWidget(m_sceneViewMesh);
+    tabViewLayout->addWidget(m_sceneViewPost2D);
+    tabViewLayout->addWidget(m_sceneViewPost3D);
+    tabViewLayout->addWidget(m_sceneViewChart);
+
+    auto viewWidget = new QWidget();
+    viewWidget->setContentsMargins(2, 2, 2, 3);
+    viewWidget->setLayout(tabViewLayout);
+
+    // zoom
+    mnuZoom = new QMenu(this);
+
+    zoomButton = new QToolButton();
+    zoomButton->setText(tr("Zoom"));
+    zoomButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    zoomButton->setIconSize(QSize(24, 24));
+    zoomButton->setMenu(mnuZoom);
+    zoomButton->setAutoRaise(true);
+    zoomButton->setIcon(icon("geometry_zoom"));
+    zoomButton->setPopupMode(QToolButton::InstantPopup);
+
+    // right toolbar
+    toolBarRight = new QToolBar();
+    toolBarRight->setIconSize(QSize(24, 24));
+    toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBarRight->addAction(actOperateOnMesh);
+    toolBarRight->addAction(actOperateOnPost2D);
+    toolBarRight->addAction(actOperateOnPost3D);
+    toolBarRight->addAction(actOperateOnChart);
+    toolBarRight->addSeparator();
+    // toolBarRight->addAction(m_sceneViewMeshProblem->actSceneObjectProperties);
+    // toolBarRight->addAction(m_sceneViewProblem->actSceneObjectDeleteSelected);
+    // toolBarRight->addSeparator();
+    // toolBarRight->addAction(m_sceneViewProblem->actSceneViewSelectRegion);
+    toolBarRight->addWidget(zoomButton);
+
+    auto layoutRight = new QVBoxLayout();
+    layoutRight->setContentsMargins(0, 0, 0, 0);
+    layoutRight->addWidget(toolBarRight);
+    layoutRight->addWidget(viewWidget);
+
+    auto layoutMain = new QHBoxLayout();
+    layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->addLayout(layoutLeft);
+    layoutMain->addLayout(layoutRight);
+    layoutMain->setStretch(1, 1);
 
     setLayout(layoutMain);
 }
@@ -129,16 +202,14 @@ void PostprocessorWidget::apply()
     if (m_currentComputation->isSolved())
     {
         // save settings
-        if (tabWidget->currentWidget() == m_meshWidget)
+        if (m_postMode == PostprocessorWidgetMode_Mesh)
             m_meshWidget->save();
-        else if (tabWidget->currentWidget() == m_post2DWidget)
+        else if (m_postMode == PostprocessorWidgetMode_Post2D)
             m_post2DWidget->save();
-        else if (tabWidget->currentWidget() == m_post3DWidget)
+        else if (m_postMode == PostprocessorWidgetMode_Post3D)
             m_post3DWidget->save();
-        else if (tabWidget->currentWidget() == m_chartWidget)
+        else if (m_postMode == PostprocessorWidgetMode_Chart)
             m_chartWidget->save();
-        // else if (tabWidget->currentWidget() == m_particleTracingWidget)
-        //    m_particleTracingWidget->save();
 
         // refresh view
         m_currentComputation->postDeal()->setActiveViewField(m_fieldWidget->selectedField());
@@ -151,7 +222,6 @@ void PostprocessorWidget::apply()
         m_sceneViewPost2D->refresh();
         m_sceneViewPost3D->refresh();
         m_sceneViewChart->refresh();
-        // m_sceneViewParticleTracing->refresh();
 
         emit changed();
     }
@@ -191,10 +261,6 @@ void PostprocessorWidget::refresh()
             m_post2DWidget->refresh();
             m_post3DWidget->refresh();
             m_chartWidget->refresh();
-            // m_particleTracingWidget->refresh();
-
-            // default widget
-            tabWidget->setCurrentWidget(m_post2DWidget);
 
             // clear post view
             m_currentComputation->postDeal()->clear();
@@ -203,14 +269,7 @@ void PostprocessorWidget::refresh()
             m_sceneViewMesh->setControls();
             m_sceneViewPost2D->setControls();
             m_sceneViewPost3D->setControls();
-            // m_sceneViewParticleTracing->setControls();
             m_sceneViewChart->refresh();
-
-            tabWidget->setTabEnabled(0, m_currentComputation->isSolved());
-            tabWidget->setTabEnabled(1, m_currentComputation->isSolved());
-            tabWidget->setTabEnabled(2, m_currentComputation->isSolved());
-            tabWidget->setTabEnabled(3, m_currentComputation->isSolved());
-            tabWidget->setTabEnabled(4, m_currentComputation->isSolved());
         }
     }
 
@@ -221,7 +280,58 @@ void PostprocessorWidget::refresh()
     m_post2DWidget->load();
     m_post3DWidget->load();
     m_chartWidget->load();
-    // m_particleTracingWidget->load();
+
+    mnuZoom->clear();
+    switch (m_postMode)
+    {
+    case PostprocessorWidgetMode_Mesh:
+    {
+        tabControlWidgetLayout->setCurrentWidget(m_meshWidget);
+        tabViewLayout->setCurrentWidget(m_sceneViewMesh);
+        m_sceneViewMesh->refresh();
+
+        zoomButton->setEnabled(true);
+        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomBestFit);
+        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomIn);
+        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomOut);
+    }
+    break;
+    case PostprocessorWidgetMode_Post2D:
+    {
+        tabControlWidgetLayout->setCurrentWidget(m_post2DWidget);
+        tabViewLayout->setCurrentWidget(m_sceneViewPost2D);
+        m_sceneViewPost2D->refresh();
+
+        zoomButton->setEnabled(true);
+        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomBestFit);
+        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomIn);
+        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomOut);
+    }
+    break;
+
+    case PostprocessorWidgetMode_Post3D:
+    {
+        tabControlWidgetLayout->setCurrentWidget(m_post3DWidget);
+        tabViewLayout->setCurrentWidget(m_sceneViewPost3D);
+        m_sceneViewPost3D->refresh();
+
+        zoomButton->setEnabled(true);
+        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomBestFit);
+        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomIn);
+        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomOut);
+    }
+    break;
+    case PostprocessorWidgetMode_Chart:
+    {
+        tabControlWidgetLayout->setCurrentWidget(m_chartWidget);
+        tabViewLayout->setCurrentWidget(m_sceneViewChart);
+
+        zoomButton->setEnabled(false);
+    }
+    break;
+    default:
+        break;
+    }
 
     if (computationChanged)
         apply();
@@ -275,20 +385,26 @@ void PostprocessorWidget::createVideo()
     }
 }
 
-PostprocessorWidgetMode PostprocessorWidget::mode()
+void PostprocessorWidget::doPostModeSet(QAction *action)
 {
-    if (tabWidget->currentWidget() == m_meshWidget)
-        return PostprocessorWidgetMode_Mesh;
-    else if (tabWidget->currentWidget() == m_post2DWidget)
-        return PostprocessorWidgetMode_Post2D;
-    else if (tabWidget->currentWidget() == m_post3DWidget)
-        return PostprocessorWidgetMode_Post3D;
-    else if (tabWidget->currentWidget() == m_chartWidget)
-        return PostprocessorWidgetMode_Chart;
-    // else if (tabWidget->currentWidget() == m_particleTracingWidget)
-    //     return PostprocessorWidgetMode_ParticleTracing;
+    if (actOperateOnMesh->isChecked())
+        m_postMode = PostprocessorWidgetMode_Mesh;
+    else if (actOperateOnPost2D->isChecked())
+        m_postMode = PostprocessorWidgetMode_Post2D;
+    else if (actOperateOnPost3D->isChecked())
+        m_postMode = PostprocessorWidgetMode_Post3D;
+    else if (actOperateOnChart->isChecked())
+        m_postMode = PostprocessorWidgetMode_Chart;
     else
-        assert(0);
+    {
+        // set default
+        actOperateOnPost2D->setChecked(true);
+        m_postMode = PostprocessorWidgetMode_Post2D;
+    }
+
+    update();
+
+    emit modeChanged(m_postMode);
 }
 
 PostprocessorSceneWidget::PostprocessorSceneWidget(PhysicalFieldWidget *fieldWidget)

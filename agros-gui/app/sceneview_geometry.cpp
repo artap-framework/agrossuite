@@ -35,6 +35,7 @@
 #include "scenemarkerdialog.h"
 #include "scenebasicselectdialog.h"
 #include "scenegeometrydialog.h"
+#include "scenetransformdialog.h"
 
 #include "solver/module.h"
 
@@ -69,7 +70,7 @@ SceneNodeCommandRemove* getRemoveCommand(SceneNode *node)
     return new SceneNodeCommandRemove(node->pointValue());
 }
 
-SceneViewPreprocessor::SceneViewPreprocessor(QWidget *parent)
+SceneViewProblem::SceneViewProblem(QWidget *parent)
     : SceneViewCommon2D(parent),
       m_sceneMode(SceneGeometryMode_OperateOnNodes),
       m_snapToGrid(true),
@@ -80,32 +81,32 @@ SceneViewPreprocessor::SceneViewPreprocessor(QWidget *parent)
     createMenuGeometry();
 }
 
-SceneViewPreprocessor::~SceneViewPreprocessor()
+SceneViewProblem::~SceneViewProblem()
 {
 }
 
-ProblemBase *SceneViewPreprocessor::problem() const
+ProblemBase *SceneViewProblem::problem() const
 {
     return static_cast<ProblemBase *>(Agros::problem());
 }
 
-void SceneViewPreprocessor::createActionsGeometry()
+void SceneViewProblem::createActionsGeometry()
 {
     actSceneModeProblem = new QAction(icon("main_problem"), tr("Problem"), this);
     actSceneModeProblem->setShortcut(tr("Ctrl+2"));
     actSceneModeProblem->setCheckable(true);
 
     // scene - operate on items
-    actOperateOnNodes = new QAction(icon("geometry_node"), tr("Operate on &nodes"), this);
+    actOperateOnNodes = new QAction(icon("geometry_node"), tr("&Nodes"), this);
     actOperateOnNodes->setShortcut(Qt::Key_F2);
     actOperateOnNodes->setCheckable(true);
     actOperateOnNodes->setChecked(true);
 
-    actOperateOnEdges = new QAction(icon("geometry_edge"), tr("Operate on &edges"), this);
+    actOperateOnEdges = new QAction(icon("geometry_edge"), tr("&Edges"), this);
     actOperateOnEdges->setShortcut(Qt::Key_F3);
     actOperateOnEdges->setCheckable(true);
 
-    actOperateOnLabels = new QAction(icon("geometry_label"), tr("Operate on &labels"), this);
+    actOperateOnLabels = new QAction(icon("geometry_label"), tr("&Labels"), this);
     actOperateOnLabels->setShortcut(Qt::Key_F4);
     actOperateOnLabels->setCheckable(true);
 
@@ -121,34 +122,35 @@ void SceneViewPreprocessor::createActionsGeometry()
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties
-    actSceneObjectProperties = new QAction(icon("gear"), tr("Object properties"), this);
+    actSceneObjectProperties = new QAction(icon("gear"), tr("Properties"), this);
     actSceneObjectProperties->setShortcut(Qt::Key_Space);
     connect(actSceneObjectProperties, SIGNAL(triggered()), this, SLOT(doSceneObjectProperties()));
+
+    actSceneObjectDeleteSelected = new QAction(icon("geometry_trash"), tr("Delete"), this);
+    connect(actSceneObjectDeleteSelected, SIGNAL(triggered()), this, SLOT(doDeleteSelected()));
 
     // scene edge swap points
     actSceneEdgeSwapDirection = new QAction(tr("Swap direction"), this);
     connect(actSceneEdgeSwapDirection, SIGNAL(triggered()), this, SLOT(doSceneEdgeSwapDirection()));
+
+    actTransform = new QAction(icon("calculator"), tr("&Transform"), this);
+    sceneTransformDialog = new SceneTransformDialog(this, this);
+    connect(actTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
 }
 
-void SceneViewPreprocessor::createMenuGeometry()
+void SceneViewProblem::createMenuGeometry()
 {
-    m_mnuScene = new QMenu(this);
-
-    // mnuScene->addAction(Agros::problem()->scene()->actNewNode);
-    // mnuScene->addAction(Agros::problem()->scene()->actNewEdge);
-    // mnuScene->addAction(Agros::problem()->scene()->actNewLabel);
-    // mnuScene->addSeparator();
-    // Agros::problem()->scene()->addBoundaryAndMaterialMenuItems(mnuScene, this);
-    m_mnuScene->addSeparator();
-    m_mnuScene->addAction(actSceneViewSelectRegion);
-    // mnuScene->addAction(Agros::problem()->scene()->actTransform);
+    m_mnuScene = new QMenu(this);    
     m_mnuScene->addSeparator();
     if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         m_mnuScene->addAction(actSceneEdgeSwapDirection);
+    m_mnuScene->addSeparator();
+    m_mnuScene->addAction(actTransform);
+    m_mnuScene->addAction(actSceneObjectDeleteSelected);
     m_mnuScene->addAction(actSceneObjectProperties);
 }
 
-void SceneViewPreprocessor::doSceneObjectProperties()
+void SceneViewProblem::doSceneObjectProperties()
 {
     if (m_sceneMode == SceneGeometryMode_OperateOnNodes)
     {
@@ -206,7 +208,7 @@ void SceneViewPreprocessor::doSceneObjectProperties()
     Agros::problem()->scene()->selectNone();
 }
 
-void SceneViewPreprocessor::doSceneEdgeSwapDirection()
+void SceneViewProblem::doSceneEdgeSwapDirection()
 {
     // swap
     if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
@@ -219,13 +221,13 @@ void SceneViewPreprocessor::doSceneEdgeSwapDirection()
                 }
 }
 
-void SceneViewPreprocessor::doSelectBasic()
+void SceneViewProblem::doSelectBasic()
 {
     SceneBasicSelectDialog sceneBasicSelectDialog(this, QApplication::activeWindow());
     sceneBasicSelectDialog.exec();
 }
 
-void SceneViewPreprocessor::doDeleteSelected()
+void SceneViewProblem::doDeleteSelected()
 {
     undoStack()->beginMacro(tr("Delete selected"));
 
@@ -272,18 +274,19 @@ void SceneViewPreprocessor::doDeleteSelected()
     problem()->scene()->invalidate();
 }
 
-void SceneViewPreprocessor::refresh()
+void SceneViewProblem::doTransform()
 {
-    // actions
-    actSceneViewSelectRegion->setEnabled(actSceneModeProblem->isChecked());
-    actOperateOnNodes->setEnabled(actSceneModeProblem->isChecked());
-    actOperateOnEdges->setEnabled(actSceneModeProblem->isChecked());
-    actOperateOnLabels->setEnabled(actSceneModeProblem->isChecked());
+    sceneTransformDialog->showDialog();
+}
+
+void SceneViewProblem::refresh()
+{
+    refreshActions();
 
     SceneViewCommon::refresh();
 }
 
-void SceneViewPreprocessor::clear()
+void SceneViewProblem::clear()
 {
     SceneViewCommon2D::clear();
 
@@ -291,9 +294,50 @@ void SceneViewPreprocessor::clear()
 
     m_sceneMode = SceneGeometryMode_OperateOnNodes;
     doZoomBestFit();
+
+    refreshActions();
 }
 
-void SceneViewPreprocessor::doSceneGeometryModeSet(QAction *action)
+void SceneViewProblem::refreshActions()
+{
+    // actions
+    actSceneViewSelectRegion->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnNodes->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnEdges->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnLabels->setEnabled(actSceneModeProblem->isChecked());
+
+    // properties and delete
+    actSceneObjectProperties->setEnabled(false);
+    actSceneObjectDeleteSelected->setEnabled(false);
+    actTransform->setEnabled(false);
+
+    // set node context menu
+    if (m_sceneMode == SceneGeometryMode_OperateOnNodes)
+    {
+        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() == 1);
+        actSceneObjectDeleteSelected->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+        actTransform->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+    }
+
+    // set boundary context menu
+    if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
+    {
+        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+        actSceneEdgeSwapDirection->setEnabled(Agros::problem()->scene()->selectedCount() == 1);
+        actSceneObjectDeleteSelected->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+        actTransform->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+    }
+
+    // set material context menu
+    if (m_sceneMode == SceneGeometryMode_OperateOnLabels)
+    {
+        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+        actSceneObjectDeleteSelected->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+        actTransform->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+    }    
+}
+
+void SceneViewProblem::doSceneGeometryModeSet(QAction *action)
 {
     if (actOperateOnNodes->isChecked())
         m_sceneMode = SceneGeometryMode_OperateOnNodes;
@@ -308,19 +352,6 @@ void SceneViewPreprocessor::doSceneGeometryModeSet(QAction *action)
         m_sceneMode = SceneGeometryMode_OperateOnNodes;
     }
 
-    switch (m_sceneMode)
-    {
-    case SceneGeometryMode_OperateOnNodes:
-        emit labelCenter(tr("Operate on nodes"));
-        break;
-    case SceneGeometryMode_OperateOnEdges:
-        emit labelCenter(tr("Operate on edges"));
-        break;
-    case SceneGeometryMode_OperateOnLabels:
-        emit labelCenter(tr("Operate on labels"));
-        break;
-    }
-
     Agros::problem()->scene()->highlightNone();
     Agros::problem()->scene()->selectNone();
     m_nodeLast = NULL;
@@ -330,7 +361,7 @@ void SceneViewPreprocessor::doSceneGeometryModeSet(QAction *action)
     emit sceneGeometryModeChanged(m_sceneMode);
 }
 
-void SceneViewPreprocessor::selectRegion(const Point &start, const Point &end)
+void SceneViewProblem::selectRegion(const Point &start, const Point &end)
 {
     Agros::problem()->scene()->selectNone();
 
@@ -355,7 +386,7 @@ void SceneViewPreprocessor::selectRegion(const Point &start, const Point &end)
     }
 }
 
-void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
+void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - m_lastPos.x();
     int dy = event->y() - m_lastPos.y();
@@ -616,7 +647,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
+void SceneViewProblem::mousePressEvent(QMouseEvent *event)
 {
     // select region
     if ((event->button() & Qt::LeftButton)
@@ -768,10 +799,12 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
         }
     }
 
+    refreshActions();
+
     SceneViewCommon2D::mousePressEvent(event);
 }
 
-void SceneViewPreprocessor::mouseReleaseEvent(QMouseEvent *event)
+void SceneViewProblem::mouseReleaseEvent(QMouseEvent *event)
 {
     actSceneViewSelectRegion->setChecked(false);
 
@@ -795,10 +828,12 @@ void SceneViewPreprocessor::mouseReleaseEvent(QMouseEvent *event)
         Agros::problem()->scene()->selectNone();
     }
 
+    refreshActions();
+
     SceneViewCommon2D::mouseReleaseEvent(event);
 }
 
-void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
+void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (!(event->modifiers() & Qt::ControlModifier))
     {
@@ -861,10 +896,12 @@ void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
         }
     }
 
+    refreshActions();
+
     SceneViewCommon2D::mouseDoubleClickEvent(event);
 }
 
-void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
+void SceneViewProblem::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key())
     {
@@ -892,6 +929,8 @@ void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
     }
 
+    refreshActions();
+
     SceneViewCommon2D::keyPressEvent(event);
 
     // snap to grid
@@ -900,37 +939,24 @@ void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
                     && (m_sceneMode == SceneGeometryMode_OperateOnNodes));
 }
 
-void SceneViewPreprocessor::keyReleaseEvent(QKeyEvent *event)
+void SceneViewProblem::keyReleaseEvent(QKeyEvent *event)
 {
     m_snapToGrid = false;
     update();
 
+    refreshActions();
+
     SceneViewCommon2D::keyReleaseEvent(event);
 }
 
-void SceneViewPreprocessor::contextMenuEvent(QContextMenuEvent *event)
+void SceneViewProblem::contextMenuEvent(QContextMenuEvent *event)
 {
-    actSceneObjectProperties->setEnabled(false);
-
-    // set node context menu
-    if (m_sceneMode == SceneGeometryMode_OperateOnNodes)
-        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() == 1);
-
-    // set boundary context menu
-    if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
-    {
-        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
-        actSceneEdgeSwapDirection->setEnabled(Agros::problem()->scene()->selectedCount() == 1);
-    }
-
-    // set material context menu
-    if (m_sceneMode == SceneGeometryMode_OperateOnLabels)
-        actSceneObjectProperties->setEnabled(Agros::problem()->scene()->selectedCount() > 0);
+    refreshActions();
 
     m_mnuScene->exec(event->globalPos());
 }
 
-void SceneViewPreprocessor::paintRulersHintsEdges()
+void SceneViewProblem::paintRulersHintsEdges()
 {
     loadProjection2d(true);
 
@@ -996,7 +1022,7 @@ void SceneViewPreprocessor::paintRulersHintsEdges()
     }
 }
 
-void SceneViewPreprocessor::paintGL()
+void SceneViewProblem::paintGL()
 {
     if (!isVisible()) return;
     makeCurrent();
@@ -1028,7 +1054,7 @@ void SceneViewPreprocessor::paintGL()
     paintEdgeLine();
 }
 
-void SceneViewPreprocessor::paintGeometry()
+void SceneViewProblem::paintGeometry()
 {
     loadProjection2d(true);
 
@@ -1097,7 +1123,6 @@ void SceneViewPreprocessor::paintGeometry()
 
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
         glPointSize(NODESIZE - 2.0);
-
         glBegin(GL_POINTS);
         glVertex2d(node->point().x, node->point().y);
         glEnd();
@@ -1135,26 +1160,36 @@ void SceneViewPreprocessor::paintGeometry()
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         glColor3d(COLORLABEL[0], COLORLABEL[1], COLORLABEL[2]);
-        glLineWidth(1.0);
-        glBegin(GL_POLYGON);
-        for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + dxlabel*fastcos(i/180.0*M_PI), label->point().y + dylabel*fastsin(i/180.0*M_PI));
+        glPointSize(LABELSIZE);
+        glBegin(GL_POINTS);
+        glVertex2d(label->point().x, label->point().y);
         glEnd();
-        //        glBegin(GL_TRIANGLES);
-        //        glVertex2d(label->point().x + dxlabel/2.0, label->point().y - dylabel/3.0);
-        //        glVertex2d(label->point().x - dxlabel/2.0, label->point().y - dylabel/3.0);
-        //        glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0);
-        //        glEnd();
+
+        // glLineWidth(1.0);
+        // glBegin(GL_POLYGON);
+        // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + dxlabel*fastcos(i/180.0*M_PI), label->point().y + dylabel*fastsin(i/180.0*M_PI));
+        // glEnd();
+
+        // glBegin(GL_TRIANGLES);
+        // glVertex2d(label->point().x + dxlabel/2.0, label->point().y - dylabel/3.0);
+        // glVertex2d(label->point().x - dxlabel/2.0, label->point().y - dylabel/3.0);
+        // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0);
+        // glEnd();
 
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
-        glBegin(GL_POLYGON);
-        for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
+        glPointSize(LABELSIZE - 2.0);
+        glBegin(GL_POINTS);
+        glVertex2d(label->point().x, label->point().y);
         glEnd();
-        //        glBegin(GL_TRIANGLES);
-        //        glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-        //        glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-        //        glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
-        //        glEnd();
 
+        // glBegin(GL_POLYGON);
+        // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
+        // glEnd();
+        // glBegin(GL_TRIANGLES);
+        // glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+        // glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+        // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
+        // glEnd();
 
         if ((label->isSelected()) || (label->isHighlighted()))
         {
@@ -1163,15 +1198,20 @@ void SceneViewPreprocessor::paintGeometry()
             if (label->isSelected())
                 glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
 
-            glBegin(GL_POLYGON);
-            for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
+            glPointSize(LABELSIZE);
+            glBegin(GL_POINTS);
+            glVertex2d(label->point().x, label->point().y);
             glEnd();
 
-            //            glBegin(GL_TRIANGLES);
-            //            glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-            //            glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-            //            glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
-            //            glEnd();
+            // glBegin(GL_POLYGON);
+            // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
+            // glEnd();
+
+            // glBegin(GL_TRIANGLES);
+            // glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+            // glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
+            // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
+            // glEnd();
         }
 
         // area size
@@ -1298,7 +1338,7 @@ void SceneViewPreprocessor::paintGeometry()
     }
 }
 
-void SceneViewPreprocessor::paintSnapToGrid()
+void SceneViewProblem::paintSnapToGrid()
 {
     if (m_snapToGrid)
     {
@@ -1318,7 +1358,7 @@ void SceneViewPreprocessor::paintSnapToGrid()
     }
 }
 
-void SceneViewPreprocessor::paintEdgeLine()
+void SceneViewProblem::paintEdgeLine()
 {
     if (m_nodeLast)
     {
@@ -1367,7 +1407,7 @@ void SceneViewPreprocessor::paintEdgeLine()
     }
 }
 
-void SceneViewPreprocessor::paintSelectRegion()
+void SceneViewProblem::paintSelectRegion()
 {
     // zoom region
     if (m_selectRegion)
@@ -1382,7 +1422,7 @@ void SceneViewPreprocessor::paintSelectRegion()
     }
 }
 
-void SceneViewPreprocessor::saveGeometryToSvg(const QString &fileName)
+void SceneViewProblem::saveGeometryToSvg(const QString &fileName)
 {
     QString geometry = generateSvgGeometry(Agros::problem()->scene()->faces->items());
     writeStringContent(fileName, geometry);
@@ -1390,7 +1430,7 @@ void SceneViewPreprocessor::saveGeometryToSvg(const QString &fileName)
 
 
 
-bool SceneViewPreprocessor::moveSelectedNodes(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy)
+bool SceneViewProblem::moveSelectedNodes(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy)
 {
     // select endpoints
     foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
@@ -1455,7 +1495,7 @@ bool SceneViewPreprocessor::moveSelectedNodes(SceneTransformMode mode, Point poi
     return true;
 }
 
-bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
+bool SceneViewProblem::moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
     QList<SceneFace *> selectedEdges;
 
@@ -1526,7 +1566,7 @@ bool SceneViewPreprocessor::moveSelectedEdges(SceneTransformMode mode, Point poi
     return true;
 }
 
-bool SceneViewPreprocessor::moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
+bool SceneViewProblem::moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
     QList<PointValue> points;
     QList<PointValue> newPoints;
@@ -1593,7 +1633,7 @@ bool SceneViewPreprocessor::moveSelectedLabels(SceneTransformMode mode, Point po
     return true;
 }
 
-void SceneViewPreprocessor::transformPosition(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
+void SceneViewProblem::transformPosition(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
     bool okNodes, okEdges = true;
     okNodes = moveSelectedNodes(mode, point, angle, scaleFactor, copy);
@@ -1607,22 +1647,22 @@ void SceneViewPreprocessor::transformPosition(SceneTransformMode mode, const Poi
     Agros::problem()->scene()->invalidate();
 }
 
-void SceneViewPreprocessor::transformTranslate(const Point &point, bool copy, bool withMarkers)
+void SceneViewProblem::transformTranslate(const Point &point, bool copy, bool withMarkers)
 {
     transformPosition(SceneTransformMode_Translate, point, 0.0, 0.0, copy, withMarkers);
 }
 
-void SceneViewPreprocessor::transformRotate(const Point &point, double angle, bool copy, bool withMarkers)
+void SceneViewProblem::transformRotate(const Point &point, double angle, bool copy, bool withMarkers)
 {
     transformPosition(SceneTransformMode_Rotate, point, angle, 0.0, copy, withMarkers);
 }
 
-void SceneViewPreprocessor::transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers)
+void SceneViewProblem::transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers)
 {
     transformPosition(SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
 }
 
-Point SceneViewPreprocessor::calculateNewPoint(SceneTransformMode mode, Point originalPoint, Point transformationPoint, double angle, double scaleFactor)
+Point SceneViewProblem::calculateNewPoint(SceneTransformMode mode, Point originalPoint, Point transformationPoint, double angle, double scaleFactor)
 {
     Point newPoint;
 

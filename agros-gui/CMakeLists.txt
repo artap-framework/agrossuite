@@ -34,7 +34,7 @@ SET(SOURCES main.cpp
     gui/problemdialog.cpp
     gui/recipedialog.cpp
     gui/resultsview.cpp
-    gui/scenewidget.cpp
+
     gui/systemoutput.cpp
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
@@ -90,7 +90,7 @@ SET(HEADERS gui/about.h
     gui/problemdialog.h
     gui/recipedialog.h
     gui/resultsview.h
-    gui/scenewidget.h
+
     gui/systemoutput.h
     gui/valuedatatabledialog.h
     gui/valuelineedit.h

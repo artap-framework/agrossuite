@@ -56,6 +56,9 @@ void ConfigComputerDialog::load()
     // std log
     chkLogStdOut->setChecked(Agros::configComputer()->value(Config::Config_LogStdOut).toBool());
 
+    // style
+    chkApplyStyle->setChecked(Agros::configComputer()->value(Config::Config_ReloadStyle).toBool());
+
     // workspace
     chkShowAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowAxes).toBool());
     chkShowRulers->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
@@ -85,6 +88,9 @@ void ConfigComputerDialog::save()
 
     // std log
     Agros::configComputer()->setValue(Config::Config_LogStdOut, chkLogStdOut->isChecked());
+
+    // style
+    Agros::configComputer()->setValue(Config::Config_ReloadStyle, chkApplyStyle->isChecked());
 
     // workspace
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
@@ -131,11 +137,13 @@ QWidget *ConfigComputerDialog::createMainWidget()
     // other
     chkLineEditValueShowResult = new QCheckBox(tr("Show value result in line edit input"));
 
-    chkLogStdOut = new QCheckBox(tr("Print application log to standard output."));
+    chkLogStdOut = new QCheckBox(tr("Print application log to standard output"));
+    chkApplyStyle = new QCheckBox(tr("Reload stylesheet continuously"));
 
     QVBoxLayout *layoutOther = new QVBoxLayout();
     layoutOther->addWidget(chkLineEditValueShowResult);
     layoutOther->addWidget(chkLogStdOut);
+    layoutOther->addWidget(chkApplyStyle);
 
     QGroupBox *grpOther = new QGroupBox(tr("Other"));
     grpOther->setLayout(layoutOther);

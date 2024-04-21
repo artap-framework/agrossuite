@@ -40,8 +40,6 @@ public:
     QAction *actExportVTKOrder;
     QAction *actExportVTKMesh;
 
-    virtual QString labelView() { return tr("Mesh and polynomial order view"); }
-
     void setControls();
 
 public slots:    
