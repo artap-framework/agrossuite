@@ -770,6 +770,7 @@ void PreprocessorWidget::refresh()
         if (!Agros::problem()->fieldInfos().keys().contains(fieldAction->key()))
         {
             fieldAction->setIcon(icon("fields/" + fieldAction->key()));
+            fieldAction->setIconVisibleInMenu(true);
             mnuFields->addAction(fieldAction);
         }
 

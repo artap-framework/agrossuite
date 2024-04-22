@@ -68,7 +68,7 @@ void FieldWidget::createContent()
     txtPolynomialOrder->setMaximum(DEALII_MAX_ORDER);
 
     // table
-    QGridLayout *layoutGeneral = new QGridLayout();
+    auto *layoutGeneral = new QGridLayout();
     layoutGeneral->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutGeneral->setColumnStretch(1, 1);
     layoutGeneral->addWidget(new QLabel(tr("Analysis:")), 0, 0);
@@ -78,11 +78,11 @@ void FieldWidget::createContent()
     layoutGeneral->addWidget(new QLabel(tr("Matrix solver:")), 2, 0);
     layoutGeneral->addWidget(cmbLinearSolver, 2, 1);
 
-    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
+    auto *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
 
     // mesh
-    QGridLayout *layoutMesh = new QGridLayout();
+    auto *layoutMesh = new QGridLayout();
     layoutMesh->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutMesh->setColumnStretch(1, 1);
     layoutMesh->addWidget(new QLabel(tr("Number of refinements:")), 0, 0);
@@ -93,41 +93,41 @@ void FieldWidget::createContent()
     layoutMesh->addWidget(cmbAdaptivityType, 2, 1);
     layoutMesh->setRowStretch(50, 1);
 
-    QGroupBox *grpMesh = new QGroupBox(tr("Mesh parameters"));
+    auto *grpMesh = new QGroupBox(tr("Mesh parameters"));
     grpMesh->setLayout(layoutMesh);
 
     // left
-    QVBoxLayout *layoutLeft = new QVBoxLayout();
+    auto *layoutLeft = new QVBoxLayout();
     layoutLeft->addWidget(grpGeneral);
     layoutLeft->addStretch();
 
     // right
-    QVBoxLayout *layoutRight = new QVBoxLayout();
+    auto *layoutRight = new QVBoxLayout();
     layoutRight->addWidget(grpMesh);
     layoutRight->addStretch();
 
     // both
-    QHBoxLayout *layoutPanel = new QHBoxLayout();
+    auto *layoutPanel = new QHBoxLayout();
     layoutPanel->addLayout(layoutLeft);
     layoutPanel->addLayout(layoutRight);
 
     // equation
-    QHBoxLayout *layoutEquation = new QHBoxLayout();
+    auto *layoutEquation = new QHBoxLayout();
     layoutEquation->addWidget(equationImage);
     layoutEquation->addStretch(1);
     layoutEquation->addWidget(fieldImage);
 
     // tabs
-    QTabWidget *tabWidget = new QTabWidget(this);
+    auto *tabWidget = new QTabWidget(this);
     tabWidget->addTab(createSolverWidget(), tr("Solver"));
     tabWidget->addTab(createAdaptivityWidget(), tr("Space adaptivity"));
     tabWidget->addTab(createTransientAnalysisWidget(), tr("Transient analysis"));
     tabWidget->addTab(createLinearSolverWidget(), tr("Matrix solver"));
 
-    QGroupBox *grpEquation = new QGroupBox(tr("Partial differential equation"));
+    auto *grpEquation = new QGroupBox(tr("Partial differential equation"));
     grpEquation->setLayout(layoutEquation);
 
-    QVBoxLayout *layoutProblem = new QVBoxLayout();
+    auto *layoutProblem = new QVBoxLayout();
     layoutProblem->addWidget(grpEquation);
     layoutProblem->addLayout(layoutPanel);
     layoutProblem->addWidget(tabWidget);
@@ -151,7 +151,7 @@ QWidget *FieldWidget::createSolverWidget()
     txtNonlinearRelativeChangeOfSolutions = new LineEditDouble(m_fieldInfo->defaultValue(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble());
     txtNonlinearRelativeChangeOfSolutions->setBottom(0.0);
 
-    QGridLayout *layoutSolverConvergence = new QGridLayout();
+    auto *layoutSolverConvergence = new QGridLayout();
     layoutSolverConvergence->setColumnMinimumWidth(0, columnMinimumWidth());
 
     layoutSolverConvergence->addWidget(new QLabel(tr("Relative change of solutions (%):")), 0, 0);
@@ -161,7 +161,7 @@ QWidget *FieldWidget::createSolverWidget()
     layoutSolverConvergence->addWidget(chkNonlinearResidual, 1, 1);
     layoutSolverConvergence->addWidget(txtNonlinearResidual, 1, 2);
 
-    QGroupBox *grpSolverConvergence = new QGroupBox(tr("Convergence (all selected conditions have to be satisfied)"));
+    auto *grpSolverConvergence = new QGroupBox(tr("Convergence (all selected conditions have to be satisfied)"));
     grpSolverConvergence->setLayout(layoutSolverConvergence);
 
     cmbNonlinearDampingType = new QComboBox();
@@ -173,7 +173,7 @@ QWidget *FieldWidget::createSolverWidget()
     txtNonlinearDampingStepsForFactorIncrease->setMaximum(5);
     txtNonlinearDampingRatioForFactorDecrease = new LineEditDouble();
 
-    QGridLayout *layoutSolverDamping = new QGridLayout();
+    auto *layoutSolverDamping = new QGridLayout();
 
     layoutSolverDamping->addWidget(new QLabel(tr("Damping type:")), 0, 0);
     layoutSolverDamping->addWidget(cmbNonlinearDampingType, 0, 1);
@@ -184,7 +184,7 @@ QWidget *FieldWidget::createSolverWidget()
     layoutSolverDamping->addWidget(new QLabel(tr("Min. steps for factor increase:")), 1, 2);
     layoutSolverDamping->addWidget(txtNonlinearDampingStepsForFactorIncrease, 1, 3);
 
-    QGroupBox *grpSolverDamping = new QGroupBox(tr("Damping"));
+    auto *grpSolverDamping = new QGroupBox(tr("Damping"));
     grpSolverDamping->setLayout(layoutSolverDamping);
 
     chkNewtonReuseJacobian = new QCheckBox(tr("Reuse Jacobian if possible"));
@@ -195,7 +195,7 @@ QWidget *FieldWidget::createSolverWidget()
     txtNewtonMaximumStepsWithReusedJacobian->setMaximum(100);
 
     // Newton's solver
-    QGridLayout *layoutNewtonSolverReuse = new QGridLayout();
+    auto *layoutNewtonSolverReuse = new QGridLayout();
     layoutNewtonSolverReuse->addWidget(chkNewtonReuseJacobian, 0, 0);
     layoutNewtonSolverReuse->addWidget(new QLabel(tr("Max. residual ratio for Jacobian reuse:")), 1, 0);
     layoutNewtonSolverReuse->addWidget(txtNewtonSufficientImprovementFactorForJacobianReuse, 1, 1);
@@ -216,7 +216,7 @@ QWidget *FieldWidget::createSolverWidget()
     txtPicardAndersonNumberOfLastVectors->setMinimum(1);
     txtPicardAndersonNumberOfLastVectors->setMaximum(5);
 
-    QGridLayout *layoutPicardSolver = new QGridLayout();
+    auto *layoutPicardSolver = new QGridLayout();
     layoutPicardSolver->addWidget(chkPicardAndersonAcceleration, 0, 0, 1, 2);
     layoutPicardSolver->addWidget(new QLabel(tr("Anderson beta:")), 1, 0);
     layoutPicardSolver->addWidget(txtPicardAndersonBeta, 1, 1);
@@ -231,7 +231,7 @@ QWidget *FieldWidget::createSolverWidget()
     tab->addTab(widgetNewtonSolver, tr("Newton's solver"));
     tab->addTab(widgetPicardSolver, tr("Picard's solver"));
 
-    QVBoxLayout *layoutSolver = new QVBoxLayout();
+    auto *layoutSolver = new QVBoxLayout();
     layoutSolver->addWidget(grpSolverConvergence);
     layoutSolver->addWidget(grpSolverDamping);
     layoutSolver->addWidget(tab);
@@ -287,7 +287,7 @@ QWidget *FieldWidget::createAdaptivityWidget()
     txtAdaptivityRedoneEach->setMaximum(100);
 
     // control
-    QGridLayout *layoutAdaptivityControl = new QGridLayout();
+    auto *layoutAdaptivityControl = new QGridLayout();
     layoutAdaptivityControl->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdaptivityControl->addWidget(new QLabel(tr("Maximum steps:")), 0, 0);
     layoutAdaptivityControl->addWidget(txtAdaptivitySteps, 0, 2);
@@ -306,21 +306,21 @@ QWidget *FieldWidget::createAdaptivityWidget()
     layoutAdaptivityControl->addWidget(cmbAdaptivityStrategyHP, 6, 2);
     layoutAdaptivityControl->setRowStretch(50, 1);
 
-    QGroupBox *grpControl = new QGroupBox(tr("Control"), this);
+    auto *grpControl = new QGroupBox(tr("Control"), this);
     grpControl->setLayout(layoutAdaptivityControl);
 
     // transient
-    QGridLayout *layoutAdaptivityTransient = new QGridLayout();
+    auto *layoutAdaptivityTransient = new QGridLayout();
     layoutAdaptivityTransient->addWidget(new QLabel(tr("Steps back in transient:")), 0, 0);
     layoutAdaptivityTransient->addWidget(txtAdaptivityBackSteps, 0, 1);
     layoutAdaptivityTransient->addWidget(new QLabel(tr("Redone each trans. step:")), 1, 0);
     layoutAdaptivityTransient->addWidget(txtAdaptivityRedoneEach, 1, 1);
     layoutAdaptivityTransient->setRowStretch(50, 1);
 
-    QGroupBox *grpTransient = new QGroupBox(tr("Transient analysis"), this);
+    auto *grpTransient = new QGroupBox(tr("Transient analysis"), this);
     grpTransient->setLayout(layoutAdaptivityTransient);
 
-    QVBoxLayout *layoutAdaptivity = new QVBoxLayout();
+    auto *layoutAdaptivity = new QVBoxLayout();
     layoutAdaptivity->addWidget(grpControl);
     layoutAdaptivity->addWidget(grpTransient);
     layoutAdaptivity->addStretch(1);
@@ -339,7 +339,7 @@ QWidget *FieldWidget::createTransientAnalysisWidget()
     txtTransientTimeSkip->setBottom(0.0);
 
     // transient analysis
-    QGridLayout *layoutTransientAnalysis = new QGridLayout();
+    auto *layoutTransientAnalysis = new QGridLayout();
     layoutTransientAnalysis->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutTransientAnalysis->setColumnStretch(1, 1);
     layoutTransientAnalysis->addWidget(new QLabel(tr("Initial condition:")), 0, 0);
@@ -365,7 +365,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
 
-    QGridLayout *iterSolverDealIILayout = new QGridLayout();
+    auto *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIMethod, 0, 1);
     iterSolverDealIILayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
@@ -375,17 +375,17 @@ QWidget *FieldWidget::createLinearSolverWidget()
     iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 2);
     iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 1, 3);
 
-    QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
+    auto *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
     iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
 
-    QGridLayout *externalSolverLayout = new QGridLayout();
+    auto *externalSolverLayout = new QGridLayout();
     externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
     externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
 
-    QGroupBox *externalSolverGroup = new QGroupBox(tr("External"));
+    auto *externalSolverGroup = new QGroupBox(tr("External"));
     externalSolverGroup->setLayout(externalSolverLayout);
 
-    QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
+    auto *layoutLinearSolver = new QVBoxLayout();
     layoutLinearSolver->addWidget(iterSolverDealIIGroup);
     layoutLinearSolver->addWidget(externalSolverGroup);
     layoutLinearSolver->addStretch();
@@ -732,7 +732,7 @@ FieldDialog::FieldDialog(FieldInfo *fieldInfo, QWidget *parent) : QDialog(parent
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 
-    QVBoxLayout *layout = new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
     layout->addWidget(fieldWidget);
     layout->addStretch();
     layout->addWidget(buttonBox);
