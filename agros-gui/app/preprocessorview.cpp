@@ -307,6 +307,7 @@ void PreprocessorWidget::createControls()
     toolBarRight->addAction(m_sceneViewProblem->actSceneObjectDeleteSelected);
     toolBarRight->addSeparator();
     toolBarRight->addAction(m_sceneViewProblem->actSceneViewSelectRegion);
+    toolBarRight->addAction(m_sceneViewProblem->actSceneObjectClearSelected);
     toolBarRight->addWidget(zoomButton);
 
     auto *toolButtonFields = new QToolButton();

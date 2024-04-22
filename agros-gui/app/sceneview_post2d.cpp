@@ -957,8 +957,6 @@ void SceneViewPost2D::setControls()
 
 void SceneViewPost2D::clear()
 {
-    qInfo() << "SceneViewPost2D::clear()";
-
     actPostprocessorModeNothing->setChecked(true);
     actPostprocessorModeNothing->trigger();
 

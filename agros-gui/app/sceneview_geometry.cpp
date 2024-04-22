@@ -118,7 +118,7 @@ void SceneViewProblem::createActionsGeometry()
     connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doSceneGeometryModeSet(QAction *)));
 
     // select region
-    actSceneViewSelectRegion = new QAction(icon("geometry_select"), tr("&Select region"), this);
+    actSceneViewSelectRegion = new QAction(icon("geometry_select"), tr("&Select"), this);
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties
@@ -128,6 +128,9 @@ void SceneViewProblem::createActionsGeometry()
 
     actSceneObjectDeleteSelected = new QAction(icon("geometry_trash"), tr("Delete"), this);
     connect(actSceneObjectDeleteSelected, SIGNAL(triggered()), this, SLOT(doDeleteSelected()));
+
+    actSceneObjectClearSelected = new QAction(icon("geometry_clear"), tr("Clear"), this);
+    connect(actSceneObjectClearSelected, SIGNAL(triggered()), this, SLOT(doClearSelected()));
 
     // scene edge swap points
     actSceneEdgeSwapDirection = new QAction(tr("Swap direction"), this);
@@ -146,8 +149,11 @@ void SceneViewProblem::createMenuGeometry()
         m_mnuScene->addAction(actSceneEdgeSwapDirection);
     m_mnuScene->addSeparator();
     m_mnuScene->addAction(actTransform);
-    m_mnuScene->addAction(actSceneObjectDeleteSelected);
     m_mnuScene->addAction(actSceneObjectProperties);
+    m_mnuScene->addAction(actSceneObjectDeleteSelected);
+    m_mnuScene->addSeparator();
+    m_mnuScene->addAction(actSceneViewSelectRegion);
+    m_mnuScene->addAction(actSceneObjectClearSelected);
 }
 
 void SceneViewProblem::doSceneObjectProperties()
@@ -272,6 +278,12 @@ void SceneViewProblem::doDeleteSelected()
     undoStack()->endMacro();
 
     problem()->scene()->invalidate();
+}
+
+void SceneViewProblem::doClearSelected()
+{
+    Agros::problem()->scene()->selectNone();
+    update();
 }
 
 void SceneViewProblem::doTransform()

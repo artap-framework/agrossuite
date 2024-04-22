@@ -52,13 +52,12 @@ public slots:
     void doSceneObjectProperties();
     void doSceneEdgeSwapDirection();
     void doDeleteSelected();
+    void doClearSelected();
     void doTransform();
 
 public:
     SceneViewProblem(QWidget *parent = 0);
     ~SceneViewProblem();
-
-    QAction *actSceneViewSelectRegion;
 
     QAction *actSceneModeProblem;
 
@@ -69,6 +68,8 @@ public:
 
     QAction *actSceneObjectDeleteSelected;
     QAction *actSceneObjectProperties;
+    QAction *actSceneViewSelectRegion;
+    QAction *actSceneObjectClearSelected;
     QAction *actSceneEdgeSwapDirection;
     QAction *actTransform;
 

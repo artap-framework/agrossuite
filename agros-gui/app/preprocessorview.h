@@ -129,6 +129,7 @@ private:
 
     QAction *actProperties;
     QAction *actDelete;
+    QAction *actClear;
     QAction *actNewParameter;
     QAction *actNewFunctionAnalytic;
     // QAction *actNewFunctionInterpolation;
