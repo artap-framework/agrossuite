@@ -93,11 +93,10 @@ void SceneViewMesh::createActionsMesh()
 void SceneViewMesh::refresh()
 {
     clearGLLists();
-
     setControls();
 
-    if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
-        SceneViewCommon2D::refresh();
+    // if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
+    SceneViewCommon::refresh();
 }
 
 void SceneViewMesh::clearGLLists()
@@ -119,9 +118,9 @@ void SceneViewMesh::setControls()
 
 void SceneViewMesh::clear()
 {
-    setControls();
-
     SceneViewCommon2D::clear();
+
+    refresh();
     doZoomBestFit();
 }
 
@@ -222,7 +221,6 @@ void SceneViewMesh::paintGL()
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool()
                 && m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
             paintErrorColorBar();
-
     }
 
     // rulers

@@ -697,8 +697,6 @@ void FieldInfo::setStringKeys()
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
     m_settingKey[LinearSolverIterIters] = "LinearSolverIterIters";
     m_settingKey[LinearSolverExternalName] = "LinearSolverExternalName";
-    m_settingKey[LinearSolverExternalMethod] = "LinearSolverExternalMethod";
-    m_settingKey[LinearSolverExternalParameters] = "LinearSolverExternalParameters";
     m_settingKey[TimeUnit] = "TimeUnit";
 }
 
@@ -740,7 +738,5 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
     m_settingDefault[LinearSolverExternalName] = "";
-    m_settingDefault[LinearSolverExternalMethod] = "";
-    m_settingDefault[LinearSolverExternalParameters] = "";
     m_settingDefault[TimeUnit] = "s";
 }

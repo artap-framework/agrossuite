@@ -21,11 +21,11 @@
 #define PREPROCESSORVIEW_H
 
 #include "util/util.h"
+#include "util/point.h"
 #include "util/enums.h"
 #include "gui/other.h"
-#include "scenetransformdialog.h"
 
-class SceneViewPreprocessor;
+class SceneViewProblem;
 class FieldInfo;
 
 class StringAction : public QAction
@@ -71,17 +71,16 @@ public slots:
     void doNewRecipe(ResultRecipeType type);
 
 public:
-    PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
+    PreprocessorWidget(QWidget *parent = 0);
     ~PreprocessorWidget();
+
+    inline SceneViewProblem *sceneViewProblem() { return m_sceneViewProblem; }
 
     QAction *actUndo;
     QAction *actRedo;
 
-    QAction *actDeleteSelected;
-    QAction *actTransform;
-
-    QToolBar *toolBar;
-    QToolBar *toolBarAdd;
+    QToolBar *toolBarRight;
+    QToolBar *toolBarLeft;
 
     QAction *actNewNode;
     QAction *actNewEdge;
@@ -119,9 +118,7 @@ private:
         FieldProperties
     };
 
-    SceneViewPreprocessor *m_sceneViewPreprocessor;
-
-    SceneTransformDialog *sceneTransformDialog;
+    SceneViewProblem *m_sceneViewProblem;
 
     QTextEdit *txtViewNodes;
     QTextEdit *txtViewEdges;
@@ -142,7 +139,7 @@ private:
     QToolButton *toolButtonMaterials;
     QToolButton *toolButtonBoundaries;
     QToolButton *toolButtonRecipes;
-    QToolButton *toolButtonStudies;
+    QToolButton *toolButtonStudies;    
 
     QMenu *mnuPreprocessor;
 
@@ -166,7 +163,6 @@ private slots:
     void doItemDoubleClicked(QTreeWidgetItem *item, int role);
     void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doApply();
-    void doTransform();
 
     void doNewField(const QString &field);
     void doNewStudy(const QString &name);

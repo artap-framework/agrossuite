@@ -29,14 +29,6 @@ PluginSolverInterface::~PluginSolverInterface()
 
 }
 
-QStringList PluginSolverInterface::methods() const
-{
-    QStringList list;
-    list.append("none");
-
-    return list;
-}
-
 void PluginSolverInterface::prepare_crs(const dealii::SparseMatrix<double> &matrix)
 {
     const size_t N = matrix.m();

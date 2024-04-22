@@ -7,7 +7,7 @@ SET(DEAL_II_BUILD_TYPE "Release")
 SET(CMAKE_BUILD_TYPE "Release")
 
 SET(WITH_QT6 YES)
-SET(CMAKE_PREFIX_PATH "c:/Qt/6.6.1/msvc2019_64")
+SET(CMAKE_PREFIX_PATH "c:/Qt/6.5.3/msvc2019_64")
 SET(CMAKE_LIBRARY_PATH "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x64" )
 
 SET(PYTHON_INCLUDE_DIR "c:/Python312/include" )

@@ -43,7 +43,8 @@ public:
     enum Type
     {
         Unknown,
-        Config_LogStdOut,               
+        Config_LogStdOut,
+        Config_ReloadStyle,
         Config_Locale,
         Config_ShowResults,
         Config_LinearSystemFormat,

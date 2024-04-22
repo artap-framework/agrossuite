@@ -646,7 +646,6 @@ void SceneViewCommon2D::mouseMoveEvent(QMouseEvent *event)
         m_offset2d.y += 2.0/height() * dy/m_scale2d;
 
         emit mouseSceneModeChanged(MouseSceneMode_Pan);
-
         update();
     }
 
