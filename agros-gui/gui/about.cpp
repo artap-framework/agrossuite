@@ -35,7 +35,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
 
     createControls();
 
-    setMinimumSize(450, 550);
+    setMinimumSize(550, 550);
     setMaximumSize(sizeHint());
 }
 
@@ -85,6 +85,7 @@ QWidget *AboutDialog::createAgros()
                                          "<p>"
                                          "<b>Pavel Karban</b> - main developer (University of West Bohemia, Pilsen, Czech Republic)<br/>"
                                          "<b>David Pánek</b> - developer (University of West Bohemia, Pilsen, Czech Republic)<br/>"
+                                         "<b>Jan Kaska</b> - graphics and ideas, University of West Bohemia, Pilsen, Czech Republic<br/>"
                                          "<b>František Mach</b> - developer, Python script (University of West Bohemia, Pilsen, Czech Republic)<br/>"
                                          "<b>Pavel Kůs</b> - developer, coupled problems, time domain adaptivity (University of West Bohemia, Pilsen, Czech Republic)<br/>"
                                          "<b>Lukáš Korous</b> - developer (University of West Bohemia, Pilsen, Czech Republic)<br/>"
