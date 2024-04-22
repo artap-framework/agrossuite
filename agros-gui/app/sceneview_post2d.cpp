@@ -70,11 +70,11 @@ ProblemBase *SceneViewPost2D::problem() const
 void SceneViewPost2D::createActionsPost2D()
 {
     // point
-    actSelectPoint = new QAction(icon("pin"), tr("Local point value"), this);
+    actSelectPoint = new QAction(icon("results_other_local"), tr("Local point value"), this);
     connect(actSelectPoint, SIGNAL(triggered()), this, SLOT(selectPoint()));
 
     // marker
-    actSelectByMarker = new QAction(icon("bookmark"), tr("Select by marker"), this);
+    actSelectByMarker = new QAction(icon("result_other_marker"), tr("Select by marker"), this);
     connect(actSelectByMarker, SIGNAL(triggered()), this, SLOT(selectByMarker()));
 
     // postprocessor group

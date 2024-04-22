@@ -122,7 +122,7 @@ void SceneViewProblem::createActionsGeometry()
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties
-    actSceneObjectProperties = new QAction(icon("gear"), tr("Properties"), this);
+    actSceneObjectProperties = new QAction(icon("geometry_properties"), tr("Properties"), this);
     actSceneObjectProperties->setShortcut(Qt::Key_Space);
     connect(actSceneObjectProperties, SIGNAL(triggered()), this, SLOT(doSceneObjectProperties()));
 

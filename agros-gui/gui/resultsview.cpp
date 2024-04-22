@@ -59,7 +59,7 @@ ResultsView::ResultsView(SceneViewPost2D *post2D) : QWidget(post2D),
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
 
     // main widget
-    QVBoxLayout *layout = new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
     layout->addWidget(trvWidget);
     layout->setContentsMargins(0, 0, 0, 0);
 
@@ -107,12 +107,11 @@ void ResultsView::doContextMenu(const QPoint &pos)
     if (current && !current->data(0, Qt::UserRole).isNull())
     {
 
-        QAction *actCopy = new QAction(tr("Copy value"), this);
+        auto *actCopy = new QAction(tr("Copy value"), this);
         connect(actCopy, SIGNAL(triggered(bool)), this, SLOT(doCopy(bool)));
 
-        QMenu *mnuView = new QMenu(this);
+        auto *mnuView = new QMenu(this);
         mnuView->addAction(actCopy);
-
         mnuView->exec(QCursor::pos());
     }
 }
@@ -168,10 +167,10 @@ void ResultsView::showRecipe()
         fnt.setBold(true);
 
         // field
-        QTreeWidgetItem *recipeNode = new QTreeWidgetItem(trvWidget);
+        auto *recipeNode = new QTreeWidgetItem(trvWidget);
         recipeNode->setText(0, tr("Recipes"));
         recipeNode->setFont(0, fnt);
-        recipeNode->setIcon(0, iconAlphabet('R', AlphabetColor_Purple));
+        // recipeNode->setIcon(0, iconAlphabet('R', AlphabetColor_Purple));
         recipeNode->setExpanded(true);
 
         StringToDoubleMap results = currentComputation()->results()->items();
@@ -206,7 +205,7 @@ void ResultsView::showPoint()
     QTreeWidgetItem *itemPoint = new QTreeWidgetItem(trvWidget);
     itemPoint->setText(0, tr("Point"));
     itemPoint->setFont(0, fnt);
-    itemPoint->setIcon(0, iconAlphabet('P', AlphabetColor_Bluegray));
+    // itemPoint->setIcon(0, iconAlphabet('P', AlphabetColor_Bluegray));
     trvWidget->setItemWidget(itemPoint, 1, new QLabel(QString("<i>t</i> (s)")));
     itemPoint->setText(2, QString("%1").arg(currentComputation()->timeStepToTotalTime(currentComputation()->postDeal()->activeTimeStep()), 0, 'e', 3));
     itemPoint->setExpanded(true);
@@ -227,7 +226,7 @@ void ResultsView::showPoint()
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
-        fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
+        // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
         // time and adaptive step
@@ -302,7 +301,7 @@ void ResultsView::showVolumeIntegral()
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
-        fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
+        // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
         // time and adaptive step
@@ -346,7 +345,7 @@ void ResultsView::showSurfaceIntegral()
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
-        fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
+        // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
         // time and adaptive step

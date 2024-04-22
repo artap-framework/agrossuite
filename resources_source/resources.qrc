@@ -22,9 +22,14 @@
         <file alias="results_point.png">images/icons/results_point.png</file>
         <file alias="results_surface.png">images/icons/results_surface.png</file>
         <file alias="results_volume.png">images/icons/results_volume.png</file>
+        <file alias="results_mesh.png">images/icons/results_mesh.png</file>
+        <file alias="results_post2d.png">images/icons/results_post2d.png</file>
+        <file alias="results_post3d.png">images/icons/results_post3d.png</file>
+        <file alias="results_chart.png">images/icons/results_chart.png</file>
+        <file alias="results_other.png">images/icons/results_other.png</file>
+        <file alias="results_other_local.png">images/icons/results_other_local.png</file>
+        <file alias="results_other_marker.png">images/icons/results_other_marker.png</file>
         <file alias="geometry.png">images/icons/geometry.png</file>
-        <file alias="pin.png">images/pin.png</file>        
-        <file alias="bookmark.png">images/bookmark.png</file>
         <file alias="close.png">images/close.png</file>
         <file alias="calculator.png">images/calculator.png</file>
         <file alias="geometry_add.png">images/icons/geometry_add.png</file>
@@ -35,7 +40,7 @@
         <file alias="geometry_zoom.png">images/icons/geometry_zoom.png</file>
         <file alias="geometry_clear.png">images/icons/geometry_clear.png</file>
         <file alias="geometry_select.png">images/icons/geometry_select.png</file>
-        <file alias="gear.png">images/gear.png</file>
+        <file alias="geometry_properties.png">images/icons/geometry_properties.png</file>
         <file alias="up-arrow.png">images/general/up-arrow.png</file>
         <file alias="undo.png">images/general/undo.png</file>
         <file alias="redo.png">images/general/redo.png</file>

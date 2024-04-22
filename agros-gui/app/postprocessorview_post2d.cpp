@@ -61,7 +61,7 @@ void PostprocessorScenePost2DWidget::createControls()
     toolButton->addAction(m_scenePost2D->actSelectPoint);
     toolButton->addAction(m_scenePost2D->actSelectByMarker);
     toolButton->setAutoRaise(true);
-    toolButton->setIcon(icon("pin"));
+    toolButton->setIcon(icon("results_other"));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     // main toolbar

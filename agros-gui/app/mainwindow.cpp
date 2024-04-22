@@ -225,11 +225,11 @@ void MainWindow::createActions()
     actDocumentOpenRecentGroup = new QActionGroup(this);
     connect(actDocumentOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(doDocumentOpenRecent(QAction *)));
 
-    actMaterialBrowser = new QAction(tr("Material browser..."), this);
-    connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
-
     actShowLog = new QAction(tr("Log dialog"), this);
     connect(actShowLog, SIGNAL(triggered()), this, SLOT(doShowLog()));
+
+    actMaterialBrowser = new QAction(tr("Material browser..."), this);
+    connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     actSolve = new QAction(icon("main_solve"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence("Alt+S"));

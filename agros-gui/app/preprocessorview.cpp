@@ -310,7 +310,7 @@ void PreprocessorWidget::createControls()
     toolBarRight->addWidget(zoomButton);
 
     auto *toolButtonFields = new QToolButton();
-    toolButtonFields->setText(tr("Fields"));
+    toolButtonFields->setText(tr("Field"));
     toolButtonFields->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonFields->setToolTip(tr("New fields"));
     toolButtonFields->setMenu(mnuFields);
@@ -322,7 +322,7 @@ void PreprocessorWidget::createControls()
     connect(actButtonParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
     toolButtonMaterials = new QToolButton();
-    toolButtonMaterials->setText(tr("Materials"));
+    toolButtonMaterials->setText(tr("Material"));
     toolButtonMaterials->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonMaterials->setToolTip(tr("New material"));
     toolButtonMaterials->setMenu(mnuMaterials);
@@ -331,7 +331,7 @@ void PreprocessorWidget::createControls()
     toolButtonMaterials->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonBoundaries = new QToolButton();
-    toolButtonBoundaries->setText(tr("Boundaries"));
+    toolButtonBoundaries->setText(tr("Boundary"));
     toolButtonBoundaries->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonBoundaries->setToolTip(tr("New boundary"));
     toolButtonBoundaries->setMenu(mnuBoundaries);
@@ -340,7 +340,7 @@ void PreprocessorWidget::createControls()
     toolButtonBoundaries->setPopupMode(QToolButton::InstantPopup);
 
     auto *toolButtonFunctions = new QToolButton();
-    toolButtonFunctions->setText(tr("Functions"));
+    toolButtonFunctions->setText(tr("Function"));
     toolButtonFunctions->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonFunctions->setToolTip(tr("New function"));
     toolButtonFunctions->addAction(actNewFunctionAnalytic);
@@ -350,7 +350,7 @@ void PreprocessorWidget::createControls()
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonRecipes = new QToolButton();
-    toolButtonRecipes->setText(tr("Recipes"));
+    toolButtonRecipes->setText(tr("Recipe"));
     toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonRecipes->setToolTip(tr("New recipe"));
     toolButtonRecipes->addAction(actNewRecipeLocalValue);
@@ -361,7 +361,7 @@ void PreprocessorWidget::createControls()
     toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
 
     toolButtonStudies = new QToolButton();
-    toolButtonStudies->setText(tr("Studies"));
+    toolButtonStudies->setText(tr("Study"));
     toolButtonStudies->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonStudies->setToolTip(tr("New studies"));
     toolButtonStudies->setMenu(mnuStudies);

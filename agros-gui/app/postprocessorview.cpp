@@ -57,20 +57,20 @@ PostprocessorWidget::PostprocessorWidget()
     actSceneModeResults->setCheckable(true);
     actSceneModeResults->setEnabled(false);
 
-    actOperateOnMesh = new QAction(icon("geometry_node"), tr("Mesh"), this);
+    actOperateOnMesh = new QAction(icon("results_mesh"), tr("Mesh"), this);
     actOperateOnMesh->setShortcut(Qt::Key_F2);
     actOperateOnMesh->setCheckable(true);
 
-    actOperateOnPost2D = new QAction(icon("geometry_edge"), tr("Post 2D"), this);
+    actOperateOnPost2D = new QAction(icon("results_post2d"), tr("Post 2D"), this);
     actOperateOnPost2D->setShortcut(Qt::Key_F3);
     actOperateOnPost2D->setCheckable(true);
     actOperateOnPost2D->setChecked(true);
 
-    actOperateOnPost3D = new QAction(icon("geometry_label"), tr("Post 3D"), this);
+    actOperateOnPost3D = new QAction(icon("results_post3d"), tr("Post 3D"), this);
     actOperateOnPost3D->setShortcut(Qt::Key_F4);
     actOperateOnPost3D->setCheckable(true);
 
-    actOperateOnChart = new QAction(icon("geometry_label"), tr("Chart"), this);
+    actOperateOnChart = new QAction(icon("results_chart"), tr("Chart"), this);
     actOperateOnChart->setShortcut(Qt::Key_F5);
     actOperateOnChart->setCheckable(true);
 
