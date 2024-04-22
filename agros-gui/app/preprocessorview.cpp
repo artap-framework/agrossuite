@@ -281,7 +281,7 @@ void PreprocessorWidget::createControls()
     addButton->addAction(actNewEdge);
     addButton->addAction(actNewLabel);
     addButton->setAutoRaise(true);
-    addButton->setIcon(icon("bookmark"));
+    addButton->setIcon(icon("geometry_add"));
     addButton->setPopupMode(QToolButton::InstantPopup);
 
     auto *zoomButton = new QToolButton();
@@ -611,7 +611,7 @@ void PreprocessorWidget::refresh()
     // geometry
     QTreeWidgetItem *geometryNode = new QTreeWidgetItem(trvWidget);
     geometryNode->setText(0, tr("Geometry"));
-    geometryNode->setIcon(0, iconAlphabet('G', AlphabetColor_Brown));
+    geometryNode->setIcon(0, icon("geometry"));
     geometryNode->setFont(0, fnt);
     geometryNode->setExpanded(false);
 

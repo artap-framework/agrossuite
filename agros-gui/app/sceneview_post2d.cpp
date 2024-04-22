@@ -78,17 +78,17 @@ void SceneViewPost2D::createActionsPost2D()
     connect(actSelectByMarker, SIGNAL(triggered()), this, SLOT(selectByMarker()));
 
     // postprocessor group
-    actPostprocessorModeNothing = new QAction(icon("close"), tr("Nothing"), this);
+    actPostprocessorModeNothing = new QAction(icon("geometry_clear"), tr("Nothing"), this);
     actPostprocessorModeNothing->setCheckable(true);
     actPostprocessorModeNothing->setChecked(true);
 
-    actPostprocessorModeLocalPointValue = new QAction(icon("mode-localpointvalue"), tr("Local Values"), this);
+    actPostprocessorModeLocalPointValue = new QAction(icon("results_point"), tr("Point"), this);
     actPostprocessorModeLocalPointValue->setCheckable(true);
 
-    actPostprocessorModeSurfaceIntegral = new QAction(icon("mode-surfaceintegral"), tr("Surface Integrals"), this);
+    actPostprocessorModeSurfaceIntegral = new QAction(icon("results_surface"), tr("Surface int."), this);
     actPostprocessorModeSurfaceIntegral->setCheckable(true);
 
-    actPostprocessorModeVolumeIntegral = new QAction(icon("mode-volumeintegral"), tr("Volume Integrals"), this);
+    actPostprocessorModeVolumeIntegral = new QAction(icon("results_volume"), tr("Volume int."), this);
     actPostprocessorModeVolumeIntegral->setCheckable(true);
 
     actPostprocessorModeGroup = new QActionGroup(this);

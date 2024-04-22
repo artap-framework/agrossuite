@@ -80,6 +80,7 @@ private slots:
 
     void doOptions();
     void doMaterialBrowser();
+    void doShowLog();
 
     void doFullScreen();
 
@@ -129,6 +130,7 @@ private:
 
     QAction *actOptions;
     QAction *actFullScreen;
+    QAction *actShowLog;
 
     QAction *actMaterialBrowser;
 
@@ -159,7 +161,7 @@ private:
     PreprocessorWidget *problemWidget;
     PostprocessorWidget *postprocessorWidget;
 
-    LogView *logView;
+    LogViewDialog *logView;
     ConnectLog *m_connectLog;
 
     LogStdOut *logStdOut;

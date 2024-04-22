@@ -118,7 +118,7 @@ void SceneViewProblem::createActionsGeometry()
     connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doSceneGeometryModeSet(QAction *)));
 
     // select region
-    actSceneViewSelectRegion = new QAction(icon("mode-volumeintegral"), tr("&Select region"), this);
+    actSceneViewSelectRegion = new QAction(icon("geometry_select"), tr("&Select region"), this);
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties

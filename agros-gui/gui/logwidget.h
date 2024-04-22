@@ -81,14 +81,17 @@ private slots:
     void showDebug();
 };
 
-class LogView : public QWidget
+class LogViewDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogView(QWidget *parent = 0, ConnectLog *connectLog = 0);
-    ~LogView();
+    LogViewDialog(QWidget *parent = 0, ConnectLog *connectLog = 0);
+    ~LogViewDialog();
 
     QAction *actLog;    
+
+public slots:
+    void closeEvent(QCloseEvent *e);
 
 private:
     LogWidget *logWidget;

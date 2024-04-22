@@ -228,14 +228,16 @@ void LogWidget::appendHtml(const QString &html)
 
 // *******************************************************************************************************
 
-LogView::LogView(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
+LogViewDialog::LogViewDialog(QWidget *parent, ConnectLog *connectLog) : QDialog(parent),
   m_connectLog(connectLog)
 {
-    setObjectName("LogView");
+    setWindowTitle("Log View");
+    setWindowFlags(Qt::Window);
 
-    actLog = new QAction(icon("log"), tr("Log"), this);
-    actLog->setShortcut(Qt::Key_F10);
-    actLog->setCheckable(true);
+    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
+
+    setMinimumSize(w, h);
 
     logWidget = new LogWidget(this, connectLog);
     logWidget->welcomeMessage();
@@ -247,9 +249,17 @@ LogView::LogView(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),
     setLayout(layoutMain);
 }
 
-LogView::~LogView()
+LogViewDialog::~LogViewDialog()
 {        
 }
+
+void LogViewDialog::closeEvent(QCloseEvent *e)
+{
+    e->ignore();
+    setVisible(false);
+}
+
+// **********************************************************************************************************************************************
 
 LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
     m_computation(computation),

@@ -54,16 +54,26 @@ PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PhysicalFieldWidg
 
 void PostprocessorScenePost2DWidget::createControls()
 {
+    auto *toolButton = new QToolButton();
+    toolButton->setText(tr("Other"));
+    toolButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolButton->setToolTip(tr("Other tools"));
+    toolButton->addAction(m_scenePost2D->actSelectPoint);
+    toolButton->addAction(m_scenePost2D->actSelectByMarker);
+    toolButton->setAutoRaise(true);
+    toolButton->setIcon(icon("pin"));
+    toolButton->setPopupMode(QToolButton::InstantPopup);
+
     // main toolbar
     toolBar = new QToolBar();
-    toolBar->setIconSize(QSize(20, 20));
-    toolBar->addAction(m_scenePost2D->actPostprocessorModeNothing);
+    toolBar->setProperty("modulebar", true);
+    toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeLocalPointValue);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeSurfaceIntegral);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeVolumeIntegral);
+    toolBar->addAction(m_scenePost2D->actPostprocessorModeNothing);
     toolBar->addSeparator();
-    toolBar->addAction(m_scenePost2D->actSelectPoint);
-    toolBar->addAction(m_scenePost2D->actSelectByMarker);
+    toolBar->addWidget(toolButton);
 
     resultsView = new ResultsView(m_scenePost2D);
     connect(m_scenePost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
@@ -73,7 +83,7 @@ void PostprocessorScenePost2DWidget::createControls()
     QVBoxLayout *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutResults->addWidget(toolBar);
-    layoutResults->addWidget(resultsView);
+    layoutResults->addWidget(resultsView, 1);
 
     QWidget *widResults = new QWidget();
     widResults->setLayout(layoutResults);
@@ -86,7 +96,7 @@ void PostprocessorScenePost2DWidget::createControls()
     QVBoxLayout *layoutArea = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutArea->addWidget(tabWidget);
-    layoutArea->addWidget(widResults);
+    layoutArea->addWidget(widResults, 1);
 
     refresh();
 

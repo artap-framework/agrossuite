@@ -86,8 +86,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // view info
     m_connectLog = new ConnectLog();
-    logView = new LogView(this, m_connectLog);
-    (static_cast<LogGui * > (Agros::log()))->setConnectLog(m_connectLog);
+    logView = new LogViewDialog(this, m_connectLog);
+    logView->setVisible(false);
+    (dynamic_cast<LogGui * > (Agros::log()))->setConnectLog(m_connectLog);
 
     // OptiLab
     optiLab = new OptiLab(this);
@@ -227,6 +228,9 @@ void MainWindow::createActions()
     actMaterialBrowser = new QAction(tr("Material browser..."), this);
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
+    actShowLog = new QAction(tr("Log dialog"), this);
+    connect(actShowLog, SIGNAL(triggered()), this, SLOT(doShowLog()));
+
     actSolve = new QAction(icon("main_solve"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence("Alt+S"));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
@@ -240,7 +244,6 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(problemWidget->sceneViewProblem()->actSceneModeProblem);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModeResults);
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
-    actSceneModeGroup->addAction(logView->actLog);
 
     // apply stylesheet
     timerApplyStyle = new QTimer(this);
@@ -298,6 +301,7 @@ void MainWindow::createMenus()
     mnuTools->addAction(actCreateFromModel);
     mnuTools->addSeparator();
     mnuTools->addAction(actFullScreen);
+    mnuTools->addAction(actShowLog);
     mnuTools->addAction(actOptions);
 
     mnuHelp = menuBar()->addMenu(tr("&Help"));
@@ -314,7 +318,6 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
     tabControlsLayout->addWidget(optiLab);
-    tabControlsLayout->addWidget(logView);
 
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
@@ -336,8 +339,6 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(postprocessorWidget->actSceneModeResults);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
-    tlbLeftBar->addSeparator();
-    tlbLeftBar->addAction(logView->actLog);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(actSolve);
     tlbLeftBar->addAction(actSolveNewComputation);
@@ -756,6 +757,11 @@ void MainWindow::doMaterialBrowser()
     materialBrowserDialog.showDialog(false);
 }
 
+void MainWindow::doShowLog()
+{
+    logView->setVisible(true);
+}
+
 void MainWindow::doCut()
 {
 
@@ -813,8 +819,6 @@ void MainWindow::doApplyStyle()
 void MainWindow::setEnabledControls(bool state)
 {
     tabControlsLayout->setEnabled(state);
-
-    logView->setEnabled(state);
 
     menuBar()->setEnabled(state);
 
@@ -886,10 +890,6 @@ void MainWindow::setControls()
     else if (optiLab->actSceneModeOptiLab->isChecked())
     {
         tabControlsLayout->setCurrentWidget(optiLab);
-    }
-    else if (logView->actLog->isChecked())
-    {
-        tabControlsLayout->setCurrentWidget(logView);
     }
 
     // menu bar
