@@ -295,7 +295,7 @@ void PreprocessorWidget::createControls()
 
     // right toolbar
     toolBarRight = new QToolBar();
-    toolBarRight->setIconSize(QSize(24, 24));
+    toolBarRight->setProperty("modulebar", true);
     toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBarRight->addWidget(addButton);
     toolBarRight->addSeparator();

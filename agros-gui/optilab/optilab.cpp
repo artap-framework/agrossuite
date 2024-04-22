@@ -521,21 +521,18 @@ QWidget *OptiLab::createControlsDistChart()
     lblResultMin = new QLabel();
     lblResultMin->setMinimumWidth(90);
     lblResultMax = new QLabel();
-    lblResultSum = new QLabel();
     lblResultMean = new QLabel();
     lblResultMedian = new QLabel();
     lblResultVariance = new QLabel();
     lblResultStdDev = new QLabel();
-    lblResultNormalCovariance = new QLabel(); // normal distribution
-    lblResultNormalCorrelation = new QLabel(); // normal distribution
+    // lblResultNormalCovariance = new QLabel(); // normal distribution
+    // lblResultNormalCorrelation = new QLabel(); // normal distribution
 
-    QGridLayout *layoutStatistics = new QGridLayout();
+    auto *layoutStatistics = new QGridLayout();
     layoutStatistics->addWidget(new QLabel(tr("Minimum:")), 0, 0);
     layoutStatistics->addWidget(lblResultMin, 0, 1);
     layoutStatistics->addWidget(new QLabel(tr("Maximum:")), 1, 0);
     layoutStatistics->addWidget(lblResultMax, 1, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Sum:")), 2, 0);
-    layoutStatistics->addWidget(lblResultSum, 2, 1);
     layoutStatistics->addWidget(new QLabel(tr("Mean value:")), 3, 0);
     layoutStatistics->addWidget(lblResultMean, 3, 1);
     layoutStatistics->addWidget(new QLabel(tr("Median:")), 4, 0);
@@ -545,20 +542,60 @@ QWidget *OptiLab::createControlsDistChart()
     layoutStatistics->addWidget(new QLabel(tr("Std. deviation:")), 6, 0);
     layoutStatistics->addWidget(lblResultStdDev, 6, 1);
     layoutStatistics->setRowStretch(10, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Covariance:")), 21, 0);
-    layoutStatistics->addWidget(lblResultNormalCovariance, 21, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Correlation:")), 22, 0);
-    layoutStatistics->addWidget(lblResultNormalCorrelation, 22, 1);
+    // layoutStatistics->addWidget(new QLabel(tr("Covariance:")), 21, 0);
+    // layoutStatistics->addWidget(lblResultNormalCovariance, 21, 1);
+    // layoutStatistics->addWidget(new QLabel(tr("Correlation:")), 22, 0);
+    // layoutStatistics->addWidget(lblResultNormalCorrelation, 22, 1);
 
-    QHBoxLayout *layoutDetails = new QHBoxLayout();
-    layoutDetails->setContentsMargins(0, 0, 0, 0);
-    layoutDetails->addLayout(layoutStatistics, 0);
+    auto *widStatistics = new QWidget();
+    // widDist->setContentsMargins(0, 0, 0, 0);
+    widStatistics->setLayout(layoutStatistics);
 
-    QWidget *widDist = new QWidget();
-    widDist->setContentsMargins(0, 0, 0, 0);
-    widDist->setLayout(layoutDetails);
+    resultsStatChart = new QChart();
+    resultsStatChart->legend()->setVisible(true);
+    resultsStatChart->legend()->setInteractive(true);
+    resultsStatChart->legend()->setAlignment(Qt::AlignBottom);
+    resultsStatChart->legend()->attachToChart();
 
-    return widDist;
+    axisX = new QValueAxis;
+    axisX->setLabelFormat("%g");
+    axisX->setGridLineVisible(false);
+    axisX->setLabelsVisible(false);
+    resultsStatChart->addAxis(axisX, Qt::AlignBottom);
+
+    // axis y
+    axisY = new QValueAxis;
+    axisY->setLabelFormat("%g");
+    axisY->setGridLineVisible(true);
+    // axisY->setTitleText(tr("objective"));
+    resultsStatChart->addAxis(axisY, Qt::AlignLeft);
+
+    resultsStatMinMaxSeries = createSeries("Min and max");
+    resultsStatMeanSeries = createSeries("Mean");
+    resultsStatMedianSeries = createSeries("Median");
+
+    auto *chartView = new QChartView();
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setChart(resultsStatChart);
+    chartView->setMaximumHeight(300);
+
+    auto *tabStats = new QTabWidget();
+    tabStats->addTab(chartView, tr("Statistics"));
+    tabStats->addTab(widStatistics, tr("Values"));
+
+    return tabStats;
+}
+
+QScatterSeries *OptiLab::createSeries(const QString &name)
+{
+    auto series = new QScatterSeries();
+    series->setName(name);
+    series->setMarkerSize(12.0);
+    resultsStatChart->addSeries(series);
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
+
+    return series;
 }
 
 QWidget *OptiLab::createControlsChart()
@@ -684,8 +721,8 @@ QWidget *OptiLab::createControlsResults()
     mnuResults->addAction(actResultsFindMaximum);
 
     auto *layoutResults = new QVBoxLayout();
+    layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutResults->addWidget(trvResults, 2);
-    layoutResults->addWidget(geometryViewer, 1);
 
     auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
@@ -700,17 +737,25 @@ void OptiLab::createControls()
 
     auto *layoutCharts = new QVBoxLayout();
     layoutCharts->addWidget(createControlsChart(), 2);
-    layoutCharts->addWidget(createControlsDistChart(), 1);
 
     auto *widCharts = new QWidget();
     widCharts->setContentsMargins(0, 0, 0, 0);
     widCharts->setLayout(layoutCharts);
 
+    auto layoutLeft = new QVBoxLayout();
+    layoutLeft->addWidget(createControlsResults(), 2);
+    layoutLeft->addWidget(createControlsDistChart(), 0);
+    layoutLeft->addWidget(geometryViewer, 1);
+
+    auto *widLeft = new QWidget();
+    widLeft->setContentsMargins(0, 0, 0, 0);
+    widLeft->setLayout(layoutLeft);
+
     QSettings settings;
 
     splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Horizontal);
-    splitter->addWidget(createControlsResults());
+    splitter->addWidget(widLeft);
     splitter->addWidget(widCharts);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 1);
@@ -1275,13 +1320,12 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 
     lblResultMin->setText("-");
     lblResultMax->setText("-");
-    lblResultSum->setText("-");
     lblResultMean->setText("-");
     lblResultMedian->setText("-");
     lblResultVariance->setText("-");
     lblResultStdDev->setText("-");
-    lblResultNormalCovariance->setText("-");
-    lblResultNormalCorrelation->setText("-");
+    // lblResultNormalCovariance->setText("-");
+    // lblResultNormalCorrelation->setText("-");
 
     if (showStats)
     {
@@ -1348,16 +1392,26 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
                 // labels
                 lblResultMin->setText(QString::number(stats.min()));
                 lblResultMax->setText(QString::number(stats.max()));
-                lblResultSum->setText(QString::number(stats.sum()));
                 lblResultMean->setText(QString::number(stats.mean()));
                 lblResultMedian->setText(QString::number(stats.median()));
                 lblResultVariance->setText(QString::number(stats.variance()));
                 lblResultStdDev->setText(QString::number(stats.stdDev()));
 
                 // correlation and covariance
-                StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
-                lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
-                lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
+                // StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
+                // lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
+                // lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
+
+                // chart
+                resultsStatMinMaxSeries->clear();
+                resultsStatMinMaxSeries->append(0, stats.min());
+                resultsStatMinMaxSeries->append(0, stats.max());
+                resultsStatMeanSeries->clear();
+                resultsStatMeanSeries->append(0, stats.mean());
+                resultsStatMedianSeries->clear();
+                resultsStatMedianSeries->append(0, stats.median());
+                axisX->setRange(-1, 1);
+                axisY->setRange(stats.min(), stats.max());
             }
         }
     }

@@ -62,7 +62,7 @@ private:
     QPushButton *btnAbort;
 
     QChart *totalChart;
-    QLineSeries *totalObjectiveSeries;
+    QScatterSeries *totalObjectiveSeries;
     QLineSeries *totalObjectiveUncertaintySeries;
     QLineSeries *totalObjectiveUncertaintyLowerSeries;
     QLineSeries *totalObjectiveUncertaintyUpperSeries;

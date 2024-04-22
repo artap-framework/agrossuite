@@ -35,12 +35,67 @@ QToolBar[leftbar="true"] > QToolButton:checked {
 /* PREPROCESSOR TOPBAR */
 
 QToolBar[topbar="true"] { 
-  border: 1px;
   qproperty-iconSize: 52px;
+  border: 1px;  
 }
 
 QToolBar[topbar="true"] > QToolButton { 
-  /* font: bold; */  
   font-size: 8pt;
   width: 52px;  
 }
+
+/* MODULEBAR */
+
+QToolBar[modulebar="true"] > QToolButton {
+  qproperty-iconSize: 24px;
+  font-size: 10pt;
+}
+
+QToolBar[modulebar="true"] > QToolButton:checked {   
+}
+
+/* GENERAL */
+
+/* 
+QWidget {
+  background-color: #404142;
+
+  color: #DFE1E2;
+  selection-background-color: #346792;
+  selection-color: #DFE1E2;
+}
+
+QWidget:disabled {
+  background-color: #404142;
+  color: #788D9C;
+  selection-background-color: #26486B;
+  selection-color: #788D9C;
+}
+
+QWidget::item:selected {
+  background-color: #346792;
+}
+
+QWidget::item:hover:!selected {
+  background-color: #1A72BB;
+}
+
+QTreeView,
+QListView,
+QTableView,
+QColumnView {
+  background-color: #404142;
+  border: 1px solid #455364;
+  color: #DFE1E2;
+  gridline-color: #455364;
+  border-radius: 4px;
+}
+
+QToolTip {
+  background-color: #404142;
+  color: #DFE1E2;  
+  border: none;
+  padding: 0px;
+}
+
+*/

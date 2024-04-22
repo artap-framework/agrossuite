@@ -24,29 +24,49 @@
 
 #include <QMouseEvent>
 
+QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points)
+{
+    qreal minX = std::numeric_limits<qreal>::max();
+    qreal maxX = std::numeric_limits<qreal>::min();
+    qreal minY = std::numeric_limits<qreal>::max();
+    qreal maxY = std::numeric_limits<qreal>::min();
+
+    for (int i = 0; i < points.size(); i++)
+    {
+        // x
+        if (points.at(i).x() < minX)
+            minX = points.at(i).x();
+        if (points.at(i).x() > maxX)
+            maxX = points.at(i).x();
+
+        // y
+        if (points.at(i).y() < minY)
+            minY = points.at(i).y();
+        if (points.at(i).y() > maxY)
+            maxY = points.at(i).y();
+    }
+
+    return QPair<QPointF, QPointF>(QPointF(minX, minY), QPointF(maxX, maxY));
+}
+
 void fitToDataChart(QChart *chart)
 {
     // qInfo() << "fit series: " << chart->series().size();
     foreach(QAbstractSeries *series, chart->series())
     {
-        qreal minX = std::numeric_limits<qreal>::max();
-        qreal maxX = std::numeric_limits<qreal>::min();
-        qreal minY = std::numeric_limits<qreal>::max();
-        qreal maxY = std::numeric_limits<qreal>::min();
-
         // only works for line and scatter chart
         QList<QPointF> points;
         if (series->type() == QAbstractSeries::SeriesTypeLine)
         {
-            points = static_cast<QLineSeries *>(series)->points();
+            points = dynamic_cast<QLineSeries *>(series)->points();
         }
         else if (series->type() == QAbstractSeries::SeriesTypeScatter)
         {
-            points = static_cast<QScatterSeries *>(series)->points();
+            points = dynamic_cast<QScatterSeries *>(series)->points();
         }
         else if (series->type() == QAbstractSeries::SeriesTypeArea)
         {
-            QAreaSeries *area = static_cast<QAreaSeries *>(series);
+            QAreaSeries *area = dynamic_cast<QAreaSeries *>(series);
             // add upper
             foreach(QPointF point, area->upperSeries()->points())
                 points.append(point);
@@ -55,31 +75,18 @@ void fitToDataChart(QChart *chart)
                 points.append(point);
         }
 
-        for (int i = 0; i < points.size(); i++)
-        {
-            // x
-            if (points.at(i).x() < minX)
-                minX = points.at(i).x();
-            if (points.at(i).x() > maxX)
-                maxX = points.at(i).x();
-
-            // y
-            if (points.at(i).y() < minY)
-                minY = points.at(i).y();
-            if (points.at(i).y() > maxY)
-                maxY = points.at(i).y();
-        }
+        QPair<QPointF, QPointF> axesRange = findMinMax(points);
 
         // qInfo() << minX << maxX << minY << maxY;
         foreach(QAbstractAxis *axis, series->attachedAxes())
         {
             if (axis->orientation() == Qt::Horizontal)
             {
-                axis->setRange(minX, maxX);
+                axis->setRange(axesRange.first.x(), axesRange.second.x());
             }
             if (axis->orientation() == Qt::Vertical)
             {
-                axis->setRange(minY, maxY);
+                axis->setRange(axesRange.first.y(), axesRange.second.y());
             }
 //            if (axis->orientation() == Qt::Horizontal)
 //            {

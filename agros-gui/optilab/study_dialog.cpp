@@ -20,6 +20,7 @@
 #include "study_dialog.h"
 #include "util/global.h"
 #include "gui/lineeditdouble.h"
+#include "gui/chart.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 #include "optilab/study.h"
@@ -137,7 +138,7 @@ void LogOptimizationDialog::createControls()
     trvProgress->setMinimumWidth(300);
 
     // current and best parameters and functionals
-    QTreeWidgetItem *currentNode = new QTreeWidgetItem(trvProgress);
+    auto *currentNode = new QTreeWidgetItem(trvProgress);
     currentNode->setText(0, tr("Current"));
     currentNode->setFont(0, fontTitle);
     currentNode->setExpanded(true);
@@ -156,7 +157,7 @@ void LogOptimizationDialog::createControls()
     currentFunctionalsNode->setText(0, tr("Functionals"));
     currentFunctionalsNode->setExpanded(true);
 
-    QTreeWidgetItem *optimalNode = new QTreeWidgetItem(trvProgress);
+    auto *optimalNode = new QTreeWidgetItem(trvProgress);
     optimalNode->setText(0, tr("Optimal"));
     optimalNode->setFont(0, fontTitle);
     optimalNode->setExpanded(true);
@@ -177,19 +178,19 @@ void LogOptimizationDialog::createControls()
 
     foreach (Parameter parameter, m_study->parameters())
     {
-        QTreeWidgetItem *itemCurrent = new QTreeWidgetItem(currentParametersNode);
+        auto *itemCurrent = new QTreeWidgetItem(currentParametersNode);
         itemCurrent->setText(0, parameter.name());
 
-        QTreeWidgetItem *itemBest = new QTreeWidgetItem(optimalParametersNode);
+        auto *itemBest = new QTreeWidgetItem(optimalParametersNode);
         itemBest->setText(0, parameter.name());
     }
 
     foreach (Functional functional, m_study->functionals())
     {
-        QTreeWidgetItem *itemCurrent = new QTreeWidgetItem(currentFunctionalsNode);
+        auto *itemCurrent = new QTreeWidgetItem(currentFunctionalsNode);
         itemCurrent->setText(0, functional.name());
 
-        QTreeWidgetItem *itemBest = new QTreeWidgetItem(optimalFunctionalsNode);
+        auto *itemBest = new QTreeWidgetItem(optimalFunctionalsNode);
         itemBest->setText(0, functional.name());
     }
 
@@ -219,7 +220,8 @@ void LogOptimizationDialog::createControls()
     totalChart->addAxis(axisUncertainty, Qt::AlignRight);
 
     // attach axis
-    totalObjectiveSeries = new QLineSeries();
+    totalObjectiveSeries = new QScatterSeries();
+    totalObjectiveSeries->setMarkerSize(12.0);
     totalChart->addSeries(totalObjectiveSeries);
     totalObjectiveSeries->attachAxis(axisX);
     totalObjectiveSeries->attachAxis(axisObjective);
@@ -230,12 +232,12 @@ void LogOptimizationDialog::createControls()
     totalObjectiveUncertaintySeries->attachAxis(axisUncertainty);
 
     totalObjectiveUncertaintyLowerSeries = new QLineSeries();
-    // totalChart->addSeries(totalObjectiveUncertaintyLowerSeries);
+    totalChart->addSeries(totalObjectiveUncertaintyLowerSeries);
     totalObjectiveUncertaintyLowerSeries->attachAxis(axisX);
     totalObjectiveUncertaintyLowerSeries->attachAxis(axisUncertainty);
 
     totalObjectiveUncertaintyUpperSeries = new QLineSeries();
-    // totalChart->addSeries(totalObjectiveUncertaintyUpperSeries);
+    totalChart->addSeries(totalObjectiveUncertaintyUpperSeries);
     totalObjectiveUncertaintyUpperSeries->attachAxis(axisX);
     totalObjectiveUncertaintyUpperSeries->attachAxis(axisUncertainty);
 
@@ -247,19 +249,19 @@ void LogOptimizationDialog::createControls()
     progressBar = new QProgressBar(this);
     progressBar->setMaximum(m_study->estimatedNumberOfSteps());
 
-    QChartView *chartView = new QChartView();
+    auto *chartView = new QChartView();
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setChart(totalChart);
 
-    QHBoxLayout *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
+    auto *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
     layoutParametersAndFunctionalsAndChart->addWidget(trvProgress, 1);
     layoutParametersAndFunctionalsAndChart->addWidget(chartView, 10);
 
-    QVBoxLayout *layoutObjective = new QVBoxLayout();
+    auto *layoutObjective = new QVBoxLayout();
     layoutObjective->addLayout(layoutParametersAndFunctionalsAndChart, 1);
     layoutObjective->addWidget(progressBar, 1);
     
-    QVBoxLayout *layout = new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
     layout->addLayout(layoutObjective, 2);
     layout->addLayout(layoutStatus);
     
@@ -305,7 +307,7 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     totalObjectiveUncertaintySeries->append(m_step, solutionUncertainty.uncertainty);
     totalObjectiveUncertaintyLowerSeries->append(m_step, solutionUncertainty.lowerBound);
     totalObjectiveUncertaintyUpperSeries->append(m_step, solutionUncertainty.upperBound);
-    // fit
+    // fit x
     axisX->setRange(1, m_step);
 
     QPen pen;
@@ -320,7 +322,6 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
 
     double minBounds = *std::min_element(lower.constBegin(), lower.constEnd());
     double maxBounds = *std::max_element(upper.constBegin(), upper.constEnd());
-    // qInfo() << solutionUncertainty.uncertainty << solutionUncertainty.lowerBound << solutionUncertainty.upperBound << minBounds << maxBounds;
     axisUncertainty->setRange(minBounds, maxBounds);
 
     totalChart->removeSeries(totalObjectiveUncertaintyArea);
@@ -329,8 +330,9 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     totalObjectiveUncertaintyArea->setPen(pen);
     totalChart->addSeries(totalObjectiveUncertaintyArea);
 
-    double obj = qMax(totalValue, axisObjective->max());
-    axisObjective->setRange(0, obj);
+    // set objective range
+    QPair<QPointF, QPointF> axesRange = findMinMax(totalObjectiveSeries->points());
+    axisObjective->setRange(axesRange.first.y(), axesRange.second.y());
 
     m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     

@@ -28,6 +28,7 @@
 #include "gui/other.h"
 
 #include "qcustomplot.h"
+#include <QtCharts>
 
 class OptiLab;
 class Study;
@@ -109,13 +110,19 @@ private:
 
     QLabel *lblResultMin;
     QLabel *lblResultMax;
-    QLabel *lblResultSum;
     QLabel *lblResultMean;
     QLabel *lblResultMedian;
     QLabel *lblResultVariance;
     QLabel *lblResultStdDev;
-    QLabel *lblResultNormalCovariance; // normal distribution
-    QLabel *lblResultNormalCorrelation; // normal distribution
+    // QLabel *lblResultNormalCovariance; // normal distribution
+    // QLabel *lblResultNormalCorrelation; // normal distribution
+
+    QChart *resultsStatChart;
+    QScatterSeries *resultsStatMinMaxSeries;
+    QScatterSeries *resultsStatMeanSeries;
+    QScatterSeries *resultsStatMedianSeries;
+    QValueAxis *axisX;
+    QValueAxis *axisY;
 
     QTreeWidget *trvResults;
     QMenu *mnuResults;
@@ -151,6 +158,8 @@ private:
     QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
 
     void resultsFindExtrem(bool minimum);
+
+    QScatterSeries *createSeries(const QString &name);
 
 private slots:
     void chartContextMenu(const QPoint &pos);
