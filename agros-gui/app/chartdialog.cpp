@@ -38,45 +38,18 @@
 #include "gui/physicalfield.h"
 
 #include <QtSvg/QSvgRenderer>
-#include "qcustomplot/qcustomplot.h"
 
 SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
 {
-    QPen chartPen;
-    chartPen.setColor(QColor(129, 17, 19));
-    chartPen.setWidthF(2);
-
-    m_chart = new QCustomPlot(this);
-    m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    m_chart->addGraph();
-    m_chart->setCursor(QCursor(Qt::CrossCursor));
-
-    m_chart->graph(0)->setLineStyle(QCPGraph::lsLine);
-    m_chart->graph(0)->setPen(chartPen);
-
-    QPen tracerPen;
-    tracerPen.setWidth(0);
-    // tracerPen.setBrush(Qt::NoBrush);
-    tracerPen.setColor(Qt::darkGreen);
-
-    connect(m_chart, SIGNAL(mouseMove(QMouseEvent *)), this, SLOT(chartMouseMoved(QMouseEvent*)));
+    m_chartView = new ChartViewAxis(nullptr, this);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(m_chart);
+    layoutMain->addWidget(m_chartView, 1);
 
     setLayout(layoutMain);
 
     refresh();
-}
-
-void SceneViewChart::chartMouseMoved(QMouseEvent *event)
-{
-    // coord of mouse
-    double x = m_chart->xAxis->pixelToCoord(event->pos().x());
-    double y = m_chart->yAxis->pixelToCoord(event->pos().y());
-
-    emit labelRight(tr("Position: [%1; %2]").arg(x, 8, 'e', 5).arg(y, 8, 'e', 5));
 }
 
 void SceneViewChart::refresh()
@@ -96,32 +69,6 @@ void SceneViewChart::refresh()
         plotGeometry();
     else if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         plotTime();
-
-    // rescale axis
-    if (!m_chart->graph(0)->data()->isEmpty())
-    {
-        double min =   numeric_limits<double>::max();
-        double max = - numeric_limits<double>::max();
-        for (int i = 0; i < m_chart->graph(0)->data()->size(); i++)
-        {
-            double value = m_chart->graph(0)->data()->at(i)->value;
-            if (value < min) min = value;
-            if (value > max) max = value;
-        }
-
-        if ((max - min) < EPS_ZERO)
-        {
-            m_chart->graph(0)->valueAxis()->setRange(min - 1, min + 1);
-            m_chart->graph(0)->keyAxis()->setRange(m_chart->graph(0)->data()->begin()->key,
-                                                   m_chart->graph(0)->data()->end()->key);
-        }
-        else
-        {
-            m_chart->rescaleAxes();
-        }
-
-        m_chart->replot(QCustomPlot::rpQueuedRefresh);
-    }
 }
 
 QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)
@@ -191,11 +138,6 @@ void SceneViewChart::plotGeometry()
         assert(0);
     }
 
-    m_chart->xAxis->setLabel(text);
-    m_chart->yAxis->setLabel(QString("%1 (%2)").
-                             arg(physicFieldVariable.name()).
-                             arg(physicFieldVariable.unit()));
-
     // values
     ChartLine chartLine(Point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
                               m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
@@ -249,8 +191,24 @@ void SceneViewChart::plotGeometry()
         }
     }
 
+    // set labels
+    m_chartView->chart()->axisX()->setTitleText(text);
+    m_chartView->chart()->axisY()->setTitleText(QString("%1 (%2)").
+                                                arg(physicFieldVariable.name()).
+                                                arg(physicFieldVariable.unit()));
 
-    m_chart->graph(0)->setData(xval, yval);
+    // add to chart
+    m_chartView->series()->clear();
+    for (int i = 0; i < xval.size(); i++)
+        m_chartView->series()->append(xval[i], yval[i]);
+
+    // fit
+    double minX = *std::min_element(xval.constBegin(), xval.constEnd());
+    double maxX = *std::max_element(xval.constBegin(), xval.constEnd());
+    m_chartView->axisX()->setRange(minX, maxX);
+    double minY = *std::min_element(yval.constBegin(), yval.constEnd());
+    double maxY = *std::max_element(yval.constBegin(), yval.constEnd());
+    m_chartView->axisY()->setRange(minY, maxY);
 }
 
 void SceneViewChart::plotTime()
@@ -269,15 +227,15 @@ void SceneViewChart::plotTime()
     // time levels
     QList<double> times = m_postprocessorWidget->currentComputation()->timeStepTimes();
 
-    // chart
-    m_chart->xAxis->setLabel(tr("time (s)"));
-    m_chart->yAxis->setLabel(QString("%1 (%2)").
-                             arg(physicFieldVariable.name()).
-                             arg(physicFieldVariable.unit()));
-
     // table
     QVector<double> xval;
     QVector<double> yval;
+
+    // set labels
+    m_chartView->axisX()->setTitleText(tr("Time (s)"));
+    m_chartView->axisY()->setTitleText(QString("%1 (%2)").
+                          arg(physicFieldVariable.name()).
+                          arg(physicFieldVariable.unit()));
 
     for (int step = 0; step < times.count(); step++)
     {
@@ -318,7 +276,18 @@ void SceneViewChart::plotTime()
         }
     }
 
-    m_chart->graph(0)->setData(xval, yval);
+    // add to chart
+    m_chartView->series()->clear();
+    for (int i = 0; i < xval.size(); i++)
+        m_chartView->series()->append(xval[i], yval[i]);
+
+    // fit
+    double minX = *std::min_element(xval.constBegin(), xval.constEnd());
+    double maxX = *std::max_element(xval.constBegin(), xval.constEnd());
+    m_chartView->axisX()->setRange(minX, maxX);
+    double minY = *std::min_element(yval.constBegin(), yval.constEnd());
+    double maxY = *std::max_element(yval.constBegin(), yval.constEnd());
+    m_chartView->axisY()->setRange(minY, maxY);
 }
 
 void SceneViewChart::doSaveImage()
@@ -347,7 +316,7 @@ void SceneViewChart::doSaveImage()
         return;
     }
 
-    m_chart->savePng(fileName, 1024, 768);
+    m_chartView->grab().save(fileName);
 }
 
 void SceneViewChart::doExportData()

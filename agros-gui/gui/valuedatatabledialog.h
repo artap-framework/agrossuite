@@ -23,8 +23,9 @@
 #include "util/util.h"
 #include "gui/other.h"
 #include "datatable.h"
+#include <QtCharts>
 
-class QCustomPlot;
+class ChartView;
 
 class ValueDataTableDialog: public QDialog
 {
@@ -39,14 +40,23 @@ public:
 
 private:
     // captions
-    QString m_title;
-    QString m_labelX;
-    QString m_labelY;
+    QString title;
+    QString labelX;
+    QString labelY;
 
     // charts
-    DataTable m_table;
-    QCustomPlot *chartValue;
-    QCustomPlot *chartDerivative;
+    ChartView *chartViewValue;
+    QChart *chartValue;
+    QValueAxis *axisX;
+    QValueAxis *axisY;
+    QLineSeries *valueSeries;
+    QScatterSeries *valueMarkersSeries;
+
+    ChartView *chartViewDerivative;
+    QChart *chartDerivative;
+    QValueAxis *axisDX;
+    QValueAxis *axisDY;
+    QLineSeries *derivativeSeries;
 
     // values
     QPlainTextEdit *lstX;
@@ -61,7 +71,6 @@ private:
 
     QCheckBox *chkDerivative;
     QCheckBox *chkMarkers;
-    QCheckBox *chkExtrapolation;
 
     QGroupBox *grpInterpolation;
 
@@ -74,6 +83,8 @@ private:
     QPushButton *btnOk;
     QPushButton *btnClose;
     QPushButton *btnPlot;
+
+    DataTable m_table;
 
     void createControls();
     void load();

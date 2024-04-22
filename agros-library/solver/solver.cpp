@@ -839,16 +839,6 @@ void SolverDeal::solveSteadyState()
                     || (relChangeSol < EPS_ZERO))
                 break;
         }
-
-        // save chart
-        /*
-        ChartAdaptivityImage chart;
-        chart.setError(adaptiveSteps, adaptiveError);
-        chart.setDOFs(adaptiveSteps, adaptiveDOFs);
-        QString fn = chart.save();
-
-        Agros::log()->appendImage(fn);
-        */
     }
 }
 
@@ -878,15 +868,6 @@ void SolverDeal::solveTransient()
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
     // add solution to the store
     m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, initialSolution, runTime);
-
-    // Python callback
-    /*
-    double cont = 1.0;
-    QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
-            arg(m_computation->problemDir()).
-            arg(0);
-    bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
-    */
 
     primal->solution = initialSolution;
 

@@ -22,118 +22,331 @@
 #include "util/util.h"
 #include "util/global.h"
 
-ChartImage::ChartImage(QWidget *parent) : QCustomPlot(parent)
+#include <QMouseEvent>
+
+void fitToDataChart(QChart *chart)
 {
-    fontChart.setPointSize(fontChart.pointSize() - 3);
-
-    pen.setColor(Qt::darkGray);
-    pen.setWidth(2);
-
-    xAxis->setTickLabelFont(fontChart);
-    xAxis->setLabelFont(fontChart);
-
-    yAxis->setTickLabelFont(fontChart);
-    yAxis->setLabelFont(fontChart);
-
-    m_line = addGraph(xAxis, yAxis);
-    m_line->setLineStyle(QCPGraph::lsLine);
-    m_line->setPen(pen);
-    m_line->setBrush(QBrush(QColor(0, 0, 255, 20)));
-}
-
-void ChartImage::setLabel(const QString &labelx, const QString &labely)
-{
-    xAxis->setLabel(labelx);
-    yAxis->setLabel(labely);
-}
-
-void ChartImage::setData(const QVector<double> &x, const QVector<double> &y)
-{
-    m_line->setData(x, y);
-}
-
-QString ChartImage::save(const QString &fileName)
-{
-    rescaleAxes();
-    replot(QCustomPlot::rpImmediateRefresh);
-
-    QString fn = fileName;
-    if (fn.isEmpty())
+    // qInfo() << "fit series: " << chart->series().size();
+    foreach(QAbstractSeries *series, chart->series())
     {
-        QDateTime currentTime(QDateTime::currentDateTime());
-        fn = QString("%1/log/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+        qreal minX = std::numeric_limits<qreal>::max();
+        qreal maxX = std::numeric_limits<qreal>::min();
+        qreal minY = std::numeric_limits<qreal>::max();
+        qreal maxY = std::numeric_limits<qreal>::min();
+
+        // only works for line and scatter chart
+        QList<QPointF> points;
+        if (series->type() == QAbstractSeries::SeriesTypeLine)
+        {
+            points = static_cast<QLineSeries *>(series)->points();
+        }
+        else if (series->type() == QAbstractSeries::SeriesTypeScatter)
+        {
+            points = static_cast<QScatterSeries *>(series)->points();
+        }
+        else if (series->type() == QAbstractSeries::SeriesTypeArea)
+        {
+            QAreaSeries *area = static_cast<QAreaSeries *>(series);
+            // add upper
+            foreach(QPointF point, area->upperSeries()->points())
+                points.append(point);
+            // add lower
+            foreach(QPointF point, area->lowerSeries()->points())
+                points.append(point);
+        }
+
+        for (int i = 0; i < points.size(); i++)
+        {
+            // x
+            if (points.at(i).x() < minX)
+                minX = points.at(i).x();
+            if (points.at(i).x() > maxX)
+                maxX = points.at(i).x();
+
+            // y
+            if (points.at(i).y() < minY)
+                minY = points.at(i).y();
+            if (points.at(i).y() > maxY)
+                maxY = points.at(i).y();
+        }
+
+        // qInfo() << minX << maxX << minY << maxY;
+        foreach(QAbstractAxis *axis, series->attachedAxes())
+        {
+            if (axis->orientation() == Qt::Horizontal)
+            {
+                axis->setRange(minX, maxX);
+            }
+            if (axis->orientation() == Qt::Vertical)
+            {
+                axis->setRange(minY, maxY);
+            }
+//            if (axis->orientation() == Qt::Horizontal)
+//            {
+//                if (axis->type() == QAbstractAxis::AxisTypeValue)
+//                {
+//                    axis->setMin(std::min(minX, static_cast<QValueAxis *>(axis)->min()));
+//                    axis->setMax(std::max(maxX, static_cast<QValueAxis *>(axis)->max()));
+//                }
+//                else if (axis->type() == QAbstractAxis::AxisTypeLogValue)
+//                {
+//                    axis->setMin(std::min(minX, static_cast<QLogValueAxis *>(axis)->min()));
+//                    axis->setMax(std::max(maxX, static_cast<QLogValueAxis *>(axis)->max()));
+//                }
+//            }
+//            if (axis->orientation() == Qt::Vertical)
+//            {
+//                if (axis->type() == QAbstractAxis::AxisTypeValue)
+//                {
+//                    axis->setMin(std::min(minY, static_cast<QValueAxis *>(axis)->min()));
+//                    axis->setMax(std::max(maxY, static_cast<QValueAxis *>(axis)->max()));
+//                }
+//                else if (axis->type() == QAbstractAxis::AxisTypeLogValue)
+//                {
+//                    axis->setMin(std::min(minY, static_cast<QLogValueAxis *>(axis)->min()));
+//                    axis->setMax(std::max(maxY, static_cast<QLogValueAxis *>(axis)->max()));
+//                }
+//            }
+        }
     }
 
-    const int width = 650;
-    const int height = 280;
-
-    savePng(fn, width, height);
-
-    return fn;
+    // qInfo() << "fit ok";
 }
 
-ChartNonlinearImage::ChartNonlinearImage(QWidget *parent) : ChartImage(parent)
+Crosshairs::Crosshairs(QChart *chart) :
+    m_xLine(new QGraphicsLineItem(chart)),
+    m_yLine(new QGraphicsLineItem(chart)),
+    m_xText(new QGraphicsTextItem(chart)),
+    m_yText(new QGraphicsTextItem(chart)),
+    m_chart(chart)
 {
-    xAxis->setLabel(QObject::tr("number of iterations (-)"));
+    QPen pen;
+    pen.setColor(Qt::darkGray);
+    pen.setStyle(Qt::DashLine);
 
-    yAxis->setLabel(QObject::tr("rel. change of sol. (%)"));
-    yAxis->setScaleType(QCPAxis::stLogarithmic);
-
-    m_line->setName(tr("Error"));
+    m_xLine->setPen(pen);
+    m_yLine->setPen(pen);
+    m_xText->setZValue(11);
+    m_yText->setZValue(11);
+    m_xText->document()->setDocumentMargin(0);
+    m_yText->document()->setDocumentMargin(0);
+    m_xText->setDefaultTextColor(Qt::white);
+    m_yText->setDefaultTextColor(Qt::white);
 }
 
-ChartAdaptivityImage::ChartAdaptivityImage(QWidget *parent) : ChartImage(parent)
+void Crosshairs::updatePosition(QPointF position)
 {
-    legend->setVisible(true);
-    legend->setFont(fontChart);
+    QLineF xLine(position.x(), m_chart->plotArea().top(),
+                 position.x(), m_chart->plotArea().bottom());
+    QLineF yLine(m_chart->plotArea().left(), position.y(),
+                 m_chart->plotArea().right(), position.y());
+    m_xLine->setLine(xLine);
+    m_yLine->setLine(yLine);
 
-    xAxis->setLabel(QObject::tr("number of iterations (-)"));
+    QString xText = QString("%1").arg(m_chart->mapToValue(position).x());
+    QString yText = QString("%1").arg(m_chart->mapToValue(position).y());
+    m_xText->setHtml(QString("<div style='background-color: #4b4b4b;'>") + xText + "</div>");
+    m_xText->setPos(position.x() + 20, position.y() + 30);
 
-    yAxis->setLabel(QObject::tr("error (%)"));
-    yAxis->setScaleType(QCPAxis::stLogarithmic);
+    m_yText->setHtml(QString("<div style='background-color: #4b4b4b;'>") + yText + "</div>");
+    m_yText->setPos(position.x() + 20, position.y() + 50);
 
-    yAxis2->setLabel(QObject::tr("number of DOFs (-)"));
-    yAxis2->setTickLabelFont(fontChart);
-    yAxis2->setLabelFont(fontChart);
-    yAxis2->setVisible(true);
+    // m_xText->setPos(position.x() - m_xText->boundingRect().width() / 2.0, m_chart->plotArea().bottom());
+    // m_yText->setPos(m_chart->plotArea().right(), position.y() - m_yText->boundingRect().height() / 2.0);
 
-    m_line->setName(tr("Error"));
-
-    m_dofs = addGraph(xAxis, yAxis2);
-    m_dofs->setLineStyle(QCPGraph::lsLine);
-    m_dofs->setPen(pen);
-    m_dofs->setBrush(QBrush(QColor(255, 0, 0, 20)));
-    m_dofs->setName(tr("DOFs"));
+    if (!m_chart->plotArea().contains(position))
+    {
+        m_xLine->hide();
+        m_xText->hide();
+        m_yLine->hide();
+        m_yText->hide();
+    }
+    else
+    {
+        m_xLine->show();
+        m_xText->show();
+        m_yLine->show();
+        m_yText->show();
+    }
 }
 
-void ChartAdaptivityImage::setDOFs(const QVector<double> &x, const QVector<double> &y)
+// *******************************************************************************************************************************************
+
+ChartView::ChartView(QChart *chart, QWidget *parent) : QChartView(parent)
 {
-    m_dofs->setData(x, y);
+    if (chart == nullptr)
+    {
+        m_chart = new QChart();
+        m_chart->setMinimumSize(320, 240);
+        m_chart->legend()->hide();
+    }
+    else
+    {
+        m_chart = chart;
+    }
+
+    m_chart->setAcceptHoverEvents(true);
+
+    // set chart
+    setChart(m_chart);
+
+    // crosshairs
+    m_crosshairs = new Crosshairs(m_chart);
+
+    setRenderHint(QPainter::Antialiasing);
+    // setRubberBand(QChartView::RectangleRubberBand);
+    setMouseTracking(true);
 }
 
-ChartTransientImage::ChartTransientImage(QWidget *parent) : ChartImage(parent)
+void ChartView::fitToData()
 {
-    legend->setVisible(true);
-    legend->setFont(fontChart);
-
-    xAxis->setLabel(QObject::tr("number of steps (-)"));
-    yAxis->setLabel(QObject::tr("step length (s)"));
-
-    yAxis2->setLabel(QObject::tr("total time (s)"));
-    yAxis2->setTickLabelFont(fontChart);
-    yAxis2->setLabelFont(fontChart);
-    yAxis2->setVisible(true);
-
-    m_line->setName(tr("Step length"));
-
-    m_totalTime = addGraph(xAxis, yAxis2);
-    m_totalTime->setLineStyle(QCPGraph::lsLine);
-    m_totalTime->setPen(pen);
-    m_totalTime->setBrush(QBrush(QColor(255, 0, 0, 20)));
-    m_totalTime->setName(tr("Total time"));
+    fitToDataChart(m_chart);
 }
 
-void ChartTransientImage::setTotalTime(const QVector<double> &x, const QVector<double> &y)
+void ChartView::resizeEvent(QResizeEvent *event)
 {
-    m_totalTime->setData(x, y);
+    QChartView::resizeEvent(event);
+}
+
+
+bool ChartView::viewportEvent(QEvent *event)
+{
+    if (event->type() == QEvent::TouchBegin)
+    {
+        // By default touch events are converted to mouse events. So
+        // after this event we will get a mouse event also but we want
+        // to handle touch events as gestures only. So we need this safeguard
+        // to block mouse events that are actually generated from touch.
+        m_isTouching = true;
+    }
+
+    return QChartView::viewportEvent(event);
+}
+
+void ChartView::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+        m_lastMousePos = event->pos();
+        event->accept();
+    }
+
+    if (m_isTouching)
+        return;
+    QChartView::mousePressEvent(event);
+}
+
+void ChartView::mouseMoveEvent(QMouseEvent *event)
+{
+    // pan the chart with a middle mouse drag
+    if (event->buttons() & Qt::LeftButton)
+    {
+        auto dPos = event->pos() - m_lastMousePos;
+        chart()->scroll(-dPos.x(), dPos.y());
+
+        m_lastMousePos = event->pos();
+        event->accept();
+    }
+
+    // crosshairs
+    m_crosshairs->updatePosition(event->pos());
+
+    if (m_isTouching)
+        return;
+
+    QChartView::mouseMoveEvent(event);
+}
+
+void ChartView::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+         QApplication::restoreOverrideCursor();
+    }
+
+    if (m_isTouching)
+        m_isTouching = false;
+
+    QChartView::mouseReleaseEvent(event);
+}
+
+void ChartView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    // fit data
+    if (event->button() == Qt::MiddleButton)
+    {
+        fitToData();
+    }
+
+    QChartView::mouseDoubleClickEvent(event);
+}
+
+void ChartView::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Plus:
+        chart()->zoomIn();
+        break;
+    case Qt::Key_Minus:
+        chart()->zoomOut();
+        break;
+    case Qt::Key_Left:
+        chart()->scroll(-10, 0);
+        break;
+    case Qt::Key_Right:
+        chart()->scroll(10, 0);
+        break;
+    case Qt::Key_Up:
+        chart()->scroll(0, 10);
+        break;
+    case Qt::Key_Down:
+        chart()->scroll(0, -10);
+        break;
+    default:
+        QGraphicsView::keyPressEvent(event);
+        break;
+    }
+}
+
+void ChartView::wheelEvent(QWheelEvent *event)
+{
+    qreal factor;
+    if (event->angleDelta().y() > 0)
+        factor = 2.0;
+    else
+        factor = 0.5;
+
+    QRectF r = QRectF(chart()->plotArea().left(),chart()->plotArea().top(),
+                      chart()->plotArea().width()/factor,chart()->plotArea().height()/factor);
+
+    QPointF mousePos = mapFromGlobal(QCursor::pos());
+    r.moveCenter(mousePos);
+    chart()->zoomIn(r);
+
+    QPointF delta = chart()->plotArea().center() - mousePos;
+    chart()->scroll(delta.x(), -delta.y());
+}
+
+// ******************************************************************************************************************************
+
+ChartViewAxis::ChartViewAxis(QChart *chart, QWidget *parent) : ChartView(chart, parent)
+{
+    // axis x
+    m_axisX = new QValueAxis;
+    m_axisX->setLabelFormat("%g");
+    m_axisX->setGridLineVisible(true);
+    m_chart->addAxis(m_axisX, Qt::AlignBottom);
+
+    // axis y
+    m_axisY = new QValueAxis;
+    m_axisY->setLabelFormat("%g");
+    m_axisY->setGridLineVisible(true);
+    m_chart->addAxis(m_axisY, Qt::AlignLeft);
+
+    // attach axis
+    m_series = new QLineSeries();
+    m_chart->addSeries(m_series);
+    m_series->attachAxis(m_axisX);
+    m_series->attachAxis(m_axisY);
 }

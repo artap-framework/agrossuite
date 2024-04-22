@@ -67,7 +67,7 @@ const int NOT_FOUND_SO_FAR = -999;
 const int GLYPH_M = 77;
 
 const double COLORBACKGROUND[3] = { 255 / 255.0, 255 / 255.0, 255 / 255.0 };
-const double COLORGRID[3] = { 200 / 255.0, 200 / 255.0, 200 / 255.0 };
+const double COLORGRID[3] = { 220 / 255.0, 220 / 255.0, 220 / 255.0 };
 const double COLORCROSS[3] = { 150 / 255.0, 150 / 255.0, 150 / 255.0 };
 const double COLORNODE[3] = { 150 / 255.0, 0 / 255.0, 0 / 255.0 };
 const double COLOREDGE[3] = { 0 / 255.0, 0 / 255.0, 150 / 255.0 };

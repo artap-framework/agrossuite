@@ -25,7 +25,6 @@
 #include "util/global.h"
 
 #include "gui/lineeditdouble.h"
-#include "gui/groupbox.h"
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 
@@ -41,8 +40,6 @@
 #include "solver/solutionstore.h"
 
 #include "util/constants.h"
-
-#include "qcustomplot/qcustomplot.h"
 
 QList<Point> ChartLine::getPoints()
 {
@@ -178,7 +175,6 @@ void PostprocessorSceneChartWidget::createControls()
     layoutAxisPointsAndTimeStep->addWidget(new QLabel(tr("Points:")), 0, 0);
     layoutAxisPointsAndTimeStep->addWidget(txtHorizontalAxisPoints, 0, 1);
     layoutAxisPointsAndTimeStep->addWidget(chkHorizontalAxisReverse, 0, 2);
-    layoutAxisPointsAndTimeStep->setColumnStretch(1, 1);
 
     QGroupBox *grpAxisPointsAndTimeStep = new QGroupBox(tr("Points and time step"), this);
     grpAxisPointsAndTimeStep->setLayout(layoutAxisPointsAndTimeStep);
@@ -265,6 +261,9 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
 
     if (cmbFieldVariableComp->currentIndex() == -1)
         cmbFieldVariableComp->setCurrentIndex(0);
+
+    createChartLine();
+    geometryViewer->doZoomBestFit();
 }
 
 void PostprocessorSceneChartWidget::createChartLine()
@@ -287,7 +286,6 @@ void PostprocessorSceneChartWidget::createChartLine()
     }
 
     geometryViewer->setChartLine(line);
-    geometryViewer->doZoomBestFit();
 }
 
 void PostprocessorSceneChartWidget::refresh()
@@ -357,8 +355,8 @@ void PostprocessorSceneChartWidget::load()
     else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
 
-    btnSaveImage->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
-    btnExportData->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
+    btnSaveImage->setEnabled(sceneChart->chartView()->chart()->series().size() > 0); // ; graph()->data()->size()
+    btnExportData->setEnabled(sceneChart->chartView()->chart()->series().size() > 0);
 }
 
 void PostprocessorSceneChartWidget::save()

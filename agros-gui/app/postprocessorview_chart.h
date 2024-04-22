@@ -108,7 +108,6 @@ public slots:
 
 private slots:
     void doFieldVariable(int index);
-
     void createChartLine();
 };
 

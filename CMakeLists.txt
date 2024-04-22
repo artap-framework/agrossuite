@@ -98,7 +98,7 @@ ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 
 # Configure CCache if available
 find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
+IF(CCACHE_PROGRAM)
     message(NOTICE "Selected CCache: ${CCACHE_PROGRAM}")
 
     set(ENV{CCACHE_BASEDIR} "${PROJECT_SOURCE_DIR}")
@@ -110,7 +110,7 @@ if(CCACHE_PROGRAM)
 
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE_FOUND)
+ENDIF()
 
 # Enable debugging symbols for all files all the time:
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -218,9 +218,11 @@ set(info resources_source/modules/acoustic.json
          resources_source/modules/magnetic.json
          resources_source/modules/rf_te.json
          resources_source/modules/rf_tm.json
+
          resources_source/couplings/current-heat.json
          resources_source/couplings/heat-elasticity.json
          resources_source/couplings/magnetic-heat.json
+
          resources_source/generator/filter_cpp.tpl
          resources_source/generator/filter_h.tpl
          resources_source/generator/force_cpp.tpl
@@ -240,10 +242,22 @@ set(info resources_source/modules/acoustic.json
          resources_source/generator/doc_index.tpl
          resources_source/generator/equations.tpl
          resources_source/generator/equations.tex
+
          resources/templates/empty.tpl
          resources/templates/material.tpl
          resources/templates/problem.tpl
          resources/templates/welcome.tpl         
+
+         agros-python/agrossuite/src/__init__.py
+         agros-python/agrossuite/src/_agros.pyx
+         agros-python/agrossuite/src/pycomputation.pxi
+         agros-python/agrossuite/src/pyfield.pxi
+         agros-python/agrossuite/src/pygeometry.pxi
+         agros-python/agrossuite/src/pyparticletracing.pxi
+         agros-python/agrossuite/src/pyproblem.pxi
+         agros-python/agrossuite/src/pysolution.pxi
+         agros-python/agrossuite/src/pystudy.pxi
+         agros-python/agrossuite/src/vtk_tools.py
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})

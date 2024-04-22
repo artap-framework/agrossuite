@@ -45,7 +45,6 @@
 #include "sceneview_post3d.h"
 #include "sceneview_particle.h"
 #include "logview.h"
-#include "gui/infowidget.h"
 #include "preprocessorview.h"
 #include "postprocessorview.h"
 #include "chartdialog.h"
@@ -71,22 +70,18 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     logStdOut = new LogStdOut();
 
     // scene
-    sceneViewProblem = new SceneViewPreprocessor(this);
     // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
 
-    // scene - info widget
-    sceneInfoWidget = new InfoWidget(this);
-
     // preprocessor
-    problemWidget = new PreprocessorWidget(sceneViewProblem, this);
+    problemWidget = new PreprocessorWidget(this);
     // postprocessor
     postprocessorWidget = new PostprocessorWidget();
 
     connect(postprocessorWidget, SIGNAL(changed()), this, SLOT(setControls()));
-    connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
+    connect(postprocessorWidget, SIGNAL(modeChanged(PostprocessorWidgetMode)), this, SLOT(setControls()));
 
     // problem
-    exampleWidget = new ExamplesWidget(this, sceneInfoWidget);
+    exampleWidget = new ExamplesWidget(this);
     connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
 
     // view info
@@ -99,25 +94,20 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     createActions();
     createMenus();
-    createToolBars();
     createMain();
 
-    // info
-    connect(tabViewLayout, SIGNAL(currentChanged(int)), this, SLOT(setControls()));
-
-    // connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
-    connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewProblem, SLOT(refresh()));
+    connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), problemWidget->sceneViewProblem(), SLOT(refresh()));
 
     // preprocessor
-    connect(sceneViewProblem, SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), problemWidget, SLOT(loadTooltip(SceneGeometryMode)));
+    connect(problemWidget->sceneViewProblem(), SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), problemWidget, SLOT(loadTooltip(SceneGeometryMode)));
 
-    sceneViewProblem->clear();
+    problemWidget->sceneViewProblem()->clear();
 
     Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
-    sceneViewProblem->doZoomBestFit();
+    problemWidget->sceneViewProblem()->doZoomBestFit();
 
     // set recent files
     setRecentFiles();
@@ -133,22 +123,17 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
-    splitterMain->restoreState(settings.value("MainWindow/SplitterMainState").toByteArray());
-
-    // show/hide control and view panel
-    actHideControlPanel->setChecked(settings.value("MainWindow/ControlPanel", true).toBool());
-    doHideControlPanel();
 
     setControls();
+
+    doApplyStyle();
 }
 
 MainWindow::~MainWindow()
 {
     QSettings settings;
     settings.setValue("MainWindow/Geometry", saveGeometry());
-    settings.setValue("MainWindow/State", saveState());
-    settings.setValue("MainWindow/SplitterMainState", splitterMain->saveState());
-    settings.setValue("MainWindow/ControlPanel", actHideControlPanel->isChecked());
+    settings.setValue("MainWindow/State", saveState());    
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
@@ -242,39 +227,24 @@ void MainWindow::createActions()
     actMaterialBrowser = new QAction(tr("Material browser..."), this);
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
-    actSolve = new QAction(icon("run"), tr("&Solve"), this);
+    actSolve = new QAction(icon("main_solve"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence("Alt+S"));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
-    actSolveNewComputation = new QAction(icon("run-step"), tr("&Solve new"), this);
+    actSolveNewComputation = new QAction(icon("main_solvenew"), tr("&Solve new"), this);
     actSolveNewComputation->setShortcut(QKeySequence(tr("Alt+Shift+S")));
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
 
-    // zoom actions (geometry, post2d and post3d)
-    // scene - zoom
-    actSceneZoomIn = new QAction(tr("Zoom in"), this);
-    actSceneZoomIn->setShortcut(QKeySequence::ZoomIn);
-
-    actSceneZoomOut = new QAction(tr("Zoom out"), this);
-    actSceneZoomOut->setShortcut(QKeySequence::ZoomOut);
-
-    actSceneZoomBestFit = new QAction(tr("Zoom best fit"), this);
-    actSceneZoomBestFit->setShortcut(tr("Ctrl+0"));
-
-    actSceneZoomRegion = new QAction(tr("Zoom region"), this);
-    actSceneZoomRegion->setCheckable(true);
-
     actSceneModeGroup = new QActionGroup(this);
     actSceneModeGroup->addAction(exampleWidget->actExamples);
-    actSceneModeGroup->addAction(sceneViewProblem->actSceneModeProblem);
+    actSceneModeGroup->addAction(problemWidget->sceneViewProblem()->actSceneModeProblem);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModeResults);
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
     actSceneModeGroup->addAction(logView->actLog);
 
-    actHideControlPanel = new QAction(icon("gear"), tr("Show/hide control panel"), this);
-    actHideControlPanel->setShortcut(tr("Alt+0"));
-    actHideControlPanel->setCheckable(true);
-    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
+    // apply stylesheet
+    timerApplyStyle = new QTimer(this);
+    connect(timerApplyStyle, &QTimer::timeout, this, &MainWindow::doApplyStyle);
 }
 
 void MainWindow::createMenus()
@@ -321,35 +291,14 @@ void MainWindow::createMenus()
     mnuEdit->addAction(problemWidget->actRedo);
     mnuEdit->addSeparator();
     mnuEdit->addAction(actCopy);
-    mnuEdit->addSeparator();
-    mnuEdit->addAction(problemWidget->actDeleteSelected);
-    mnuEdit->addSeparator();
-    mnuEdit->addAction(sceneViewProblem->actSceneViewSelectRegion);
-    mnuEdit->addAction(problemWidget->actTransform);
-
-    QMenu *mnuProblemAddGeometry = new QMenu(tr("&Add geometry"), this);
-    mnuProblemAddGeometry->addAction(problemWidget->actNewNode);
-    mnuProblemAddGeometry->addAction(problemWidget->actNewEdge);
-    mnuProblemAddGeometry->addAction(problemWidget->actNewLabel);
-
-    mnuProblem = menuBar()->addMenu(tr("&Problem"));
-    mnuProblem->addMenu(mnuProblemAddGeometry);
-    mnuProblem->addMenu(problemWidget->mnuBoundaries);
-    mnuProblem->addMenu(problemWidget->mnuMaterials);
-    mnuProblem->addSeparator();
-    mnuProblem->addAction(actSolve);
-    mnuProblem->addAction(actSolveNewComputation);
-    mnuProblem->addSeparator();
-    mnuProblem->addAction(actCreateFromModel);
 
     mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
-
-    mnuSettings = menuBar()->addMenu(tr("S&ettings"));
-    mnuSettings->addAction(actHideControlPanel);
-    mnuSettings->addAction(actFullScreen);
-    mnuSettings->addSeparator();
-    mnuSettings->addAction(actOptions);
+    mnuTools->addSeparator();
+    mnuTools->addAction(actCreateFromModel);
+    mnuTools->addSeparator();
+    mnuTools->addAction(actFullScreen);
+    mnuTools->addAction(actOptions);
 
     mnuHelp = menuBar()->addMenu(tr("&Help"));
     mnuHelp->addAction(actCheckVersion);
@@ -358,59 +307,14 @@ void MainWindow::createMenus()
     mnuHelp->addAction(actAboutQt); // will be added to "Agros" MacOSX menu
 }
 
-void MainWindow::createToolBars()
-{
-    // zoom toolbar
-    QMenu *menu = new QMenu(this);
-    menu->addAction(actSceneZoomBestFit);
-    menu->addAction(actSceneZoomRegion);
-    menu->addAction(actSceneZoomIn);
-    menu->addAction(actSceneZoomOut);
-
-    QToolButton *toolButton = new QToolButton();
-    toolButton->setIconSize(QSize(24, 24));
-    toolButton->setMenu(menu);
-    toolButton->setIcon(icon("zoom-fit"));
-    toolButton->setPopupMode(QToolButton::InstantPopup);
-
-    problemWidget->toolBar->addSeparator();
-    problemWidget->toolBar->addWidget(toolButton);
-}
-
 void MainWindow::createMain()
 {
-    sceneViewInfoWidget = new SceneViewWidget(sceneInfoWidget, this);
-    sceneViewProblemWidget = new SceneViewWidget(sceneViewProblem, this);
-    sceneViewMeshWidget = new SceneViewWidget(postprocessorWidget->sceneViewMesh(), this);
-    sceneViewPost2DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost2D(), this);
-    sceneViewPost3DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost3D(), this);
-    // sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
-    sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
-    sceneViewOptilabWidget = new SceneViewWidget(optiLab, this);
-    sceneViewLogWidget = new SceneViewWidget(logView, this);
-
-    tabViewLayout = new QStackedLayout();
-    tabViewLayout->setContentsMargins(0, 0, 0, 0);
-    tabViewLayout->addWidget(sceneViewInfoWidget);
-    tabViewLayout->addWidget(sceneViewProblemWidget);
-    tabViewLayout->addWidget(sceneViewMeshWidget);
-    tabViewLayout->addWidget(sceneViewPost2DWidget);
-    tabViewLayout->addWidget(sceneViewPost3DWidget);
-    // tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
-    tabViewLayout->addWidget(sceneViewChartWidget);
-    tabViewLayout->addWidget(sceneViewOptilabWidget);
-    tabViewLayout->addWidget(sceneViewLogWidget);
-
-    QWidget *viewWidget = new QWidget();
-    viewWidget->setLayout(tabViewLayout);
-
     tabControlsLayout = new QStackedLayout();
-    tabControlsLayout->setContentsMargins(0, 0, 0, 0);
     tabControlsLayout->addWidget(exampleWidget);
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
-    tabControlsLayout->addWidget(optiLab->optiLabWidget());
-    tabControlsLayout->addWidget(logView->logConfigWidget());
+    tabControlsLayout->addWidget(optiLab);
+    tabControlsLayout->addWidget(logView);
 
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
@@ -422,27 +326,13 @@ void MainWindow::createMain()
     // left toolbar
     QToolBar *tlbLeftBar = new QToolBar();
     tlbLeftBar->setOrientation(Qt::Vertical);
-    // fancy layout
-#ifdef Q_WS_WIN
-    int fontSize = 7;
-#endif
-#ifdef Q_WS_X11
-    int fontSize = 8;
-#endif
-    tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
-                                      "QToolBar { background-color: rgba(64, 66, 68, 255); }"
-                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 60px; }"
-                                      "QToolButton:hover { border: 0px; background: rgba(150, 150, 150, 255); }"
-                                      "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
-    // system layout
-    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 75px; }");
-
+    tlbLeftBar->setProperty("leftbar", true);
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     tlbLeftBar->addAction(exampleWidget->actExamples);
     tlbLeftBar->addSeparator();
-    tlbLeftBar->addAction(sceneViewProblem->actSceneModeProblem);
+    tlbLeftBar->addAction(problemWidget->sceneViewProblem()->actSceneModeProblem);
     tlbLeftBar->addAction(postprocessorWidget->actSceneModeResults);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
@@ -453,18 +343,10 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(actSolveNewComputation);
     tlbLeftBar->addAction(optiLab->optiLabWidget()->actRunStudy);
 
-    splitterMain = new QSplitter(Qt::Horizontal, this);
-    splitterMain->addWidget(viewControls);
-    splitterMain->addWidget(viewWidget);
-    splitterMain->setCollapsible(0, false);
-    splitterMain->setCollapsible(1, false);
-    splitterMain->setStretchFactor(0, 1);
-    splitterMain->setStretchFactor(1, 4);
-
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(tlbLeftBar);
-    layoutMain->addWidget(splitterMain);
+    layoutMain->addWidget(viewControls);
 
     QWidget *main = new QWidget();
     main->setLayout(layoutMain);
@@ -591,8 +473,8 @@ void MainWindow::doDocumentNew()
     // clear preprocessor
     Agros::problem()->clearFieldsAndConfig();
 
-    sceneViewProblem->actSceneModeProblem->trigger();
-    sceneViewProblem->doZoomBestFit();
+    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
+    problemWidget->sceneViewProblem()->doZoomBestFit();
 }
 
 void MainWindow::doDocumentOpen(const QString &fileName)
@@ -622,8 +504,8 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
             setRecentFiles();
 
-            sceneViewProblem->actSceneModeProblem->trigger();
-            sceneViewProblem->doZoomBestFit();
+            problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
+            problemWidget->sceneViewProblem()->doZoomBestFit();
 
             return;
         }
@@ -664,26 +546,26 @@ void MainWindow::doDocumentSave()
 
 void MainWindow::doDeleteSolutions()
 {
-    sceneViewProblem->actSceneModeProblem->trigger();
+    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
 
     // clear solutions
     foreach (QSharedPointer<Computation> computation, Agros::singleton()->computations())
         computation->clearSolution();
 
     optiLab->optiLabWidget()->refresh();
-    sceneViewProblem->refresh();
+    problemWidget->sceneViewProblem()->refresh();
     setControls();
 }
 
 void MainWindow::doDeleteSolutionsAndResults()
 {
-    sceneViewProblem->actSceneModeProblem->trigger();
+    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
 
     // clear all computations
     Agros::clearComputations();
 
     optiLab->optiLabWidget()->refresh();
-    sceneViewProblem->refresh();
+    problemWidget->sceneViewProblem()->refresh();
     setControls();
 }
 
@@ -727,7 +609,7 @@ void MainWindow::doDocumentImportDXF()
     if (!fileName.isEmpty())
     {
         Agros::problem()->scene()->importFromDxf(fileName);
-        sceneViewProblem->doZoomBestFit();
+        problemWidget->sceneViewProblem()->doZoomBestFit();
 
         QFileInfo fileInfo(fileName);
         if (fileInfo.absoluteDir() != tempProblemDir())
@@ -763,8 +645,8 @@ void MainWindow::doDocumentSaveImage()
         QFileInfo fileInfo(fileName);
         if (fileInfo.suffix().toLower() != "png") fileName += ".png";
 
-        if (sceneViewProblem->actSceneModeProblem->isChecked())
-            sceneViewProblem->saveImageToFile(fileName);
+        if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
+            problemWidget->sceneViewProblem()->saveImageToFile(fileName);
         // else if (sceneViewMesh->actSceneModeMesh->isChecked())
         //    sceneViewMesh->saveImageToFile(fileName);
         // else if (sceneViewPost2D->actSceneModePost2D->isChecked())
@@ -795,7 +677,7 @@ void MainWindow::doDocumentSaveGeometry()
         QFileInfo fileInfo(fileName);
         if (fileInfo.suffix().toLower() != "svg") fileName += ".svg";
 
-        sceneViewProblem->saveGeometryToSvg(fileName);
+        problemWidget->sceneViewProblem()->saveGeometryToSvg(fileName);
 
         if (fileInfo.absoluteDir() != tempProblemDir())
             settings.setValue("General/LastImageDir", fileInfo.absolutePath());
@@ -863,7 +745,7 @@ void MainWindow::doOptions()
     ConfigComputerDialog configDialog(this);
     if (configDialog.exec())
     {
-        sceneViewProblem->refresh();
+        problemWidget->sceneViewProblem()->refresh();
         setControls();
     }
 }
@@ -883,9 +765,9 @@ void MainWindow::doCopy()
 {
     // copy image to clipboard
     QPixmap pixmap;
-    if (sceneViewProblem->actSceneModeProblem->isChecked())
+    if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
     {
-        pixmap = sceneViewProblem->renderScenePixmap();
+        pixmap = problemWidget->sceneViewProblem()->renderScenePixmap();
     }
     else if (postprocessorWidget->actSceneModeResults->isChecked())
     {
@@ -896,7 +778,7 @@ void MainWindow::doCopy()
         else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post3D)
             pixmap = postprocessorWidget->sceneViewPost3D()->renderScenePixmap();
         else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Chart)
-            pixmap = postprocessorWidget->sceneViewChart()->chart()->toPixmap();
+            pixmap = postprocessorWidget->sceneViewChart()->chartView()->grab();
     }
 
     QApplication::clipboard()->setImage(pixmap.toImage());
@@ -912,15 +794,24 @@ void MainWindow::clear()
     setControls();
 }
 
-void MainWindow::doStartedScript()
+void MainWindow::doApplyStyle()
 {
-    // disable controls
-    setEnabledControls(false);
+    QFile f(QString("%1/resources/themes/theme.qss").arg(Agros::dataDir()));
+
+    if (!f.exists())
+    {
+        qInfo() << "Unable to set stylesheet, file not found";
+    }
+    else
+    {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
 }
 
 void MainWindow::setEnabledControls(bool state)
 {
-    tabViewLayout->setEnabled(state);
     tabControlsLayout->setEnabled(state);
 
     logView->setEnabled(state);
@@ -939,45 +830,23 @@ void MainWindow::setControls()
     actDeleteSolutionsAndResults->setEnabled(!Agros::computations().isEmpty());
 
     // set controls
-    actSolve->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
-    actSolve->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
-    actSolveNewComputation->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
-    actSolveNewComputation->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
+    actSolve->setEnabled(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
+    actSolve->setVisible(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
+    actSolveNewComputation->setEnabled(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
+    actSolveNewComputation->setVisible(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
     optiLab->optiLabWidget()->actRunStudy->setEnabled(optiLab->actSceneModeOptiLab->isChecked());
     optiLab->optiLabWidget()->actRunStudy->setVisible(optiLab->actSceneModeOptiLab->isChecked());
 
     postprocessorWidget->refresh();
 
-    sceneViewProblem->actSceneZoomRegion = NULL;
-
-    bool showZoom = sceneViewProblem->actSceneModeProblem->isChecked() || postprocessorWidget->actSceneModeResults->isChecked();
-
-    actSceneZoomIn->setVisible(showZoom);
-    actSceneZoomOut->setVisible(showZoom);
-    actSceneZoomBestFit->setVisible(showZoom);
-    actSceneZoomRegion->setVisible(showZoom);
-    actSceneZoomRegion->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked() ||
-                                   postprocessorWidget->actSceneModeResults->isChecked());
-
-    // disconnect signals
-    actSceneZoomIn->disconnect();
-    actSceneZoomOut->disconnect();
-    actSceneZoomBestFit->disconnect();
-
     if (exampleWidget->actExamples->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
         tabControlsLayout->setCurrentWidget(exampleWidget);
     }
-    else if (sceneViewProblem->actSceneModeProblem->isChecked())
+    else if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewProblemWidget);
         tabControlsLayout->setCurrentWidget(problemWidget);
-
-        connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomIn()));
-        connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomOut()));
-        connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomBestFit()));
-        sceneViewProblem->actSceneZoomRegion = actSceneZoomRegion;
+        // problemWidget->sceneViewProblem()->actSceneZoomRegion = actSceneZoomRegion;
     }
     else if (postprocessorWidget->actSceneModeResults->isChecked())
     {
@@ -985,49 +854,30 @@ void MainWindow::setControls()
         {
         case PostprocessorWidgetMode_Mesh:
         {
-            tabViewLayout->setCurrentWidget(sceneViewMeshWidget);
-
-            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomIn()));
-            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomOut()));
-            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomBestFit()));
-            postprocessorWidget->sceneViewMesh()->actSceneZoomRegion = actSceneZoomRegion;
+            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomIn()));
+            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomOut()));
+            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomBestFit()));
+            // postprocessorWidget->sceneViewMesh()->actSceneZoomRegion = actSceneZoomRegion;
         }
             break;
         case PostprocessorWidgetMode_Post2D:
         {
-            tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
-
-            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
-            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
-            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
-            postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
+            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
+            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
+            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
+            // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
         }
             break;
 
         case PostprocessorWidgetMode_Post3D:
         {
-            tabViewLayout->setCurrentWidget(sceneViewPost3DWidget);
-
-            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomIn()));
-            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomOut()));
-            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomBestFit()));
+            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomIn()));
+            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomOut()));
+            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomBestFit()));
         }
             break;
-        case PostprocessorWidgetMode_Chart:
-            tabViewLayout->setCurrentWidget(sceneViewChartWidget);
+        case PostprocessorWidgetMode_Chart:            
             break;
-        /*
-        case PostprocessorWidgetMode_ParticleTracing:
-        {
-            tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
-
-            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomIn()));
-            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomOut()));
-            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomBestFit()));
-            // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
-        }
-            break;
-        */
         default:
             break;
         }
@@ -1035,13 +885,11 @@ void MainWindow::setControls()
     }
     else if (optiLab->actSceneModeOptiLab->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewOptilabWidget);
-        tabControlsLayout->setCurrentWidget(optiLab->optiLabWidget());
+        tabControlsLayout->setCurrentWidget(optiLab);
     }
     else if (logView->actLog->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewLogWidget);
-        tabControlsLayout->setCurrentWidget(logView->logConfigWidget());
+        tabControlsLayout->setCurrentWidget(logView);
     }
 
     // menu bar
@@ -1049,8 +897,6 @@ void MainWindow::setControls()
     menuBar()->addMenu(mnuFile);
     menuBar()->addMenu(mnuEdit);
     menuBar()->addMenu(mnuTools);
-    menuBar()->addMenu(mnuProblem);
-    menuBar()->addMenu(mnuSettings);
     menuBar()->addMenu(mnuHelp);
 
     // window title
@@ -1062,6 +908,12 @@ void MainWindow::setControls()
     postprocessorWidget->refresh();
     // update optilab
     optiLab->refresh();
+
+    if (Agros::configComputer()->value(Config::Config_ReloadStyle).toBool())
+        timerApplyStyle->start(1000);
+    else
+        timerApplyStyle->stop();
+
 
     setUpdatesEnabled(true);
 }
@@ -1075,11 +927,6 @@ void MainWindow::doAbout()
 {
     AboutDialog about(this);
     about.exec();
-}
-
-void MainWindow::doHideControlPanel()
-{
-    viewControls->setVisible(actHideControlPanel->isChecked());
 }
 
 void MainWindow::doDocumentExportMeshFile()

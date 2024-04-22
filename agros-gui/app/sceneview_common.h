@@ -23,12 +23,12 @@
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QtOpenGL/QOpenGLDebugMessage>
 
+#include "gui/other.h"
+
 #include "util/util.h"
 #include "util/point.h"
 #include "util/enums.h"
 #include "util/conf.h"
-
-#include "gui/scenewidget.h"
 
 class Scene;
 class SceneViewCommon;
@@ -63,12 +63,14 @@ public:
     SceneViewCommon(QWidget *parent = 0);
     virtual ~SceneViewCommon();
 
+    // actions
+    QAction *actSceneZoomIn;
+    QAction *actSceneZoomOut;
+    QAction *actSceneZoomBestFit;
     QAction *actSceneZoomRegion;
 
     void saveImageToFile(const QString &fileName, int w = 0, int h = 0);
     QPixmap renderScenePixmap(int w = 0, int h = 0, bool useContext = false);
-
-    virtual QString labelView() { return ""; }
 
 signals:
     void mouseMoved(const Point &position);
@@ -76,9 +78,6 @@ signals:
     void mousePressed(const Point &point);
     void postprocessorModeGroupChanged(SceneModePostprocessor sceneModePostprocessor);
     void mouseSceneModeChanged(MouseSceneMode mouseSceneMode);
-
-    void labelCenter(const QString &center);
-    void labelRight(const QString &right);
 
 protected:
     QPoint m_lastPos; // last position of cursor

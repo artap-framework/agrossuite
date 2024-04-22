@@ -37,8 +37,8 @@
 
 #include "../3rdparty/quazip/JlCompress.h"
 
-ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
-    : QWidget(parent), m_infoWidget(infoWidget)
+ExamplesWidget::ExamplesWidget(QWidget *parent)
+    : QWidget(parent), infoWidget(infoWidget)
 {
     m_selectedRecentFilename = "";
     m_selectedRecentFormFilename = "";
@@ -49,6 +49,7 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     createActions();
 
     trvRecentFiles = new QTreeWidget(this);
+    trvRecentFiles->setMinimumWidth(300);
     trvRecentFiles->setMouseTracking(true);
     trvRecentFiles->setColumnCount(1);
     trvRecentFiles->setIconSize(QSize(24, 24));
@@ -57,13 +58,8 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     connect(trvRecentFiles, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doRecentItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvRecentFiles, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doRecentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    QHBoxLayout *layoutRecentFiles = new QHBoxLayout();
-    layoutRecentFiles->addWidget(trvRecentFiles);
-
-    QGroupBox *widgetRecentFiles = new QGroupBox(tr("Recent files"));
-    widgetRecentFiles->setLayout(layoutRecentFiles);
-
     trvExamples = new QTreeWidget(this);
+    trvExamples->setMinimumWidth(300);
     trvExamples->setMouseTracking(true);
     trvExamples->setColumnCount(1);
     trvExamples->setIconSize(QSize(24, 24));
@@ -72,30 +68,30 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     connect(trvExamples, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doExampleItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvExamples, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doExampleItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    QHBoxLayout *layoutExamples = new QHBoxLayout();
-    layoutExamples->addWidget(trvExamples);
-
-    QGroupBox *widgetExamples = new QGroupBox(tr("Examples"));
-    widgetExamples->setLayout(layoutExamples);
-
     QSettings settings;
     splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(widgetRecentFiles);
-    splitter->addWidget(widgetExamples);
+    splitter->setOrientation(Qt::Vertical);    
+    splitter->addWidget(trvRecentFiles);
+    splitter->addWidget(trvExamples);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 2);
     splitter->restoreState(settings.value("ExamplesWidget/SplitterState").toByteArray());
     splitter->restoreGeometry(settings.value("ExamplesWidget/SplitterGeometry").toByteArray());
 
-    QVBoxLayout *layout = new QVBoxLayout();
+    // scene - info widget
+    infoWidget = new InfoWidget(this);
+
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(splitter);
+    layout->addWidget(infoWidget);
+    layout->setStretch(1, 1);
 
     setLayout(layout);
 
-    // connect(Agros::problem()->scene(), SIGNAL(cleared()), this, SLOT(readRecentFiles()));
+    readExamples();
+    readRecentFiles();
 
-    init("Examples");
+    infoWidget->welcome();
 }
 
 ExamplesWidget::~ExamplesWidget()
@@ -107,23 +103,19 @@ ExamplesWidget::~ExamplesWidget()
 
 void ExamplesWidget::createActions()
 {
-    actExamples = new QAction(icon("agros"), tr("Welcome"), this);
+    actExamples = new QAction(icon("main_welcome"), tr("Welcome"), this);
     actExamples->setShortcut(tr("Ctrl+1"));
     actExamples->setCheckable(true);
 }
 
-void ExamplesWidget::init(const QString &expandedGroup)
+void ExamplesWidget::initRecentFile()
 {
-    m_expandedGroup = expandedGroup;
-
-    readRecentFiles();
-    readExamples();
-
-    if (!trvExamples->currentItem())
+    QTreeWidgetItem *mainTreeItem = trvRecentFiles->topLevelItem(0);
+    if (mainTreeItem->childCount() > 0)
     {
-        QList<QTreeWidgetItem *> items = trvExamples->findItems(m_expandedGroup, Qt::MatchExactly);
-        if (items.count() == 1)
-            trvExamples->setCurrentItem(items.at(0));
+        QTreeWidgetItem *selected = mainTreeItem->child(0);
+        selected->setSelected(true);
+        doRecentItemChanged(selected, nullptr);
     }
 }
 
@@ -140,7 +132,7 @@ void ExamplesWidget::doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetIt
         }
     }
 
-    m_infoWidget->welcome();
+    infoWidget->welcome();
 }
 
 void ExamplesWidget::doRecentItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -167,7 +159,7 @@ void ExamplesWidget::doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetI
         }
     }
 
-    m_infoWidget->welcome();
+    infoWidget->welcome();
 }
 
 void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -192,6 +184,7 @@ void ExamplesWidget::readRecentFiles()
 
     QTreeWidgetItem *trvRecentProblems = new QTreeWidgetItem(trvRecentFiles);
     trvRecentProblems->setText(0, tr("Recent problems"));
+    trvRecentProblems->setIcon(0, icon("fields/empty"));
     trvRecentProblems->setFont(0, fnt);
     trvRecentProblems->setExpanded(true);
 
@@ -213,25 +206,7 @@ void ExamplesWidget::readRecentFiles()
             item->setIcon(0, icon("fields/empty"));
     }
 
-    QTreeWidgetItem *trvRecentScripts = new QTreeWidgetItem(trvRecentFiles);
-    trvRecentScripts->setText(0, tr("Recent scripts"));
-    trvRecentScripts->setFont(0, fnt);
-    trvRecentScripts->setExpanded(true);
-
-    QStringList recentScripts = settings.value("RecentScripts").value<QStringList>();
-    for (int i = 0; i < qMin(5, recentScripts.count()); i++)
-    {
-        QFileInfo fileInfo(recentScripts[i]);
-        if (!QFile::exists(fileInfo.absoluteFilePath()))
-            continue;
-
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvRecentScripts);
-        item->setText(0, fileInfo.baseName());
-        item->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
-        item->setIcon(0, icon("pythonlab"));
-    }
-
-    m_infoWidget->welcome();
+    infoWidget->welcome();
 }
 
 void ExamplesWidget::readExamples()
@@ -302,25 +277,7 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
 
             // increase counter
             count++;
-        }
-        else if (fileInfo.suffix() == "py")
-        {
-            // skip ui python
-            if (QFile::exists(fileInfo.absoluteFilePath().left(fileInfo.absoluteFilePath().length() - 3) + ".ui"))
-                continue;
-
-            // skip problem.py
-            if (fileInfo.baseName() == "problem")
-                continue;
-
-            QTreeWidgetItem *examplePythonItem = new QTreeWidgetItem(parentItem);
-            examplePythonItem->setIcon(0, icon("script-python"));
-            examplePythonItem->setText(0, fileInfo.baseName());
-            examplePythonItem->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
-
-            // increase counter
-            count++;
-        }
+        }        
         else if (fileInfo.suffix() == "ui")
         {
             QTreeWidgetItem *exampleFormItem = new QTreeWidgetItem(parentItem);
@@ -360,7 +317,7 @@ void ExamplesWidget::problemInfo(const QString &fileName)
             // show info
             QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
             problem->readProblemFromJson(fn);
-            m_infoWidget->showProblemInfo(problem.data(), fileInfo.baseName());
+            infoWidget->showProblemInfo(problem.data(), fileInfo.baseName());
 
             QFile::remove(fn);
 
@@ -371,7 +328,7 @@ void ExamplesWidget::problemInfo(const QString &fileName)
             // show info
             QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
             problem->readProblemFromJson(fileName);
-            m_infoWidget->showProblemInfo(problem.data());
+            infoWidget->showProblemInfo(problem.data());
 
             return;
         }
@@ -379,14 +336,14 @@ void ExamplesWidget::problemInfo(const QString &fileName)
         {
             QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
             problem->readProblemFromJson(fileName);
-            m_infoWidget->showProblemInfo(problem.data());
+            infoWidget->showProblemInfo(problem.data());
 
             return;
         }
     }
     else
     {
-        m_infoWidget->welcome();
+        infoWidget->welcome();
     }
 }
 

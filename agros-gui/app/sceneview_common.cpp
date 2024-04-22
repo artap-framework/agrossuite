@@ -102,6 +102,21 @@ SceneViewCommon::~SceneViewCommon()
 
 void SceneViewCommon::createActions()
 {
+    // scene - zoom
+    actSceneZoomIn = new QAction(tr("Zoom in"), this);
+    actSceneZoomIn->setShortcut(QKeySequence::ZoomIn);
+    connect(actSceneZoomIn, SIGNAL(triggered()), this, SLOT(doZoomIn()));
+
+    actSceneZoomOut = new QAction(tr("Zoom out"), this);
+    actSceneZoomOut->setShortcut(QKeySequence::ZoomOut);
+    connect(actSceneZoomOut, SIGNAL(triggered()), this, SLOT(doZoomOut()));
+
+    actSceneZoomBestFit = new QAction(tr("Zoom best fit"), this);
+    actSceneZoomBestFit->setShortcut(tr("Ctrl+0"));
+    connect(actSceneZoomBestFit, SIGNAL(triggered()), this, SLOT(doZoomBestFit()));
+
+    actSceneZoomRegion = new QAction(tr("Zoom region"), this);
+    actSceneZoomRegion->setCheckable(true);
 }
 
 void SceneViewCommon::initializeGL()
@@ -135,6 +150,7 @@ void SceneViewCommon::messageLogged(QOpenGLDebugMessage message)
 void SceneViewCommon::resizeGL(int w, int h)
 {
     setupViewport(w, h);
+    QOpenGLWidget::resizeGL(w, h);
 }
 
 void SceneViewCommon::setupViewport(int w, int h)

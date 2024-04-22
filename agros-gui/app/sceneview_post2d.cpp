@@ -80,6 +80,7 @@ void SceneViewPost2D::createActionsPost2D()
     // postprocessor group
     actPostprocessorModeNothing = new QAction(icon("close"), tr("Nothing"), this);
     actPostprocessorModeNothing->setCheckable(true);
+    actPostprocessorModeNothing->setChecked(true);
 
     actPostprocessorModeLocalPointValue = new QAction(icon("mode-localpointvalue"), tr("Local Values"), this);
     actPostprocessorModeLocalPointValue->setCheckable(true);
@@ -195,7 +196,7 @@ void SceneViewPost2D::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     // grid
-    if (Agros::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
+    // paintGrid();
 
     // view
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
@@ -244,11 +245,7 @@ void SceneViewPost2D::paintGL()
             if ((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
                 text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
 
-            emit labelCenter(text);
-        }
-        else
-        {
-            emit labelCenter(tr("Postprocessor 2D"));
+            // emit labelCenter(text);
         }
     }
 }
@@ -940,11 +937,10 @@ void SceneViewPost2D::clearGLLists()
 void SceneViewPost2D::refresh()
 {
     clearGLLists();
-
     setControls();
 
-    if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
-        SceneViewCommon2D::refresh();
+    // if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
+    SceneViewCommon::refresh();
 }
 
 void SceneViewPost2D::setControls()
@@ -961,12 +957,14 @@ void SceneViewPost2D::setControls()
 
 void SceneViewPost2D::clear()
 {
+    qInfo() << "SceneViewPost2D::clear()";
+
     actPostprocessorModeNothing->setChecked(true);
     actPostprocessorModeNothing->trigger();
 
-    setControls();
-
     SceneViewCommon2D::clear();
+
+    refresh();
     doZoomBestFit();
 }
 

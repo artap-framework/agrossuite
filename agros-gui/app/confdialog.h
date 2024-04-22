@@ -48,6 +48,7 @@ private:
 
     // log std out
     QCheckBox *chkLogStdOut;
+    QCheckBox *chkApplyStyle;
 
     // development
     QCheckBox *chkDiscreteSaveMatrixRHS;
@@ -55,9 +56,6 @@ private:
 
     // cache
     QSpinBox *txtCacheSize;
-
-    // grid
-    QCheckBox *chkShowGrid;
 
     // scene font
     QSpinBox *txtRulersFontSizes;

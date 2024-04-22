@@ -23,9 +23,7 @@ SET(SOURCES main.cpp
     gui/chart.cpp
     gui/common.cpp
     gui/fielddialog.cpp
-    # gui/filebrowser.cpp
     gui/functiondialog.cpp
-    gui/groupbox.cpp
     gui/htmledit.cpp
     gui/infowidget.cpp
     gui/lineeditdouble.cpp
@@ -36,9 +34,8 @@ SET(SOURCES main.cpp
     gui/problemdialog.cpp
     gui/recipedialog.cpp
     gui/resultsview.cpp
-    gui/scenewidget.cpp
+
     gui/systemoutput.cpp
-    # gui/textedit.cpp
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
@@ -82,9 +79,7 @@ SET(HEADERS gui/about.h
     gui/chart.h
     gui/common.h
     gui/fielddialog.h
-    # gui/filebrowser.h
     gui/functiondialog.h
-    gui/groupbox.h
     gui/htmledit.h
     gui/infowidget.h
     gui/lineeditdouble.h
@@ -95,9 +90,8 @@ SET(HEADERS gui/about.h
     gui/problemdialog.h
     gui/recipedialog.h
     gui/resultsview.h
-    gui/scenewidget.h
+
     gui/systemoutput.h
-    # gui/textedit.h
     gui/valuedatatabledialog.h
     gui/valuelineedit.h
     gui/valuetimedialog.h
@@ -139,8 +133,12 @@ SET(HEADERS gui/about.h
     optilab/study_methoddialog.h)
 
 # images
-SET(RESOURCES ../resources_source/resources.qrc)
+SET(RESOURCES_ICON ../resources_source/resources.rc)
+SET(RESOURCES ../resources_source/resources.qrc
+              # ../resources_source/themes/dark/darkstyle.qrc
+)
 QT_ADD_RESOURCES(RESOURCES_RCC ${RESOURCES})
+
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS Svg REQUIRED)
@@ -150,6 +148,7 @@ find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED) 
 find_package(Qt6 COMPONENTS OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Charts REQUIRED)
 
 IF(WIN32)
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /bigobj")
@@ -173,14 +172,14 @@ IF(WIN32)
 set(WINDOWS_FLAG WIN32)
 ENDIF(WIN32)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${WINDOWS_FLAG} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC} ${QM_FILES})
+ADD_EXECUTABLE(${PROJECT_NAME} ${WINDOWS_FLAG} ${SOURCES} ${HEADERS} ${GUI} main.cpp  ${RESOURCES_RCC} ${RESOURCES_ICON} ${QM_FILES})
 
 
 # translations
 qt_add_lupdate(${PROJECT_NAME} TS_FILES ${TS_FILES})
 qt_add_lrelease(${PROJECT_NAME} TS_FILES ${TS_FILES})
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} Qt6::OpenGLWidgets Qt6::Svg Qt6::SvgWidgets OpenGL::GL Qt6::OpenGL)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PLUGINS} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${QCUSTOMPLOT_LIBRARY} Qt6::OpenGLWidgets Qt6::Svg Qt6::SvgWidgets OpenGL::GL Qt6::OpenGL Qt6::Charts)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

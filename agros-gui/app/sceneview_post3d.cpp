@@ -135,15 +135,10 @@ void SceneViewPost3D::paintGL()
             if ((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
                 text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
 
-            emit labelCenter(text);
+            // emit labelCenter(text);
         }
     }
         break;
-    case SceneViewPost3DMode_Model:
-        emit labelCenter(tr("Model"));
-        break;
-    default:
-        emit labelCenter(tr("Postprocessor 3D"));
     }
 
     if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();

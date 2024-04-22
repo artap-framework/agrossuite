@@ -26,7 +26,7 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneTransformDialog::SceneTransformDialog(SceneViewPreprocessor *sceneViewPreprocessor, QWidget *parent)
+SceneTransformDialog::SceneTransformDialog(SceneViewProblem *sceneViewPreprocessor, QWidget *parent)
     : QDialog(parent), m_sceneViewPreprocessor(sceneViewPreprocessor)
 {
     setWindowTitle(tr("Transform"));

@@ -47,9 +47,6 @@ public:
     virtual ~PluginSolverInterface();
 
     virtual QString name() const = 0;
-    virtual QStringList methods() const;
-    void setMethod(const QString &meth) { method = meth; }
-    void setParameters(const QString &params) { parameters = params; }
 
     virtual void solve(dealii::SparseMatrix<double> &system,
                        dealii::Vector<double> &rhs,
@@ -59,9 +56,6 @@ protected:
     std::vector<int> Ap;
     std::vector<int> Ai;
     std::vector<double> Ax;
-
-    QString method;
-    QString parameters;
 
     void prepare_crs(const dealii::SparseMatrix<double> &matrix);
     void sort_arrays(const dealii::SparseMatrix<double> &matrix);

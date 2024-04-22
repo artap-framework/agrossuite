@@ -60,12 +60,11 @@ public:
 
     inline PhysicalFieldWidget *fieldWidget() { return m_fieldWidget; }
 
-    PostprocessorWidgetMode mode();
+    inline PostprocessorWidgetMode mode() { return m_postMode; }
 
     inline SceneViewMesh *sceneViewMesh() { return m_sceneViewMesh; }
     inline SceneViewPost2D *sceneViewPost2D() { return m_sceneViewPost2D; }
     inline SceneViewPost3D *sceneViewPost3D() { return m_sceneViewPost3D; }
-    inline SceneViewParticleTracing *sceneViewParticleTracing() { return m_sceneViewParticleTracing; }
     inline SceneViewChart *sceneViewChart() { return m_sceneViewChart; }
 
     inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
@@ -73,7 +72,7 @@ public:
     QAction *actSceneModeResults;
 
 signals:
-    void modeChanged();
+    void modeChanged(PostprocessorWidgetMode);
     void changed();
 
 public slots:
@@ -83,28 +82,43 @@ public slots:
     void processed();
     void clearedComputation();
     void createVideo();
+    void doPostModeSet(QAction *action);
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
     QSharedPointer<Computation> m_currentComputation;
 
-    QTabWidget *tabWidget;
     QPushButton *btnApply;
     QPushButton *btnCreateVideo;
 
+    QToolBar *toolBarRight;
+
+    QActionGroup *actOperateGroup;
+    QAction *actOperateOnMesh;
+    QAction *actOperateOnPost2D;
+    QAction *actOperateOnPost3D;
+    QAction *actOperateOnChart;
+
+    // control
+    QStackedLayout *tabControlWidgetLayout;
     PostprocessorSceneMeshWidget *m_meshWidget;
     PostprocessorScenePost2DWidget *m_post2DWidget;
     PostprocessorScenePost3DWidget *m_post3DWidget;
     PostprocessorSceneChartWidget *m_chartWidget;
-    // PostprocessorSceneParticleTracingWidget *m_particleTracingWidget;
 
+    // view
+    QStackedLayout *tabViewLayout;
     SceneViewMesh *m_sceneViewMesh;
     SceneViewPost2D *m_sceneViewPost2D;
     SceneViewPost3D *m_sceneViewPost3D;
-    SceneViewParticleTracing *m_sceneViewParticleTracing;
     SceneViewChart *m_sceneViewChart;
 
+    QToolButton *zoomButton;
+    QMenu *mnuZoom;
+
     void createControls();
+
+    PostprocessorWidgetMode m_postMode;
 
     friend class PostprocessorSceneWidget;
 };

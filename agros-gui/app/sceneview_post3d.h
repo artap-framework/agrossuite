@@ -41,8 +41,6 @@ public:
 
     QAction *actSceneModePost3D;
 
-    virtual QString labelView() { return tr("Postprocessor 3D"); }
-
     void setControls();
 
 protected:

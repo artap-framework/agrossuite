@@ -17,6 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+#include <QTextEdit>
+
 #include "infowidget.h"
 
 #include "util/constants.h"
@@ -57,7 +59,7 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     webEdit->setReadOnly(true);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 2);
+    layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(webEdit);
 
     setLayout(layoutMain);
@@ -290,8 +292,6 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
-    // return;
-
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");

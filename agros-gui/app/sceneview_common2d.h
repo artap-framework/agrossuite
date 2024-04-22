@@ -68,9 +68,6 @@ protected:
 
     // rulers
     Point rulersAreaSize();
-
-private slots:
-    void updatePosition(const Point &point);
 };
 
 #endif // SCENEVIEWCOMMON2D_H

@@ -60,9 +60,6 @@ public:
     QAction *actExportVTKScalar;
     QAction *actExportVTKContours;
 
-    virtual QIcon iconView() { return icon("scene-post2d"); }
-    virtual QString labelView() { return tr("Postprocessor 2D"); }
-
     void setControls();
 
 protected:

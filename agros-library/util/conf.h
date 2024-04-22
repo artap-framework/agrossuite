@@ -43,7 +43,8 @@ public:
     enum Type
     {
         Unknown,
-        Config_LogStdOut,               
+        Config_LogStdOut,
+        Config_ReloadStyle,
         Config_Locale,
         Config_ShowResults,
         Config_LinearSystemFormat,
@@ -51,8 +52,7 @@ public:
         Config_MatrixSystemSave,
         Config_CacheSize,        
         Config_RulersFontPointSize,
-        Config_PostFontPointSize,
-        Config_ShowGrid,
+        Config_PostFontPointSize,        
         Config_ShowRulers,
         Config_ShowAxes
     };

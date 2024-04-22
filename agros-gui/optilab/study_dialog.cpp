@@ -30,8 +30,6 @@
 #include "optilab/study_bayesopt.h"
 #include "optilab/study_methoddialog.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 #include <boost/random/normal_distribution.hpp>
 #include <boost/math/distributions/normal.hpp>
 
@@ -53,8 +51,8 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     m_study->updateParametersAndFunctionals = std::bind(&LogOptimizationDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
     
-    int w = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
-    int h = 2.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
+    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -195,56 +193,67 @@ void LogOptimizationDialog::createControls()
         itemBest->setText(0, functional.name());
     }
 
-    // total objective function
-    totalChart = new QCustomPlot(this);
+    // chart
+    totalChart = new QChart();
+    totalChart->legend()->hide();
+    totalChart->setTitle(tr("Solution"));
 
-    QCPTextElement *title = new QCPTextElement(totalChart, tr("Total objective function"));
-    title->setFont(fontTitle);
-    totalChart->plotLayout()->insertRow(0);
-    totalChart->plotLayout()->addElement(0, 0, title);
+    // axis x
+    axisX = new QValueAxis;
+    axisX->setLabelFormat("%g");
+    axisX->setGridLineVisible(true);
+    axisX->setTitleText(tr("number of steps"));
+    totalChart->addAxis(axisX, Qt::AlignBottom);
 
-    totalChart->xAxis->setTickLabelFont(fontChart);
-    totalChart->xAxis->setLabelFont(fontChart);
-    // chart->xAxis->setTickStep(1.0);
-    totalChart->xAxis->setLabel(tr("number of steps"));
-    // m_totalChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    totalChart->yAxis->setTickLabelFont(fontChart);
-    totalChart->yAxis->setLabelFont(fontChart);
-    totalChart->yAxis->setLabel(tr("Objective"));
-    totalChart->yAxis2->setLabel(tr("Uncertainty"));
-    totalChart->yAxis2->setVisible(true);
-    totalChart->legend->setVisible(true);
+    // axis y
+    axisObjective = new QValueAxis;
+    axisObjective->setLabelFormat("%g");
+    axisObjective->setGridLineVisible(true);
+    axisObjective->setTitleText(tr("objective"));
+    totalChart->addAxis(axisObjective, Qt::AlignLeft);
 
-    QCPGraph *totalObjectiveGraph = totalChart->addGraph(totalChart->xAxis, totalChart->yAxis);
-    totalObjectiveGraph->setLineStyle(QCPGraph::lsLine);
-    totalObjectiveGraph->setPen(pen);
-    totalObjectiveGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
-    totalObjectiveGraph->setName(tr("Value"));
-    totalObjectiveGraph->addToLegend();
+    axisUncertainty = new QValueAxis;
+    axisUncertainty->setLabelFormat("%g");
+    axisUncertainty->setGridLineVisible(true);
+    axisUncertainty->setTitleText(tr("uncertainty"));
+    totalChart->addAxis(axisUncertainty, Qt::AlignRight);
 
-    QCPGraph *totalObjectiveGraphLower = totalChart->addGraph();
-    totalObjectiveGraphLower->removeFromLegend();
-    totalObjectiveGraphLower->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
+    // attach axis
+    totalObjectiveSeries = new QLineSeries();
+    totalChart->addSeries(totalObjectiveSeries);
+    totalObjectiveSeries->attachAxis(axisX);
+    totalObjectiveSeries->attachAxis(axisObjective);
 
-    QCPGraph *totalObjectiveGraphUpper = totalChart->addGraph();
-    totalObjectiveGraphUpper->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
-    totalObjectiveGraphUpper->setBrush(QBrush(QColor(255, 50, 30, 20)));
-    totalObjectiveGraphUpper->setChannelFillGraph(totalObjectiveGraphLower);
-    totalObjectiveGraphUpper->setName(tr("Bounds (std. dev.)"));
-    totalObjectiveGraphUpper->addToLegend();
+    totalObjectiveUncertaintySeries = new QLineSeries();
+    totalChart->addSeries(totalObjectiveUncertaintySeries);
+    totalObjectiveUncertaintySeries->attachAxis(axisX);
+    totalObjectiveUncertaintySeries->attachAxis(axisUncertainty);
 
-    QCPGraph *totalObjectiveUncertainty = totalChart->addGraph(totalChart->xAxis, totalChart->yAxis);
-    totalObjectiveUncertainty->setLineStyle(QCPGraph::lsLine);
-    totalObjectiveUncertainty->setPen(QPen(QBrush(QColor(30, 10, 20)), 2, Qt::DashLine));
-    totalObjectiveUncertainty->setName(tr("Uncertainty"));
-    totalObjectiveUncertainty->addToLegend();
+    totalObjectiveUncertaintyLowerSeries = new QLineSeries();
+    // totalChart->addSeries(totalObjectiveUncertaintyLowerSeries);
+    totalObjectiveUncertaintyLowerSeries->attachAxis(axisX);
+    totalObjectiveUncertaintyLowerSeries->attachAxis(axisUncertainty);
+
+    totalObjectiveUncertaintyUpperSeries = new QLineSeries();
+    // totalChart->addSeries(totalObjectiveUncertaintyUpperSeries);
+    totalObjectiveUncertaintyUpperSeries->attachAxis(axisX);
+    totalObjectiveUncertaintyUpperSeries->attachAxis(axisUncertainty);
+
+    totalObjectiveUncertaintyArea = new QAreaSeries(totalObjectiveUncertaintyLowerSeries, totalObjectiveUncertaintyUpperSeries);
+    totalObjectiveUncertaintyArea->setOpacity(0.5);
+    totalObjectiveUncertaintyArea->setPen(pen);
+    totalChart->addSeries(totalObjectiveUncertaintyArea);
 
     progressBar = new QProgressBar(this);
     progressBar->setMaximum(m_study->estimatedNumberOfSteps());
-    
+
+    QChartView *chartView = new QChartView();
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setChart(totalChart);
+
     QHBoxLayout *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
     layoutParametersAndFunctionalsAndChart->addWidget(trvProgress, 1);
-    layoutParametersAndFunctionalsAndChart->addWidget(totalChart, 10);
+    layoutParametersAndFunctionalsAndChart->addWidget(chartView, 10);
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
     layoutObjective->addLayout(layoutParametersAndFunctionalsAndChart, 1);
@@ -292,41 +301,37 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     }
 
     // total objective function
-    totalChart->graph(0)->addData(m_step, totalValue);
+    totalObjectiveSeries->append(m_step, totalValue);
+    totalObjectiveUncertaintySeries->append(m_step, solutionUncertainty.uncertainty);
+    totalObjectiveUncertaintyLowerSeries->append(m_step, solutionUncertainty.lowerBound);
+    totalObjectiveUncertaintyUpperSeries->append(m_step, solutionUncertainty.upperBound);
+    // fit
+    axisX->setRange(1, m_step);
 
-    // uncertainties
-    if (fabs(solutionUncertainty.lowerBound) > 0.0 && fabs(solutionUncertainty.upperBound) > 0.0)
-    {
-        totalChart->legend->setVisible(true);
-        totalChart->graph(1)->setVisible(true);
-        totalChart->graph(2)->setVisible(true);
-        totalChart->graph(3)->setVisible(true);
+    QPen pen;
+    pen.setWidth(2.0);
 
-        totalChart->graph(1)->addData(m_step, (solutionUncertainty.lowerBound));
-        totalChart->graph(2)->addData(m_step, (solutionUncertainty.upperBound));
-        totalChart->graph(3)->addData(m_step, (solutionUncertainty.uncertainty));
-    }
-    else
-    {
-        totalChart->legend->setVisible(false);
-        totalChart->graph(1)->setVisible(false);
-        totalChart->graph(2)->setVisible(false);
-        totalChart->graph(3)->setVisible(false);
-    }
+    QVector<double> lower;
+    foreach (QPointF point, totalObjectiveUncertaintyLowerSeries->points())
+        lower.append(point.y());
+    QVector<double> upper;
+    foreach (QPointF point, totalObjectiveUncertaintyUpperSeries->points())
+        upper.append(point.y());
 
-    // dashed line (populations)
-    if (m_computationSetsCount < computationSetsCount)
-    {
-        QCPItemStraightLine *line = new QCPItemStraightLine(totalChart);
+    double minBounds = *std::min_element(lower.constBegin(), lower.constEnd());
+    double maxBounds = *std::max_element(upper.constBegin(), upper.constEnd());
+    // qInfo() << solutionUncertainty.uncertainty << solutionUncertainty.lowerBound << solutionUncertainty.upperBound << minBounds << maxBounds;
+    axisUncertainty->setRange(minBounds, maxBounds);
 
-        line->point1->setCoords(QPointF(m_step - 0.5, 0));
-        line->point2->setCoords(QPointF(m_step - 0.5, 1));
-        line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
-    }
+    totalChart->removeSeries(totalObjectiveUncertaintyArea);
+    totalObjectiveUncertaintyArea = new QAreaSeries(totalObjectiveUncertaintyLowerSeries, totalObjectiveUncertaintyUpperSeries);
+    totalObjectiveUncertaintyArea->setOpacity(0.5);
+    totalObjectiveUncertaintyArea->setPen(pen);
+    totalChart->addSeries(totalObjectiveUncertaintyArea);
 
-    totalChart->rescaleAxes();
-    totalChart->replot(QCustomPlot::rpImmediateRefresh);
-    
+    double obj = qMax(totalValue, axisObjective->max());
+    axisObjective->setRange(0, obj);
+
     m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     
     currentStepNode->setText(1, QString("%1 / %2").arg(m_step).arg(progressBar->maximum()));

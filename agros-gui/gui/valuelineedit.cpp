@@ -82,7 +82,7 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         btnDataTableDelete->setIcon(iconAwesome(fa::remove));
         btnDataTableDelete->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnDataTableDelete = new QPushButton(icon("trash"), "");
+        btnDataTableDelete = new QPushButton(icon("geometry_trash"), "");
         btnDataTableDelete->setMaximumSize(btnDataTableDelete->sizeHint());
 #endif
         connect(btnDataTableDelete, SIGNAL(clicked()), this, SLOT(doOpenDataTableDelete()));

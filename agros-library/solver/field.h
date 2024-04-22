@@ -97,9 +97,7 @@ public:
         LinearSolverIterDealIIPreconditioner,
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
-        LinearSolverExternalName,
-        LinearSolverExternalMethod,
-        LinearSolverExternalParameters,
+        LinearSolverExternalName,        
         TimeUnit
     };
 

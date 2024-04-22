@@ -35,10 +35,6 @@ cdef extern from "../../agros-python/pythonlab/pyfield.h":
 
         string getExternalMatrixSolver()
         void setExternalMatrixSolver(string &solver) except +
-        string getExternalMatrixSolverMethod()
-        void setExternalMatrixSolverMethod(string &method)
-        string getExternalMatrixSolverParameters()
-        void setExternalMatrixSolverParameters(string &parameters)
 
         string getNonlinearDampingType()
         void setNonlinearDampingType(string &dampingType) except +
@@ -303,9 +299,7 @@ cdef class __Field__:
                 'dealii_iterations' : self.thisptr.getIntParameter(b'LinearSolverIterIters'),
                 'dealii_method' : self.thisptr.getLinearSolverDealIIMethod().decode(),
                 'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
-                'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
-                'external_method' : self.thisptr.getExternalMatrixSolverMethod().decode(),
-                'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}
+                'external_solver' : self.thisptr.getExternalMatrixSolver().decode()}
 
     def __set_matrix_solver_parameters__(self, parameters):
         # tolerance
@@ -322,8 +316,6 @@ cdef class __Field__:
 
         # external solver
         self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())
-        self.thisptr.setParameter(string(b'LinearSolverExternalCommandMethod'), <string>parameters['external_method'].encode())
-        self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())
 
     # refinements
     property number_of_refinements:

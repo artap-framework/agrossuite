@@ -121,23 +121,23 @@ void setLocale(const QString &locale)
 {
     // non latin-1 chars
     QTranslator *qtTranslator = new QTranslator(QCoreApplication::instance());
-    // QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
+    QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
     QTranslator *pluginTranslator = new QTranslator(QCoreApplication::instance());
 
-    QString country = locale.section('_',0,0);
+    QString country = locale.section('_',0,0);    
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))
         auto ok = qtTranslator->load(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm");
-    else if (QFile::exists(":/lang/qt_" + country + ".qm"))
-        auto ok = qtTranslator->load(":/lang/qt_" + country + ".qm");
+    else if (QFile::exists(":/lang/qt_" + locale + ".qm"))
+        auto ok = qtTranslator->load(":/lang/qt_" + locale + ".qm");
     else
         qDebug() << "Qt locale file not found.";
 
-    // if (QFile::exists(":/lang/" + locale + ".qm"))
-    //     auto ok = appTranslator->load(":/lang/" + locale + ".qm");
-    // else if (QFile::exists(":/lang/en_US.qm"))
-    //     auto ok = appTranslator->load(":/lang/en_US.qm");
-    // else
-    //     qDebug() << "Locale file not found.";
+     if (QFile::exists(":/lang/" + locale + ".qm"))
+         auto ok = appTranslator->load(":/lang/" + locale + ".qm");
+     else if (QFile::exists(":/lang/en_US.qm"))
+         auto ok = appTranslator->load(":/lang/en_US.qm");
+     else
+         qDebug() << "Locale file not found.";
 
     if (QFile::exists(":/lang/plugin_" + locale + ".qm"))
         auto ok = pluginTranslator->load(":/lang/plugin_" + locale + ".qm");
@@ -147,7 +147,7 @@ void setLocale(const QString &locale)
         qDebug() << "Plugin locale file not found.";
 
     QCoreApplication::installTranslator(qtTranslator);
-    // QCoreApplication::installTranslator(appTranslator);
+    QCoreApplication::installTranslator(appTranslator);
     QCoreApplication::installTranslator(pluginTranslator);
 }
 

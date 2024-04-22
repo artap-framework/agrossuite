@@ -49,7 +49,6 @@ private:
     int m_adaptiveStepStore;
     int m_adaptiveSteps;
     bool m_showRulersStore;
-    bool m_showGridStore;
     bool m_showAxesStore;
 
     QStackedWidget *tabType;
@@ -63,7 +62,6 @@ private:
     QPushButton *btnGenerate;
 
     QCheckBox *chkSaveImages;
-    QCheckBox *chkFigureShowGrid;
     QCheckBox *chkFigureShowRulers;
     QCheckBox *chkFigureShowAxes;
 

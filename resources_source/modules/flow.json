@@ -162,7 +162,7 @@
                     }
                 },
                 "id": "flow_pressure_force_x",
-                "name": "Pressure force X",
+                "name": "Pressure force - x",
                 "shortname": "Fpx",
                 "shortname_html": "<i>F</i><sub>p,x</sub>",
                 "type": "scalar",
@@ -178,7 +178,7 @@
                     }
                 },
                 "id": "flow_pressure_force_y",
-                "name": "Pressure force Y",
+                "name": "Pressure force - y",
                 "shortname": "Fpy",
                 "shortname_html": "<i>F</i><sub>p,y</sub>",
                 "type": "scalar",
@@ -194,7 +194,7 @@
                     }
                 },
                 "id": "flow_viscous_force_x",
-                "name": "Viscous force X",
+                "name": "Viscous force - x",
                 "shortname": "Fvx",
                 "shortname_html": "<i>F</i><sub>v,x</sub>",
                 "type": "scalar",
@@ -210,7 +210,7 @@
                     }
                 },
                 "id": "flow_viscous_force_y",
-                "name": "Viscous force Y",
+                "name": "Viscous force - y",
                 "shortname": "Fvy",
                 "shortname_html": "<i>F</i><sub>v,y</sub>",
                 "type": "scalar",

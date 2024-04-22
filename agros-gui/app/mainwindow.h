@@ -27,10 +27,8 @@
 
 class SceneViewPost2D;
 class SceneViewPost3D;
-class SceneViewPreprocessor;
 class SceneViewMesh;
 class OptiLab;
-class InfoWidget;
 class SettingsWidget;
 class ExamplesWidget;
 class ResultsView;
@@ -83,7 +81,6 @@ private slots:
     void doOptions();
     void doMaterialBrowser();
 
-    void doHideControlPanel();
     void doFullScreen();
 
     void doCut();
@@ -92,7 +89,7 @@ private slots:
 
     void doCheckVersion();
     void doAbout();
-    void doStartedScript();
+    void doApplyStyle();
     void setEnabledControls(bool state);
     void setControls();
     void clear();
@@ -109,9 +106,7 @@ private:
 
     QMenu *mnuFile;
     QMenu *mnuEdit;
-    QMenu *mnuProblem;
     QMenu *mnuTools;
-    QMenu *mnuSettings;
     QMenu *mnuHelp;
 
     QAction *actDocumentNew;
@@ -129,8 +124,6 @@ private:
 
     QAction *actExit;
     QActionGroup *actDocumentOpenRecentGroup;
-
-    QAction *actHideControlPanel;
 
     QAction *actCopy;
 
@@ -155,28 +148,9 @@ private:
 
     QComboBox *cmbTimeStep;
 
-    // pointers to actions (geometry, post2d and post3d)
-    QAction *actSceneZoomIn;
-    QAction *actSceneZoomOut;
-    QAction *actSceneZoomBestFit;
-    QAction *actSceneZoomRegion;
-
     // scene mode
     QActionGroup *actSceneModeGroup;
 
-    SceneViewWidget *sceneViewInfoWidget;
-    SceneViewWidget *sceneViewProblemWidget;
-    SceneViewWidget *sceneViewMeshWidget;
-    SceneViewWidget *sceneViewPost2DWidget;
-    SceneViewWidget *sceneViewPost3DWidget;
-    // SceneViewWidget *sceneViewPostParticleTracingWidget;
-    SceneViewWidget *sceneViewChartWidget;
-    SceneViewWidget *sceneViewOptilabWidget;
-    SceneViewWidget *sceneViewLogWidget;
-
-    QStackedLayout *tabViewLayout;
-    InfoWidget *sceneInfoWidget;
-    SceneViewPreprocessor *sceneViewProblem;
     OptiLab *optiLab;
 
     QWidget *viewControls;
@@ -188,20 +162,18 @@ private:
     LogView *logView;
     ConnectLog *m_connectLog;
 
-    QSplitter *splitterMain;
-
     LogStdOut *logStdOut;
     LogDialog *logDialog;
 
     QString m_startupProblemFilename;
     bool m_startupExecute;
+    QTimer *timerApplyStyle;
 
     void setRecentFiles();
 
     void createActions();
     void createToolBox();
     void createMenus();
-    void createToolBars();
     void createMain();
 };
 
