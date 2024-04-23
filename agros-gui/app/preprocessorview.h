@@ -153,11 +153,9 @@ private:
 
     QString problemPropertiesToString();
     QString fieldPropertiesToString(FieldInfo *fieldInfo);
-    void problemProperties(QTreeWidgetItem *item);
-    void fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *item);
-    QTreeWidgetItem *propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value,
-                                    PreprocessorWidget::Type type = PreprocessorWidget::Undefined,
-                                    const QString &data = "");
+    // QTreeWidgetItem *propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value,
+    //                                 PreprocessorWidget::Type type = PreprocessorWidget::Undefined,
+    //                                 const QString &data = "");
 
 private slots:
     void doContextMenu(const QPoint &pos);

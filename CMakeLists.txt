@@ -4,6 +4,17 @@ PROJECT(agros)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Enable debugging symbols for all files all the time:
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    SET(CMAKE_BUILD_TYPE Release)
+    # SET(CMAKE_BUILD_TYPE Debug)
+    # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
+    # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
+    SET(RELEASE_FLAGS "-g")
+    SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+    ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
+ENDIF()
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake /usr/lib/x86_64-linux-gnu/cmake/Qt6)
 
 SET(DEAL_II_BUILD_TYPE "Release")
@@ -110,17 +121,6 @@ IF(CCACHE_PROGRAM)
 
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
     # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-ENDIF()
-
-# Enable debugging symbols for all files all the time:
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  # SET(CMAKE_BUILD_TYPE Release)
-  SET(CMAKE_BUILD_TYPE Debug)
-  # SET(RELEASE_FLAGS "-DNDEBUG -g -O3 -Ofast")
-  # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
-  SET(RELEASE_FLAGS "-DNDEBUG -g")
-  SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
-  ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
 ENDIF()
 
 # Create file with preprocessor definitions exposing the build settings to the source code.

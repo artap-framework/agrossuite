@@ -30,6 +30,9 @@
         <file alias="results_other_local.png">images/icons/results_other_local.png</file>
         <file alias="results_other_marker.png">images/icons/results_other_marker.png</file>
         <file alias="geometry.png">images/icons/geometry.png</file>
+        <file alias="problem.png">images/icons/problem.png</file>
+        <file alias="optilab.png">images/icons/optilab.png</file>
+        <file alias="problem_properties.png">images/icons/problem_properties.png</file>
         <file alias="close.png">images/close.png</file>
         <file alias="calculator.png">images/calculator.png</file>
         <file alias="geometry_add.png">images/icons/geometry_add.png</file>

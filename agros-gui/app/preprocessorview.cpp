@@ -83,8 +83,8 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
     createControls();
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
-    connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(trvWidget, SIGNAL(currentItemChanged(auto *, auto *)), this, SLOT(doItemChanged(auto *, auto *)));
+    connect(trvWidget, SIGNAL(itemDoubleClicked(auto *, int)), this, SLOT(doItemDoubleClicked(auto *, int)));
 
     doItemChanged(NULL, NULL);
 }
@@ -489,35 +489,27 @@ void PreprocessorWidget::refresh()
     fnt.setBold(true);
 
     // problem
-    QTreeWidgetItem *problemNode = new QTreeWidgetItem(trvWidget);
+    auto *problemNode = new QTreeWidgetItem(trvWidget);
     problemNode->setText(0, tr("Problem"));
     problemNode->setFont(0, fnt);
-    problemNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
+    problemNode->setIcon(0, icon("problem"));
     problemNode->setToolTip(0, problemPropertiesToString());
     problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemNode->setExpanded(true);
-
-    // problem properties
-    QTreeWidgetItem *problemPropertiesNode = new QTreeWidgetItem(problemNode);
-    problemPropertiesNode->setText(0, tr("Properties"));
-    problemPropertiesNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
-    problemPropertiesNode->setForeground(0, QBrush(Qt::darkGray));
-    problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
-    problemProperties(problemPropertiesNode);
 
     // parameters
     QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     if (parameters.count() > 0)
     {
-        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
+        auto *parametersNode = new QTreeWidgetItem(problemNode);
         parametersNode->setText(0, tr("Parameters"));
-        parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
+        parametersNode->setIcon(0, icon("menu_parameter"));
         parametersNode->setFont(0, fnt);
         parametersNode->setExpanded(true);
 
         foreach (QString key, parameters.keys())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
+            auto *item = new QTreeWidgetItem(parametersNode);
             item->setText(0, QString("%1 (%2)").arg(key).arg(parameters[key].value()));
             item->setData(0, Qt::UserRole, key);
             item->setData(1, Qt::UserRole, PreprocessorWidget::ModelParameter);
@@ -528,7 +520,7 @@ void PreprocessorWidget::refresh()
     ProblemFunctions *functions = Agros::problem()->config()->functions();
     if (functions->items().count() > 0)
     {
-        QTreeWidgetItem *functionNode = new QTreeWidgetItem(problemNode);
+        auto *functionNode = new QTreeWidgetItem(problemNode);
         functionNode->setText(0, tr("Functions"));
         functionNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
         functionNode->setFont(0, fnt);
@@ -536,7 +528,7 @@ void PreprocessorWidget::refresh()
 
         foreach (ProblemFunction *function, functions->items())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(functionNode);
+            auto *item = new QTreeWidgetItem(functionNode);
             item->setText(0, function->name());
             // item->setText(1, QString::number(parameters[key]));
             item->setData(0, Qt::UserRole, function->name());
@@ -545,9 +537,9 @@ void PreprocessorWidget::refresh()
     }
 
     // fields
-    QTreeWidgetItem *fieldsNode = new QTreeWidgetItem(trvWidget);
+    auto *fieldsNode = new QTreeWidgetItem(trvWidget);
     fieldsNode->setText(0, tr("Fields"));
-    fieldsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Brown));
+    fieldsNode->setIcon(0, icon("menu_field"));
     fieldsNode->setFont(0, fnt);
     fieldsNode->setExpanded(true);
 
@@ -555,7 +547,7 @@ void PreprocessorWidget::refresh()
     foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         // field
-        QTreeWidgetItem *fieldNode = new QTreeWidgetItem(fieldsNode);
+        auto *fieldNode = new QTreeWidgetItem(fieldsNode);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
         // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
@@ -565,21 +557,16 @@ void PreprocessorWidget::refresh()
         fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
 
-        // field properties
-        QTreeWidgetItem *fieldPropertiesNode = propertiesItem(fieldNode, tr("Properties"), "", PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-        fieldPropertiesNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
-        fieldProperties(fieldInfo, fieldPropertiesNode);
-
         // materials
-        QTreeWidgetItem *materialsNode = new QTreeWidgetItem(fieldNode);
-        materialsNode->setIcon(0, iconAlphabet('M', AlphabetColor_Red));
+        auto *materialsNode = new QTreeWidgetItem(fieldNode);
+        materialsNode->setIcon(0, icon("menu_material"));
         materialsNode->setText(0, tr("Materials"));
         materialsNode->setFont(0, fnt);
         materialsNode->setExpanded(true);
 
         foreach (SceneMaterial *material, Agros::problem()->scene()->materials->filter(fieldInfo).items())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(materialsNode);
+            auto *item = new QTreeWidgetItem(materialsNode);
 
             item->setText(0, material->name());
             if (Agros::problem()->scene()->labels->haveMarker(material).isEmpty())
@@ -589,15 +576,15 @@ void PreprocessorWidget::refresh()
         }
 
         // boundary conditions
-        QTreeWidgetItem *boundaryConditionsNode = new QTreeWidgetItem(fieldNode);
-        boundaryConditionsNode->setIcon(0, iconAlphabet('B', AlphabetColor_Purple));
+        auto *boundaryConditionsNode = new QTreeWidgetItem(fieldNode);
+        boundaryConditionsNode->setIcon(0, icon("menu_boundary"));
         boundaryConditionsNode->setText(0, tr("Boundary conditions"));
         boundaryConditionsNode->setFont(0, fnt);
         boundaryConditionsNode->setExpanded(true);
 
         foreach (SceneBoundary *boundary, Agros::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(boundaryConditionsNode);
+            auto *item = new QTreeWidgetItem(boundaryConditionsNode);
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
 
@@ -610,14 +597,14 @@ void PreprocessorWidget::refresh()
     }
 
     // geometry
-    QTreeWidgetItem *geometryNode = new QTreeWidgetItem(trvWidget);
+    auto *geometryNode = new QTreeWidgetItem(trvWidget);
     geometryNode->setText(0, tr("Geometry"));
     geometryNode->setIcon(0, icon("geometry"));
     geometryNode->setFont(0, fnt);
     geometryNode->setExpanded(false);
 
     // nodes
-    QTreeWidgetItem *nodesNode = new QTreeWidgetItem(geometryNode);
+    auto *nodesNode = new QTreeWidgetItem(geometryNode);
     nodesNode->setText(0, tr("Nodes"));
     nodesNode->setIcon(0, iconAlphabet('N', AlphabetColor_Green));
     nodesNode->setFont(0, fnt);
@@ -625,7 +612,7 @@ void PreprocessorWidget::refresh()
     int inode = 0;
     foreach (SceneNode *node, Agros::problem()->scene()->nodes->items())
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem(nodesNode);
+        auto *item = new QTreeWidgetItem(nodesNode);
 
         item->setText(0, QString("%1. [%2; %3] ").arg(inode).arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->nodes->items().indexOf(node));
@@ -635,7 +622,7 @@ void PreprocessorWidget::refresh()
     }
 
     // edges
-    QTreeWidgetItem *edgesNode = new QTreeWidgetItem(geometryNode);
+    auto *edgesNode = new QTreeWidgetItem(geometryNode);
     edgesNode->setText(0, tr("Edges"));
     edgesNode->setIcon(0, iconAlphabet('E', AlphabetColor_Green));
     edgesNode->setFont(0, fnt);
@@ -643,7 +630,7 @@ void PreprocessorWidget::refresh()
     int iface = 0;
     foreach (SceneFace *face, Agros::problem()->scene()->faces->items())
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem(edgesNode);
+        auto *item = new QTreeWidgetItem(edgesNode);
 
         item->setText(0, QString("%1. %2 m").
                       arg(iface).arg((face->angle() < EPS_ZERO) ? (face->nodeEnd()->point() - face->nodeStart()->point()).magnitude() : face->radius() * face->angle() / 180.0 * M_PI, 0, 'e', 2));
@@ -654,7 +641,7 @@ void PreprocessorWidget::refresh()
     }
 
     // labels
-    QTreeWidgetItem *labelsNode = new QTreeWidgetItem(geometryNode);
+    auto *labelsNode = new QTreeWidgetItem(geometryNode);
     labelsNode->setText(0, tr("Labels"));
     labelsNode->setIcon(0, iconAlphabet('L', AlphabetColor_Green));
     labelsNode->setFont(0, fnt);
@@ -662,7 +649,7 @@ void PreprocessorWidget::refresh()
     int ilabel = 0;
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem(labelsNode);
+        auto *item = new QTreeWidgetItem(labelsNode);
 
         item->setText(0, QString("%1. [%2; %3]").arg(ilabel).arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->labels->items().indexOf(label));
@@ -672,23 +659,24 @@ void PreprocessorWidget::refresh()
     }
 
     // optilab
-    QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
+    auto *optilabNode = new QTreeWidgetItem(trvWidget);
     optilabNode->setText(0, tr("OptiLab"));
-    optilabNode->setIcon(0, iconAlphabet('O', AlphabetColor_Brown));
+    optilabNode->setIcon(0, icon("optilab"));
     optilabNode->setFont(0, fnt);
     optilabNode->setExpanded(true);
 
     // recipes
     if (Agros::problem()->recipes()->items().count() > 0)
     {
-        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(optilabNode);
+        auto *recipesNode = new QTreeWidgetItem(optilabNode);
         recipesNode->setText(0, tr("Recipes"));
+        recipesNode->setIcon(0, icon("menu_study"));
         recipesNode->setFont(0, fnt);
         // recipesNode->setExpanded(true);
 
         foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
+            auto *item = new QTreeWidgetItem(recipesNode);
 
             item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
             item->setData(0, Qt::UserRole, recipe->name());
@@ -703,16 +691,16 @@ void PreprocessorWidget::refresh()
             Study *study = Agros::problem()->studies()->items().at(k);
 
             // study
-            QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
+            auto *studyNode = new QTreeWidgetItem(optilabNode);
             studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
-            studyNode->setIcon(0, iconAlphabet(studyTypeString(study->type()).at(0), AlphabetColor_Green));
+            studyNode->setIcon(0, icon("menu_recipe"));
             studyNode->setFont(0, fnt);
             studyNode->setData(0, Qt::UserRole, k);
             studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             // studyNode->setExpanded(true);
 
             // parameters
-            QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
+            auto *parametersNode = new QTreeWidgetItem(studyNode);
             parametersNode->setText(0, tr("Parameters"));
             parametersNode->setFont(0, fnt);
             parametersNode->setData(0, Qt::UserRole, k);
@@ -721,7 +709,7 @@ void PreprocessorWidget::refresh()
 
             foreach (Parameter parameter, study->parameters())
             {
-                QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
+                auto *item = new QTreeWidgetItem(parametersNode);
 
                 item->setText(0, QString("%1 (%2 - %3)").arg(parameter.name()).arg(parameter.lowerBound()).arg(parameter.upperBound()));
                 item->setData(0, Qt::UserRole, parameter.name());
@@ -730,7 +718,7 @@ void PreprocessorWidget::refresh()
             }
 
             // functionals
-            QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
+            auto *functionalsNode = new QTreeWidgetItem(studyNode);
             functionalsNode->setText(0, tr("Functionals"));
             functionalsNode->setFont(0, fnt);
             functionalsNode->setData(0, Qt::UserRole, study->variant());
@@ -739,7 +727,7 @@ void PreprocessorWidget::refresh()
 
             foreach (Functional functional, study->functionals())
             {
-                QTreeWidgetItem *item = new QTreeWidgetItem(functionalsNode);
+                auto *item = new QTreeWidgetItem(functionalsNode);
 
                 item->setText(0, QString("%1 (%2 %) %3").arg(functional.name()).arg(functional.weight()).
                                  arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
@@ -837,54 +825,54 @@ QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
     return html;
 }
 
-void PreprocessorWidget::problemProperties(QTreeWidgetItem *item)
-{
-    propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
-    propertiesItem(item, tr("Mesh type"), meshTypeString(Agros::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
-    if (Agros::problem()->isHarmonic())
-    {
-        propertiesItem(item, tr("Frequency"), Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
-    }
-    if (Agros::problem()->isTransient())
-    {
-        propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Order"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Tolerance"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Initial step size"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Constant time step"), QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
-        propertiesItem(item, tr("Total time"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
-    }
-}
+// void PreprocessorWidget::problemProperties(auto *item)
+// {
+//     propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
+//     propertiesItem(item, tr("Mesh type"), meshTypeString(Agros::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
+//     if (Agros::problem()->isHarmonic())
+//     {
+//         propertiesItem(item, tr("Frequency"), Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
+//     }
+//     if (Agros::problem()->isTransient())
+//     {
+//         propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Order"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Tolerance"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Initial step size"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Constant time step"), QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
+//         propertiesItem(item, tr("Total time"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
+//     }
+// }
+//
+// void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, auto *item)
+// {
+//     propertiesItem(item, tr("Analysis"), analysisTypeString(fieldInfo->analysisType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+//     propertiesItem(item, tr("Solver"), linearityTypeString(fieldInfo->linearityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+//     propertiesItem(item, tr("Number of refinements"), QString::number(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+//     propertiesItem(item, tr("Polynomial order"), QString::number(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+//     propertiesItem(item, tr("Adaptivity"), adaptivityTypeString(fieldInfo->adaptivityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+//     propertiesItem(item, tr("Matrix solver"), matrixSolverTypeString(fieldInfo->matrixSolver()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+// }
 
-void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *item)
-{
-    propertiesItem(item, tr("Analysis"), analysisTypeString(fieldInfo->analysisType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-    propertiesItem(item, tr("Solver"), linearityTypeString(fieldInfo->linearityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-    propertiesItem(item, tr("Number of refinements"), QString::number(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-    propertiesItem(item, tr("Polynomial order"), QString::number(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-    propertiesItem(item, tr("Adaptivity"), adaptivityTypeString(fieldInfo->adaptivityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-    propertiesItem(item, tr("Matrix solver"), matrixSolverTypeString(fieldInfo->matrixSolver()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-}
-
-QTreeWidgetItem *PreprocessorWidget::propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
-{
-    QTreeWidgetItem *result = new QTreeWidgetItem(item);
-    if (value.isEmpty())
-        result->setText(0, QString("%1").arg(key));
-    else
-        result->setText(0, QString("%1 - %2").arg(key).arg(value));
-    result->setForeground(0, QBrush(Qt::darkGray));
-    result->setForeground(1, QBrush(Qt::darkGray));
-    result->setData(0, Qt::UserRole, data);
-    result->setData(1, Qt::UserRole, type);
-
-    return result;
-}
+// auto *PreprocessorWidget::propertiesItem(auto *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
+// {
+//     auto *result = new QTreeWidgetItem(item);
+//     if (value.isEmpty())
+//         result->setText(0, QString("%1").arg(key));
+//     else
+//         result->setText(0, QString("%1 - %2").arg(key).arg(value));
+//     result->setForeground(0, QBrush(Qt::darkGray));
+//     result->setForeground(1, QBrush(Qt::darkGray));
+//     result->setData(0, Qt::UserRole, data);
+//     result->setData(1, Qt::UserRole, type);
+//
+//     return result;
+// }
 
 void PreprocessorWidget::doContextMenu(const QPoint &pos)
 {
-    QTreeWidgetItem *current = trvWidget->itemAt(pos);
+    auto *current = trvWidget->itemAt(pos);
     doItemChanged(current, NULL);
 
     if (current)
