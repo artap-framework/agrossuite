@@ -83,8 +83,8 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
     createControls();
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
-    connect(trvWidget, SIGNAL(currentItemChanged(auto *, auto *)), this, SLOT(doItemChanged(auto *, auto *)));
-    connect(trvWidget, SIGNAL(itemDoubleClicked(auto *, int)), this, SLOT(doItemDoubleClicked(auto *, int)));
+    connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 
     doItemChanged(NULL, NULL);
 }
@@ -825,7 +825,7 @@ QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
     return html;
 }
 
-// void PreprocessorWidget::problemProperties(auto *item)
+// void PreprocessorWidget::problemProperties(QTreeWidget *item)
 // {
 //     propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
 //     propertiesItem(item, tr("Mesh type"), meshTypeString(Agros::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
@@ -845,7 +845,7 @@ QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
 //     }
 // }
 //
-// void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, auto *item)
+// void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidget *item)
 // {
 //     propertiesItem(item, tr("Analysis"), analysisTypeString(fieldInfo->analysisType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
 //     propertiesItem(item, tr("Solver"), linearityTypeString(fieldInfo->linearityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
@@ -855,7 +855,7 @@ QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
 //     propertiesItem(item, tr("Matrix solver"), matrixSolverTypeString(fieldInfo->matrixSolver()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
 // }
 
-// auto *PreprocessorWidget::propertiesItem(auto *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
+// auto *PreprocessorWidget::propertiesItem(QTreeWidget *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
 // {
 //     auto *result = new QTreeWidgetItem(item);
 //     if (value.isEmpty())
@@ -1015,13 +1015,12 @@ void PreprocessorWidget::doProperties()
     if (trvWidget->currentItem())
     {
         PreprocessorWidget::Type type = (PreprocessorWidget::Type) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
-
         if (type == PreprocessorWidget::GeometryNode || type == PreprocessorWidget::GeometryEdge || type == PreprocessorWidget::GeometryLabel)
         {
             // geometry - node
             if (type == PreprocessorWidget::GeometryNode)
             {
-                SceneNodeDialog *dialog = new SceneNodeDialog(Agros::problem()->scene()->nodes->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
+                auto *dialog = new SceneNodeDialog(Agros::problem()->scene()->nodes->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
                 if (dialog->exec() == QDialog::Accepted)
                 {
                     m_sceneViewProblem->refresh();
@@ -1031,7 +1030,7 @@ void PreprocessorWidget::doProperties()
             // geometry - face
             if (type == PreprocessorWidget::GeometryEdge)
             {
-                SceneFaceDialog *dialog = new SceneFaceDialog(Agros::problem()->scene()->faces->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
+                auto *dialog = new SceneFaceDialog(Agros::problem()->scene()->faces->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
                 if (dialog->exec() == QDialog::Accepted)
                 {
                     m_sceneViewProblem->refresh();
@@ -1041,7 +1040,7 @@ void PreprocessorWidget::doProperties()
             // geometry - label
             if (type == PreprocessorWidget::GeometryLabel)
             {
-                SceneLabelDialog *dialog = new SceneLabelDialog(Agros::problem()->scene()->labels->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
+                auto *dialog = new SceneLabelDialog(Agros::problem()->scene()->labels->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()), this, true);
                 if (dialog->exec() == QDialog::Accepted)
                 {
                     m_sceneViewProblem->refresh();
@@ -1053,7 +1052,7 @@ void PreprocessorWidget::doProperties()
         {
             // edge marker
             SceneBoundary *objectBoundary = Agros::problem()->scene()->boundaries->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            SceneBoundaryDialog *dialog = new SceneBoundaryDialog(objectBoundary, this);
+            auto *dialog = new SceneBoundaryDialog(objectBoundary, this);
 
             if (dialog->exec() == QDialog::Accepted)
             {
@@ -1065,7 +1064,7 @@ void PreprocessorWidget::doProperties()
         {
             // label marker
             SceneMaterial *objectMaterial = Agros::problem()->scene()->materials->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            SceneMaterialDialog *dialog = new SceneMaterialDialog(objectMaterial, this);
+            auto *dialog = new SceneMaterialDialog(objectMaterial, this);
 
             if (dialog->exec() == QDialog::Accepted)
             {
@@ -1199,18 +1198,61 @@ void PreprocessorWidget::doDelete()
             // scene objects
             if (type == PreprocessorWidget::GeometryNode)
             {
-                Agros::problem()->scene()->nodes->remove(Agros::problem()->scene()->nodes->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()));
+                undoStack()->beginMacro(tr("Delete selected"));
+                SceneNode *node = Agros::problem()->scene()->nodes->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
+                QList<PointValue> selectedNodePoints;
+                selectedNodePoints.append(node->pointValue());
+
+                undoStack()->push(new SceneNodeCommandRemoveMulti(selectedNodePoints));
+                undoStack()->endMacro();
+
                 Agros::problem()->scene()->invalidate();
+                m_sceneViewProblem->update();
             }
             else if (type == PreprocessorWidget::GeometryEdge)
             {
-                Agros::problem()->scene()->faces->remove(Agros::problem()->scene()->faces->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()));
+                undoStack()->beginMacro(tr("Delete selected"));
+                SceneFace *edge = Agros::problem()->scene()->faces->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
+
+                QList<PointValue> selectedEdgePointsStart;
+                QList<PointValue> selectedEdgePointsEnd;
+                QList<Value> selectedEdgeAngles;
+                QList<int> selectedEdgeSegments;
+                QList<QMap<QString, QString> > selectedEdgeMarkers;
+
+                selectedEdgePointsStart.append(edge->nodeStart()->pointValue());
+                selectedEdgePointsEnd.append(edge->nodeEnd()->pointValue());
+                selectedEdgeAngles.append(edge->angleValue());
+                selectedEdgeSegments.append(edge->segments());
+                selectedEdgeMarkers.append(edge->markersKeys());
+
+                undoStack()->push(new SceneEdgeCommandRemoveMulti(selectedEdgePointsStart, selectedEdgePointsEnd,
+                                                          selectedEdgeMarkers, selectedEdgeAngles, selectedEdgeSegments));
+                undoStack()->endMacro();
+
+
                 Agros::problem()->scene()->invalidate();
+                m_sceneViewProblem->update();
             }
             else if (type == PreprocessorWidget::GeometryLabel)
             {
-                Agros::problem()->scene()->labels->remove(Agros::problem()->scene()->labels->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt()));
+                undoStack()->beginMacro(tr("Delete selected"));
+                SceneLabel *label = Agros::problem()->scene()->labels->at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
+
+                QList<PointValue> selectedLabelPointsStart;
+                QList<double> selectedLabelAreas;
+                QList<QMap<QString, QString> > selectedLabelMarkers;
+
+                selectedLabelPointsStart.append(label->pointValue());
+                selectedLabelAreas.append(label->area());
+                selectedLabelMarkers.append(label->markersKeys());
+
+                undoStack()->push(new SceneLabelCommandRemoveMulti(selectedLabelPointsStart, selectedLabelMarkers, selectedLabelAreas));
+
+                undoStack()->endMacro();
+
                 Agros::problem()->scene()->invalidate();
+                m_sceneViewProblem->update();
             }
         }
         else if (type == PreprocessorWidget::Material)

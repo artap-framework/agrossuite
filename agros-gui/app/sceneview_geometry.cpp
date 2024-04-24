@@ -278,6 +278,7 @@ void SceneViewProblem::doDeleteSelected()
     undoStack()->endMacro();
 
     problem()->scene()->invalidate();
+    update();
 }
 
 void SceneViewProblem::doClearSelected()
