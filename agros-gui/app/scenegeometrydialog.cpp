@@ -1501,7 +1501,7 @@ bool SceneCircleDialog::save()
     }
 
     QString centerX = QString("%1").arg(txtPointX->value().text());
-    QString centerY = QString("%1").arg(txtPointX->value().text());
+    QString centerY = QString("%1").arg(txtPointY->value().text());
     QString nodeL = QString("%1-%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
     QString nodeR = QString("%1+%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
     QString nodeB = QString("%1-%2").arg(txtPointY->value().text()).arg(txtRadius->value().text());
