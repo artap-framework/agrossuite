@@ -27,15 +27,12 @@
 #include "gui/functiondialog.h"
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
-#include "gui/recipedialog.h"
 #include "gui/other.h"
 #include "app/scenegeometrydialog.h"
 
 #include "solver/problem_config.h"
 #include "solver/problem_parameter.h"
 #include "solver/problem_function.h"
-#include "optilab/study.h"
-#include "optilab/study_dialog.h"
 
 #include "scene.h"
 #include "logview.h"
@@ -50,18 +47,6 @@
 
 #include "solver/problem.h"
 
-StringAction::StringAction(QObject* parent, const QString &k, const QString &v) :
-    QAction(v, parent),
-    m_key(k), m_value(v)
-{
-    connect(this, SIGNAL(triggered()), this, SLOT(doTriggered()));
-}
-
-void StringAction::doTriggered()
-{
-    emit triggered(m_key);
-}
-
 PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
 {
     m_sceneViewProblem = new SceneViewProblem(this);
@@ -74,7 +59,6 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
     // context menu
     mnuPreprocessor = new QMenu(this);
     mnuFields = new QMenu(tr("New fields"), this);
-    mnuStudies = new QMenu(tr("New studies"), this);
     mnuMaterials = new QMenu(tr("New materials"), this);
     mnuBoundaries = new QMenu(tr("New boundaries"), this);
     connect(this, SIGNAL(refreshGUI()), m_sceneViewProblem, SLOT(refresh()));
@@ -102,11 +86,6 @@ PreprocessorWidget::~PreprocessorWidget()
         delete action;
     actNewFields.clear();
 
-    // clear studies
-    foreach (QAction *action, actNewStudies.values())
-        delete action;
-    actNewStudies.clear();
-
     // clear actions
     foreach (QAction *action, actNewBoundaries.values())
         delete action;
@@ -133,13 +112,6 @@ void PreprocessorWidget::createActions()
     // actNewFunctionInterpolation = new QAction(tr("New interpolation function..."), this);
     // connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
 
-    actNewRecipeLocalValue = new QAction(tr("Local value recipe..."), this);
-    connect(actNewRecipeLocalValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
-    actNewRecipeSurfaceIntegral = new QAction(tr("Surface integral recipe..."), this);
-    connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
-    actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
-    connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
-
     // scene - add items
     actNewNode = new QAction(icon("geometry_node"), tr("New &node..."), this);
     actNewNode->setShortcut(QKeySequence("Alt+N"));
@@ -163,11 +135,6 @@ void PreprocessorWidget::createActions()
     foreach (StringAction *action, actNewFields.values())
         delete action;
     actNewFields.clear();
-
-    // clear studies
-    foreach (StringAction *action, actNewStudies.values())
-        delete action;
-    actNewStudies.clear();
 
     // clear boundaries
     foreach (StringAction *action, actNewBoundaries.values())
@@ -197,15 +164,6 @@ void PreprocessorWidget::createActions()
         connect(actionMaterial, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
         actNewMaterials[it.key()] = actionMaterial;
     }
-
-    foreach (QString name, studyTypeStringKeys())
-    {
-        QString label = studyTypeString(studyTypeFromStringKey(name));
-
-        StringAction* actionStudy = new StringAction(this, name, label);
-        connect(actionStudy, SIGNAL(triggered(QString)), this, SLOT(doNewStudy(QString)));        
-        actNewStudies[name] = actionStudy;
-    }
 }
 
 void PreprocessorWidget::createMenu()
@@ -223,14 +181,6 @@ void PreprocessorWidget::createMenu()
     mnuFunctions->addAction(actNewFunctionAnalytic);
     // mnuFunctions->addAction(actNewFunctionInterpolation);
     mnuPreprocessor->addMenu(mnuFunctions);
-
-    QMenu *mnuRecipe = new QMenu(tr("New recipe"));
-    mnuRecipe->addAction(actNewRecipeLocalValue);
-    mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
-    mnuRecipe->addAction(actNewRecipeVolumeIntegral);
-
-    mnuPreprocessor->addMenu(mnuRecipe);
-    mnuPreprocessor->addMenu(mnuStudies);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addAction(actProperties);
@@ -241,14 +191,10 @@ void PreprocessorWidget::createMenu()
 
     mnuMaterials->setEnabled(enabled);
     mnuBoundaries->setEnabled(enabled);
-    mnuRecipe->setEnabled(enabled);
-    mnuStudies->setEnabled(enabled);
 
     // toolbar
     toolButtonMaterials->setEnabled(enabled);
     toolButtonBoundaries->setEnabled(enabled);
-    toolButtonRecipes->setEnabled(enabled);
-    toolButtonStudies->setEnabled(enabled);
 }
 
 void PreprocessorWidget::createControls()
@@ -350,26 +296,6 @@ void PreprocessorWidget::createControls()
     toolButtonFunctions->setIcon(icon("menu_function"));
     toolButtonFunctions->setPopupMode(QToolButton::InstantPopup);
 
-    toolButtonRecipes = new QToolButton();
-    toolButtonRecipes->setText(tr("Recipe"));
-    toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolButtonRecipes->setToolTip(tr("New recipe"));
-    toolButtonRecipes->addAction(actNewRecipeLocalValue);
-    toolButtonRecipes->addAction(actNewRecipeSurfaceIntegral);
-    toolButtonRecipes->addAction(actNewRecipeVolumeIntegral);
-    toolButtonRecipes->setAutoRaise(true);
-    toolButtonRecipes->setIcon(icon("menu_recipe"));
-    toolButtonRecipes->setPopupMode(QToolButton::InstantPopup);
-
-    toolButtonStudies = new QToolButton();
-    toolButtonStudies->setText(tr("Study"));
-    toolButtonStudies->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolButtonStudies->setToolTip(tr("New studies"));
-    toolButtonStudies->setMenu(mnuStudies);
-    toolButtonStudies->setAutoRaise(true);
-    toolButtonStudies->setIcon(icon("menu_study"));
-    toolButtonStudies->setPopupMode(QToolButton::InstantPopup);
-
     // left toolbar
     toolBarLeft = new QToolBar();
     toolBarLeft->setProperty("topbar", true);
@@ -382,8 +308,6 @@ void PreprocessorWidget::createControls()
     toolBarLeft->addWidget(toolButtonBoundaries);
     toolBarLeft->addSeparator();
     toolBarLeft->addWidget(toolButtonFunctions);
-    toolBarLeft->addWidget(toolButtonRecipes);
-    toolBarLeft->addWidget(toolButtonStudies);
 
     trvWidget = new QTreeWidget(this);
     trvWidget->setExpandsOnDoubleClick(false);
@@ -658,85 +582,85 @@ void PreprocessorWidget::refresh()
         ilabel++;
     }
 
-    // optilab
-    auto *optilabNode = new QTreeWidgetItem(trvWidget);
-    optilabNode->setText(0, tr("OptiLab"));
-    optilabNode->setIcon(0, icon("optilab"));
-    optilabNode->setFont(0, fnt);
-    optilabNode->setExpanded(true);
-
-    // recipes
-    if (Agros::problem()->recipes()->items().count() > 0)
-    {
-        auto *recipesNode = new QTreeWidgetItem(optilabNode);
-        recipesNode->setText(0, tr("Recipes"));
-        recipesNode->setIcon(0, icon("menu_study"));
-        recipesNode->setFont(0, fnt);
-        // recipesNode->setExpanded(true);
-
-        foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
-        {
-            auto *item = new QTreeWidgetItem(recipesNode);
-
-            item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
-            item->setData(0, Qt::UserRole, recipe->name());
-            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
-        }
-    }
-
-    if (Agros::problem()->studies()->items().count() > 0)
-    {
-        for (int k = 0; k < Agros::problem()->studies()->items().count(); k++)
-        {
-            Study *study = Agros::problem()->studies()->items().at(k);
-
-            // study
-            auto *studyNode = new QTreeWidgetItem(optilabNode);
-            studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
-            studyNode->setIcon(0, icon("menu_recipe"));
-            studyNode->setFont(0, fnt);
-            studyNode->setData(0, Qt::UserRole, k);
-            studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-            // studyNode->setExpanded(true);
-
-            // parameters
-            auto *parametersNode = new QTreeWidgetItem(studyNode);
-            parametersNode->setText(0, tr("Parameters"));
-            parametersNode->setFont(0, fnt);
-            parametersNode->setData(0, Qt::UserRole, k);
-            parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-            parametersNode->setExpanded(true);
-
-            foreach (Parameter parameter, study->parameters())
-            {
-                auto *item = new QTreeWidgetItem(parametersNode);
-
-                item->setText(0, QString("%1 (%2 - %3)").arg(parameter.name()).arg(parameter.lowerBound()).arg(parameter.upperBound()));
-                item->setData(0, Qt::UserRole, parameter.name());
-                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);                
-                item->setData(2, Qt::UserRole, k);
-            }
-
-            // functionals
-            auto *functionalsNode = new QTreeWidgetItem(studyNode);
-            functionalsNode->setText(0, tr("Functionals"));
-            functionalsNode->setFont(0, fnt);
-            functionalsNode->setData(0, Qt::UserRole, study->variant());
-            functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-            functionalsNode->setExpanded(true);
-
-            foreach (Functional functional, study->functionals())
-            {
-                auto *item = new QTreeWidgetItem(functionalsNode);
-
-                item->setText(0, QString("%1 (%2 %) %3").arg(functional.name()).arg(functional.weight()).
-                                 arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
-                item->setData(0, Qt::UserRole, functional.name());
-                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);                
-                item->setData(2, Qt::UserRole, k);
-            }
-        }
-    }
+    // // optilab
+    // auto *optilabNode = new QTreeWidgetItem(trvWidget);
+    // optilabNode->setText(0, tr("OptiLab"));
+    // optilabNode->setIcon(0, icon("optilab"));
+    // optilabNode->setFont(0, fnt);
+    // optilabNode->setExpanded(true);
+    //
+    // // recipes
+    // if (Agros::problem()->recipes()->items().count() > 0)
+    // {
+    //     auto *recipesNode = new QTreeWidgetItem(optilabNode);
+    //     recipesNode->setText(0, tr("Recipes"));
+    //     recipesNode->setIcon(0, icon("menu_study"));
+    //     recipesNode->setFont(0, fnt);
+    //     // recipesNode->setExpanded(true);
+    //
+    //     foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
+    //     {
+    //         auto *item = new QTreeWidgetItem(recipesNode);
+    //
+    //         item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
+    //         item->setData(0, Qt::UserRole, recipe->name());
+    //         item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
+    //     }
+    // }
+    //
+    // if (Agros::problem()->studies()->items().count() > 0)
+    // {
+    //     for (int k = 0; k < Agros::problem()->studies()->items().count(); k++)
+    //     {
+    //         Study *study = Agros::problem()->studies()->items().at(k);
+    //
+    //         // study
+    //         auto *studyNode = new QTreeWidgetItem(optilabNode);
+    //         studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
+    //         studyNode->setIcon(0, icon("menu_recipe"));
+    //         studyNode->setFont(0, fnt);
+    //         studyNode->setData(0, Qt::UserRole, k);
+    //         studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+    //         // studyNode->setExpanded(true);
+    //
+    //         // parameters
+    //         auto *parametersNode = new QTreeWidgetItem(studyNode);
+    //         parametersNode->setText(0, tr("Parameters"));
+    //         parametersNode->setFont(0, fnt);
+    //         parametersNode->setData(0, Qt::UserRole, k);
+    //         parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+    //         parametersNode->setExpanded(true);
+    //
+    //         foreach (Parameter parameter, study->parameters())
+    //         {
+    //             auto *item = new QTreeWidgetItem(parametersNode);
+    //
+    //             item->setText(0, QString("%1 (%2 - %3)").arg(parameter.name()).arg(parameter.lowerBound()).arg(parameter.upperBound()));
+    //             item->setData(0, Qt::UserRole, parameter.name());
+    //             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
+    //             item->setData(2, Qt::UserRole, k);
+    //         }
+    //
+    //         // functionals
+    //         auto *functionalsNode = new QTreeWidgetItem(studyNode);
+    //         functionalsNode->setText(0, tr("Functionals"));
+    //         functionalsNode->setFont(0, fnt);
+    //         functionalsNode->setData(0, Qt::UserRole, study->variant());
+    //         functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+    //         functionalsNode->setExpanded(true);
+    //
+    //         foreach (Functional functional, study->functionals())
+    //         {
+    //             auto *item = new QTreeWidgetItem(functionalsNode);
+    //
+    //             item->setText(0, QString("%1 (%2 %) %3").arg(functional.name()).arg(functional.weight()).
+    //                              arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
+    //             item->setData(0, Qt::UserRole, functional.name());
+    //             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+    //             item->setData(2, Qt::UserRole, k);
+    //         }
+    //     }
+    // }
 
     trvWidget->resizeColumnToContents(1);
     trvWidget->setUpdatesEnabled(true);
@@ -761,11 +685,6 @@ void PreprocessorWidget::refresh()
             fieldAction->setIconVisibleInMenu(true);
             mnuFields->addAction(fieldAction);
         }
-
-    // studies
-    mnuStudies->clear();
-    foreach(StringAction *studyAction, actNewStudies.values())
-        mnuStudies->addAction(studyAction);
 
     // create menu
     createMenu();
@@ -878,10 +797,6 @@ void PreprocessorWidget::doContextMenu(const QPoint &pos)
     if (current)
         trvWidget->setCurrentItem(current);
 
-    actNewRecipeLocalValue->setEnabled(Agros::problem()->fieldInfos().count() > 0);
-    actNewRecipeSurfaceIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
-    actNewRecipeVolumeIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
-
     mnuPreprocessor->exec(QCursor::pos());
 }
 
@@ -977,28 +892,6 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         {
             // problem
             actProperties->setEnabled(true);
-        }
-        else if (type == PreprocessorWidget::OptilabStudy)
-        {
-            // optilab - study
-            actProperties->setEnabled(true);
-            actDelete->setEnabled(true);
-        }
-        else if (type == PreprocessorWidget::OptilabParameter)
-        {
-            // optilab - parameter
-            actProperties->setEnabled(true);
-        }
-        else if (type == PreprocessorWidget::OptilabFunctional)
-        {
-            // optilab - parameter
-            actProperties->setEnabled(true);
-        }
-        else if (type == PreprocessorWidget::OptilabRecipe)
-        {
-            // problem - recipe
-            actProperties->setEnabled(true);
-            actDelete->setEnabled(true);
         }
 
         emit refreshGUI();
@@ -1123,65 +1016,6 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
-        else if (type == PreprocessorWidget::OptilabStudy)
-        {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            StudyDialog *studyDialog = StudyDialog::factory(study, this);
-            if (studyDialog->showDialog() == QDialog::Accepted)
-            {
-                refresh();
-            }
-        }
-        else if (type == PreprocessorWidget::OptilabParameter)
-        {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            QString parameter = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-
-            StudyParameterDialog dialog(study, &study->parameter(parameter));
-            if (dialog.exec() == QDialog::Accepted)
-            {
-                refresh();
-            }
-        }
-        else if (type == PreprocessorWidget::OptilabFunctional)
-        {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            QString functional = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-
-            StudyFunctionalDialog dialog(study, &study->functional(functional));
-            if (dialog.exec() == QDialog::Accepted)
-            {
-                refresh();
-            }
-        }
-        else if (type == PreprocessorWidget::OptilabRecipe)
-        {
-            ResultRecipe *recipe = Agros::problem()->recipes()->recipe(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
-
-            RecipeDialog *dialog = nullptr;
-            if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
-            {
-                dialog = new LocalValueRecipeDialog(localRecipe, this);
-            }
-            else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
-            {
-                dialog = new SurfaceIntegralRecipeDialog(surfaceRecipe, this);
-            }
-            else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
-            {
-                dialog = new VolumeIntegralRecipeDialog(volumeRecipe, this);
-            }
-            else
-                assert(0);
-
-            if (dialog->showDialog() == QDialog::Accepted)
-            {
-                refresh();
-            }
-        }
 
         emit refreshGUI();
     }
@@ -1295,27 +1129,6 @@ void PreprocessorWidget::doDelete()
                 Agros::problem()->removeField(fieldInfo);
             }
         }
-        else if (type == PreprocessorWidget::OptilabStudy)
-        {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvWidget->currentItem()->data(0, Qt::UserRole).toInt());
-            if (QMessageBox::question(this, tr("Delete"), tr("Study '%1' will be pernamently deleted. Are you sure?").
-                                      arg(studyTypeString(study->type())), tr("&Yes"), tr("&No")) == 0)
-            {
-                Agros::problem()->studies()->removeStudy(study);
-            }
-        }
-        else if (type == PreprocessorWidget::OptilabRecipe)
-        {
-            // recipe
-            ResultRecipe *recipe = Agros::problem()->recipes()->recipe(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
-
-            if (QMessageBox::question(this, tr("Delete"), tr("Recipe '%1' will be pernamently deleted. Are you sure?").
-                                      arg(recipe->name()), tr("&Yes"), tr("&No")) == 0)
-            {
-                Agros::problem()->recipes()->removeRecipe(recipe);
-            }
-        }
 
         refresh();
 
@@ -1379,77 +1192,6 @@ void PreprocessorWidget::doNewField(const QString &field)
     else
     {
         delete fieldInfo;
-    }
-}
-
-void PreprocessorWidget::doNewStudy(const QString &name)
-{
-    // add study
-    Study *study = Study::factory(studyTypeFromStringKey(name));
-
-    StudyDialog *studyDialog = StudyDialog::factory(study, this);
-    if (studyDialog->showDialog() == QDialog::Accepted)
-    {
-        Agros::problem()->studies()->addStudy(study);
-
-        refresh();
-        emit refreshGUI();
-    }
-    else
-    {
-        delete study;
-    }
-}
-
-void PreprocessorWidget::doNewRecipeLocalValue()
-{
-    doNewRecipe(ResultRecipeType_LocalValue);
-}
-
-void PreprocessorWidget::doNewRecipeSurfaceIntegral()
-{
-    doNewRecipe(ResultRecipeType_SurfaceIntegral);
-}
-
-void PreprocessorWidget::doNewRecipeVolumeIntegral()
-{
-    doNewRecipe(ResultRecipeType_VolumeIntegral);
-}
-
-void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
-{
-    if (Agros::problem()->fieldInfos().count() > 0)
-    {
-        ResultRecipe *recipe = ResultRecipe::factory(type);
-        recipe->setFieldId(Agros::problem()->fieldInfos().first()->fieldId());
-
-        RecipeDialog *dialog = nullptr;
-        if (type == ResultRecipeType_LocalValue)
-        {
-            dialog = new LocalValueRecipeDialog((LocalValueRecipe *) recipe, this);
-        }
-        else if (type == ResultRecipeType_SurfaceIntegral)
-        {
-            dialog = new SurfaceIntegralRecipeDialog((SurfaceIntegralRecipe *) recipe, this);
-        }
-        else if (type == ResultRecipeType_VolumeIntegral)
-        {
-            dialog = new VolumeIntegralRecipeDialog((VolumeIntegralRecipe *) recipe, this);
-        }
-        else
-            assert(0);
-
-        if (dialog->showDialog() == QDialog::Accepted)
-        {
-            Agros::problem()->recipes()->addRecipe(recipe);
-
-            refresh();
-            emit refreshGUI();
-        }
-        else
-        {
-            delete recipe;
-        }
     }
 }
 
