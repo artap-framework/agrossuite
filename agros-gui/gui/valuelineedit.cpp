@@ -67,51 +67,28 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         //connect(txtLineEdit, SIGNAL(textChanged(QString)), this, SIGNAL(textChanged(QString)));
         connect(txtLineEdit, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
 
-#ifdef Q_WS_MAC
-        btnMaterialDialog = new QToolButton();
-        btnMaterialDialog->setIcon(iconAwesome(fa::caretup));
-        btnMaterialDialog->setMaximumHeight(txtLineEdit->height() - 4);
-#else
         btnMaterialDialog = new QPushButton(icon("up-arrow"), "");
         btnMaterialDialog->setMaximumSize(btnMaterialDialog->sizeHint());
-#endif
         connect(btnMaterialDialog, SIGNAL(clicked()), this, SLOT(doOpenMaterialDialog()));
 
-#ifdef Q_WS_MAC
-        btnDataTableDelete = new QToolButton();
-        btnDataTableDelete->setIcon(iconAwesome(fa::remove));
-        btnDataTableDelete->setMaximumHeight(txtLineEdit->height() - 4);
-#else
         btnDataTableDelete = new QPushButton(icon("geometry_trash"), "");
         btnDataTableDelete->setMaximumSize(btnDataTableDelete->sizeHint());
-#endif
         connect(btnDataTableDelete, SIGNAL(clicked()), this, SLOT(doOpenDataTableDelete()));
 
-#ifdef Q_WS_MAC
-        btnDataTableDialog = new QToolButton();
-        btnDataTableDialog->setIcon(iconAwesome(fa::caretup));
-        btnDataTableDialog->setMaximumHeight(txtLineEdit->height() - 4);
-#else
         btnDataTableDialog = new QPushButton(icon("up-arrow"), "");
         btnDataTableDialog->setMaximumSize(btnDataTableDialog->sizeHint());
-#endif
         connect(btnDataTableDialog, SIGNAL(clicked()), this, SLOT(doOpenDataTableDialog()));
 
         // timedep value
-#ifdef Q_WS_MAC
-        btnEditTimeDep = new QToolButton();
-        btnEditTimeDep->setIcon(iconAwesome(fa::caretup));
-        btnEditTimeDep->setMaximumHeight(txtLineEdit->height() - 4);
-#else
         btnEditTimeDep = new QPushButton(icon("up-arrow"), "");
-#endif
         connect(btnEditTimeDep, SIGNAL(clicked()), this, SLOT(doOpenValueTimeDialog()));
     }
 
     lblValue = new QLabel(this);
     lblInfo = new QLabel();
 
-    QHBoxLayout *layout = new QHBoxLayout();
+    auto *layout = new QHBoxLayout();
+    layout->setContentsMargins(1, 1, 1, 1);
     // layout->setMargin(0);
     if (isBool)
         layout->addWidget(chkCheckBox, 1);

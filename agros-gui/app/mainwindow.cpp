@@ -355,61 +355,6 @@ void MainWindow::createMain()
     setCentralWidget(main);
 }
 
-void MainWindow::doMouseSceneModeChanged(MouseSceneMode mouseSceneMode)
-{
-    /*
-    lblMouseMode->setText("Mode: -");
-
-    switch (mouseSceneMode)
-    {
-    case MouseSceneMode_Add:
-    {
-        switch (sceneViewGeometry->sceneMode())
-        {
-        case SceneGeometryMode_OperateOnNodes:
-            lblMouseMode->setText(tr("Mode: Add node"));
-            break;
-        case SceneGeometryMode_OperateOnEdges:
-            lblMouseMode->setText(tr("Mode: Add edge"));
-            break;
-        case SceneGeometryMode_OperateOnLabels:
-            lblMouseMode->setText(tr("Mode: Add label"));
-            break;
-        default:
-            break;
-        }
-    }
-        break;
-    case MouseSceneMode_Pan:
-        lblMouseMode->setText(tr("Mode: Pan"));
-        break;
-    case MouseSceneMode_Rotate:
-        lblMouseMode->setText(tr("Mode: Rotate"));
-        break;
-    case MouseSceneMode_Move:
-    {
-        switch (sceneViewGeometry->sceneMode())
-        {
-        case SceneGeometryMode_OperateOnNodes:
-            lblMouseMode->setText(tr("Mode: Move node"));
-            break;
-        case SceneGeometryMode_OperateOnEdges:
-            lblMouseMode->setText(tr("Mode: Move edge"));
-            break;
-        case SceneGeometryMode_OperateOnLabels:
-            lblMouseMode->setText(tr("Mode: Move label"));
-            break;
-        default:
-            break;
-        }
-    }
-        break;
-    default:
-        break;
-    }
-    */
-}
-
 void MainWindow::setRecentFiles()
 {    
     mnuRecentFiles->clear();

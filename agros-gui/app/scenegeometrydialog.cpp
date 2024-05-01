@@ -1348,3 +1348,169 @@ void SceneLabelCommandAddOrRemoveMulti::add()
 
     Agros::problem()->scene()->invalidate();
 }
+
+// rectangle ************************************************************************************************************
+
+SceneRectangleDialog::SceneRectangleDialog(SceneNode *nodeLB,  SceneNode *nodeRB, SceneNode *nodeLT, SceneNode *nodeRT, QWidget *parent, bool isNew)
+: SceneBasicDialog(parent, isNew), m_nodeLB(nodeLB), m_nodeRB(nodeRB), m_nodeLT(nodeLT), m_nodeRT(nodeRT)
+{
+    setWindowTitle(tr("Rectangle"));
+    setMinimumWidth(350);
+
+    createControls();
+
+    load();
+
+    setMinimumSize(sizeHint().width() * 1.8, sizeHint().height());
+}
+
+QLayout* SceneRectangleDialog::createContent()
+{
+    txtPointX = new ValueLineEdit();
+    txtPointY = new ValueLineEdit();
+    txtWidth = new ValueLineEdit();
+    txtWidth->setMinimum(0.0);
+    txtHeight = new ValueLineEdit();
+    txtHeight->setMinimum(0.0);
+
+    connect(txtPointX, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtPointY, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtWidth, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtHeight, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+
+    // coordinates must be greater then or equal to 0 (axisymmetric case)
+
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
+         txtPointX->setMinimum(0.0);
+
+    auto *layout = new QFormLayout();
+    layout->addRow(Agros::problem()->config()->labelX() + " (m):", txtPointX);
+    layout->addRow(Agros::problem()->config()->labelY() + " (m):", txtPointY);
+    layout->addRow(tr("Width:"), txtWidth);
+    layout->addRow(tr("Height:"), txtHeight);
+
+    return layout;
+}
+
+bool SceneRectangleDialog::load()
+{
+    txtPointX->setValue(Value(Agros::problem(), 0));
+    txtPointY->setValue(Value(Agros::problem(), 0));
+    txtWidth->setValue(Value(Agros::problem(), 0.1));
+    txtHeight->setValue(Value(Agros::problem(), 0.2));
+
+    return true;
+}
+
+bool SceneRectangleDialog::save()
+{
+    if (!txtPointX->evaluate(false)) return false;
+    if (!txtPointY->evaluate(false)) return false;
+    if (!txtWidth->evaluate(false)) return false;
+    if (!txtHeight->evaluate(false)) return false;
+
+    if (!(txtWidth->number() > 0.0))
+    {
+        QMessageBox::warning(this, tr("Rectangle"), tr("Width must be positive."));
+        return false;
+    }
+    if (!(txtHeight->number() > 0.0))
+    {
+        QMessageBox::warning(this, tr("Rectangle"), tr("Height must be positive."));
+        return false;
+    }
+
+    QString nodeLX = txtPointX->value().text();
+    QString nodeRX = QString("%1+%2").arg(txtPointX->value().text()).arg(txtWidth->value().text());
+    QString nodeBY = txtPointY->value().text();
+    QString nodeTY = QString("%1+%2").arg(txtPointY->value().text()).arg(txtHeight->value().text());
+
+    m_nodeLB->setPointValue(PointValue(Value(Agros::problem(), nodeLX), Value(Agros::problem(), nodeBY)));
+    m_nodeRB->setPointValue(PointValue(Value(Agros::problem(), nodeRX), Value(Agros::problem(), nodeBY)));
+    m_nodeLT->setPointValue(PointValue(Value(Agros::problem(), nodeLX), Value(Agros::problem(), nodeTY)));
+    m_nodeRT->setPointValue(PointValue(Value(Agros::problem(), nodeRX), Value(Agros::problem(), nodeTY)));
+
+    return true;
+}
+
+// circle ************************************************************************************************************
+
+SceneCircleDialog::SceneCircleDialog(SceneNode *nodeL,  SceneNode *nodeR, SceneNode *nodeB, SceneNode *nodeT, QWidget *parent, bool isNew)
+: SceneBasicDialog(parent, isNew), m_nodeL(nodeL), m_nodeR(nodeR), m_nodeB(nodeB), m_nodeT(nodeT)
+{
+    setWindowTitle(tr("Rectangle"));
+    setMinimumWidth(350);
+
+    createControls();
+
+    load();
+
+    setMinimumSize(sizeHint().width() * 1.8, sizeHint().height());
+}
+
+QLayout* SceneCircleDialog::createContent()
+{
+    txtPointX = new ValueLineEdit();
+    txtPointY = new ValueLineEdit();
+    txtRadius = new ValueLineEdit();
+    txtRadius->setMinimum(0.0);
+
+    connect(txtPointX, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtPointY, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+    connect(txtRadius, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
+
+    // coordinates must be greater then or equal to 0 (axisymmetric case)
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
+         txtPointX->setMinimum(0.0);
+
+    auto *layout = new QFormLayout();
+    layout->addRow(Agros::problem()->config()->labelX() + " (m):", txtPointX);
+    layout->addRow(Agros::problem()->config()->labelY() + " (m):", txtPointY);
+    layout->addRow(tr("Radius:"), txtRadius);
+
+    return layout;
+}
+
+bool SceneCircleDialog::load()
+{
+    txtPointX->setValue(Value(Agros::problem(), 0));
+    txtPointY->setValue(Value(Agros::problem(), 0));
+    txtRadius->setValue(Value(Agros::problem(), 0.1));
+
+    return true;
+}
+
+bool SceneCircleDialog::save()
+{
+    if (!txtPointX->evaluate(false)) return false;
+    if (!txtPointY->evaluate(false)) return false;
+    if (!txtRadius->evaluate(false)) return false;
+
+    if (!(txtRadius->number() > 0.0))
+    {
+        QMessageBox::warning(this, tr("Circle"), tr("Radius must be positive."));
+        return false;
+    }
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
+    {
+        if (!((txtPointX->number() - txtRadius->number()) > 0.0))
+        {
+            QMessageBox::warning(this, tr("Circle"), tr("Circle lies outside the allowed area (r<0)"));
+            return false;
+        }
+    }
+
+    QString centerX = QString("%1").arg(txtPointX->value().text());
+    QString centerY = QString("%1").arg(txtPointX->value().text());
+    QString nodeL = QString("%1-%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
+    QString nodeR = QString("%1+%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
+    QString nodeB = QString("%1-%2").arg(txtPointY->value().text()).arg(txtRadius->value().text());
+    QString nodeT = QString("%1+%2").arg(txtPointY->value().text()).arg(txtRadius->value().text());
+
+    m_nodeL->setPointValue(PointValue(Value(Agros::problem(), nodeL), Value(Agros::problem(), centerY)));
+    m_nodeR->setPointValue(PointValue(Value(Agros::problem(), nodeR), Value(Agros::problem(), centerY)));
+    m_nodeB->setPointValue(PointValue(Value(Agros::problem(), centerX), Value(Agros::problem(), nodeB)));
+    m_nodeT->setPointValue(PointValue(Value(Agros::problem(), centerX), Value(Agros::problem(), nodeT)));
+
+    return true;
+}

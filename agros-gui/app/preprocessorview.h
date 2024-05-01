@@ -61,6 +61,8 @@ public:
     QAction *actNewNode;
     QAction *actNewEdge;
     QAction *actNewLabel;
+    QAction *actNewRectangle;
+    QAction *actNewCircle;
 
     QMap<QString, StringAction *> actNewFields;
     QMap<QString, StringAction *> actNewBoundaries;
@@ -133,6 +135,8 @@ private slots:
     void doNewNode(const Point &point = Point());
     void doNewEdge();
     void doNewLabel(const Point &point = Point());
+    void doNewRectangle();
+    void doNewCircle();
 
     void doNewBoundary(const QString &field);
     void doNewMaterial(const QString &field);

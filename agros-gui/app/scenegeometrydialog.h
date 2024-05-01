@@ -541,4 +541,57 @@ private:
     QList<PointValue> m_pointsNew;
 };
 
+// rectangle *********************************************************************************************************************
+
+class SceneRectangleDialog : public SceneBasicDialog
+{
+    Q_OBJECT
+
+public:
+    SceneRectangleDialog(SceneNode *nodeLB,  SceneNode *nodeRB, SceneNode *nodeLT, SceneNode *nodeRT, QWidget *parent, bool isNew = false);
+
+protected:
+    QLayout *createContent();
+
+    bool load();
+    bool save();
+
+private:
+    ValueLineEdit *txtPointX;
+    ValueLineEdit *txtPointY;
+    ValueLineEdit *txtWidth;
+    ValueLineEdit *txtHeight;
+
+    SceneNode *m_nodeLB;
+    SceneNode *m_nodeRB;
+    SceneNode *m_nodeLT;
+    SceneNode *m_nodeRT;
+};
+
+// circle *********************************************************************************************************************
+
+class SceneCircleDialog : public SceneBasicDialog
+{
+    Q_OBJECT
+
+public:
+    SceneCircleDialog(SceneNode *nodeL,  SceneNode *nodeR, SceneNode *nodeB, SceneNode *nodeT, QWidget *parent, bool isNew = false);
+
+protected:
+    QLayout *createContent();
+
+    bool load();
+    bool save();
+
+private:
+    ValueLineEdit *txtPointX;
+    ValueLineEdit *txtPointY;
+    ValueLineEdit *txtRadius;
+
+    SceneNode *m_nodeL;
+    SceneNode *m_nodeR;
+    SceneNode *m_nodeB;
+    SceneNode *m_nodeT;
+};
+
 #endif // SCENEGEOMETRYDIALOG_H

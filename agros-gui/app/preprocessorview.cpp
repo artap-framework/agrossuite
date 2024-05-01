@@ -128,6 +128,14 @@ void PreprocessorWidget::createActions()
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewLabel);
 
+    actNewRectangle = new QAction(iconAlphabet('R', AlphabetColor_Blue), tr("New &rectangle..."), this);
+    connect(actNewRectangle, SIGNAL(triggered()), this, SLOT(doNewRectangle()));
+    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewRectangle);
+
+    actNewCircle = new QAction(iconAlphabet('C', AlphabetColor_Blue), tr("New &circle..."), this);
+    connect(actNewCircle, SIGNAL(triggered()), this, SLOT(doNewCircle()));
+    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewCircle);
+
     // actNewBoundary->setShortcut(QKeySequence("Alt+B"));
     // actNewMaterial->setShortcut(QKeySequence("Alt+M"));
 
@@ -226,6 +234,8 @@ void PreprocessorWidget::createControls()
     addButton->addAction(actNewNode);
     addButton->addAction(actNewEdge);
     addButton->addAction(actNewLabel);
+    addButton->addAction(actNewRectangle);
+    addButton->addAction(actNewCircle);
     addButton->setAutoRaise(true);
     addButton->setIcon(icon("geometry_add"));
     addButton->setPopupMode(QToolButton::InstantPopup);
@@ -1203,9 +1213,8 @@ void PreprocessorWidget::doApply()
 
 void PreprocessorWidget::doNewNode(const Point &point)
 {
-    SceneNode *node = new SceneNode(Agros::problem()->scene(),
-                                    PointValue(Agros::problem(), point));
-    SceneNodeDialog *dialog = new SceneNodeDialog(node, this, true);
+    auto *node = new SceneNode(Agros::problem()->scene(), PointValue(Agros::problem(), point));
+    auto *dialog = new SceneNodeDialog(node, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
@@ -1226,11 +1235,8 @@ void PreprocessorWidget::doNewNode(const Point &point)
 
 void PreprocessorWidget::doNewEdge()
 {
-    SceneFace *edge = new SceneFace(Agros::problem()->scene(),
-                                    Agros::problem()->scene()->nodes->at(0),
-                                    Agros::problem()->scene()->nodes->at(1),
-                                    Value(Agros::problem(), 0.0));
-    SceneFaceDialog *dialog = new SceneFaceDialog(edge, this, true);
+    auto *edge = new SceneFace(Agros::problem()->scene(), Agros::problem()->scene()->nodes->at(0), Agros::problem()->scene()->nodes->at(1), Value(Agros::problem(), 0.0));
+    auto *dialog = new SceneFaceDialog(edge, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
@@ -1251,10 +1257,8 @@ void PreprocessorWidget::doNewEdge()
 
 void PreprocessorWidget::doNewLabel(const Point &point)
 {
-    SceneLabel *label = new SceneLabel(Agros::problem()->scene(),
-                                       PointValue(Agros::problem(), point),
-                                       0.0);
-    SceneLabelDialog *dialog = new SceneLabelDialog(label, this, true);
+    auto *label = new SceneLabel(Agros::problem()->scene(), PointValue(Agros::problem(), point), 0.0);
+    auto *dialog = new SceneLabelDialog(label, this, true);
 
     if (dialog->exec() == QDialog::Accepted)
     {
@@ -1273,17 +1277,133 @@ void PreprocessorWidget::doNewLabel(const Point &point)
     }
 }
 
+void PreprocessorWidget::doNewRectangle()
+{
+    auto *nodeLB = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeRB = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeLT = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeRT = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+
+    auto *dialog = new SceneRectangleDialog(nodeLB, nodeRB, nodeLT, nodeRT, this, true);
+
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        SceneNode *nodeAddedLB = Agros::problem()->scene()->addNode(nodeLB);
+        SceneNode *nodeAddedRB = Agros::problem()->scene()->addNode(nodeRB);
+        SceneNode *nodeAddedLT = Agros::problem()->scene()->addNode(nodeLT);
+        SceneNode *nodeAddedRT = Agros::problem()->scene()->addNode(nodeRT);
+
+        auto *edgeB = new SceneFace(Agros::problem()->scene(), nodeAddedLB, nodeAddedRB, Value(Agros::problem(), 0.0));
+        auto *edgeR = new SceneFace(Agros::problem()->scene(), nodeAddedRB, nodeAddedRT, Value(Agros::problem(), 0.0));
+        auto *edgeT = new SceneFace(Agros::problem()->scene(), nodeAddedRT, nodeAddedLT, Value(Agros::problem(), 0.0));
+        auto *edgeL = new SceneFace(Agros::problem()->scene(), nodeAddedLT, nodeAddedLB, Value(Agros::problem(), 0.0));
+
+        SceneFace *edgeAddedB = Agros::problem()->scene()->addFace(edgeB);
+        SceneFace *edgeAddedR = Agros::problem()->scene()->addFace(edgeR);
+        SceneFace *edgeAddedT = Agros::problem()->scene()->addFace(edgeT);
+        SceneFace *edgeAddedL = Agros::problem()->scene()->addFace(edgeL);
+
+        Agros::problem()->scene()->invalidate();
+
+        if (nodeAddedLB == nodeLB)
+            undoStack()->push(new SceneNodeCommandAdd(nodeLB->pointValue()));
+        if (nodeAddedRB == nodeRB)
+            undoStack()->push(new SceneNodeCommandAdd(nodeRB->pointValue()));
+        if (nodeAddedLT == nodeLT)
+            undoStack()->push(new SceneNodeCommandAdd(nodeLT->pointValue()));
+        if (nodeAddedRT == nodeRT)
+            undoStack()->push(new SceneNodeCommandAdd(nodeRT->pointValue()));
+
+        if (edgeAddedB == edgeB)
+            undoStack()->push(getAddCommand(edgeB));
+        if (edgeAddedR == edgeR)
+            undoStack()->push(getAddCommand(edgeR));
+        if (edgeAddedT == edgeT)
+            undoStack()->push(getAddCommand(edgeT));
+        if (edgeAddedL == edgeL)
+            undoStack()->push(getAddCommand(edgeL));
+
+        refresh();
+        emit refreshGUI();
+    }
+    else
+    {
+        delete nodeLB;
+        delete nodeRB;
+        delete nodeLT;
+        delete nodeRT;
+    }
+}
+
+void PreprocessorWidget::doNewCircle()
+{
+    auto *nodeL = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeR = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeB = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+    auto *nodeT = new SceneNode(Agros::problem()->scene(), PointValue(Value(Agros::problem(), "0.0"), Value(Agros::problem(), "0.0")));
+
+    auto *dialog = new SceneCircleDialog(nodeL, nodeR, nodeB, nodeT, this, true);
+
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        SceneNode *nodeAddedL = Agros::problem()->scene()->addNode(nodeL);
+        SceneNode *nodeAddedR = Agros::problem()->scene()->addNode(nodeR);
+        SceneNode *nodeAddedB = Agros::problem()->scene()->addNode(nodeB);
+        SceneNode *nodeAddedT = Agros::problem()->scene()->addNode(nodeT);
+
+        auto *edgeB = new SceneFace(Agros::problem()->scene(), nodeAddedB, nodeAddedR, Value(Agros::problem(), 90.0));
+        auto *edgeR = new SceneFace(Agros::problem()->scene(), nodeAddedR, nodeAddedT, Value(Agros::problem(), 90.0));
+        auto *edgeT = new SceneFace(Agros::problem()->scene(), nodeAddedT, nodeAddedL, Value(Agros::problem(), 90.0));
+        auto *edgeL = new SceneFace(Agros::problem()->scene(), nodeAddedL, nodeAddedB, Value(Agros::problem(), 90.0));
+
+        SceneFace *edgeAddedB = Agros::problem()->scene()->addFace(edgeB);
+        SceneFace *edgeAddedR = Agros::problem()->scene()->addFace(edgeR);
+        SceneFace *edgeAddedT = Agros::problem()->scene()->addFace(edgeT);
+        SceneFace *edgeAddedL = Agros::problem()->scene()->addFace(edgeL);
+
+        Agros::problem()->scene()->invalidate();
+
+        if (nodeAddedL == nodeL)
+            undoStack()->push(new SceneNodeCommandAdd(nodeL->pointValue()));
+        if (nodeAddedR == nodeR)
+            undoStack()->push(new SceneNodeCommandAdd(nodeR->pointValue()));
+        if (nodeAddedB == nodeB)
+            undoStack()->push(new SceneNodeCommandAdd(nodeB->pointValue()));
+        if (nodeAddedT == nodeT)
+            undoStack()->push(new SceneNodeCommandAdd(nodeT->pointValue()));
+
+        if (edgeAddedB == edgeB)
+            undoStack()->push(getAddCommand(edgeB));
+        if (edgeAddedR == edgeR)
+            undoStack()->push(getAddCommand(edgeR));
+        if (edgeAddedT == edgeT)
+            undoStack()->push(getAddCommand(edgeT));
+        if (edgeAddedL == edgeL)
+            undoStack()->push(getAddCommand(edgeL));
+
+        refresh();
+        emit refreshGUI();
+    }
+    else
+    {
+        delete nodeL;
+        delete nodeR;
+        delete nodeB;
+        delete nodeT;
+    }
+}
+
 void PreprocessorWidget::doNewBoundary(const QString &field)
 {
     // first boundary as default
     QList<Module::BoundaryType> boundaryTypes = Agros::problem()->fieldInfo(field)->boundaryTypes();
     assert(boundaryTypes.count() > 1);
 
-    SceneBoundary *boundary = new SceneBoundary(Agros::problem()->scene(),
+    auto *boundary = new SceneBoundary(Agros::problem()->scene(),
                                                 Agros::problem()->fieldInfo(field),
                                                 tr("new boundary"),
                                                 boundaryTypes.first().id());
-    SceneBoundaryDialog *dialog = new SceneBoundaryDialog(boundary, this);
+    auto *dialog = new SceneBoundaryDialog(boundary, this);
 
     if (dialog->exec() == QDialog::Accepted)
     {
@@ -1301,11 +1421,11 @@ void PreprocessorWidget::doNewBoundary(const QString &field)
 
 void PreprocessorWidget::doNewMaterial(const QString &field)
 {
-    SceneMaterial *material = new SceneMaterial(Agros::problem()->scene(),
+    auto *material = new SceneMaterial(Agros::problem()->scene(),
                                                 Agros::problem()->fieldInfo(field),
                                                 tr("new material"));
 
-    SceneMaterialDialog *dialog = new SceneMaterialDialog(material, this);
+    auto *dialog = new SceneMaterialDialog(material, this);
 
     if (dialog->exec() == QDialog::Accepted)
     {
