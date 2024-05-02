@@ -4,6 +4,8 @@ PROJECT(solver_plugin_MUMPS C CXX)
 SET(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
+SET(CMAKE_PREFIX_PATH "c:/Qt/6.5.3/msvc2019_64")
+
 # SET(DEBUG_FLAGS "-g")
 # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
 
@@ -16,7 +18,20 @@ IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 ENDIF()
 
+IF(MSVC)
+set(MUMPS_LIBRARIES "C:/agros_dependencies/source/mumps/build/dmumps.lib" "C:/agros_dependencies/source/mumps/build/mumps_common.lib"
+"C:/agros_dependencies/source/mumps/build/pord.lib" "C:/agros_dependencies/source/mumps/build/mpiseq.lib" "C:/agros_dependencies/source/mumps/build/smumps.lib" 
+"C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib"  "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib/libmmd.lib")
+link_directories("C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib" )
+link_directories("C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib")
+set(MKLROOT "C:/Program Files (x86)/Intel/oneAPI/mkl")
+set(MUMPS_INCLUDE_DIR "C:/agros_dependencies/source/mumps/mumps/5.6.2/include")
+set(BLAS_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_blas.lib")
+set(LAPACK_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_intel_lp64.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib")
+set(LAPACK_links "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib")
+ELSE()
 FIND_PACKAGE(MUMPS REQUIRED)
+ENDIF()
 # FIND_PACKAGE(LAPACK REQUIRED)
 
 # INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/../3rdparty/matio)
@@ -47,7 +62,7 @@ ADD_DEFINITIONS(-DQT_DLL)
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
 
 DEAL_II_SETUP_TARGET(${PROJECT_NAME})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_TARGET} ${MUMPS_LIBRARIES} Qt6::Core)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_TARGET} ${MUMPS_LIBRARIES} ${LAPACK_LIBRARIES} ${BLAS_LIBRARY} Qt6::Core)
 # SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/../libs)
 
 # ENABLE_TESTING()
