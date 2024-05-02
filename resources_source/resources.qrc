@@ -34,6 +34,8 @@
         <file alias="geometry_node.png">images/icons/geometry_node.png</file>
         <file alias="geometry_edge.png">images/icons/geometry_edge.png</file>
         <file alias="geometry_label.png">images/icons/geometry_label.png</file>
+        <file alias="geometry_rectangle.png">images/icons/geometry_rectangle.png</file>
+        <file alias="geometry_circle.png">images/icons/geometry_circle.png</file>
         <file alias="geometry_trash.png">images/icons/geometry_trash.png</file>
         <file alias="geometry_zoom.png">images/icons/geometry_zoom.png</file>
         <file alias="geometry_clear.png">images/icons/geometry_clear.png</file>

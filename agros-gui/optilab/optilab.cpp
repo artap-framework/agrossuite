@@ -149,6 +149,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
 
     actRunStudy = new QAction(icon("main_solve"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence("Alt+S"));
+    actRunStudy->setEnabled(false);
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
 
     // studies
@@ -479,6 +480,9 @@ void OptiLabWidget::exportData()
 
 void OptiLabWidget::studyChanged(Study *study)
 {
+    // disable buttons
+    actRunStudy->setEnabled(false);
+
     trvComputation->blockSignals(true);
 
     // computations
@@ -526,6 +530,9 @@ void OptiLabWidget::studyChanged(Study *study)
 
         // set study to optilab view
         m_optilab->setStudy(study);
+
+        // enable buttons
+        actRunStudy->setEnabled(true);
     }
 
     trvComputation->blockSignals(false);
@@ -537,9 +544,6 @@ void OptiLabWidget::studyChanged(Study *study)
     // if not selected -> select first
     if (trvComputation->topLevelItemCount() > 0 && !trvComputation->currentItem())
         trvComputation->setCurrentItem(trvComputation->topLevelItem(0));
-
-    // enable buttons
-    actRunStudy->setEnabled(true);
 }
 
 void OptiLabWidget::solveStudy()
