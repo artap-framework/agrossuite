@@ -119,11 +119,11 @@ build-windows:
     - win11
 
   before_script:
-    - $env:CCACHE_BASEDIR="$PWD"
-    - $env:CCACHE_DIR="$PWD/ccache"
-    - $env:CCACHE_COMPILERCHECK="content"
-    - ccache --zero-stats
-    - ccache --show-stats
+    # - $env:CCACHE_BASEDIR="$PWD"
+    # - $env:CCACHE_DIR="$PWD/ccache"
+    # - $env:CCACHE_COMPILERCHECK="content"
+    # - ccache --zero-stats
+    # - ccache --show-stats
 
   after_script:
     - $env:CCACHE_DIR="$PWD/ccache"
