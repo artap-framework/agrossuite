@@ -113,28 +113,36 @@ void PreprocessorWidget::createActions()
     // connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
 
     // scene - add items
+    actNewRectangle = new QAction(icon("geometry_rectangle"), tr("New &rectangle..."), this);
+    actNewRectangle->setIconVisibleInMenu(true);
+    connect(actNewRectangle, SIGNAL(triggered()), this, SLOT(doNewRectangle()));
+
+    actNewCircle = new QAction(icon("geometry_circle"), tr("New &circle..."), this);
+    actNewCircle->setIconVisibleInMenu(true);
+    connect(actNewCircle, SIGNAL(triggered()), this, SLOT(doNewCircle()));
+
     actNewNode = new QAction(icon("geometry_node"), tr("New &node..."), this);
     actNewNode->setShortcut(QKeySequence("Alt+N"));
+    actNewNode->setIconVisibleInMenu(true);
     connect(actNewNode, SIGNAL(triggered()), this, SLOT(doNewNode()));
-    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewNode);
 
     actNewEdge = new QAction(icon("geometry_edge"), tr("New &edge..."), this);
     actNewEdge->setShortcut(QKeySequence("Alt+E"));
+    actNewEdge->setIconVisibleInMenu(true);
     connect(actNewEdge, SIGNAL(triggered()), this, SLOT(doNewEdge()));
-    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewEdge);
 
     actNewLabel = new QAction(icon("geometry_label"), tr("New &label..."), this);
     actNewLabel->setShortcut(QKeySequence("Alt+L"));
+    actNewLabel->setIconVisibleInMenu(true);
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
-    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewLabel);
 
-    actNewRectangle = new QAction(iconAlphabet('R', AlphabetColor_Blue), tr("New &rectangle..."), this);
-    connect(actNewRectangle, SIGNAL(triggered()), this, SLOT(doNewRectangle()));
+    // add to menu
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewRectangle);
-
-    actNewCircle = new QAction(iconAlphabet('C', AlphabetColor_Blue), tr("New &circle..."), this);
-    connect(actNewCircle, SIGNAL(triggered()), this, SLOT(doNewCircle()));
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewCircle);
+    m_sceneViewProblem->menuScene()->addSeparator();
+    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewNode);
+    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewEdge);
+    m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewLabel);
 
     // actNewBoundary->setShortcut(QKeySequence("Alt+B"));
     // actNewMaterial->setShortcut(QKeySequence("Alt+M"));

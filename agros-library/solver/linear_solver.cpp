@@ -94,29 +94,14 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QStringList solvers = Agros::solvers().keys();
 
     QString solver = m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
-    if (solver.isEmpty() || solver.endsWith(".ext"))
-    {
+
+    if (solver == "Eigen")
         if (solvers.contains("MUMPS"))
-        {
             solver = "MUMPS";
-        }
-        else if (solvers.contains("EIGEN"))
-        {
-            solver = "Eigen";
-        }
-    }
-    else
-    {
-        // failsafe solution - Eigen
-        if (solvers.contains("MUMPS") && solver == "MUMPS")
-        {
+
+    if (solver.isEmpty() || solver.endsWith(".ext"))
+        if (solvers.contains("MUMPS"))
             solver = "MUMPS";
-        }
-        else
-        {
-            solver = "Eigen";
-        }
-    }
 
     if (!solver.isEmpty())
     {

@@ -32,7 +32,7 @@ WizardSmallImageFile=resources_source\images\setup\SetupModernSmall.bmp
 Source: agros_library.dll; DestDir: {app}; DestName: agros_library.dll
 Source: libs\*.dll; DestDir: {app}/libs
 Source: agros.exe; DestDir: {app}; DestName: Agros.exe
-Source: solver_plugin_EIGEN.dll; DestDir: {app}; DestName: solver_plugin_EIGEN.dll
+Source: solver_plugin_MUMPS.dll; DestDir: {app}; DestName: solver_plugin_MUMPS.dll
 Source: resources\images\agros.ico; DestDir: {app}; DestName: Agros.ico
 Source: resources\*; DestDir: {app}/resources; Flags: recursesubdirs
 
