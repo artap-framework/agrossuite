@@ -28,26 +28,6 @@
 class SceneViewProblem;
 class FieldInfo;
 
-class StringAction : public QAction
-{
-    Q_OBJECT
-
-public:
-    StringAction(QObject* parent, const QString &k, const QString &v);
-    inline QString key() const { return m_key; }
-    inline QString value() const { return m_value; }
-
-public slots:
-    void doTriggered();
-
-signals:
-    void triggered(QString);
-
-private:
-    QString m_key;
-    QString m_value;
-};
-
 class PreprocessorWidget : public QWidget
 {
     Q_OBJECT
@@ -65,10 +45,6 @@ public slots:
     void doNewParameter();
     void doNewFunctionAnalytic();
     void doNewFunctionInterpolation();
-    void doNewRecipeLocalValue();
-    void doNewRecipeSurfaceIntegral();
-    void doNewRecipeVolumeIntegral();
-    void doNewRecipe(ResultRecipeType type);
 
 public:
     PreprocessorWidget(QWidget *parent = 0);
@@ -85,14 +61,14 @@ public:
     QAction *actNewNode;
     QAction *actNewEdge;
     QAction *actNewLabel;
+    QAction *actNewRectangle;
+    QAction *actNewCircle;
 
-    QMap<QString, StringAction*> actNewFields;
-    QMap<QString, StringAction*> actNewStudies;
-    QMap<QString, StringAction*> actNewBoundaries;
-    QMap<QString, StringAction*> actNewMaterials;
+    QMap<QString, StringAction *> actNewFields;
+    QMap<QString, StringAction *> actNewBoundaries;
+    QMap<QString, StringAction *> actNewMaterials;
 
     QMenu *mnuFields;
-    QMenu *mnuStudies;
     QMenu *mnuBoundaries;
     QMenu *mnuMaterials;
 
@@ -110,10 +86,6 @@ private:
         GeometryLabel,
         Material,
         Boundary,
-        OptilabStudy,
-        OptilabParameter,
-        OptilabFunctional,
-        OptilabRecipe,
         ProblemProperties,
         FieldProperties
     };
@@ -133,14 +105,9 @@ private:
     QAction *actNewParameter;
     QAction *actNewFunctionAnalytic;
     // QAction *actNewFunctionInterpolation;
-    QAction *actNewRecipeLocalValue;
-    QAction *actNewRecipeSurfaceIntegral;
-    QAction *actNewRecipeVolumeIntegral;
 
     QToolButton *toolButtonMaterials;
     QToolButton *toolButtonBoundaries;
-    QToolButton *toolButtonRecipes;
-    QToolButton *toolButtonStudies;    
 
     QMenu *mnuPreprocessor;
 
@@ -164,11 +131,12 @@ private slots:
     void doApply();
 
     void doNewField(const QString &field);
-    void doNewStudy(const QString &name);
 
     void doNewNode(const Point &point = Point());
     void doNewEdge();
     void doNewLabel(const Point &point = Point());
+    void doNewRectangle();
+    void doNewCircle();
 
     void doNewBoundary(const QString &field);
     void doNewMaterial(const QString &field);

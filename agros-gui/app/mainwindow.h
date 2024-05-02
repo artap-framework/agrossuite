@@ -72,8 +72,6 @@ private slots:
     void doDocumentSaveGeometry();    
     void doCreatePythonFromModel();
 
-    void doMouseSceneModeChanged(MouseSceneMode mouseSceneMode);
-
     void doSolve();
     void doSolveNewComputation();
     void doSolveFinished();

@@ -70,4 +70,34 @@ private slots:
      Computation *m_computation;
 };
 
+
+class StringAction : public QAction
+{
+    Q_OBJECT
+
+public:
+    StringAction(QObject* parent, const QString &k, const QString &v) :
+        QAction(v, parent),
+        m_key(k), m_value(v)
+    {
+        connect(this, SIGNAL(triggered()), this, SLOT(doTriggered()));
+    }
+
+    inline QString key() const { return m_key; }
+    inline QString value() const { return m_value; }
+
+    public slots:
+        void doTriggered()
+    {
+        emit triggered(m_key);
+    }
+
+    signals:
+        void triggered(QString);
+
+private:
+    QString m_key;
+    QString m_value;
+};
+
 #endif // OTHER_H

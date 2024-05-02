@@ -49,18 +49,42 @@ public slots:
     void exportData();
 
 private:
+    enum Type
+    {
+        Undefined = 0,
+        OptilabStudy,
+        OptilabParameter,
+        OptilabFunctional,
+        OptilabRecipe,
+    };
+
     OptiLab *m_optilab;
 
-    QTreeWidget *trvComputations;
-    QLabel *lblNumberOfComputations;
-    QComboBox *cmbStudies;
-    QLineEdit *txtFilter;
+    QToolBar *toolBarLeft;
+    QToolButton *toolButtonStudies;
+    QToolButton *toolButtonRecipes;
+    QTreeWidget *trvOptilab;
 
+    // ser
+    QMenu *mnuOptilab;
+    QMap<QString, StringAction *> actNewStudies;
+    QAction *actNewRecipeLocalValue;
+    QAction *actNewRecipeSurfaceIntegral;
+    QAction *actNewRecipeVolumeIntegral;
+
+    QAction *actProperties;
+    QAction *actDelete;
+
+    // computation;
+    QTreeWidget *trvComputation;
     QMenu *mnuComputations;
     QAction *actComputationDelete;
     QAction *actComputationSolve;
 
+
     void createControls();
+    QWidget *createControlsOptilab();
+    QWidget *createControlsComputation();
 
 signals:
     void studySelected(Study *study);
@@ -68,13 +92,24 @@ signals:
     void chartRefreshed(const QString &key);
 
 private slots:
+    void doItemDoubleClicked(QTreeWidgetItem *item, int role);
+    void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void doItemProperties();
+    void doItemDelete();
+    void doItemContextMenu(const QPoint &pos);
     void doComputationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
     void doComputationSelected(const QString &key);
     void doComputationContextMenu(const QPoint &pos);
     void doComputationDelete(bool);
     void doComputationSolve(bool);
 
-    void studyChanged(int index);    
+    void doNewRecipeLocalValue();
+    void doNewRecipeSurfaceIntegral();
+    void doNewRecipeVolumeIntegral();
+    void doNewRecipe(ResultRecipeType type);
+    void doNewStudy(const QString &key);
+
+    void studyChanged(Study *study);
 
     void solveStudy();
 };
@@ -90,6 +125,7 @@ public:
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
 
     void setStudy(Study *study);
+    inline Study *study() { return m_study; }
 
 signals:
     void computationSelected(const QString &key);
@@ -102,8 +138,6 @@ public slots:
 
 private:
     Study *m_study;
-
-    QSplitter *splitter;
 
     OptiLabWidget *m_optiLabWidget;
     SceneViewSimpleGeometry *geometryViewer;
@@ -152,7 +186,7 @@ private:
     QAction *actChartParetoFront;
 
     void createControls();
-    QWidget *createControlsDistChart();
+    QWidget *createControlsGeometryAndStats();
     QWidget *createControlsChart();
     QWidget *createControlsResults();
     QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
