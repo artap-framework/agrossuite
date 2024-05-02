@@ -23,7 +23,7 @@ set(MUMPS_LIBRARIES "C:/agros_dependencies/source/mumps/build/dmumps.lib" "C:/ag
 "C:/agros_dependencies/source/mumps/build/pord.lib" "C:/agros_dependencies/source/mumps/build/mpiseq.lib" "C:/agros_dependencies/source/mumps/build/smumps.lib" 
 "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib"  "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib/libmmd.lib")
 link_directories("C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib" )
-link_directories("C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib")
+link_directories("C:/Program Files (x86)/Intel/oneAPI/compiler/2024.0/lib")
 set(MKLROOT "C:/Program Files (x86)/Intel/oneAPI/mkl")
 set(MUMPS_INCLUDE_DIR "C:/agros_dependencies/source/mumps/mumps/5.6.2/include")
 set(BLAS_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_blas.lib")
