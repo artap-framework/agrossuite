@@ -5,6 +5,7 @@
 
 SET(DEAL_II_BUILD_TYPE "Release")
 SET(CMAKE_BUILD_TYPE "Release")
+SET(DEAL_II_DIR "${CMAKE_SOURCE_DIR}/dealii/build/cmake/config}")
 
 SET(WITH_QT6 YES)
 SET(CMAKE_PREFIX_PATH "c:/Qt/6.5.3/msvc2019_64")
