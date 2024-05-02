@@ -3,8 +3,6 @@
         <file alias="agros-pixmap.png">images/agros-pixmap.png</file>
         <file alias="agros-logo.png">images/agros-logo.png</file>
         <file alias="agros.png">images/agros.png</file>
-        <file alias="pythonlab.png">images/pythonlab.png</file>
-        <file alias="log.png">images/log.png</file>
         <file alias="menu_boundary.png">images/icons/menu_boundary.png</file>               
         <file alias="menu_field.png">images/icons/menu_field.png</file>               
         <file alias="menu_function.png">images/icons/menu_function.png</file>               
@@ -18,7 +16,6 @@
         <file alias="main_optilab.png">images/icons/main_optilab.png</file>
         <file alias="main_solve.png">images/icons/main_solve.png</file>               
         <file alias="main_solvenew.png">images/icons/main_solvenew.png</file>               
-        <file alias="mode-nothing.png">images/mode-nothing.png</file>
         <file alias="results_point.png">images/icons/results_point.png</file>
         <file alias="results_surface.png">images/icons/results_surface.png</file>
         <file alias="results_volume.png">images/icons/results_volume.png</file>
@@ -33,8 +30,6 @@
         <file alias="problem.png">images/icons/problem.png</file>
         <file alias="optilab.png">images/icons/optilab.png</file>
         <file alias="problem_properties.png">images/icons/problem_properties.png</file>
-        <file alias="close.png">images/close.png</file>
-        <file alias="calculator.png">images/calculator.png</file>
         <file alias="geometry_add.png">images/icons/geometry_add.png</file>
         <file alias="geometry_node.png">images/icons/geometry_node.png</file>
         <file alias="geometry_edge.png">images/icons/geometry_edge.png</file>
