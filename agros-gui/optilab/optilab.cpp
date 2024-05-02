@@ -1147,8 +1147,6 @@ void OptiLab::createControls()
 
 void OptiLab::refresh()
 {
-    actSceneModeOptiLab->setEnabled(!Agros::problem()->studies()->items().isEmpty());
-
     optiLabWidget()->refresh();
 }
 

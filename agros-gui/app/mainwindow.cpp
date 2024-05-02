@@ -799,37 +799,6 @@ void MainWindow::setControls()
     }
     else if (postprocessorWidget->actSceneModeResults->isChecked())
     {
-        switch (postprocessorWidget->mode())
-        {
-        case PostprocessorWidgetMode_Mesh:
-        {
-            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomIn()));
-            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomOut()));
-            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomBestFit()));
-            // postprocessorWidget->sceneViewMesh()->actSceneZoomRegion = actSceneZoomRegion;
-        }
-            break;
-        case PostprocessorWidgetMode_Post2D:
-        {
-            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
-            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
-            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
-            // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
-        }
-            break;
-
-        case PostprocessorWidgetMode_Post3D:
-        {
-            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomIn()));
-            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomOut()));
-            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomBestFit()));
-        }
-            break;
-        case PostprocessorWidgetMode_Chart:            
-            break;
-        default:
-            break;
-        }
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
     }
     else if (optiLab->actSceneModeOptiLab->isChecked())
