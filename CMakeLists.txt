@@ -12,6 +12,8 @@ IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
     # SET(RELEASE_FLAGS "-DNDEBUG -g -O0 -Ofast")
     SET(RELEASE_FLAGS "-g")
     SET(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-deprecated-declarations -Wno-missing-declarations -Wno-return-type ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
+    # add coverage
+    # SET(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage ${CMAKE_CXX_FLAGS} ${RELEASE_FLAGS}")
     ADD_DEFINITIONS(-DQT_NO_DEBUG_OUTPUT)
 ENDIF()
 
@@ -165,10 +167,7 @@ INCLUDE_DIRECTORIES(${EPETRAEXT_INCLUDE_PATH})
 message("CMake: Start agros")
 message("=====================")
 ADD_SUBDIRECTORY(agros-library)
-ADD_SUBDIRECTORY(solver-plugin-eigen)
-IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    ADD_SUBDIRECTORY(solver-plugin-mumps)
-ENDIF()
+ADD_SUBDIRECTORY(solver-plugin-mumps)
 
 ADD_SUBDIRECTORY(agros-generator)
 # GUI

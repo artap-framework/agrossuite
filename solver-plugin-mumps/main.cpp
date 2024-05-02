@@ -29,7 +29,6 @@
 #define JOB_SOLVE 6
 #define USE_COMM_WORLD -987654
 
-
 class MUMPSSolverInterface : public QObject, public PluginSolverInterface
 {
     Q_OBJECT
