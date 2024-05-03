@@ -331,8 +331,8 @@ void OptiLabWidget::refresh()
         studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
         studyNode->setIcon(0, icon("menu_recipe"));
         studyNode->setFont(0, fnt);
-        studyNode->setData(0, Qt::UserRole, k);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        studyNode->setData(2, Qt::UserRole, k);
         studyNode->setExpanded(true);
         if (m_optilab->study() && m_optilab->study() == study)
             nodeSelected = studyNode;
@@ -341,8 +341,8 @@ void OptiLabWidget::refresh()
         auto *parametersNode = new QTreeWidgetItem(studyNode);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setData(0, Qt::UserRole, k);
         parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        parametersNode->setData(2, Qt::UserRole, k);
         parametersNode->setExpanded(true);
 
         foreach (Parameter parameter, study->parameters())
@@ -362,6 +362,7 @@ void OptiLabWidget::refresh()
         functionalsNode->setFont(0, fnt);
         functionalsNode->setData(0, Qt::UserRole, study->variant());
         functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        functionalsNode->setData(2, Qt::UserRole, k);
         functionalsNode->setExpanded(true);
 
         foreach (Functional functional, study->functionals())
@@ -424,9 +425,9 @@ void OptiLabWidget::exportData()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
         {
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
             QList<ComputationSet> computationSets = study->computationSets(study->value(Study::View_Filter).toString());
 
@@ -509,7 +510,7 @@ void OptiLabWidget::studyChanged(Study *study)
             int currentComputationSetCount = 0;
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
-                QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
+                auto *item = new QTreeWidgetItem(itemComputationSet);
                 // item->setText(0, computation->problemDir());
                 item->setText(0, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
                 item->setData(0, Qt::UserRole, computation->problemDir());
@@ -552,9 +553,9 @@ void OptiLabWidget::solveStudy()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
         {
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
             auto *log = new LogOptimizationDialog(study);
             log->show();
@@ -614,9 +615,6 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
             actRunStudy->setEnabled(true);
-
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
-            studyChanged(study);
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
@@ -634,6 +632,13 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+
+        // change study
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
+        {
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+            studyChanged(study);
+        }
     }
 }
 
@@ -645,7 +650,7 @@ void OptiLabWidget::doItemProperties()
         if (type == OptiLabWidget::OptilabStudy)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {

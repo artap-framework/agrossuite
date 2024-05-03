@@ -328,7 +328,7 @@ void PreprocessorWidget::createControls()
 
     trvWidget = new QTreeWidget(this);
     trvWidget->setMinimumWidth(400);
-    trvWidget->setMaximumWidth(400);
+    // trvWidget->setMaximumWidth(400);
     trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
