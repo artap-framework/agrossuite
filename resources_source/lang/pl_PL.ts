@@ -52,27 +52,27 @@
         <translation>Sprawdź wersje</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="77"/>
-        <source>&lt;h3&gt;Agros Suite %1&lt;/h3&gt;Agros Suite is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://dealii.org/&quot;&gt;deal.ii&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;David Pánek&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;František Mach&lt;/b&gt; - developer, Python script (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Pavel Kůs&lt;/b&gt; - developer, coupled problems, time domain adaptivity (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Korous&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;Václav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Petr Kropík&lt;/b&gt; - University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;b&gt;Denys Nikolayev&lt;/b&gt; - Russion and French translation, University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="154"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="155"/>
         <source>&lt;h3&gt;Libraries&lt;/h3&gt;&lt;b&gt;Qt:&lt;/b&gt; Qt (&lt;a href=&quot;https://www.qt.io/&quot;&gt;Qt - Cross-platform application and UI development framework&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Python:&lt;/b&gt; Python Programming Language (&lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;libdxfrw:&lt;/b&gt; LibreCAD DXF library (&lt;a href=&quot;http://sourceforge.net/projects/libdxfrw/&quot;&gt;libdxfrw&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;ctemplate:&lt;/b&gt; Simple but powerful template language for C++ (&lt;a href=&quot;http://code.google.com/p/ctemplate/&quot;&gt;ctemplate&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;matio:&lt;/b&gt; MAT File I/O Library (&lt;a href=&quot;http://sourceforge.net/projects/matio/&quot;&gt;matio&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;poly2tri:&lt;/b&gt; A 2D constrained Delaunay triangulation library (&lt;a href=&quot;http://code.google.com/p/poly2tri/&quot;&gt;poly2tri&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Triangle:&lt;/b&gt; Jonathan Richard Shewchuk (&lt;a href=&quot;http://www.cs.cmu.edu/~quake/triangle.html&quot;&gt;Triangle&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Eigen:&lt;/b&gt; A C++ template library for linear algebra (&lt;a href=&quot;https://eigen.tuxfamily.org/&quot;&gt;Eigen&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;MUMPS:&lt;/b&gt; A MUltifrontal Massively Parallel sparse direct Solver (&lt;a href=&quot;http://graal.ens-lyon.fr/MUMPS/&quot;&gt;MUMPS&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;QCustomChart:&lt;/b&gt; QCustomChart (&lt;a href=&quot;http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/&quot;&gt;Qt Plotting Widget&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;BayesOpt:&lt;/b&gt; Bayesian optimization library (&lt;a href=&quot;https://github.com/rmcantin/bayesopt/&quot;&gt;BayesOpt&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;NLopt:&lt;/b&gt; Free/open-source library for nonlinear optimization (&lt;a href=&quot;https://nlopt.readthedocs.io/en/latest/&quot;&gt;NLopt&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;exprtk:&lt;/b&gt; Mathematical Expression Toolkit Library (&lt;a href=&quot;https://github.com/ArashPartow/exprtk/&quot;&gt;exprtk&lt;/a&gt;)&lt;br/&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="121"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="122"/>
         <source>&lt;h3&gt;dealii&lt;/h3&gt;Web page: &lt;a href=&quot;http://dealii.org/&quot;&gt;http://dealii.org/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Principal developers&lt;/b&gt;&lt;br/&gt;Wolfgang Bangerth, Texas A&amp;M University, TX, USA&lt;br/&gt;Timo Heister, Clemson University, SC, USA&lt;br/&gt;Guido Kanschat, Universität Heidelberg, Germany&lt;br/&gt;Matthias Maier, Universität Heidelberg, Germany&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Developers&lt;/b&gt;&lt;br/&gt;Luca Heltai, SISSA, Trieste, Italy&lt;br/&gt;Martin Kronbichler, Technische Universität München, Germany&lt;br/&gt;Bruno Turcksin, Texas A&amp;M University, TX, USA&lt;br/&gt;Toby D. Young, Polish Academy of Sciences, Poland&lt;br/&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="184"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="77"/>
+        <source>&lt;h3&gt;Agros Suite %1&lt;/h3&gt;Agros Suite is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://dealii.org/&quot;&gt;deal.ii&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;David Pánek&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Jan Kaska&lt;/b&gt; - graphics and ideas, University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;b&gt;František Mach&lt;/b&gt; - developer, Python script (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Pavel Kůs&lt;/b&gt; - developer, coupled problems, time domain adaptivity (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Korous&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;Václav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Petr Kropík&lt;/b&gt; - University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;b&gt;Denys Nikolayev&lt;/b&gt; - Russion and French translation, University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/gui/about.cpp" line="185"/>
         <source>&lt;h3&gt;License:&lt;/h3&gt;&lt;p&gt;Agros is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;Agros is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with Agros. If not, see &lt;a href=&quot;http://www.gnu.org/licenses/&quot;&gt;http://www.gnu.org/licenses/&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="224"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="225"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
@@ -85,32 +85,32 @@
         <translation type="vanished">&lt;h3&gt;Biblioteki&lt;/h3&gt;&lt;b&gt;Digia Qt:&lt;/b&gt; Digia Qt (&lt;a href=&quot;http://qt.digia.com/&quot;&gt;Qt - Cross-platform application and UI development framework&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;QCustomChart:&lt;/b&gt; QCustomChart (&lt;a href=&quot;http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/&quot;&gt;Qt Plotting Widget&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Python:&lt;/b&gt; Python Programming Language (&lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;libdxfrw:&lt;/b&gt; LibreCAD DXF library (&lt;a href=&quot;http://sourceforge.net/projects/libdxfrw/&quot;&gt;libdxfrw&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;ctemplate:&lt;/b&gt; Simple but powerful template language for C++ (&lt;a href=&quot;http://code.google.com/p/ctemplate/&quot;&gt;ctemplate&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;BSON:&lt;/b&gt; BSON implementation (&lt;a href=&quot;https://github.com/mongodb/mongo-c-driver/&quot;&gt;mongo-c-driver&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;matio:&lt;/b&gt; MAT File I/O Library (&lt;a href=&quot;http://sourceforge.net/projects/matio/&quot;&gt;matio&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;poly2tri:&lt;/b&gt; A 2D constrained Delaunay triangulation library (&lt;a href=&quot;http://code.google.com/p/poly2tri/&quot;&gt;poly2tri&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;stb_truetype.h:&lt;/b&gt; TrueType processing library - Sean Barrett / RAD Game Tools (&lt;a href=&quot;http://nothings.org/&quot;&gt;stb&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Triangle:&lt;/b&gt; Jonathan Richard Shewchuk (&lt;a href=&quot;http://www.cs.cmu.edu/~quake/triangle.html&quot;&gt;Triangle&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Gmsh:&lt;/b&gt; A three-dimensional finite element mesh generator (&lt;a href=&quot;http://geuz.org/gmsh&quot;&gt;Gmsh&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;UMFPACK:&lt;/b&gt; unsymmetric multifrontal sparse LU factorization package (&lt;a href=&quot;http://www.cise.ufl.edu/research/sparse/umfpack/&quot;&gt;UMFPACK&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;MUMPS:&lt;/b&gt; A MUltifrontal Massively Parallel sparse direct Solver (&lt;a href=&quot;http://graal.ens-lyon.fr/MUMPS/&quot;&gt;MUMPS&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;SuperLU:&lt;/b&gt; Direct solver for large sparse systems of linear equations (&lt;a href=&quot;http://crd-legacy.lbl.gov/~xiaoye/SuperLU/&quot;&gt;SuperLU&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;PARALUTION:&lt;/b&gt; Sparse iterative solvers on multi-core CPU and GPU devices (&lt;a href=&quot;http://www.paralution.com/&quot;&gt;PARALUTION&lt;/a&gt;)&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="204"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="205"/>
         <source>OS:</source>
         <translation>System operacyjny:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="207"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="208"/>
         <source>Operating system</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="212"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="213"/>
         <source>Processor:</source>
         <translation>Procesor:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="214"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="215"/>
         <source>Number of threads:</source>
         <translation>Liczba wątków:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="216"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="217"/>
         <source>Memory:</source>
         <translation>Pamięć:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/about.cpp" line="218"/>
+        <location filename="../../agros-gui/gui/about.cpp" line="219"/>
         <source>Screen resolution:</source>
         <translation>Rozdzielczość ekranu:</translation>
     </message>
@@ -760,58 +760,63 @@ Wiersz: %2
         <translation>Opcje</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="73"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="75"/>
         <source>Language change</source>
         <translation>Zmiana języka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="74"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="76"/>
         <source>Interface language has been changed. You must restart the application.</source>
         <translation>Zmieniono język interfejsu. Należy zrestartować program.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="105"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="109"/>
         <source>Main</source>
         <translation>Główne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="106"/>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="200"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="110"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="204"/>
         <source>Solver</source>
         <translation>Obliczenia</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="146"/>
-        <source>Show grid</source>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="140"/>
+        <source>Print application log to standard output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="147"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="141"/>
+        <source>Reload stylesheet continuously</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="152"/>
         <source>Show rulers</source>
         <translation type="unfinished">Pokaż linijki</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="148"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="153"/>
         <source>Show axes</source>
         <translation type="unfinished">Pokaż osie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="155"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="159"/>
         <source>Grid</source>
         <translation type="unfinished">Kratka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="168"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="172"/>
         <source>Rulers:</source>
         <translation type="unfinished">Linijki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="170"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="174"/>
         <source>Postprocessor:</source>
         <translation type="unfinished">Wyniki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="173"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="177"/>
         <source>Fonts</source>
         <translation type="unfinished">Czcionka</translation>
     </message>
@@ -828,7 +833,7 @@ Wiersz: %2
         <translation type="vanished">Wygląd:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="127"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="131"/>
         <source>Language:</source>
         <translation>Język:</translation>
     </message>
@@ -837,12 +842,12 @@ Wiersz: %2
         <translation type="obsolete">Domyślny typ problemu:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="130"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="134"/>
         <source>General</source>
         <translation>Ogólne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="134"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="138"/>
         <source>Show value result in line edit input</source>
         <translation>Pokaż wartość wyniku w linii wejścia</translation>
     </message>
@@ -851,12 +856,11 @@ Wiersz: %2
         <translation type="obsolete">Podczas uruchomienia sprawdź dostępność nowej wersji</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="136"/>
         <source>Print application log to standard output.</source>
-        <translation>Dziennik aplikacji na standardowe wyjście.</translation>
+        <translation type="vanished">Dziennik aplikacji na standardowe wyjście.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="142"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="148"/>
         <source>Other</source>
         <translation>Inne</translation>
     </message>
@@ -881,22 +885,22 @@ Wiersz: %2
         <translation type="vanished">Liczba wątków:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="197"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="201"/>
         <source>Number of cache slots:</source>
         <translation>Liczba pamięci cache:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="203"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="207"/>
         <source>Save matrix and RHS</source>
         <translation>Zapisz macierz i wektor prawej strony</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="211"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="215"/>
         <source>Matrix format</source>
         <translation>Format macierzy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/confdialog.cpp" line="214"/>
+        <location filename="../../agros-gui/app/confdialog.cpp" line="218"/>
         <source>Development</source>
         <translation>Rozwój</translation>
     </message>
@@ -1415,7 +1419,7 @@ Wiersz: %2
 <context>
     <name>CouplingsWidget</name>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="56"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="55"/>
         <source>Type</source>
         <translation type="unfinished">Typ</translation>
     </message>
@@ -2091,40 +2095,29 @@ Wiersz: %2
 <context>
     <name>ExamplesWidget</name>
     <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="63"/>
-        <source>Recent files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="78"/>
         <source>Examples</source>
-        <translation type="unfinished">Przykłady</translation>
+        <translation type="obsolete">Przykłady</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="110"/>
+        <location filename="../../agros-gui/app/examplesdialog.cpp" line="106"/>
         <source>Welcome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="111"/>
+        <location filename="../../agros-gui/app/examplesdialog.cpp" line="107"/>
         <source>Ctrl+1</source>
         <translation type="unfinished">Ctrl+1</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="194"/>
+        <location filename="../../agros-gui/app/examplesdialog.cpp" line="186"/>
         <source>Recent problems</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/examplesdialog.cpp" line="217"/>
-        <source>Recent scripts</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>FieldDialog</name>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="756"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="725"/>
         <source>Delete field</source>
         <translation>Usuń pole</translation>
     </message>
@@ -2133,22 +2126,22 @@ Wiersz: %2
         <translation type="vanished">Edytor modułu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="793"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="762"/>
         <source>Delete</source>
         <translation>Skasuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="793"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="762"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation>Pole fizyczne &apos;%1&apos; zostanie skasowane. Jesteś pewny?</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="794"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="763"/>
         <source>&amp;Yes</source>
         <translation>&amp;Tak</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="794"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="763"/>
         <source>&amp;No</source>
         <translation>&amp;Nie</translation>
     </message>
@@ -2171,7 +2164,7 @@ Wiersz: %2
         <translation type="obsolete">Adaptacja:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="347"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="345"/>
         <source>Initial condition:</source>
         <translation>Warunek początkowy:</translation>
     </message>
@@ -2212,7 +2205,7 @@ Wiersz: %2
         <translation type="obsolete">Zbieżność</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="189"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="187"/>
         <source>Damping</source>
         <translation>Tłumienie</translation>
     </message>
@@ -2233,123 +2226,113 @@ Wiersz: %2
         <translation type="vanished">Solwer iteracyjny</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="126"/>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="322"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="124"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="320"/>
         <source>Transient analysis</source>
         <translation>Analiza w czasie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="80"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="78"/>
         <source>Matrix solver:</source>
         <translation>Solwer macierzowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="90"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="88"/>
         <source>Number of refinements:</source>
         <translation>Liczba zagęszczeń:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="94"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="92"/>
         <source>Space adaptivity:</source>
         <translation>Adaptacja przestrzenna:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="127"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="125"/>
         <source>Matrix solver</source>
         <translation>Solwer macierzowy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="159"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="157"/>
         <source>Relative change of solutions (%):</source>
         <translation>Względna zmiana rozwiązania (%):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="162"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="160"/>
         <source>Residual:</source>
         <translation>Residuum:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="166"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="164"/>
         <source>Convergence (all selected conditions have to be satisfied)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="180"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="178"/>
         <source>Damping type:</source>
         <translation>Typ tłumienia:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="184"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="182"/>
         <source>Min. residual ratio for factor decrease:</source>
         <translation>Min. wsp. residuum do obniżenia:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="186"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="184"/>
         <source>Min. steps for factor increase:</source>
         <translation>Min. krok przy obniżaniu wsp.:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="202"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="200"/>
         <source>Max. residual ratio for Jacobian reuse:</source>
         <translation>Max. wsp. residuum przy używaniu Jac.: </translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="204"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="202"/>
         <source>Max. steps with the same Jacobian:</source>
         <translation>Max. krok przy tym samym Jakobianie:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="233"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="231"/>
         <source>Newton&apos;s solver</source>
         <translation>Newton</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="234"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="232"/>
         <source>Picard&apos;s solver</source>
         <translation>Picard</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="299"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="297"/>
         <source>Error estimator:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="301"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="299"/>
         <source>Control strategy:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="303"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="301"/>
         <source>Percentage to be refined:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="305"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="303"/>
         <source>Percentage to be coarsened:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="307"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="305"/>
         <source>&lt;i&gt;hp&lt;/i&gt;-adaptivity strategy:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="383"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="378"/>
         <source>deal.II</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="389"/>
-        <source>Environment:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="391"/>
-        <source>Parameters:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="394"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="385"/>
         <source>External</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2370,22 +2353,22 @@ Wiersz: %2
         <translation type="vanished">Wykorzystaj zagęszczanie do estymacji błędu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="374"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="369"/>
         <source>Method:</source>
         <translation>Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="376"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="371"/>
         <source>Preconditioner:</source>
         <translation>Prekondycjoner:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="378"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="373"/>
         <source>Absolute tolerance:</source>
         <translation>Bezwzględna tolerancja:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="380"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="375"/>
         <source>Maximum number of iterations:</source>
         <translation>Maksymalna liczba iteracji:</translation>
     </message>
@@ -2398,23 +2381,23 @@ Wiersz: %2
         <translation type="obsolete">Tłumienie:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="182"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="180"/>
         <source>Factor:</source>
         <translation>Factor:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="192"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="190"/>
         <source>Reuse Jacobian if possible</source>
         <translation>Jeśli to możliwe ponownie wykorzystaj Jakobian</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="76"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="74"/>
         <source>Analysis:</source>
         <translation>Analiza:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="78"/>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="387"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="76"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="382"/>
         <source>Solver:</source>
         <translation>Obliczenia:</translation>
     </message>
@@ -2423,12 +2406,12 @@ Wiersz: %2
         <translation type="obsolete">Solwer liniowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="92"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="90"/>
         <source>Polynomial order:</source>
         <translation>Stopień wielomianu:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="98"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="96"/>
         <source>Mesh parameters</source>
         <translation>Parametry siatki</translation>
     </message>
@@ -2445,32 +2428,32 @@ Wiersz: %2
         <translation type="obsolete">Adaptacja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="296"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="294"/>
         <source>Tolerance (%):</source>
         <translation>Tolerancja (%):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="212"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="210"/>
         <source>Use Anderson acceleration</source>
         <translation>Wykorzystaj akcelerację Andersona</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="223"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="221"/>
         <source>Anderson beta:</source>
         <translation>Beta Andersona:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="225"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="223"/>
         <source>Num. of last used iter.:</source>
         <translation>Num. of last used iter.:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="83"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="81"/>
         <source>General</source>
         <translation>Ogólne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="294"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="292"/>
         <source>Maximum steps:</source>
         <translation>Maks. liczba kroków:</translation>
     </message>
@@ -2479,7 +2462,7 @@ Wiersz: %2
         <translation type="vanished">Próg:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="311"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="309"/>
         <source>Control</source>
         <translation>Kontrola</translation>
     </message>
@@ -2496,17 +2479,17 @@ Wiersz: %2
         <translation type="vanished">Rozwiązanie odniesienia</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="316"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="314"/>
         <source>Steps back in transient:</source>
         <translation>Kroki w tył:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="318"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="316"/>
         <source>Redone each trans. step:</source>
         <translation>Przelicz każdy krok:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="349"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="347"/>
         <source>Time skip (s):</source>
         <translation>Przeskok czasowy (s):</translation>
     </message>
@@ -2523,17 +2506,17 @@ Wiersz: %2
         <translation type="obsolete">Redone each trans st:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="125"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="123"/>
         <source>Space adaptivity</source>
         <translation>Adaptacja w przestrzeni</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="124"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="122"/>
         <source>Solver</source>
         <translation>Solwer</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/fielddialog.cpp" line="129"/>
+        <location filename="../../agros-gui/gui/fielddialog.cpp" line="127"/>
         <source>Partial differential equation</source>
         <translation>Równanie różniczkowe cząstkowe</translation>
     </message>
@@ -3370,28 +3353,28 @@ Wiersz: %2
 <context>
     <name>ImageSequenceDialog</name>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="358"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="350"/>
         <source>Video</source>
         <translation>Wideo</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="391"/>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="448"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="383"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="440"/>
         <source>Run</source>
         <translation>Uruchom</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="393"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="385"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="402"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="394"/>
         <source>Speed:</source>
         <translation>Prędkość:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="456"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="448"/>
         <source>Stop</source>
         <translation>Zatrzymaj</translation>
     </message>
@@ -3646,97 +3629,97 @@ Wiersz: %2
 <context>
     <name>InfoWidgetGeneral</name>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="88"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="90"/>
         <source>Basic informations</source>
         <translation type="unfinished">Podstawowe informacje</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="90"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="92"/>
         <source>Name:</source>
         <translation type="unfinished">Nazwa:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="98"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="100"/>
         <source>General</source>
         <translation type="unfinished">Ogólne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="99"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="101"/>
         <source>Coordinate type:</source>
         <translation type="unfinished">Układ współrzędnych:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="101"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="103"/>
         <source>Mesh type:</source>
         <translation type="unfinished">Typ siatki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="108"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="110"/>
         <source>Harmonic analysis</source>
         <translation type="unfinished">Analiza harmoniczna</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="109"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="111"/>
         <source>Frequency:</source>
         <translation type="unfinished">Częstotliwość:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="116"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="118"/>
         <source>Transient analysis</source>
         <translation type="unfinished">Analiza w czasie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="117"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="119"/>
         <source>Method:</source>
         <translation type="unfinished">Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="119"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="121"/>
         <source>Order:</source>
         <translation type="unfinished">Rząd:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="121"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="123"/>
         <source>Tolerance (%):</source>
         <translation type="unfinished">Tolerancja (%):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="123"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="125"/>
         <source>Initial step size:</source>
         <translation type="unfinished">Krok początkowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="125"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="127"/>
         <source>Constant time step:</source>
         <translation type="unfinished">Stały krok czasowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="127"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="129"/>
         <source>Number of const. time steps:</source>
         <translation type="unfinished">Liczba stałych kroków czasowych:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="129"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="131"/>
         <source>Total time:</source>
         <translation type="unfinished">Całkowity czas:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="133"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="135"/>
         <source>Geometry</source>
         <translation type="unfinished">Geometria</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="179"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="181"/>
         <source>Functions</source>
         <translation type="unfinished">Funkcje</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="244"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="246"/>
         <source>Studies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="250"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="252"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3761,62 +3744,62 @@ Wiersz: %2
         <translation type="obsolete">Brzegi:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="164"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="166"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="193"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="195"/>
         <source>Physical fields</source>
         <translation type="unfinished">Pole fizyczne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="201"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="203"/>
         <source>Analysis:</source>
         <translation type="unfinished">Analiza:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="203"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="205"/>
         <source>Solver:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="205"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="207"/>
         <source>Number of refinements:</source>
         <translation type="unfinished">Liczba zagęszczeń:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="207"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="209"/>
         <source>Polynomial order:</source>
         <translation type="unfinished">Stopień wielomianu:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="209"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="211"/>
         <source>Adaptivity:</source>
         <translation type="unfinished">Adaptacja:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="211"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="213"/>
         <source>Matrix solver:</source>
         <translation type="unfinished">Solwer macierzowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="220"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="222"/>
         <source>Coupled fields</source>
         <translation type="unfinished">Pola sprzężone</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="228"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="230"/>
         <source>Source:</source>
         <translation type="unfinished">Źródło:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="230"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="232"/>
         <source>Target:</source>
         <translation type="unfinished">Cel:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/infowidget.cpp" line="232"/>
+        <location filename="../../agros-gui/gui/infowidget.cpp" line="234"/>
         <source>Coupling type:</source>
         <translation type="unfinished">Typ sprzężenia:</translation>
     </message>
@@ -3835,7 +3818,7 @@ Wiersz: %2
 <context>
     <name>LocalPointValueDialog</name>
     <message>
-        <location filename="../../agros-gui/gui/resultsview.cpp" line="377"/>
+        <location filename="../../agros-gui/gui/resultsview.cpp" line="376"/>
         <source>Local point value</source>
         <translation>Wybieranie punktu</translation>
     </message>
@@ -3918,7 +3901,7 @@ Wiersz: %2
         <translation type="obsolete">Skasuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="490"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="491"/>
         <source>error</source>
         <translation>błąd</translation>
     </message>
@@ -3927,7 +3910,7 @@ Wiersz: %2
         <translation type="obsolete">iteracja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="331"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="332"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
@@ -3936,17 +3919,17 @@ Wiersz: %2
         <translation type="vanished">Pokaż/ukryj log</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="335"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="336"/>
         <source>Abort</source>
         <translation>Przerwij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="363"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="364"/>
         <source>Transient problem</source>
         <translation>Problem w czasie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="369"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="370"/>
         <source>number of steps</source>
         <translation>liczba kroków</translation>
     </message>
@@ -3955,38 +3938,38 @@ Wiersz: %2
         <translation type="vanished">długość kroku</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="376"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="377"/>
         <source>length of steps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="382"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="383"/>
         <source>total time</source>
         <translation>czas całkowity</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="428"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="429"/>
         <source>Nonlinear solver</source>
         <translation>Nieliniowy solwer</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="434"/>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="483"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="435"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="484"/>
         <source>number of iterations</source>
         <translation>liczba iteracji</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="441"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="442"/>
         <source>rel. change of sln. (%)</source>
         <translation>wzgl. zmiana rozw. (%)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="477"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="478"/>
         <source>Adaptivity</source>
         <translation>Adaptacja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="496"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="497"/>
         <source>number of DOFs</source>
         <translation>liczba st. swobody</translation>
     </message>
@@ -3995,12 +3978,12 @@ Wiersz: %2
         <translation type="vanished">stopnie swobody</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="709"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="710"/>
         <source>Solver</source>
         <translation>Solwer</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="709"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="710"/>
         <source>Solution is being aborted.</source>
         <translation>Rozwiązanie zostało przerwane.</translation>
     </message>
@@ -4073,7 +4056,7 @@ Wiersz: %2
         <translation type="obsolete">Pliki PNG (*.png)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.h" line="117"/>
+        <location filename="../../agros-gui/gui/logwidget.h" line="106"/>
         <source>Progress...</source>
         <translation>Postęp...</translation>
     </message>
@@ -4081,70 +4064,70 @@ Wiersz: %2
 <context>
     <name>LogOptimizationDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="86"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="87"/>
         <source>Solver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="86"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="87"/>
         <source>Study is being aborted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="106"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="107"/>
         <source>Close</source>
         <translation type="unfinished">Zamknij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="110"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="111"/>
         <source>Abort</source>
         <translation type="unfinished">Przerwij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="141"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="142"/>
         <source>Current</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="147"/>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="166"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="148"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="167"/>
         <source>Step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="151"/>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="170"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="152"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="171"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="156"/>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="175"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="157"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="176"/>
         <source>Functionals</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="160"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="161"/>
         <source>Optimal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="199"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="200"/>
         <source>Solution</source>
         <translation type="unfinished">Rozwiązanie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="212"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="213"/>
         <source>objective</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="218"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="219"/>
         <source>uncertainty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="205"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="206"/>
         <source>number of steps</source>
         <translation type="unfinished">liczba kroków</translation>
     </message>
@@ -4163,36 +4146,31 @@ Wiersz: %2
         <source>Application log</source>
         <translation type="vanished">Dziennik aplikacji</translation>
     </message>
-    <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="242"/>
-        <source>Log</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>LogWidget</name>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="123"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="117"/>
         <source>Show timestamp</source>
         <translation>Pokaż czas</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="128"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="122"/>
         <source>Show debug</source>
         <translation>Pokaż debug</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="133"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="127"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="151"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="145"/>
         <source>Start</source>
         <translation>Początek</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="151"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="145"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
@@ -4205,7 +4183,7 @@ Wiersz: %2
         <translation type="obsolete">Kopiuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/logwidget.cpp" line="212"/>
+        <location filename="../../agros-gui/gui/logwidget.cpp" line="206"/>
         <source>version: %1</source>
         <translation>wersja: %1</translation>
     </message>
@@ -4257,7 +4235,7 @@ Wiersz: %2
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="164"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="150"/>
         <source>&amp;New...</source>
         <translation>&amp;Nowy...</translation>
     </message>
@@ -4266,7 +4244,7 @@ Wiersz: %2
         <translation type="obsolete">Utwórz nowy plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="168"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="154"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otwórz...</translation>
     </message>
@@ -4275,7 +4253,7 @@ Wiersz: %2
         <translation type="obsolete">Otwórz istniejący plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="172"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="158"/>
         <source>&amp;Save</source>
         <translation>&amp;Zapisz</translation>
     </message>
@@ -4292,7 +4270,7 @@ Wiersz: %2
         <translation type="obsolete">Zapisz plik wraz z rozwiązaniem na dysk</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="181"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="167"/>
         <source>Save &amp;As...</source>
         <translation>Zapisz &amp;jako...</translation>
     </message>
@@ -4301,7 +4279,7 @@ Wiersz: %2
         <translation type="obsolete">Zapisz plik pod nową nazwą</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="185"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="171"/>
         <source>&amp;Close</source>
         <translation>&amp;Zamknij</translation>
     </message>
@@ -4310,7 +4288,7 @@ Wiersz: %2
         <translation type="obsolete">Zamknij plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="189"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="175"/>
         <source>Import DXF...</source>
         <translation>Import DXF...</translation>
     </message>
@@ -4319,7 +4297,7 @@ Wiersz: %2
         <translation type="obsolete">Import AutoCAD DXF</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="192"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="178"/>
         <source>Export DXF...</source>
         <translation>Eksport DXF...</translation>
     </message>
@@ -4332,12 +4310,12 @@ Wiersz: %2
         <translation type="vanished">Otwórz przykład...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="216"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="202"/>
         <source>Copy image to clipboard</source>
         <translation>Skopiuj obraz do schowka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="245"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="234"/>
         <source>&amp;Solve</source>
         <translation type="unfinished">Uruchom
 &amp;symulacje</translation>
@@ -4347,7 +4325,7 @@ Wiersz: %2
         <translation type="vanished">PythonLab</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="242"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="231"/>
         <source>Material browser...</source>
         <translation>Przeglądaj materiały...</translation>
     </message>
@@ -4360,17 +4338,17 @@ Wiersz: %2
         <translation type="vanished">Panele</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1090"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="851"/>
         <source>Export mesh file</source>
         <translation>Eksport pliku siatki</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1090"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="851"/>
         <source>Mesh files (*.msh)</source>
         <translation>Pliki siatki (*.msh)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1119"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="880"/>
         <source>The problem is not meshed</source>
         <translation>Siatka nie została wygenerowana</translation>
     </message>
@@ -4379,7 +4357,7 @@ Wiersz: %2
         <translation type="obsolete">Eksport pliku siatki Hermes2D</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="195"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="181"/>
         <source>Export mesh file...</source>
         <translation>Eksport siatki...</translation>
     </message>
@@ -4404,37 +4382,42 @@ Wiersz: %2
         <translation type="vanished">Zapisz rozwiązanie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="201"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="187"/>
         <source>Export image...</source>
         <translation>Eksport obrazu...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="607"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="228"/>
+        <source>Log dialog</source>
+        <translation type="unfinished">Okno dziennika</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="435"/>
         <source>Agros files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Agros2D data files - deprecated (*.a2d)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="695"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="523"/>
         <source>Agros files (*.ags)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="760"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="588"/>
         <source>Export image to file</source>
         <translation>Eksport obrazu do pliku</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="204"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="190"/>
         <source>Export geometry...</source>
         <translation>Eksportuj geometrię...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="176"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="162"/>
         <source>Delete solutions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="789"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="617"/>
         <source>Export geometry to file</source>
         <translation>Eksportuj geometrię do pliku</translation>
     </message>
@@ -4451,12 +4434,12 @@ Wiersz: %2
         <translation type="vanished">Obraz w tle...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="211"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="197"/>
         <source>E&amp;xit</source>
         <translation>Wy&amp;jście</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="212"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="198"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
@@ -4495,7 +4478,7 @@ adaptacyjny</translation>
         <translation type="obsolete">Kopiuj obraz do schowka.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="354"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="307"/>
         <source>&amp;Help</source>
         <translation>&amp;Pomoc</translation>
     </message>
@@ -4520,7 +4503,7 @@ adaptacyjny</translation>
         <translation type="obsolete">Pomoc online</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="220"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="206"/>
         <source>Check version</source>
         <translation>Sprawdź wersje</translation>
     </message>
@@ -4533,7 +4516,7 @@ adaptacyjny</translation>
         <translation type="obsolete">Pokaż okno informacyjne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="227"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="213"/>
         <source>About &amp;Qt</source>
         <translation>O &amp;Qt</translation>
     </message>
@@ -4542,7 +4525,7 @@ adaptacyjny</translation>
         <translation type="obsolete">Pokaż okno o bibliotece Qt</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="231"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="217"/>
         <source>&amp;Options</source>
         <translation>&amp;Opcje</translation>
     </message>
@@ -4576,58 +4559,51 @@ siatkę</translation>
         <translation type="obsolete">Rozwiąż problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="178"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="164"/>
         <source>Delete solutions and results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="207"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="193"/>
         <source>&amp;Create script from model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="223"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="209"/>
         <source>About &amp;Agros Suite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="255"/>
         <source>Zoom in</source>
-        <translation>Przybliż</translation>
+        <translation type="vanished">Przybliż</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="258"/>
         <source>Zoom out</source>
-        <translation>Oddal</translation>
+        <translation type="vanished">Oddal</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="261"/>
         <source>Zoom best fit</source>
-        <translation>Dopasuj</translation>
+        <translation type="vanished">Dopasuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="262"/>
         <source>Ctrl+0</source>
-        <translation>Ctrl+0</translation>
+        <translation type="vanished">Ctrl+0</translation>
     </message>
     <message>
         <source>Best fit</source>
         <translation type="obsolete">Dopasowanie do wielkości okna</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="264"/>
         <source>Zoom region</source>
-        <translation>Dopasuj do zaznaczenia</translation>
+        <translation type="vanished">Dopasuj do zaznaczenia</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="274"/>
         <source>Show/hide control panel</source>
-        <translation>Pokaż/ukryj panel kontrolny</translation>
+        <translation type="vanished">Pokaż/ukryj panel kontrolny</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="275"/>
         <source>Alt+0</source>
-        <translation>Alt+0</translation>
+        <translation type="vanished">Alt+0</translation>
     </message>
     <message>
         <source>Zoom</source>
@@ -4642,7 +4618,7 @@ siatkę</translation>
         <translation type="vanished">Postprocesor 2D</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="790"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="618"/>
         <source>SVG files (*.svg)</source>
         <translation>Pliki SVF (*.svg)</translation>
     </message>
@@ -4651,8 +4627,8 @@ siatkę</translation>
         <translation type="obsolete">Siatka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="816"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="830"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="644"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="658"/>
         <source>Solver</source>
         <translation type="unfinished">Solwer</translation>
     </message>
@@ -4669,12 +4645,12 @@ siatkę</translation>
         <translation type="obsolete">Wykres</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="235"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="221"/>
         <source>Fullscreen mode</source>
         <translation>Pełny ekran</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="236"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="222"/>
         <source>F11</source>
         <translation>F11</translation>
     </message>
@@ -4735,7 +4711,7 @@ siatkę</translation>
         <translation type="obsolete">Pokaż dziennik aplikacji</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="285"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="258"/>
         <source>Import/Export</source>
         <translation>Import/Eksport</translation>
     </message>
@@ -4756,12 +4732,12 @@ siatkę</translation>
         <translation type="obsolete">Eksport pliku vtk</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1130"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="891"/>
         <source>VTK files (*.vtk)</source>
         <translation>Pliki VTK (*.vtk)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="284"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="257"/>
         <source>&amp;Recent files</source>
         <translation>&amp;Ostatnie pliki</translation>
     </message>
@@ -4770,12 +4746,12 @@ siatkę</translation>
         <translation type="obsolete">Wczytaj obraz w tło</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="299"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="272"/>
         <source>&amp;File</source>
         <translation>&amp;Plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="319"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="292"/>
         <source>E&amp;dit</source>
         <translation>E&amp;dycja</translation>
     </message>
@@ -4784,12 +4760,11 @@ siatkę</translation>
         <translation type="vanished">&amp;Widok</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="335"/>
         <source>&amp;Problem</source>
-        <translation>&amp;Problem</translation>
+        <translation type="vanished">&amp;Problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="345"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="298"/>
         <source>&amp;Tools</source>
         <translation>N&amp;arzędzia</translation>
     </message>
@@ -4806,11 +4781,11 @@ siatkę</translation>
         <translation type="vanished">Widok</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="631"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="635"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="656"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="708"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1119"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="459"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="463"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="484"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="536"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="880"/>
         <source>Problem</source>
         <translation>Problem</translation>
     </message>
@@ -4871,7 +4846,7 @@ siatkę</translation>
         <translation type="obsolete">Tryb: Przesunięcie etykiety</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="607"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="435"/>
         <source>Open file</source>
         <translation>Otwórz plik</translation>
     </message>
@@ -4884,7 +4859,7 @@ siatkę</translation>
         <translation type="vanished">Otwórz plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="631"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="459"/>
         <source>Unknown suffix.</source>
         <translation>Nieznane rozszerzenie</translation>
     </message>
@@ -4893,7 +4868,7 @@ siatkę</translation>
         <translation type="vanished">Usuń rozwiązanie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="198"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="184"/>
         <source>Export VTK geometry...</source>
         <translation>Eksport geometrii do VTK...</translation>
     </message>
@@ -4906,19 +4881,18 @@ siatkę</translation>
         <translation type="vanished">Testy jednostkowe...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="249"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="238"/>
         <source>&amp;Solve new</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="250"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="239"/>
         <source>Alt+Shift+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="330"/>
         <source>&amp;Add geometry</source>
-        <translation>&amp;Dodaj geometrię</translation>
+        <translation type="vanished">&amp;Dodaj geometrię</translation>
     </message>
     <message>
         <source>&amp;Add boundaries and materials</source>
@@ -4929,12 +4903,7 @@ siatkę</translation>
         <translation type="vanished">Kształty użytkownika</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="348"/>
-        <source>S&amp;ettings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="635"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="463"/>
         <source>File &apos;%1&apos; is not found.</source>
         <translation>Nie znaleziono pliku &apos;%1&apos;.</translation>
     </message>
@@ -4951,7 +4920,7 @@ siatkę</translation>
         <translation type="vanished">Rozwiązanie &apos;%1&apos; nie istnieje.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="695"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="523"/>
         <source>Save file</source>
         <translation>Zapisz plik</translation>
     </message>
@@ -4960,23 +4929,23 @@ siatkę</translation>
         <translation type="vanished">Pliki Agros2D (*.a2d)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="726"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="554"/>
         <source>Import file</source>
         <translation>Import pliku</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="726"/>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="743"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="554"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="571"/>
         <source>DXF files (*.dxf)</source>
         <translation>DXF files (*.dxf)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="743"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="571"/>
         <source>Export file</source>
         <translation>Eksport pliku</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="760"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="588"/>
         <source>PNG files (*.png)</source>
         <translation>PNG files (*.png)</translation>
     </message>
@@ -4998,7 +4967,7 @@ siatkę</translation>
         <translation type="vanished">Nie znaleziono pliku &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/mainwindow.cpp" line="1130"/>
+        <location filename="../../agros-gui/app/mainwindow.cpp" line="891"/>
         <source>Export VTK file</source>
         <translation>Eksport pliku VTK</translation>
     </message>
@@ -6025,7 +5994,7 @@ siatkę</translation>
 <context>
     <name>OptiLab</name>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="485"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="873"/>
         <source>OptiLab</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6034,171 +6003,167 @@ siatkę</translation>
         <translation type="obsolete">Normalne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="535"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="918"/>
         <source>Minimum:</source>
         <translation type="unfinished">Minimum:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="537"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="920"/>
         <source>Maximum:</source>
         <translation type="unfinished">Maximum:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="539"/>
-        <source>Sum:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="541"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="922"/>
         <source>Mean value:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="543"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="924"/>
         <source>Median:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="545"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="926"/>
         <source>Variance:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="547"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="928"/>
         <source>Std. deviation:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="550"/>
-        <source>Covariance:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="552"/>
-        <source>Correlation:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="568"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="993"/>
         <source>Rescale chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="571"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="996"/>
         <source>Logarithmic scale (x-axis)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="575"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1000"/>
         <source>Logarithmic scale (y-axis)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="579"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1004"/>
         <source>Show trend line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="583"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1008"/>
         <source>Show average value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="587"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1012"/>
         <source>Show Pareto front</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="593"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1018"/>
         <source>Chart properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="654"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1079"/>
         <source>Name</source>
         <translation type="unfinished">Nazwa</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="654"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1079"/>
         <source>Value</source>
         <translation type="unfinished">Wartość</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="666"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1091"/>
         <source>Dependence on the number of steps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="669"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1094"/>
         <source>Set on horizontal axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="672"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1097"/>
         <source>Set on vertical axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="675"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1100"/>
         <source>Find minimum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="677"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1102"/>
         <source>Find maximum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="684"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="973"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1109"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="886"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="972"/>
+        <source>Geometry</source>
+        <translation type="unfinished">Geometria</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="974"/>
+        <source>Values</source>
+        <translation type="unfinished">Wartości</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1308"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="906"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1328"/>
         <source>Functionals</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="913"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1335"/>
         <source>Recipes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="920"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1342"/>
         <source>Other</source>
         <translation type="unfinished">Inne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="996"/>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1009"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1418"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1431"/>
         <source>%1 (parameter)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="998"/>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1011"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1420"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1433"/>
         <source>%1 (functional)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1000"/>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1013"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1422"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1435"/>
         <source>%1 (recipe)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1002"/>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1015"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1424"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1437"/>
         <source>%1 (other)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="1244"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="1666"/>
         <source>&lt;table&gt;&lt;tr&gt;&lt;th colspan=&quot;2&quot;&gt;%L1&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;X:&lt;/td&gt;&lt;td&gt;%L2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Y:&lt;/td&gt;&lt;td&gt;%L3&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6206,7 +6171,7 @@ siatkę</translation>
 <context>
     <name>OptiLabWidget</name>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="107"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="154"/>
         <source>Run study</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6215,83 +6180,171 @@ siatkę</translation>
         <translation type="obsolete">Alt+S</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="127"/>
-        <source>Study:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="129"/>
         <source>Filter:</source>
-        <translation type="unfinished">Filtr:</translation>
+        <translation type="obsolete">Filtr:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="131"/>
-        <source>Number of computations:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="146"/>
-        <source>Computation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="146"/>
-        <source>State</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="151"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="252"/>
         <source>Solve problem</source>
         <translation type="unfinished">Rozwiąż problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="154"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="255"/>
         <source>Delete solution</source>
         <translation type="unfinished">Usuń rozwiązanie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="162"/>
         <source>Apply</source>
-        <translation type="unfinished">Zastosuj</translation>
+        <translation type="obsolete">Zastosuj</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="148"/>
+        <source>&amp;Properties</source>
+        <translation type="unfinished">&amp;Ustawienia</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="151"/>
+        <source>&amp;Delete</source>
+        <translation type="unfinished">&amp;Usuń</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="160"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="198"/>
+        <source>New studies</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../agros-gui/optilab/optilab.cpp" line="165"/>
+        <source>Local value recipe...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="167"/>
+        <source>Surface integral recipe...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="169"/>
+        <source>Volume integral recipe...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="172"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="187"/>
+        <source>New recipe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="185"/>
+        <source>Recipe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="196"/>
+        <source>Study</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="213"/>
+        <source>Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="213"/>
+        <source>Value</source>
+        <translation type="unfinished">Wartość</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="263"/>
         <source>Export</source>
         <translation type="unfinished">Eksport</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="229"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="303"/>
+        <source>Recipes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="319"/>
+        <source>Studies</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="331"/>
+        <source>%1</source>
+        <translation type="unfinished">%1</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="342"/>
+        <source>Parameters</source>
+        <translation type="unfinished">Parametry</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="361"/>
+        <source>Functionals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="399"/>
         <source>Save image</source>
         <translation type="unfinished">Zapisz obraz</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="229"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="399"/>
         <source>CSV files (*.csv)</source>
         <translation type="unfinished">Pliki CSV (*.csv)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="341"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="514"/>
         <source>solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="341"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="514"/>
         <source>not solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="341"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="514"/>
         <source>results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="341"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="514"/>
         <source>no results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="355"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="528"/>
         <source>%1 (%2 computations)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="717"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="728"/>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="717"/>
+        <source>Study &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="718"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="729"/>
+        <source>&amp;Yes</source>
+        <translation type="unfinished">&amp;Tak</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="718"/>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="729"/>
+        <source>&amp;No</source>
+        <translation type="unfinished">&amp;Nie</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/optilab.cpp" line="728"/>
+        <source>Recipe &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -6316,7 +6369,7 @@ siatkę</translation>
 <context>
     <name>ParameterSelectDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="1031"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="1033"/>
         <source>Add parameter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6585,12 +6638,12 @@ siatkę</translation>
 <context>
     <name>PostprocessorSceneChartWidget</name>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="85"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="84"/>
         <source>Variable:</source>
         <translation type="unfinished">Zmienna:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="87"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="86"/>
         <source>Component:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6599,72 +6652,72 @@ siatkę</translation>
         <translation type="obsolete">Zmienna</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="97"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="96"/>
         <source>Save image</source>
         <translation type="unfinished">Zapisz obraz</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="103"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="102"/>
         <source>Export</source>
         <translation type="unfinished">Eksport</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="129"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="128"/>
         <source>Start</source>
         <translation type="unfinished">Początek</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="139"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="138"/>
         <source>End</source>
         <translation type="unfinished">Koniec</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="147"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="146"/>
         <source>Length</source>
         <translation type="unfinished">Długość</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="163"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="162"/>
         <source>Horizontal axis</source>
         <translation type="unfinished">Oś pozioma</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="171"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="170"/>
         <source>Reverse</source>
         <translation type="unfinished">Odwróć</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="176"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="175"/>
         <source>Points:</source>
         <translation type="unfinished">Punkty:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="181"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="179"/>
         <source>Points and time step</source>
         <translation type="unfinished">Punkty i chwila w czasie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="199"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="197"/>
         <source>Point</source>
         <translation type="unfinished">Punkt</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="233"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="231"/>
         <source>Geometry</source>
         <translation type="unfinished">Geometria</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="234"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="232"/>
         <source>Time</source>
         <translation type="unfinished">Czas</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="255"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="253"/>
         <source>Scalar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="259"/>
+        <location filename="../../agros-gui/app/postprocessorview_chart.cpp" line="257"/>
         <source>Magnitude</source>
         <translation type="unfinished">Amplituda</translation>
     </message>
@@ -6672,44 +6725,44 @@ siatkę</translation>
 <context>
     <name>PostprocessorSceneMeshWidget</name>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="59"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="58"/>
         <source>Initial mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="60"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="59"/>
         <source>Solution mesh</source>
         <translation type="unfinished">Siatka rozwiązania</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="69"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="68"/>
         <source>View</source>
         <translation type="unfinished">Widok</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="70"/>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="108"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="69"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="107"/>
         <source>Polynomial order</source>
         <translation type="unfinished">Stopień wielomianu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="71"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="70"/>
         <source>Error estimate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="57"/>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="92"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="56"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="91"/>
         <source>Mesh</source>
         <translation type="unfinished">Siatka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="58"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="57"/>
         <source>None</source>
         <translation type="unfinished">Pusto</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="100"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="99"/>
         <source>Show colorbar</source>
         <translation type="unfinished">Pokaż skalę kolorów</translation>
     </message>
@@ -6718,38 +6771,38 @@ siatkę</translation>
         <translation type="obsolete">Pokaż etykiety</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="104"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="103"/>
         <source>Palette:</source>
         <translation type="unfinished">Paleta:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="117"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="116"/>
         <source>Initial mesh:</source>
         <translation type="unfinished">Siatka początkowa:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="119"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="118"/>
         <source>Solution mesh:</source>
         <translation type="unfinished">Siatka rozwiązania:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="121"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="120"/>
         <source>Number of DOFs:</source>
         <translation type="unfinished">Liczba zmiennych (DOFs):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="124"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="123"/>
         <source>Mesh and polynomial order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="177"/>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="180"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="176"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="179"/>
         <source>%1 nodes, %2 elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="193"/>
+        <location filename="../../agros-gui/app/postprocessorview_mesh.cpp" line="192"/>
         <source>%1 DOFs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6939,68 +6992,68 @@ siatkę</translation>
 <context>
     <name>PostprocessorScenePost2DWidget</name>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="82"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="92"/>
         <source>Scalar field</source>
         <translation type="unfinished">Pole skalarne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="83"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="93"/>
         <source>Contours</source>
         <translation type="unfinished">Izolinie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="84"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="94"/>
         <source>Vector field</source>
         <translation type="unfinished">Pole wektorowe</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="98"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="109"/>
         <source>Show scalar field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="101"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="195"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="247"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="112"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="206"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="258"/>
         <source>Deform shape</source>
         <translation type="unfinished">Deformacja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="113"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="205"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="257"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="124"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="216"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="268"/>
         <source>Variable:</source>
         <translation type="unfinished">Zmienna:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="115"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="126"/>
         <source>Component:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="118"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="208"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="260"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="129"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="219"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="271"/>
         <source>Variable</source>
         <translation type="unfinished">Zmienna</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="126"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="137"/>
         <source>Filter</source>
         <translation type="unfinished">Filtr</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="140"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="151"/>
         <source>Show colorbar</source>
         <translation type="unfinished">Pokaż skalę kolorów</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="143"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="154"/>
         <source>Log. scale</source>
         <translation type="unfinished">Skala log.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="152"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="163"/>
         <source>Auto range</source>
         <translation type="unfinished">Zakres autom.</translation>
     </message>
@@ -7017,108 +7070,118 @@ siatkę</translation>
         <translation type="obsolete">Zakres</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="158"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="58"/>
+        <source>Other</source>
+        <translation type="unfinished">Inne</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="60"/>
+        <source>Other tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="169"/>
         <source>Palette:</source>
         <translation type="unfinished">Paleta:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="161"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="172"/>
         <source>Steps:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="164"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="175"/>
         <source>Decimal places:</source>
         <translation type="unfinished">Liczba miejsc po przecinku:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="166"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="177"/>
         <source>Base:</source>
         <translation type="unfinished">Podstawa:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="169"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="180"/>
         <source>Minimum range:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="172"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="183"/>
         <source>Maximum range:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="175"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="186"/>
         <source>Palette and colorbar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="192"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="203"/>
         <source>Show contours</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="223"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="234"/>
         <source>Number of contours:</source>
         <translation type="unfinished">Liczba izolinii</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="225"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="236"/>
         <source>Contour width:</source>
         <translation type="unfinished">Szerokość izolinii:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="228"/>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="296"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="239"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="307"/>
         <source>Advanced</source>
         <translation type="unfinished">Zaawans.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="244"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="255"/>
         <source>Show vectors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="264"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="275"/>
         <source>Proportional</source>
         <translation type="unfinished">Proporcjonalnie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="265"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="276"/>
         <source>Color (b/w)</source>
         <translation type="unfinished">Kolor (b-cz)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="284"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="295"/>
         <source>Number of vectors:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="287"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="298"/>
         <source>Scale:</source>
         <translation type="unfinished">Skala:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="290"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="301"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="292"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="303"/>
         <source>Center:</source>
         <translation type="unfinished">Środek:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="356"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="367"/>
         <source>Scalar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="360"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="371"/>
         <source>Magnitude</source>
         <translation type="unfinished">Amplituda</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="471"/>
+        <location filename="../../agros-gui/app/postprocessorview_post2d.cpp" line="482"/>
         <source>Width and height of bounding box over vector count.</source>
         <translation type="unfinished">Szerokość i wysokość ramki do okoła licznika wektorów.</translation>
     </message>
@@ -7126,62 +7189,62 @@ siatkę</translation>
 <context>
     <name>PostprocessorScenePost3DWidget</name>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="57"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="56"/>
         <source>None</source>
         <translation type="unfinished">Pusto</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="58"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="57"/>
         <source>Scalar view</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="59"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="58"/>
         <source>Scalar view solid</source>
         <translation type="unfinished">Pole skalarne, bryła</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="74"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="73"/>
         <source>Postprocessor 3D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="84"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="83"/>
         <source>Solid view</source>
         <translation type="unfinished">Widok bryły</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="88"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="87"/>
         <source>Ligthing</source>
         <translation type="unfinished">Oświetlenie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="94"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="93"/>
         <source>Gradient back.</source>
         <translation type="unfinished">Gradient odwr.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="100"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="99"/>
         <source>Bounding box</source>
         <translation type="unfinished">Ramka otaczająca</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="101"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="100"/>
         <source>Show edges</source>
         <translation type="unfinished">Pokaż krawędzie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="105"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="104"/>
         <source>Angle:</source>
         <translation type="unfinished">Kąt:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="107"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="106"/>
         <source>Height:</source>
         <translation type="unfinished">Wysokość:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="114"/>
+        <location filename="../../agros-gui/app/postprocessorview_post3d.cpp" line="113"/>
         <source>Settings</source>
         <translation type="unfinished">Ustawienia</translation>
     </message>
@@ -7440,34 +7503,47 @@ siatkę</translation>
         <translation type="vanished">Szerokość i wysokość ramki do okoła licznika wektorów.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="56"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="55"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="57"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="56"/>
         <source>Ctrl+3</source>
         <translation type="unfinished">Ctrl+3</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="85"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="64"/>
+        <source>Post 2D</source>
+        <translation type="unfinished">Wyniki 2D</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="69"/>
+        <source>Post 3D</source>
+        <translation type="unfinished">Wyniki 3D</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="109"/>
         <source>Apply</source>
         <translation>Zastosuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="88"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="112"/>
         <source>Create video</source>
         <translation type="unfinished">Tworzenie wideo</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="98"/>
-        <source>2D view</source>
-        <translation type="unfinished">Widok 3D {2D?}</translation>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="148"/>
+        <source>Zoom</source>
+        <translation type="unfinished">Powiększenie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="99"/>
+        <source>2D view</source>
+        <translation type="obsolete">Widok 3D {2D?}</translation>
+    </message>
+    <message>
         <source>3D view</source>
-        <translation type="unfinished">Widok 3D</translation>
+        <translation type="obsolete">Widok 3D</translation>
     </message>
     <message>
         <source>Initial mesh</source>
@@ -7482,7 +7558,7 @@ siatkę</translation>
         <translation type="vanished">Stopień wielomianu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="97"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="60"/>
         <source>Mesh</source>
         <translation>Siatka</translation>
     </message>
@@ -7627,7 +7703,7 @@ siatkę</translation>
         <translation type="vanished">Liczba wektorów:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/postprocessorview.cpp" line="101"/>
+        <location filename="../../agros-gui/app/postprocessorview.cpp" line="73"/>
         <source>Chart</source>
         <translation type="unfinished">Wykres</translation>
     </message>
@@ -7751,18 +7827,16 @@ siatkę</translation>
 <context>
     <name>PreprocessorWidget</name>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="124"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="100"/>
         <source>&amp;Properties</source>
         <translation>&amp;Ustawienia</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="461"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="528"/>
         <source>Properties</source>
-        <translation type="unfinished">Ustawienia</translation>
+        <translation type="obsolete">Ustawienia</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="127"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="103"/>
         <source>&amp;Delete</source>
         <translation>&amp;Usuń</translation>
     </message>
@@ -7775,32 +7849,15 @@ siatkę</translation>
         <translation type="obsolete">&amp;Dodaj brzegi i materiały</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="129"/>
         <source>Delete selected objects</source>
-        <translation type="unfinished">Usuń zaznaczone obiekty</translation>
+        <translation type="obsolete">Usuń zaznaczone obiekty</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="132"/>
         <source>&amp;Transform</source>
-        <translation type="unfinished">&amp;Przekształcenie</translation>
+        <translation type="obsolete">&amp;Przekształcenie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="142"/>
-        <source>Local value recipe...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="144"/>
-        <source>Surface integral recipe...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="146"/>
-        <source>Volume integral recipe...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="150"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="123"/>
         <source>New &amp;node...</source>
         <translation type="unfinished">Dodaj &amp;węzeł...</translation>
     </message>
@@ -7809,7 +7866,7 @@ siatkę</translation>
         <translation type="obsolete">Alt+N</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="155"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="128"/>
         <source>New &amp;edge...</source>
         <translation type="unfinished">Dodaj &amp;krawędź...</translation>
     </message>
@@ -7818,7 +7875,7 @@ siatkę</translation>
         <translation type="obsolete">Alt+E</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="160"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="133"/>
         <source>New &amp;label...</source>
         <translation type="unfinished">Dodaj &amp;etykietę...</translation>
     </message>
@@ -7843,376 +7900,305 @@ siatkę</translation>
         <translation type="obsolete">Alt+M</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="227"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="303"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="195"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="309"/>
         <source>New function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="231"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="314"/>
-        <source>New recipe</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="392"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="370"/>
         <source>Snap to grid</source>
         <translation>Przyciągaj do kratki</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="394"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="372"/>
         <source>Apply</source>
         <translation>Zastosuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="401"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="378"/>
         <source>Grid step:</source>
         <translation>Rozmiar kratki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="452"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="438"/>
         <source>Problem</source>
         <translation type="unfinished">Problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="472"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="675"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="450"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="301"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="491"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="470"/>
         <source>Functions</source>
         <translation type="unfinished">Funkcje</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="75"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="273"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="60"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="279"/>
         <source>New fields</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="76"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="326"/>
-        <source>New studies</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="77"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="61"/>
         <source>New materials</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="78"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="62"/>
         <source>New boundaries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="134"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="285"/>
         <source>Parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="137"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="109"/>
         <source>New analytic function...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="271"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="508"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="106"/>
+        <source>New parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="115"/>
+        <source>New &amp;rectangle...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="119"/>
+        <source>New &amp;circle...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="238"/>
+        <source>Add geometry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="251"/>
+        <source>Zoom</source>
+        <translation type="unfinished">Powiększenie</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="277"/>
+        <source>Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="289"/>
+        <source>Material</source>
+        <translation type="unfinished">Materiał</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="298"/>
+        <source>Boundary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="307"/>
+        <source>Function</source>
+        <translation type="unfinished">Funkcja</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="487"/>
         <source>Fields</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="281"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="535"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="508"/>
         <source>Materials</source>
         <translation>Materiały</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="553"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="526"/>
         <source>Boundary conditions</source>
         <translation>Warunki brzegowe</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="573"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="547"/>
         <source>Geometry</source>
         <translation>Geometria</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="580"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="554"/>
         <source>Nodes</source>
         <translation>Węzły</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="598"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="574"/>
         <source>Edges</source>
         <translation>Krawędzie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="617"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="593"/>
         <source>Labels</source>
         <translation>Etykiety</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="635"/>
-        <source>OptiLab</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="312"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="644"/>
-        <source>Recipes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="666"/>
-        <source>Study - %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="693"/>
-        <source>Functionals</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="980"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="993"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1018"/>
+        <source>Delete selected</source>
+        <translation type="unfinished">Usuń zaznaczone</translation>
     </message>
     <message>
         <source>New boundary condition</source>
         <translation type="obsolete">Dodaj warunek brzegowy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="283"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="291"/>
         <source>New material</source>
         <translation type="unfinished">Dodaj materiał</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="291"/>
-        <source>Boundaries</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="293"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="300"/>
         <source>New boundary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="324"/>
-        <source>Studies</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="749"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="649"/>
         <source>Problem properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="751"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="651"/>
         <source>Coordinate type:</source>
         <translation type="unfinished">Układ współrzędnych:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="752"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="652"/>
         <source>Mesh type:</source>
         <translation type="unfinished">Typ siatki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="755"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="655"/>
         <source>Frequency:</source>
         <translation type="unfinished">Częstotliwość:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="759"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="659"/>
         <source>Method:</source>
         <translation type="unfinished">Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="760"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="660"/>
         <source>Order:</source>
         <translation type="unfinished">Rząd:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="761"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="661"/>
         <source>Tolerance (%):</source>
         <translation type="unfinished">Tolerancja (%):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="762"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="662"/>
         <source>Initial step size:</source>
         <translation type="unfinished">Krok początkowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="763"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="663"/>
         <source>Constant time step:</source>
         <translation type="unfinished">Stały krok czasowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="764"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="664"/>
         <source>Number of const. time steps:</source>
         <translation type="unfinished">Liczba stałych kroków czasowych:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="765"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="665"/>
         <source>Total time:</source>
         <translation type="unfinished">Całkowity czas:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="780"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="680"/>
         <source>Analysis:</source>
         <translation type="unfinished">Analiza:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="781"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="681"/>
         <source>Solver:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="782"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="682"/>
         <source>Number of refinements:</source>
         <translation type="unfinished">Liczba zagęszczeń:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="783"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="683"/>
         <source>Polynomial order:</source>
         <translation type="unfinished">Stopień wielomianu:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="784"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="684"/>
         <source>Adaptivity:</source>
         <translation type="unfinished">Adaptacja:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="785"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="685"/>
         <source>Matrix solver:</source>
         <translation type="unfinished">Solwer macierzowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="794"/>
-        <source>Coordinate type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="795"/>
-        <source>Mesh type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="798"/>
-        <source>Frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="802"/>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="803"/>
         <source>Order</source>
-        <translation type="unfinished">Stopień</translation>
+        <translation type="obsolete">Stopień</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="804"/>
-        <source>Tolerance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="805"/>
-        <source>Initial step size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="806"/>
-        <source>Constant time step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="807"/>
-        <source>Number of const. time steps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="808"/>
         <source>Total time</source>
-        <translation type="unfinished">Czas całkowity</translation>
+        <translation type="obsolete">Czas całkowity</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="814"/>
-        <source>Analysis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="815"/>
-        <source>Solver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="816"/>
-        <source>Number of refinements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="817"/>
         <source>Polynomial order</source>
-        <translation type="unfinished">Stopień wielomianu</translation>
+        <translation type="obsolete">Stopień wielomianu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="818"/>
         <source>Adaptivity</source>
-        <translation type="unfinished">Adaptacja</translation>
+        <translation type="obsolete">Adaptacja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="819"/>
         <source>Matrix solver</source>
-        <translation type="unfinished">Solwer macierzowy</translation>
+        <translation type="obsolete">Solwer macierzowy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1211"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1221"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1232"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1071"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1211"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1071"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation type="unfinished">Pole fizyczne &apos;%1&apos; zostanie skasowane. Jesteś pewny?</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1212"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1222"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1233"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1072"/>
         <source>&amp;Yes</source>
         <translation type="unfinished">&amp;Tak</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1212"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1222"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1233"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1072"/>
         <source>&amp;No</source>
         <translation type="unfinished">&amp;Nie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1221"/>
-        <source>Study &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1232"/>
-        <source>Recipe &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1466"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1339"/>
         <source>new boundary</source>
         <translation type="unfinished">nowy warunek</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1488"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1361"/>
         <source>new material</source>
         <translation type="unfinished">nowy materiał</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="368"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="345"/>
         <source>Tooltip_OperateOnNodes</source>
         <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
@@ -8258,12 +8244,12 @@ siatkę</translation>
         <translation type="obsolete">Dodaj pole</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="249"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="222"/>
         <source>&amp;Undo</source>
         <translation type="unfinished">&amp;Cofnij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="254"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="227"/>
         <source>&amp;Redo</source>
         <translation type="unfinished">&amp;Ponów</translation>
     </message>
@@ -8276,7 +8262,7 @@ siatkę</translation>
         <translation type="obsolete">Wartość</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="373"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="350"/>
         <source>Tooltip_OperateOnEdges</source>
         <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
@@ -8314,7 +8300,7 @@ siatkę</translation>
 &lt;/body&gt;</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="378"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="355"/>
         <source>Tooltip_OperateOnLabels</source>
         <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
@@ -8560,7 +8546,7 @@ siatkę</translation>
 <context>
     <name>ProblemDialog</name>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="378"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="377"/>
         <source>Problem properties</source>
         <translation type="unfinished">Parametry problemu</translation>
     </message>
@@ -8797,7 +8783,7 @@ siatkę</translation>
         <translation type="obsolete">Nazwa:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="157"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="156"/>
         <source>Coordinate type:</source>
         <translation>Układ współrzędnych:</translation>
     </message>
@@ -8806,42 +8792,42 @@ siatkę</translation>
         <translation type="obsolete">Obliczenia: </translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="159"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="158"/>
         <source>Mesh type:</source>
         <translation>Typ siatki:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="162"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="161"/>
         <source>General</source>
         <translation>Ogólne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="172"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="171"/>
         <source>Frequency (Hz):</source>
         <translation>Częstotliwość (Hz):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="175"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="174"/>
         <source>Harmonic analysis</source>
         <translation>Analiza harmoniczna</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="195"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="194"/>
         <source>Number of constant steps:</source>
         <translation>Liczba stałych kroków:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="205"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="204"/>
         <source>Method:</source>
         <translation>Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="207"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="206"/>
         <source>Order:</source>
         <translation>Rząd:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="209"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="208"/>
         <source>Tolerance (%):</source>
         <translation type="unfinished">Tolerancja (%):</translation>
     </message>
@@ -8850,12 +8836,12 @@ siatkę</translation>
         <translation type="vanished">Tolerancja:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="215"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="214"/>
         <source>Initial time step:</source>
         <translation>Początkowy krok w czasie:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="340"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="339"/>
         <source>Approx. number of steps:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8864,17 +8850,17 @@ siatkę</translation>
         <translation type="obsolete">Całkowity czas (s):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="218"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="217"/>
         <source>Constant time step:</source>
         <translation>Stały krok czasowy:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="221"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="220"/>
         <source>Transient analysis</source>
         <translation>Analiza w czasie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="234"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="233"/>
         <source>Couplings</source>
         <translation>Sprzężenia</translation>
     </message>
@@ -8887,7 +8873,7 @@ siatkę</translation>
         <translation type="vanished">Skrypt</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/problemdialog.cpp" line="351"/>
+        <location filename="../../agros-gui/gui/problemdialog.cpp" line="350"/>
         <source>Number of steps:</source>
         <translation>Liczba kroków:</translation>
     </message>
@@ -11514,10 +11500,10 @@ Czy chcesz zapisać zmiany?</translation>
     </message>
     <message>
         <location filename="../../agros-library/optilab/study.cpp" line="596"/>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="133"/>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="151"/>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="168"/>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="197"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="108"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="124"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="141"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="170"/>
         <location filename="../../agros-library/solver/problem.cpp" line="1842"/>
         <location filename="../../agros-library/solver/problem.cpp" line="1896"/>
         <location filename="../../agros-library/solver/problem.cpp" line="1939"/>
@@ -11530,22 +11516,22 @@ Czy chcesz zapisać zmiany?</translation>
         <translation>Solwer</translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="133"/>
-        <source>Solver - %1 (%2)</source>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="108"/>
+        <source>Solver - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="152"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="125"/>
         <source>Iterative solver: deal.II (%1, %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="168"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="141"/>
         <source>Preconditioner &apos;%1&apos; is not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-library/solver/linear_solver.cpp" line="197"/>
+        <location filename="../../agros-library/solver/linear_solver.cpp" line="170"/>
         <source>Solver method (deal.II) &apos;%1&apos; is not supported.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12561,12 +12547,12 @@ Czy chcesz zapisać zmiany?</translation>
         <translation type="unfinished">Skopiuj wartość</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/resultsview.cpp" line="172"/>
+        <location filename="../../agros-gui/gui/resultsview.cpp" line="171"/>
         <source>Recipes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/resultsview.cpp" line="207"/>
+        <location filename="../../agros-gui/gui/resultsview.cpp" line="206"/>
         <source>Point</source>
         <translation type="unfinished">Punkt</translation>
     </message>
@@ -13022,6 +13008,35 @@ Czy chcesz zapisać zmiany?</translation>
     <message>
         <source>Boundary condition</source>
         <translation type="obsolete">Warunek brzegowy</translation>
+    </message>
+</context>
+<context>
+    <name>SceneCircleDialog</name>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1441"/>
+        <source>Rectangle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1469"/>
+        <source>Radius:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1491"/>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1498"/>
+        <source>Circle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1491"/>
+        <source>Radius must be positive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1498"/>
+        <source>Circle lies outside the allowed area (r&lt;0)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -13684,6 +13699,36 @@ Czy chcesz zapisać zmiany?</translation>
     </message>
 </context>
 <context>
+    <name>SceneRectangleDialog</name>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1357"/>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1414"/>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1419"/>
+        <source>Rectangle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1389"/>
+        <source>Width:</source>
+        <translation type="unfinished">Szerokość:</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1390"/>
+        <source>Height:</source>
+        <translation type="unfinished">Wysokość:</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1414"/>
+        <source>Width must be positive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/scenegeometrydialog.cpp" line="1419"/>
+        <source>Height must be positive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SceneTabWidget</name>
     <message>
         <source>Equation:</source>
@@ -13938,12 +13983,37 @@ Czy chcesz zapisać zmiany?</translation>
 <context>
     <name>SceneViewCommon</name>
     <message>
-        <location filename="../../agros-gui/app/sceneview_common.cpp" line="299"/>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="106"/>
+        <source>Zoom in</source>
+        <translation type="unfinished">Przybliż</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="110"/>
+        <source>Zoom out</source>
+        <translation type="unfinished">Oddal</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="114"/>
+        <source>Zoom best fit</source>
+        <translation type="unfinished">Dopasuj</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="115"/>
+        <source>Ctrl+0</source>
+        <translation type="unfinished">Ctrl+0</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="118"/>
+        <source>Zoom region</source>
+        <translation type="unfinished">Dopasuj do zaznaczenia</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="315"/>
         <source>Image cannot be saved to the file &apos;%1&apos;.</source>
         <translation>Obraz nie może być zapisany do pliku &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_common.cpp" line="299"/>
+        <location filename="../../agros-gui/app/sceneview_common.cpp" line="315"/>
         <source>Problem</source>
         <translation>Problem</translation>
     </message>
@@ -13951,9 +14021,8 @@ Czy chcesz zapisać zmiany?</translation>
 <context>
     <name>SceneViewCommon2D</name>
     <message>
-        <location filename="../../agros-gui/app/sceneview_common2d.cpp" line="55"/>
         <source>Position: [%1; %2]</source>
-        <translation>Pozycja: [%1; %2]</translation>
+        <translation type="vanished">Pozycja: [%1; %2]</translation>
     </message>
 </context>
 <context>
@@ -14103,7 +14172,7 @@ Czy chcesz zapisać zmiany?</translation>
         <translation>Eksport VTK siatki...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_mesh.cpp" line="151"/>
+        <location filename="../../agros-gui/app/sceneview_mesh.cpp" line="150"/>
         <source>Export VTK file</source>
         <translation>Eksport pliku VTK</translation>
     </message>
@@ -14112,14 +14181,13 @@ Czy chcesz zapisać zmiany?</translation>
         <translation type="obsolete">Eksport pliku vtk</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_mesh.cpp" line="151"/>
+        <location filename="../../agros-gui/app/sceneview_mesh.cpp" line="150"/>
         <source>VTK files (*.vtk)</source>
         <translation>Pliki VTK (*.vtk)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_mesh.h" line="43"/>
         <source>Mesh and polynomial order view</source>
-        <translation>Widok siatki i stopnia wielomianu</translation>
+        <translation type="vanished">Widok siatki i stopnia wielomianu</translation>
     </message>
 </context>
 <context>
@@ -14200,15 +14268,13 @@ cząstek</translation>
         <translation type="vanished">Ctrl+4</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="103"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="106"/>
         <source>Export VTK contours...</source>
         <translation>Eksport izolinii do VTK...</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="251"/>
-        <location filename="../../agros-gui/app/sceneview_post2d.h" line="64"/>
         <source>Postprocessor 2D</source>
-        <translation>Wyniki 2D</translation>
+        <translation type="vanished">Wyniki 2D</translation>
     </message>
     <message>
         <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="73"/>
@@ -14216,32 +14282,44 @@ cząstek</translation>
         <translation>Wybieranie punktu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="77"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="78"/>
         <source>Select by marker</source>
         <translation>Wybierz znacznikiem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="81"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="83"/>
         <source>Nothing</source>
         <translation>Nic</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="84"/>
-        <source>Local Values</source>
-        <translation>Wartości lokalna</translation>
-    </message>
-    <message>
         <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="87"/>
-        <source>Surface Integrals</source>
-        <translation>Całka powierzchniowa</translation>
+        <source>Point</source>
+        <translation type="unfinished">Punkt</translation>
     </message>
     <message>
         <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="90"/>
-        <source>Volume Integrals</source>
-        <translation>Całka objętościowa</translation>
+        <source>Surface int.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="100"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="93"/>
+        <source>Volume int.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local Values</source>
+        <translation type="vanished">Wartości lokalna</translation>
+    </message>
+    <message>
+        <source>Surface Integrals</source>
+        <translation type="vanished">Całka powierzchniowa</translation>
+    </message>
+    <message>
+        <source>Volume Integrals</source>
+        <translation type="vanished">Całka objętościowa</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="103"/>
         <source>Export VTK scalar...</source>
         <translation>Eksport VTK skalarne...</translation>
     </message>
@@ -14250,7 +14328,7 @@ cząstek</translation>
         <translation type="obsolete">Eksportuj pole skalarne do pliku VTK</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="1003"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="1001"/>
         <source>Export VTK file</source>
         <translation>Eksport pliku VTK</translation>
     </message>
@@ -14259,7 +14337,7 @@ cząstek</translation>
         <translation type="obsolete">Eksport pliku vtk</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="1003"/>
+        <location filename="../../agros-gui/app/sceneview_post2d.cpp" line="1001"/>
         <source>VTK files (*.vtk)</source>
         <translation>Pliki VTK (*.vtk)</translation>
     </message>
@@ -14277,15 +14355,12 @@ cząstek</translation>
         <translation>Ctrl+5</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post3d.cpp" line="146"/>
-        <location filename="../../agros-gui/app/sceneview_post3d.h" line="44"/>
         <source>Postprocessor 3D</source>
-        <translation>Wyniki 3D</translation>
+        <translation type="vanished">Wyniki 3D</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_post3d.cpp" line="143"/>
         <source>Model</source>
-        <translation>Model</translation>
+        <translation type="vanished">Model</translation>
     </message>
 </context>
 <context>
@@ -14295,104 +14370,76 @@ cząstek</translation>
         <translation type="vanished">Model</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="95"/>
         <source>Ctrl+2</source>
-        <translation>Ctrl+2</translation>
+        <translation type="vanished">Ctrl+2</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="99"/>
         <source>Operate on &amp;nodes</source>
-        <translation>Operacje na &amp;węzłach</translation>
+        <translation type="vanished">Operacje na &amp;węzłach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="230"/>
         <source>Delete selected</source>
-        <translation type="unfinished">Usuń zaznaczone</translation>
+        <translation type="obsolete">Usuń zaznaczone</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="314"/>
         <source>Operate on nodes</source>
-        <translation>Operacje na węzłach</translation>
+        <translation type="vanished">Operacje na węzłach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="474"/>
-        <source>&lt;h3&gt;Label&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Area:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Material:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomial order:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="536"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="547"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="554"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="572"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="583"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="590"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="597"/>
         <source>Translation</source>
-        <translation type="unfinished">Przesunięcie</translation>
+        <translation type="obsolete">Przesunięcie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1399"/>
         <source>Cannot perform transformation, existing point would be overwritten</source>
-        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące punkty zostaną nadpisane</translation>
+        <translation type="obsolete">Przekształcenie nie może być wykonane, istniejące punkty zostaną nadpisane</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1479"/>
         <source>Cannot perform transformation, existing edge would be overwritten</source>
-        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące krawędzie zostaną nadpisane</translation>
+        <translation type="obsolete">Przekształcenie nie może być wykonane, istniejące krawędzie zostaną nadpisane</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1528"/>
         <source>Cannot perform transformation, existing label would be overwritten</source>
-        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące etykiety zostaną nadpisane</translation>
+        <translation type="obsolete">Przekształcenie nie może być wykonane, istniejące etykiety zostaną nadpisane</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="104"/>
         <source>Operate on &amp;edges</source>
-        <translation>Operacje na &amp;krawędziach</translation>
+        <translation type="vanished">Operacje na &amp;krawędziach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="94"/>
         <source>Problem</source>
-        <translation type="unfinished">Problem</translation>
+        <translation type="obsolete">Problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="317"/>
         <source>Operate on edges</source>
-        <translation>Operacje na krawędziach</translation>
+        <translation type="vanished">Operacje na krawędziach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="108"/>
         <source>Operate on &amp;labels</source>
-        <translation>Operacje na &amp;etykietach</translation>
+        <translation type="vanished">Operacje na &amp;etykietach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="320"/>
         <source>Operate on labels</source>
-        <translation>Operacje na etykietach</translation>
+        <translation type="vanished">Operacje na etykietach</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="120"/>
         <source>&amp;Select region</source>
-        <translation>&amp;Wybierz obszar</translation>
+        <translation type="vanished">&amp;Wybierz obszar</translation>
     </message>
     <message>
         <source>Select region</source>
         <translation type="obsolete">Wybierz obszar</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="124"/>
         <source>Object properties</source>
-        <translation>Parametry obiektu</translation>
+        <translation type="vanished">Parametry obiektu</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="129"/>
         <source>Swap direction</source>
-        <translation>Odwróć kierunek</translation>
+        <translation type="vanished">Odwróć kierunek</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="386"/>
         <source>&lt;h3&gt;Node&lt;/h3&gt;Point: [%1; %2]&lt;br/&gt;Index: %3</source>
-        <translation>&lt;h3&gt;Węzeł&lt;/h3&gt;Punkt: [%1; %2]&lt;br/&gt;Numer: %3</translation>
+        <translation type="vanished">&lt;h3&gt;Węzeł&lt;/h3&gt;Punkt: [%1; %2]&lt;br/&gt;Numer: %3</translation>
     </message>
     <message>
         <source>-</source>
@@ -14403,41 +14450,151 @@ cząstek</translation>
         <translation type="vanished">&lt;h3&gt;Krawędź&lt;/h3&gt;&lt;b&gt;Punkt:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Warunki brzegowe:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Zagęszczanie:&lt;/b&gt; %6&lt;br/&gt;&lt;b&gt;Kąt:&lt;/b&gt; %7 stopnie.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="412"/>
-        <source>&lt;h3&gt;Edge&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Boundary conditions:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Angle:&lt;/b&gt; %7 deg.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;h3&gt;Label&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Material:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Area refinement:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomial order:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</source>
         <translation type="vanished">&lt;h3&gt;Etykieta&lt;/h3&gt;&lt;b&gt;Punkt:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Materiał:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Rozmiar elementu:&lt;/b&gt; %4 &lt;br/&gt;&lt;b&gt;Stopień wielomianu&lt;/b&gt;: %5&lt;br/&gt;Numer: %6 %7</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="666"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="714"/>
         <source>Node</source>
-        <translation>Węzeł</translation>
+        <translation type="vanished">Węzeł</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="666"/>
+        <source>Radial component must be greater then or equal to zero.</source>
+        <translation type="vanished">Współrzędna radialna musi być większa lub równa od zera.</translation>
+    </message>
+    <message>
+        <source>Geometry</source>
+        <translation type="obsolete">Geometria</translation>
+    </message>
+    <message>
+        <source>Geometry editor</source>
+        <translation type="vanished">Edytor geometrii</translation>
+    </message>
+</context>
+<context>
+    <name>SceneViewProblem</name>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="95"/>
+        <source>Problem</source>
+        <translation type="unfinished">Problem</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="96"/>
+        <source>Ctrl+2</source>
+        <translation type="unfinished">Ctrl+2</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="100"/>
+        <source>&amp;Nodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="105"/>
+        <source>&amp;Edges</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="109"/>
+        <source>&amp;Labels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="121"/>
+        <source>&amp;Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="125"/>
+        <source>Properties</source>
+        <translation type="unfinished">Ustawienia</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="129"/>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="132"/>
+        <source>Clear</source>
+        <translation type="unfinished">Wyczyść</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="136"/>
+        <source>Swap direction</source>
+        <translation type="unfinished">Odwróć kierunek</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="139"/>
+        <source>&amp;Transform</source>
+        <translation type="unfinished">&amp;Przekształcenie</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="238"/>
+        <source>Delete selected</source>
+        <translation type="unfinished">Usuń zaznaczone</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="430"/>
+        <source>&lt;h3&gt;Node&lt;/h3&gt;Point: [%1; %2]&lt;br/&gt;Index: %3</source>
+        <translation type="unfinished">&lt;h3&gt;Węzeł&lt;/h3&gt;Punkt: [%1; %2]&lt;br/&gt;Numer: %3</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="456"/>
+        <source>&lt;h3&gt;Edge&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Boundary conditions:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Angle:&lt;/b&gt; %7 deg.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="518"/>
+        <source>&lt;h3&gt;Label&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Area:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Material:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomial order:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="580"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="591"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="598"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="616"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="627"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="634"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="641"/>
+        <source>Translation</source>
+        <translation type="unfinished">Przesunięcie</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="710"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="758"/>
+        <source>Node</source>
+        <translation type="unfinished">Węzeł</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="710"/>
         <source>Radial component must be greater than or equal to zero.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="714"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="758"/>
         <source>Radial component must be greater then or equal to zero.</source>
-        <translation>Współrzędna radialna musi być większa lub równa od zera.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1399"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1479"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1528"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1469"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1549"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1598"/>
         <source>Geometry</source>
         <translation type="unfinished">Geometria</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.h" line="72"/>
-        <source>Geometry editor</source>
-        <translation>Edytor geometrii</translation>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1469"/>
+        <source>Cannot perform transformation, existing point would be overwritten</source>
+        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące punkty zostaną nadpisane</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1549"/>
+        <source>Cannot perform transformation, existing edge would be overwritten</source>
+        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące krawędzie zostaną nadpisane</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1598"/>
+        <source>Cannot perform transformation, existing label would be overwritten</source>
+        <translation type="unfinished">Przekształcenie nie może być wykonane, istniejące etykiety zostaną nadpisane</translation>
     </message>
 </context>
 <context>
@@ -14461,24 +14618,16 @@ cząstek</translation>
 <context>
     <name>SceneViewWidget</name>
     <message>
-        <location filename="../../agros-gui/gui/scenewidget.cpp" line="57"/>
-        <source>Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/gui/scenewidget.cpp" line="66"/>
-        <location filename="../../agros-gui/gui/scenewidget.cpp" line="72"/>
         <source>Info</source>
-        <translation>Info</translation>
+        <translation type="vanished">Info</translation>
     </message>
     <message>
         <source>PythonLab</source>
         <translation type="obsolete">PythonLab</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/scenewidget.cpp" line="78"/>
         <source>Application log</source>
-        <translation type="unfinished">Dziennik aplikacji</translation>
+        <translation type="obsolete">Dziennik aplikacji</translation>
     </message>
 </context>
 <context>
@@ -15319,121 +15468,121 @@ Do you want to save your changes?</source>
 <context>
     <name>StudyDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="447"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="449"/>
         <source>%1</source>
         <translation type="unfinished">%1</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="462"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="464"/>
         <source>OK</source>
         <translation type="unfinished">OK</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="466"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="468"/>
         <source>Close</source>
         <translation type="unfinished">Zamknij</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="469"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="471"/>
         <source>Duplicate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="478"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="480"/>
         <source>Clear solution after solving the problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="479"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="481"/>
         <source>Solve problem</source>
         <translation type="unfinished">Rozwiąż problem</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="486"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="488"/>
         <source>General</source>
         <translation type="unfinished">Ogólne</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="489"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="491"/>
         <source>Enable DoE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="498"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="500"/>
         <source>Deviation (%):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="500"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="502"/>
         <source>Number of Samples:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="504"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="506"/>
         <source>Design of Experiments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="520"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="522"/>
         <source>Study</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="521"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="523"/>
         <source>Parameters and functionals</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="538"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="540"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="544"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="546"/>
         <source>Functionals</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="562"/>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="684"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="564"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="686"/>
         <source>Name</source>
         <translation type="unfinished">Nazwa</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="562"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="564"/>
         <source>Lower bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="562"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="564"/>
         <source>Upper bound</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="573"/>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="692"/>
-        <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../agros-gui/optilab/study_dialog.cpp" line="575"/>
         <location filename="../../agros-gui/optilab/study_dialog.cpp" line="694"/>
-        <source>Edit</source>
-        <translation type="unfinished">Edycja</translation>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../agros-gui/optilab/study_dialog.cpp" line="577"/>
         <location filename="../../agros-gui/optilab/study_dialog.cpp" line="696"/>
+        <source>Edit</source>
+        <translation type="unfinished">Edycja</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="579"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="698"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="684"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="686"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="684"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="686"/>
         <source>Expression</source>
         <translation type="unfinished"></translation>
     </message>
@@ -15441,27 +15590,27 @@ Do you want to save your changes?</source>
 <context>
     <name>StudyFunctionalDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="860"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="862"/>
         <source>Functional: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="873"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="875"/>
         <source>Name</source>
         <translation type="unfinished">Nazwa</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="875"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="877"/>
         <source>Expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="877"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="879"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="929"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="931"/>
         <source>Functional already exists.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -15605,27 +15754,27 @@ Do you want to save your changes?</source>
 <context>
     <name>StudyParameterDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="965"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="967"/>
         <source>Parameter: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="976"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="978"/>
         <source>Name</source>
         <translation type="unfinished">Nazwa</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="978"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="980"/>
         <source>Lower bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="980"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="982"/>
         <source>Upper bound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="1005"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="1007"/>
         <source>Lower bound is higher then upper bound.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -15633,7 +15782,7 @@ Do you want to save your changes?</source>
 <context>
     <name>StudySelectDialog</name>
     <message>
-        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="356"/>
+        <location filename="../../agros-gui/optilab/study_dialog.cpp" line="358"/>
         <source>Add study</source>
         <translation type="unfinished"></translation>
     </message>
@@ -16064,24 +16213,24 @@ Do you want to save your changes?</source>
         <translation>W tym polu można używać zmiennych.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="312"/>
+        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="289"/>
         <source>Condition couldn&apos;t be evaluated:
 %1</source>
         <translation>Warunek nie może być wykonany:
 %1</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="336"/>
+        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="313"/>
         <source>nonlinear %1(%2)</source>
         <translation>nieliniowy %1(%2)</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="338"/>
+        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="315"/>
         <source>nonlinear</source>
         <translation>nieliniowy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="258"/>
+        <location filename="../../agros-gui/gui/valuelineedit.cpp" line="235"/>
         <source>error</source>
         <translation>błąd</translation>
     </message>
@@ -16162,8 +16311,8 @@ Do you want to save your changes?</source>
         <translation>Wideo</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="82"/>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="284"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="79"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="277"/>
         <source>%1 / %2 s</source>
         <translation>%1 / %2 s</translation>
     </message>
@@ -16172,58 +16321,57 @@ Do you want to save your changes?</source>
         <translation type="obsolete">Adaptacja</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="106"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="103"/>
         <source>Video Dialog</source>
         <translation>Wideo</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="106"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="103"/>
         <source>The active field is not time dependent or adaptive.</source>
         <translation>Aktywne pole nie jest zależne od czasu ani adaptacyjne.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="140"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="137"/>
         <source>Show video</source>
         <translation>Pokaż wideo</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="144"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="141"/>
         <source>Open folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="147"/>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="296"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="144"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="289"/>
         <source>Generate</source>
         <translation>Generuj</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="158"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="155"/>
         <source>Save images to disk</source>
         <translation>Zapisz obrazu na dysk</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="161"/>
         <source>Show grid</source>
-        <translation>Pokaż siatkę</translation>
+        <translation type="vanished">Pokaż siatkę</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="163"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="158"/>
         <source>Show rulers</source>
         <translation>Pokaż linijki</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="165"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="160"/>
         <source>Show axes</source>
         <translation>Pokaż osie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="220"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="214"/>
         <source>Adaptive step:</source>
         <translation>Krok adaptacji:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="241"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="235"/>
         <source>Run</source>
         <translation>Uruchom</translation>
     </message>
@@ -16236,7 +16384,7 @@ Do you want to save your changes?</source>
         <translation type="obsolete">Plik</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="136"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="133"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
@@ -16285,12 +16433,12 @@ Do you want to save your changes?</source>
         <translation type="obsolete">Opóźnienie:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="198"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="192"/>
         <source>Time:</source>
         <translation>Czas:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="196"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="190"/>
         <source>Time step:</source>
         <translation>Suwak czasu:</translation>
     </message>
@@ -16299,8 +16447,8 @@ Do you want to save your changes?</source>
         <translation type="obsolete">Odtwórz</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="249"/>
-        <location filename="../../agros-gui/app/videodialog.cpp" line="304"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="243"/>
+        <location filename="../../agros-gui/app/videodialog.cpp" line="297"/>
         <source>Stop</source>
         <translation>Zatrzymaj</translation>
     </message>

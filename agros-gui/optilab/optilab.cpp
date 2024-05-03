@@ -328,7 +328,7 @@ void OptiLabWidget::refresh()
 
         // study
         auto *studyNode = new QTreeWidgetItem(studiesNode);
-        studyNode->setText(0, tr("%1").arg(studyTypeString(study->type())));
+        studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
         studyNode->setIcon(0, icon("menu_recipe"));
         studyNode->setFont(0, fnt);
         studyNode->setData(0, Qt::UserRole, k);
