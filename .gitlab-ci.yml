@@ -150,7 +150,21 @@ build-windows:
     - cmake .
     - cmake --build . --config Release  --parallel 100 -j 100
     - cd ..
-    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y 
+    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y  
+    # deploy
+    - iscc.exe agros.iss
+    - cd setup
+    - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
+    - cd ..
+    
+test-windows:
+  stage: test
+  needs: ["build-windows"]
+  tags:
+    - agros
+    - win11
+  
+  script:
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
@@ -166,23 +180,7 @@ build-windows:
     - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\triangle.exe" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
-    - cd ..
-    - Remove-Item -Path .\setup -Recurse
-    # deploy
-    - iscc.exe agros.iss
-    - cd setup
-    - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
-    
-test-windows:
-  stage: test
-  needs: ["build-windows"]
-  tags:
-    - agros
-    - win11
-  
-  script:
-    - cd agros-python curl.exe -T .\setup\AgrosSuite.exe
-    - .\env\Scripts\activate 
+    - cd agrossuite
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
