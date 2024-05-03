@@ -165,7 +165,7 @@ test-windows:
     - win11
   
   script:
-cd agros-python 
+    - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
     - pip install cython
