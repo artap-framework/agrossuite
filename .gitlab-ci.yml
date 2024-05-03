@@ -150,24 +150,7 @@ build-windows:
     - cmake .
     - cmake --build . --config Release  --parallel 100 -j 100
     - cd ..
-    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y 
-    - cd agros-python 
-    - python -m venv env
-    - .\env\Scripts\activate
-    - pip install cython
-    - pip install scikit-build
-    - pip install pytest
-    - pip install numpy
-    - cd agrossuite
-    - pip install .
-    - cd ..
-    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\triangle.exe" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
-    - cd ..
-    - Remove-Item -Path .\setup -Recurse
+    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y  
     # deploy
     - iscc.exe agros.iss
     - cd setup
@@ -182,7 +165,22 @@ test-windows:
     - win11
   
   script:
-    - .\env\Scripts\activate 
+cd agros-python 
+    - python -m venv env
+    - .\env\Scripts\activate
+    - pip install cython
+    - pip install scikit-build
+    - pip install pytest
+    - pip install numpy
+    - cd agrossuite
+    - pip install .
+    - cd ..
+    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
+    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
+    - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
+    - copy "C:\Users\vboxuser\Documents\Release\install\triangle.exe" .\env\Lib\site-packages\agrossuite
+    - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
+    - cd agrossuite
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
