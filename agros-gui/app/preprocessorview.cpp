@@ -51,7 +51,6 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
 {
     m_sceneViewProblem = new SceneViewProblem(this);
 
-    setMinimumWidth(200);
     setObjectName("PreprocessorView");
 
     createActions();
@@ -193,7 +192,7 @@ void PreprocessorWidget::createMenu()
     mnuPreprocessor->addMenu(mnuBoundaries);
     mnuPreprocessor->addSeparator();
 
-    QMenu *mnuFunctions = new QMenu(tr("New function"));
+    auto *mnuFunctions = new QMenu(tr("New function"));
     mnuFunctions->addAction(actNewFunctionAnalytic);
     // mnuFunctions->addAction(actNewFunctionInterpolation);
     mnuPreprocessor->addMenu(mnuFunctions);
@@ -328,12 +327,16 @@ void PreprocessorWidget::createControls()
     toolBarLeft->addWidget(toolButtonFunctions);
 
     trvWidget = new QTreeWidget(this);
+    trvWidget->setMinimumWidth(400);
+    trvWidget->setMaximumWidth(400);
     trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
-    trvWidget->setColumnCount(1);
+    trvWidget->setColumnCount(2);
+    trvWidget->setColumnWidth(0, 220);
+    trvWidget->setColumnWidth(1, 175);
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     txtViewNodes = new QTextEdit(this);
@@ -452,7 +455,8 @@ void PreprocessorWidget::refresh()
         foreach (QString key, parameters.keys())
         {
             auto *item = new QTreeWidgetItem(parametersNode);
-            item->setText(0, QString("%1 (%2)").arg(key).arg(parameters[key].value()));
+            item->setText(0, QString("%1").arg(key));
+            item->setText(1, QString("%1").arg(parameters[key].value()));
             item->setData(0, Qt::UserRole, key);
             item->setData(1, Qt::UserRole, PreprocessorWidget::ModelParameter);
         }
@@ -492,7 +496,6 @@ void PreprocessorWidget::refresh()
         auto *fieldNode = new QTreeWidgetItem(fieldsNode);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
-        // fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setIcon(0, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
         fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));        
@@ -530,7 +533,8 @@ void PreprocessorWidget::refresh()
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
 
-            item->setText(0, QString("%1 (%2)").arg(boundary->name()).arg(boundaryType.name()));
+            item->setText(0, QString("%1").arg(boundary->name()));
+            item->setText(1, QString("%1").arg(boundaryType.name()));
             if (Agros::problem()->scene()->faces->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, Agros::problem()->scene()->boundaries->items().indexOf(boundary));
@@ -556,7 +560,9 @@ void PreprocessorWidget::refresh()
     {
         auto *item = new QTreeWidgetItem(nodesNode);
 
-        item->setText(0, QString("%1. [%2; %3] ").arg(inode).arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
+        // item->setText(0, QString("%1. [%2; %3] ").arg(inode).arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
+        item->setText(0, QString("%1").arg(inode));
+        item->setText(1, QString("[%1; %2] ").arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->nodes->items().indexOf(node));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryNode);
 
@@ -593,94 +599,15 @@ void PreprocessorWidget::refresh()
     {
         auto *item = new QTreeWidgetItem(labelsNode);
 
-        item->setText(0, QString("%1. [%2; %3]").arg(ilabel).arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
+        // item->setText(0, QString("%1. [%2; %3]").arg(ilabel).arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
+        item->setText(0, QString("%1").arg(ilabel));
+        item->setText(1, QString("[%1; %2]").arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->labels->items().indexOf(label));
         item->setData(1, Qt::UserRole, GeometryLabel);
 
         ilabel++;
     }
 
-    // // optilab
-    // auto *optilabNode = new QTreeWidgetItem(trvWidget);
-    // optilabNode->setText(0, tr("OptiLab"));
-    // optilabNode->setIcon(0, icon("optilab"));
-    // optilabNode->setFont(0, fnt);
-    // optilabNode->setExpanded(true);
-    //
-    // // recipes
-    // if (Agros::problem()->recipes()->items().count() > 0)
-    // {
-    //     auto *recipesNode = new QTreeWidgetItem(optilabNode);
-    //     recipesNode->setText(0, tr("Recipes"));
-    //     recipesNode->setIcon(0, icon("menu_study"));
-    //     recipesNode->setFont(0, fnt);
-    //     // recipesNode->setExpanded(true);
-    //
-    //     foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
-    //     {
-    //         auto *item = new QTreeWidgetItem(recipesNode);
-    //
-    //         item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
-    //         item->setData(0, Qt::UserRole, recipe->name());
-    //         item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
-    //     }
-    // }
-    //
-    // if (Agros::problem()->studies()->items().count() > 0)
-    // {
-    //     for (int k = 0; k < Agros::problem()->studies()->items().count(); k++)
-    //     {
-    //         Study *study = Agros::problem()->studies()->items().at(k);
-    //
-    //         // study
-    //         auto *studyNode = new QTreeWidgetItem(optilabNode);
-    //         studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
-    //         studyNode->setIcon(0, icon("menu_recipe"));
-    //         studyNode->setFont(0, fnt);
-    //         studyNode->setData(0, Qt::UserRole, k);
-    //         studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-    //         // studyNode->setExpanded(true);
-    //
-    //         // parameters
-    //         auto *parametersNode = new QTreeWidgetItem(studyNode);
-    //         parametersNode->setText(0, tr("Parameters"));
-    //         parametersNode->setFont(0, fnt);
-    //         parametersNode->setData(0, Qt::UserRole, k);
-    //         parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-    //         parametersNode->setExpanded(true);
-    //
-    //         foreach (Parameter parameter, study->parameters())
-    //         {
-    //             auto *item = new QTreeWidgetItem(parametersNode);
-    //
-    //             item->setText(0, QString("%1 (%2 - %3)").arg(parameter.name()).arg(parameter.lowerBound()).arg(parameter.upperBound()));
-    //             item->setData(0, Qt::UserRole, parameter.name());
-    //             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
-    //             item->setData(2, Qt::UserRole, k);
-    //         }
-    //
-    //         // functionals
-    //         auto *functionalsNode = new QTreeWidgetItem(studyNode);
-    //         functionalsNode->setText(0, tr("Functionals"));
-    //         functionalsNode->setFont(0, fnt);
-    //         functionalsNode->setData(0, Qt::UserRole, study->variant());
-    //         functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-    //         functionalsNode->setExpanded(true);
-    //
-    //         foreach (Functional functional, study->functionals())
-    //         {
-    //             auto *item = new QTreeWidgetItem(functionalsNode);
-    //
-    //             item->setText(0, QString("%1 (%2 %) %3").arg(functional.name()).arg(functional.weight()).
-    //                              arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
-    //             item->setData(0, Qt::UserRole, functional.name());
-    //             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
-    //             item->setData(2, Qt::UserRole, k);
-    //         }
-    //     }
-    // }
-
-    trvWidget->resizeColumnToContents(1);
     trvWidget->setUpdatesEnabled(true);
     trvWidget->blockSignals(false);
 

@@ -113,6 +113,10 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     }
 
     createControls();
+
+    connect(trvOptilab, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doItemContextMenu(const QPoint &)));
+    connect(trvOptilab, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvOptilab, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -218,10 +222,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     // trvOptilab->setUniformRowHeights(true);
     trvOptilab->setExpandsOnDoubleClick(false);
     trvOptilab->setIndentation(trvOptilab->indentation() - 2);
-
-    connect(trvOptilab, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doItemContextMenu(const QPoint &)));
-    connect(trvOptilab, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvOptilab, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 
     auto *layoutStudies = new QGridLayout();
     layoutStudies->setContentsMargins(2, 2, 2, 2);
