@@ -4100,11 +4100,6 @@ oblasti</translation>
         <translation>Předpisy</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/optilab/optilab.cpp" line="331"/>
-        <source>%1</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../agros-gui/optilab/optilab.cpp" line="342"/>
         <source>Parameters</source>
         <translation>Parametry</translation>
@@ -5651,7 +5646,7 @@ Nový uzel...</translation>
     <message>
         <location filename="../../agros-gui/app/preprocessorview.cpp" line="298"/>
         <source>Boundary</source>
-        <translation>Okrajová podmínka</translation>
+        <translation>Okr. podm.</translation>
     </message>
     <message>
         <location filename="../../agros-gui/app/preprocessorview.cpp" line="307"/>
@@ -5710,178 +5705,178 @@ Nový uzel...</translation>
         <translation type="obsolete">Studie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="649"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="666"/>
         <source>Problem properties</source>
         <translation>Vlastnosti problému</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="651"/>
         <source>Coordinate type:</source>
-        <translation>Souřadnicový systém:</translation>
+        <translation type="vanished">Souřadnicový systém:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="652"/>
         <source>Mesh type:</source>
-        <translation>Typ sítě:</translation>
+        <translation type="vanished">Typ sítě:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="655"/>
         <source>Frequency:</source>
-        <translation>Frekvence:</translation>
+        <translation type="vanished">Frekvence:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="659"/>
         <source>Method:</source>
-        <translation>Metoda:</translation>
+        <translation type="vanished">Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="660"/>
         <source>Order:</source>
-        <translation>Řád:</translation>
+        <translation type="vanished">Řád:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="661"/>
         <source>Tolerance (%):</source>
-        <translation>Tolerance (%):</translation>
+        <translation type="vanished">Tolerance (%):</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="662"/>
         <source>Initial step size:</source>
-        <translation>Velikost poč. kroku:</translation>
+        <translation type="vanished">Velikost poč. kroku:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="663"/>
         <source>Constant time step:</source>
-        <translation>Konstantní čas. krok:</translation>
+        <translation type="vanished">Konstantní čas. krok:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="664"/>
         <source>Number of const. time steps:</source>
-        <translation>Počet konst. časových kroků:</translation>
+        <translation type="vanished">Počet konst. časových kroků:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="665"/>
         <source>Total time:</source>
-        <translation>Celkový čas:</translation>
+        <translation type="vanished">Celkový čas:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="680"/>
         <source>Analysis:</source>
-        <translation>Analýza:</translation>
+        <translation type="vanished">Analýza:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="681"/>
         <source>Solver:</source>
-        <translation>Řešič:</translation>
+        <translation type="vanished">Řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="682"/>
         <source>Number of refinements:</source>
-        <translation>Počet zjemnění:</translation>
+        <translation type="vanished">Počet zjemnění:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="683"/>
         <source>Polynomial order:</source>
-        <translation>Řád polynomu:</translation>
+        <translation type="vanished">Řád polynomu:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="684"/>
         <source>Adaptivity:</source>
-        <translation>Adaptivita:</translation>
+        <translation type="vanished">Adaptivita:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="685"/>
         <source>Matrix solver:</source>
-        <translation>Maticový řešič:</translation>
+        <translation type="vanished">Maticový řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="980"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="993"/>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1018"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="925"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="938"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="963"/>
         <source>Delete selected</source>
         <translation>Smazat vybrané</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="648"/>
         <source>Coordinate type</source>
-        <translation type="vanished">Souřadnicový systém</translation>
+        <translation>Souřadnicový systém</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="649"/>
         <source>Mesh type</source>
-        <translation type="vanished">Typ sítě</translation>
+        <translation>Typ sítě</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="653"/>
         <source>Frequency</source>
-        <translation type="vanished">Frekvence</translation>
+        <translation>Frekvence</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="657"/>
         <source>Method</source>
-        <translation type="vanished">Metoda</translation>
+        <translation>Metoda</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="658"/>
         <source>Order</source>
-        <translation type="vanished">Řád polynomu</translation>
+        <translation>Řád polynomu</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="659"/>
         <source>Tolerance</source>
-        <translation type="vanished">Tolerance</translation>
+        <translation>Tolerance</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="660"/>
         <source>Initial step size</source>
-        <translation type="vanished">Velikost poč. kroku</translation>
+        <translation>Velikost poč. kroku</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="661"/>
         <source>Constant time step</source>
-        <translation type="vanished">Konstantní čas. krok</translation>
+        <translation>Konstantní čas. krok</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="662"/>
         <source>Number of const. time steps</source>
-        <translation type="vanished">Počet konst. časových kroků</translation>
+        <translation>Počet konst. časových kroků</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="663"/>
         <source>Total time</source>
-        <translation type="vanished">Celkový čas</translation>
+        <translation>Celkový čas</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="672"/>
         <source>Analysis</source>
-        <translation type="vanished">Analýza</translation>
+        <translation>Analýza</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="673"/>
         <source>Solver</source>
-        <translation type="vanished">Řešič</translation>
+        <translation>Řešič</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="674"/>
         <source>Number of refinements</source>
-        <translation type="vanished">Počet zjemnění</translation>
+        <translation>Počet zjemnění</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="675"/>
         <source>Polynomial order</source>
-        <translation type="vanished">Řád polynomu</translation>
+        <translation>Řád polynomu</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="676"/>
         <source>Adaptivity</source>
-        <translation type="vanished">Adaptivita</translation>
+        <translation>Adaptivita</translation>
     </message>
     <message>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="677"/>
         <source>Matrix solver</source>
-        <translation type="vanished">Maticový řešič</translation>
+        <translation>Maticový řešič</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1071"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1016"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1071"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1016"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation>Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1072"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1017"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ano</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1072"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1017"/>
         <source>&amp;No</source>
         <translation>&amp;Ne</translation>
     </message>
@@ -5894,12 +5889,12 @@ Nový uzel...</translation>
         <translation type="vanished">Předpis &apos;%1&apos; bude trvale smazán. Jste si jistí?</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1339"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1284"/>
         <source>new boundary</source>
         <translation>nová podmínka</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1361"/>
+        <location filename="../../agros-gui/app/preprocessorview.cpp" line="1306"/>
         <source>new material</source>
         <translation>nový materiál</translation>
     </message>
@@ -10373,66 +10368,117 @@ Tracing</source>
         <translation>Smazat vybrané</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="430"/>
         <source>&lt;h3&gt;Node&lt;/h3&gt;Point: [%1; %2]&lt;br/&gt;Index: %3</source>
-        <translation>&lt;h3&gt;Uzel&lt;/h3&gt;Bod: [%1; %2]&lt;br/&gt;Index: %3</translation>
+        <translation type="vanished">&lt;h3&gt;Uzel&lt;/h3&gt;Bod: [%1; %2]&lt;br/&gt;Index: %3</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="456"/>
         <source>&lt;h3&gt;Edge&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Boundary conditions:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Angle:&lt;/b&gt; %7 deg.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</source>
-        <translation>&lt;h3&gt;Hrana&lt;/h3&gt;&lt;b&gt;Bod:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Okrajové podmínky:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Úhel:&lt;/b&gt; %7 st.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</translation>
+        <translation type="vanished">&lt;h3&gt;Hrana&lt;/h3&gt;&lt;b&gt;Bod:&lt;/b&gt; [%1; %2] - [%3; %4]&lt;br/&gt;&lt;b&gt;Okrajové podmínky:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Úhel:&lt;/b&gt; %7 st.&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %8</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="518"/>
         <source>&lt;h3&gt;Label&lt;/h3&gt;&lt;b&gt;Point:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Area:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Material:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomial order:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</source>
-        <translation>&lt;h3&gt;Oblast&lt;/h3&gt;&lt;b&gt;Bod:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Plocha:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Materiál:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomiální řád:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</translation>
+        <translation type="vanished">&lt;h3&gt;Oblast&lt;/h3&gt;&lt;b&gt;Bod:&lt;/b&gt; [%1; %2]&lt;br/&gt;&lt;b&gt;Plocha:&lt;/b&gt; %3&lt;br/&gt;&lt;b&gt;Materiál:&lt;/b&gt; %4&lt;br/&gt;&lt;b&gt;Polynomiální řád:&lt;/b&gt; %5&lt;br/&gt;&lt;b&gt;Index:&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="580"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="591"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="598"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="616"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="627"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="634"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="641"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="585"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="596"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="603"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="621"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="632"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="639"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="646"/>
         <source>Translation</source>
         <translation>Posun</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="710"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="758"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="434"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="715"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="763"/>
         <source>Node</source>
         <translation>Uzel</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="710"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="431"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="523"/>
+        <source>Point</source>
+        <translation>Bod</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="433"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="464"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="527"/>
+        <source>Index</source>
+        <translation>Index</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="458"/>
+        <source>Start point</source>
+        <translation>Počáteční bod</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="460"/>
+        <source>End point</source>
+        <translation>Koncový bod</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="462"/>
+        <source>Boundary conditions</source>
+        <translation>Okrajové podmínky</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="463"/>
+        <source>Angle</source>
+        <translation>Úhel</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="465"/>
+        <source>Edge</source>
+        <translation>Hrana</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="525"/>
+        <source>Materials</source>
+        <translation>Materiály</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="526"/>
+        <source>Polynomial order</source>
+        <translation>Řád polynomu</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="528"/>
+        <source>Label</source>
+        <translation>Popisek oblasti</translation>
+    </message>
+    <message>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="715"/>
         <source>Radial component must be greater than or equal to zero.</source>
         <translation>Radiální složka musí být větší nebo rovna nule.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="758"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="763"/>
         <source>Radial component must be greater then or equal to zero.</source>
         <translation>Radiální složka musí být větší nebo rovna nule.</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1469"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1549"/>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1598"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1474"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1554"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1603"/>
         <source>Geometry</source>
         <translation>Geometrie</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1469"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1474"/>
         <source>Cannot perform transformation, existing point would be overwritten</source>
         <translation>Transformace nemohla být provedena, došlo by k přepsání uzlů</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1549"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1554"/>
         <source>Cannot perform transformation, existing edge would be overwritten</source>
         <translation>Transformace nemohla být provedena, došlo by k přepsání hrany</translation>
     </message>
     <message>
-        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1598"/>
+        <location filename="../../agros-gui/app/sceneview_geometry.cpp" line="1603"/>
         <source>Cannot perform transformation, existing label would be overwritten</source>
         <translation>Transformace nemohla být provedena, došlo by k přepsání značky oblasti</translation>
     </message>
@@ -11242,7 +11288,7 @@ Tracing</source>
         <location filename="../../agros-library/optilab/study_nlopt.cpp" line="220"/>
         <location filename="../../agros-library/optilab/study_nlopt.cpp" line="233"/>
         <source>NLopt</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros-library/optilab/study_nlopt.cpp" line="214"/>
@@ -11310,7 +11356,7 @@ Tracing</source>
     <message>
         <location filename="../../agros-library/optilab/study_nsga2.cpp" line="173"/>
         <source>NSGA2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -11368,7 +11414,7 @@ Tracing</source>
     <message>
         <location filename="../../agros-gui/optilab/study_methoddialog.cpp" line="137"/>
         <source>Config</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Konfigurace</translation>
     </message>
 </context>
 <context>

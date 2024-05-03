@@ -644,95 +644,40 @@ void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
 
 QString PreprocessorWidget::problemPropertiesToString()
 {
-    // TODO: rework
-    QString html = "<body style=\"font-size: 11px;\">";
-    html += QString("<h4>%1</h4>").arg(tr("Problem properties"));
-    html += "<table width=\"100%\">";
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Coordinate type:")).arg(coordinateTypeString(Agros::problem()->config()->coordinateType()));
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Mesh type:")).arg(meshTypeString(Agros::problem()->config()->meshType()));
+    QMap<QString, QString> items;
+    items[tr("Coordinate type")] = coordinateTypeString(Agros::problem()->config()->coordinateType());
+    items[tr("Mesh type")] = meshTypeString(Agros::problem()->config()->meshType());
+
     if (Agros::problem()->isHarmonic())
     {
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Frequency:")).arg(Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz");
+        items[tr("Frequency")] = Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz";
     }
     if (Agros::problem()->isTransient())
     {
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Method:")).arg(timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Order:")).arg(QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()));
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Tolerance (%):")).arg(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Initial step size:")).arg(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Constant time step:")).arg(QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s");
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of const. time steps:")).arg(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
-        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Total time:")).arg(QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s");
+        items[tr("Method")] = timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
+        items[tr("Order")] = QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt());
+        items[tr("Tolerance")] = QString("%1 %").arg(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
+        items[tr("Initial step size")] = QString("%1").arg(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
+        items[tr("Constant time step")] = QString("%1 s").arg(QString::number(Agros::problem()->config()->constantTimeStepLength()));
+        items[tr("Number of const. time steps")] = QString("%1 s").arg(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
+        items[tr("Total time")] = QString("%1 s").arg(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
     }
 
-    html += "</table>";
-    html += "</body>";
-
-    return html;
+    return createToolTip(tr("Problem properties"), items);
 }
 
 QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
 {
-    // TODO: rework
-    QString html = "<body style=\"font-size: 11px;\">";
-    html += QString("<h4>%1</h4>").arg(fieldInfo->name());
-    html += "<table width=\"100%\">";
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Analysis:")).arg(analysisTypeString(fieldInfo->analysisType()));
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Solver:")).arg(linearityTypeString(fieldInfo->linearityType()));
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of refinements:")).arg(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Polynomial order:")).arg(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Adaptivity:")).arg(adaptivityTypeString(fieldInfo->adaptivityType()));
-    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Matrix solver:")).arg(matrixSolverTypeString(fieldInfo->matrixSolver()));
-    html += "</table>";
-    html += "</body>";
+    QMap<QString, QString> items;
+    items[tr("Analysis")] = QString("%1").arg(analysisTypeString(fieldInfo->analysisType()));
+    items[tr("Solver")] = QString("%1").arg(linearityTypeString(fieldInfo->linearityType()));
+    items[tr("Number of refinements")] = QString("%1").arg(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
+    items[tr("Polynomial order")] = QString("%1").arg(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
+    items[tr("Adaptivity")] = QString("%1").arg(adaptivityTypeString(fieldInfo->adaptivityType()));
+    items[tr("Matrix solver")] = QString("%1").arg(matrixSolverTypeString(fieldInfo->matrixSolver()));
 
-    return html;
+    return createToolTip(fieldInfo->name(), items);
 }
-
-// void PreprocessorWidget::problemProperties(QTreeWidget *item)
-// {
-//     propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
-//     propertiesItem(item, tr("Mesh type"), meshTypeString(Agros::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
-//     if (Agros::problem()->isHarmonic())
-//     {
-//         propertiesItem(item, tr("Frequency"), Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
-//     }
-//     if (Agros::problem()->isTransient())
-//     {
-//         propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Order"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Tolerance"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Initial step size"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Constant time step"), QString::number(Agros::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
-//         propertiesItem(item, tr("Total time"), QString::number(Agros::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
-//     }
-// }
-//
-// void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidget *item)
-// {
-//     propertiesItem(item, tr("Analysis"), analysisTypeString(fieldInfo->analysisType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-//     propertiesItem(item, tr("Solver"), linearityTypeString(fieldInfo->linearityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-//     propertiesItem(item, tr("Number of refinements"), QString::number(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-//     propertiesItem(item, tr("Polynomial order"), QString::number(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-//     propertiesItem(item, tr("Adaptivity"), adaptivityTypeString(fieldInfo->adaptivityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-//     propertiesItem(item, tr("Matrix solver"), matrixSolverTypeString(fieldInfo->matrixSolver()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
-// }
-
-// auto *PreprocessorWidget::propertiesItem(QTreeWidget *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
-// {
-//     auto *result = new QTreeWidgetItem(item);
-//     if (value.isEmpty())
-//         result->setText(0, QString("%1").arg(key));
-//     else
-//         result->setText(0, QString("%1 - %2").arg(key).arg(value));
-//     result->setForeground(0, QBrush(Qt::darkGray));
-//     result->setForeground(1, QBrush(Qt::darkGray));
-//     result->setData(0, Qt::UserRole, data);
-//     result->setData(1, Qt::UserRole, type);
-//
-//     return result;
-// }
 
 void PreprocessorWidget::doContextMenu(const QPoint &pos)
 {

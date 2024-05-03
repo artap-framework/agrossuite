@@ -111,3 +111,20 @@ void SolveThread::finished()
 {
     deleteLater();
 }
+
+// ************************************************************************************************************************
+
+QString createToolTip(const QString &title, const QMap<QString, QString> &items)
+{
+    QString html = "<body style=\"font-size: 11px;\">";
+    html += QString("<h4>%1</h4>").arg(title);
+    html += "<table width=\"100%\">";
+
+    foreach (const QString &key, items.keys())
+        html += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(key).arg(items[key]);
+
+    html += "</table>";
+    html += "</body>";
+
+    return html;
+}

@@ -70,7 +70,6 @@ private slots:
      Computation *m_computation;
 };
 
-
 class StringAction : public QAction
 {
     Q_OBJECT
@@ -100,4 +99,6 @@ private:
     QString m_value;
 };
 
-#endif // OTHER_H
+QString createToolTip(const QString &title, const QMap<QString, QString> &items);
+
+#endif
