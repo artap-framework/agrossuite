@@ -396,7 +396,6 @@ void writeStringContent(const QString &fileName, QString *content, bool force)
 
     if (write)
     {
-        qInfo() << "write";
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly))
         {

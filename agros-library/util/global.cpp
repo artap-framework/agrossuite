@@ -276,7 +276,6 @@ void Agros::readPlugins()
         if (!loader->load())
         {
             QString error = loader->errorString();
-            qInfo() << error;
             delete loader;
             throw AgrosPluginException(QObject::tr("Could not load 'solver_plugin_%1' (%2)").arg(pluginPath).arg(error));
         }
