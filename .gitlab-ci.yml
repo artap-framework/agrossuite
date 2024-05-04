@@ -27,21 +27,21 @@ build-linux:
     - mkdir -p build 
     - cd build 
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
-    - make -j48
+    - make -j12
     - cd ../../
     #  agros
     - mkdir -p build
-    - cd build
-    - cmake .. 
     # copy deal
-    - mkdir -p usr/lib 
-    - cp -f ../dealii/build/lib/libdeal_II.so.9.5.2 usr/lib/libdeal_II.so.9.5.2 
-    - make -j48    
+    - mkdir -p build/usr/lib 
+    - cp -f ../dealii/build/lib/libdeal_II.so.9.5.2 build/usr/lib/libdeal_II.so.9.5.2     
+    - cd build
+    - cmake ..     
+    - make -j12    
     # generator
     - ./usr/bin/agros_generator
     - cd plugins
     - cmake .
-    - make -j48
+    - make -j12
     - cd ..
     # pip package
     # create python env
