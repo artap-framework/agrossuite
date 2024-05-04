@@ -30,7 +30,7 @@ build-linux:
     - make -j48
     - cd ../../
     #  agros
-    - mkdir build
+    - mkdir -p build
     - cd build
     - cmake .. 
     # copy deal
