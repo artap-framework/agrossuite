@@ -12,7 +12,7 @@ mkdir appimage/usr/share
 mkdir appimage/usr/share/agrossuite
 
 # copy binary files
-cp agros appimage/usr/bin/
+cp usr/bin/agros appimage/usr/bin/
 cp -r ../resources appimage/usr/share/agrossuite/resources/
 cp usr/lib/libagros_*.so appimage/usr/lib/
 cp usr/lib/libsolver_plugin_*.so appimage/usr/lib/
