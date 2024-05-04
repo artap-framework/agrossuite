@@ -63,7 +63,7 @@ test-linux:
     - linux
 
   script: 
-    - cd agros-python
+    - cd build/agros-python
     - source env/bin/activate    
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
