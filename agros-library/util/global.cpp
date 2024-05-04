@@ -241,7 +241,7 @@ void Agros::readPlugins()
     foreach (QString pluginPath, pluginList(m_singleton->dataDir()))
     {
         // load new plugin
-        QPluginLoader *loader = new QPluginLoader(pluginPath);
+        auto *loader = new QPluginLoader(pluginPath);
 
         if (!loader)
         {
@@ -256,7 +256,7 @@ void Agros::readPlugins()
         }
 
         assert(loader->instance());
-        PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
+        auto *plugin = qobject_cast<PluginInterface *>(loader->instance());
         m_singleton->m_plugins[plugin->fieldId()] = plugin;
 
         delete loader;
@@ -266,7 +266,7 @@ void Agros::readPlugins()
     foreach (QString pluginPath, solverList(m_singleton->dataDir()))
     {
         // load new plugin
-        QPluginLoader *loader = new QPluginLoader(pluginPath);
+        auto *loader = new QPluginLoader(pluginPath);
 
         if (!loader)
         {
@@ -282,7 +282,7 @@ void Agros::readPlugins()
         }
 
         assert(loader->instance());
-        PluginSolverInterface *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
+        auto *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
         m_singleton->m_solvers[plugin->name()] = plugin;
 
         delete loader;
