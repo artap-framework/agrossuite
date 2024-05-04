@@ -100,5 +100,9 @@ private:
 };
 
 QString createToolTip(const QString &title, const QMap<QString, QString> &items);
+QString createTooltipOperateOnNodes();
+QString createTooltipOperateOnEdges();
+QString createTooltipOperateOnLabels();
+void createTooltipOperate(QMap<QString, QString> &items);
 
 #endif

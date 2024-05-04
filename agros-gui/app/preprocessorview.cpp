@@ -328,7 +328,6 @@ void PreprocessorWidget::createControls()
 
     trvWidget = new QTreeWidget(this);
     trvWidget->setMinimumWidth(400);
-    // trvWidget->setMaximumWidth(400);
     trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -342,17 +341,17 @@ void PreprocessorWidget::createControls()
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
     txtViewNodes->setVisible(false);
-    txtViewNodes->setText(tr("Tooltip_OperateOnNodes"));
+    txtViewNodes->setText(createTooltipOperateOnNodes());
 
     txtViewEdges = new QTextEdit(this);
     txtViewEdges->setReadOnly(true);
     txtViewEdges->setVisible(false);
-    txtViewEdges->setText(tr("Tooltip_OperateOnEdges"));
+    txtViewEdges->setText(createTooltipOperateOnEdges());
 
     txtViewLabels = new QTextEdit(this);
     txtViewLabels->setReadOnly(true);
     txtViewLabels->setVisible(false);
-    txtViewLabels->setText(tr("Tooltip_OperateOnLabels"));
+    txtViewLabels->setText(createTooltipOperateOnLabels());
 
     loadTooltip(SceneGeometryMode_OperateOnNodes);
 

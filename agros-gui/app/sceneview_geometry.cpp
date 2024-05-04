@@ -98,15 +98,18 @@ void SceneViewProblem::createActionsGeometry()
 
     // scene - operate on items
     actOperateOnNodes = new QAction(icon("geometry_node"), tr("&Nodes"), this);
+    actOperateOnNodes->setToolTip(createTooltipOperateOnNodes());
     actOperateOnNodes->setShortcut(Qt::Key_F2);
     actOperateOnNodes->setCheckable(true);
     actOperateOnNodes->setChecked(true);
 
     actOperateOnEdges = new QAction(icon("geometry_edge"), tr("&Edges"), this);
+    actOperateOnEdges->setToolTip(createTooltipOperateOnEdges());
     actOperateOnEdges->setShortcut(Qt::Key_F3);
     actOperateOnEdges->setCheckable(true);
 
     actOperateOnLabels = new QAction(icon("geometry_label"), tr("&Labels"), this);
+    actOperateOnLabels->setToolTip(createTooltipOperateOnLabels());
     actOperateOnLabels->setShortcut(Qt::Key_F4);
     actOperateOnLabels->setCheckable(true);
 

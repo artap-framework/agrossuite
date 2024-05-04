@@ -117,7 +117,8 @@ void SolveThread::finished()
 QString createToolTip(const QString &title, const QMap<QString, QString> &items)
 {
     QString html = "<body style=\"font-size: 11px;\">";
-    html += QString("<h4>%1</h4>").arg(title);
+    if (!title.isEmpty())
+        html += QString("<h4>%1</h4>").arg(title);
     html += "<table width=\"100%\">";
 
     foreach (const QString &key, items.keys())
@@ -127,4 +128,47 @@ QString createToolTip(const QString &title, const QMap<QString, QString> &items)
     html += "</body>";
 
     return html;
+}
+
+void createTooltipOperate(QMap<QString, QString> &items)
+{
+    items[QObject::tr("Shift + Left mouse or Middle mouse")] = QObject::tr("Pan over the workspace (you can also use arrows keys)");
+    items[QObject::tr("Mouse wheel")] = QObject::tr("Zoom the workspace");
+    items[QObject::tr("Middle button double click or Shift + Left mouse double click")] = QObject::tr("Zoom to fit");
+}
+
+QString createTooltipOperateOnNodes()
+{
+    QMap<QString, QString> items;
+    items[QObject::tr("Alt + N")] = QObject::tr("Add node by coordinates (open dialog)");
+    items[QObject::tr("Ctrl + Left mouse")] = QObject::tr("Add node directly by mouse");
+    items[QObject::tr("Control + Shift + Left mouse")] = QObject::tr("Move nodes by mouse");
+    items[QObject::tr("Space")] = QObject::tr("Open dialog for setting of selected node");
+    createTooltipOperate(items);
+
+    return createToolTip("", items);
+}
+
+QString createTooltipOperateOnEdges()
+{
+    QMap<QString, QString> items;
+    items[QObject::tr("Alt + E")] = QObject::tr("Add edge using coordinates (open dialog)");
+    items[QObject::tr("Ctrl + Left mouse")] = QObject::tr("Add edge directly by mouse");
+    items[QObject::tr("Control + Shift + Left mouse")] = QObject::tr("Move edges by mouse");
+    items[QObject::tr("Space")] = QObject::tr("Open dialog for setting of selected edge");
+    createTooltipOperate(items);
+
+    return createToolTip("", items);
+}
+
+QString createTooltipOperateOnLabels()
+{
+    QMap<QString, QString> items;
+    items[QObject::tr("Alt + L")] = QObject::tr("Add label using coordinates (open dialog)");
+    items[QObject::tr("Ctrl + left mouse")] = QObject::tr("Add label directly by mouse");
+    items[QObject::tr("Control + Shift + Left mouse")] = QObject::tr("Move labels by mouse");
+    items[QObject::tr("Space")] = QObject::tr("Open dialog for setting of selected label");
+    createTooltipOperate(items);
+
+    return createToolTip("", items);
 }
