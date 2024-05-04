@@ -160,7 +160,6 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>matio:</b> MAT File I/O Library (<a href=\"http://sourceforge.net/projects/matio/\">matio</a>)<br/>"
                                          "<b>poly2tri:</b> A 2D constrained Delaunay triangulation library (<a href=\"http://code.google.com/p/poly2tri/\">poly2tri</a>)<br/>"                                         
                                          "<b>Triangle:</b> Jonathan Richard Shewchuk (<a href=\"http://www.cs.cmu.edu/~quake/triangle.html\">Triangle</a>)<br/>"
-                                         "<b>Eigen:</b> A C++ template library for linear algebra (<a href=\"https://eigen.tuxfamily.org/\">Eigen</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
                                          "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
                                          "<b>BayesOpt:</b> Bayesian optimization library (<a href=\"https://github.com/rmcantin/bayesopt/\">BayesOpt</a>)<br/>"
