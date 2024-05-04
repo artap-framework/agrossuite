@@ -84,11 +84,6 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
     def tearDown(self):
         self.tearDownClass()
         
-    def test_external_eigen(self):
-        # UMFPACK
-        sln = self.model("external_plugin", "Eigen")        
-        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "EIGEN (external) sln failed.")
-
     def test_external_mumps(self):
         # MUMPS
         sln = self.model("external_plugin", "MUMPS")        

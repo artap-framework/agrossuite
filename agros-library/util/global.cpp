@@ -58,8 +58,8 @@ QStringList pluginList(const QString &data)
 {
     QString pluginPath = "";
 
-    if (isPluginDir(data + "/libs/"))
-        pluginPath = data + "/libs/";
+    if (isPluginDir(data + "/lib/"))
+        pluginPath = data + "/lib/";
     else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
@@ -85,8 +85,8 @@ QStringList solverList(const QString &data)
 {
     QString pluginPath = "";
 
-    if (isPluginDir(data + "/libs/"))
-        pluginPath = data + "/libs/";
+    if (isPluginDir(data + "/lib/"))
+        pluginPath = data + "/lib/";
     else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 

@@ -26,8 +26,6 @@ deal_ii_initialize_cached_variables()
 message("deal.II: ${DEAL_II_VERSION}")
 message("deal.II: ${DEAL_II_TARGET}")
 
-SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
-
 # Allow to override the default values in CMake.vars:
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     INCLUDE(CMake.vars.Linux OPTIONAL)
@@ -87,20 +85,20 @@ SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
 find_package(CURL REQUIRED)
 
 # Output paths.
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY})
-SET(LIBRARY_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY}/libs)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/usr/bin)
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/usr/lib)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_AGROS_DIRECTORY})
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_AGROS_DIRECTORY}/libs)
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_AGROS_DIRECTORY}/libs)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/usr/bin)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/usr/lib)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/usr/lib)
 
 IF(MSVC)
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_AGROS_DIRECTORY})
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_AGROS_DIRECTORY})
-  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_AGROS_DIRECTORY}/libs)
-  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_AGROS_DIRECTORY}/libs)
-  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_AGROS_DIRECTORY}/libs)
-  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_AGROS_DIRECTORY}/libs)
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 ENDIF(MSVC)
 
 # Include current dir
@@ -127,14 +125,37 @@ ENDIF()
 
 # Create file with preprocessor definitions exposing the build settings to the source code.
 configure_file(
-  agros-library/util/agros_version.h.cmake
-  agros-library/util/agros_version.h)
+        agros-library/util/agros_version.h.cmake
+        ${CMAKE_BINARY_DIR}/agros-library/util/agros_version.h)
 configure_file(
-  resources_source/resources.rc.cmake
-  resources_source/resources.rc)
+        resources_source/resources.rc.cmake
+        ${CMAKE_BINARY_DIR}/resources_source/resources.rc)
+
+# copy resources
+file(COPY ${PROJECT_SOURCE_DIR}/resources_source DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/resources DESTINATION ${PROJECT_BINARY_DIR}/usr/share/agrossuite)
+file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Linux DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Windows DESTINATION ${PROJECT_BINARY_DIR})
+
+# python wrapper
+file(COPY ${PROJECT_SOURCE_DIR}/tests.sh DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/agros-python/agrossuite DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
+file(COPY ${PROJECT_SOURCE_DIR}/agros-python/tests DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
+file(COPY ${PROJECT_SOURCE_DIR}/agros-python/examples DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
+
+# deploy
+file(COPY ${PROJECT_SOURCE_DIR}/deploy.sh DESTINATION ${PROJECT_BINARY_DIR})
+
+# add_dependencies(RoE copy_resources_source)
 
 # Include OUR header files location
-INCLUDE(IncludeSubdirs.cmake)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/ctemplate)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/libdxfrw)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qcustomplot)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qsingleapplication)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/quazip)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/matio)
 
 # Subdirectories.
 ADD_SUBDIRECTORY(3rdparty)
@@ -194,7 +215,6 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.9.5.2 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)

@@ -509,11 +509,11 @@ QStringList Agros2DGenerator::availableModules()
     QStringList filters;
     filters << "*.xml";
 
-    QDir dir(QString("resources_source/modules/"));
+    QDir dir(QString("%1/%2/modules/").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_RESOURCES));
     dir.setNameFilters(filters);
 
     foreach (QString id, dir.entryList())
-        list.append(id.left(id.count() - 4));
+        list.append(id.left(id.size() - 4));
 
     return list;
 }
@@ -526,11 +526,11 @@ QStringList Agros2DGenerator::availableCouplings()
     QStringList filters;
     filters << "*.xml";
 
-    QDir dir(QString("resources_source/couplings/"));
+    QDir dir(QString("%1/%2/couplings/").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_RESOURCES));
     dir.setNameFilters(filters);
 
     foreach (QString id, dir.entryList())
-        list.append(id.left(id.count() - 4));
+        list.append(id.left(id.size() - 4));
 
     return list;
 }
@@ -679,7 +679,7 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
 {
     Agros2DGeneratorModule generator(moduleId);
 
-    qWarning() << (QString("Module: %1.").arg(moduleId).toLatin1());
+    qWarning() << (QString("-- Module: %1").arg(moduleId).toLatin1());
     generator.generatePluginProjectFile();
     generator.prepareWeakFormsOutput();
     generator.generatePluginInterfaceFiles();

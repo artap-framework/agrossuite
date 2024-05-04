@@ -83,14 +83,13 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
     allAnalysisTypes.push_back(AnalysisType_Harmonic);
 
     foreach (QString sourceField, modules)
-    {        
-        bool isCouplingAvailable = QFile::exists(QCoreApplication::applicationDirPath() + COUPLINGROOT + "/" + sourceField + "-" + this->m_id + ".xml");
+    {
+        QString couplingFN = QString("%1/%2/couplings/%3.xml").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_RESOURCES).arg(sourceField + "-" + this->m_id);
+        bool isCouplingAvailable = QFile::exists(couplingFN);
         if (isCouplingAvailable)
         {
-            // qInfo() << "COUPLING" << QCoreApplication::applicationDirPath() + COUPLINGROOT + "/" + sourceField + "-" + this->m_id + ".xml";
-
             // JSON
-            QString fileName = QString("%1/resources_source/couplings/%2.json").arg(QCoreApplication::applicationDirPath()).arg(sourceField + "-" + this->m_id);
+            QString fileName = QString("%1/%2/couplings/%3.json").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_RESOURCES).arg(sourceField + "-" + this->m_id);
             QFile file(fileName);
             if (file.open(QIODevice::ReadOnly))
             {
@@ -122,7 +121,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             ctemplate::TemplateDictionary *coupling = output.AddSectionDictionary("COUPLING_SOURCE");
             coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
 
-            coupling_xsd = XMLModule::module_(compatibleFilename(QCoreApplication::applicationDirPath() + COUPLINGROOT + "/" + sourceField + "-" + this->m_id + ".xml").toStdString(), xml_schema::flags::dont_validate);
+            coupling_xsd = XMLModule::module_(compatibleFilename(couplingFN).toStdString(), xml_schema::flags::dont_validate);
             XMLModule::module *mod = coupling_xsd.get();
             assert(mod->coupling().present());
             xml_couplings[sourceField] = &mod->coupling().get();
@@ -132,7 +131,8 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             //QHash<std::string, std::string> volumeVariables;
             volumeVariables.clear();
 
-            std::shared_ptr<XMLModule::module> source_module_xsd = XMLModule::module_(compatibleFilename(QCoreApplication::applicationDirPath() + MODULEROOT + "/" + sourceField + ".xml").toStdString(), xml_schema::flags::dont_validate);;
+            QString moduleFN = QString("%1/%2/modules/%3.xml").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_RESOURCES).arg(sourceField);
+            std::shared_ptr<XMLModule::module> source_module_xsd = XMLModule::module_(compatibleFilename(moduleFN).toStdString(), xml_schema::flags::dont_validate);;
             XMLModule::field source_module = source_module_xsd->field().get();
             foreach(XMLModule::quantity variable, source_module.volume().quantity())
             {
