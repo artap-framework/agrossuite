@@ -34,6 +34,7 @@ build-linux:
     - cd build
     - cmake .. 
     # copy deal
+    - mkdir -p usr/lib 
     - cp -f ../dealii/build/lib/libdeal_II.so.9.5.2 usr/lib/libdeal_II.so.9.5.2 
     - make -j48    
     # generator
