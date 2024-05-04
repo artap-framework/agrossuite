@@ -94,7 +94,7 @@ deploy-linux:
     - mkdir appimage/usr/share/agrossuite
 
     # copy binary files
-    - cp agros appimage/usr/bin/
+    - cp usr/bin/agros appimage/usr/bin/
     - cp -r ../resources appimage/usr/share/agrossuite/resources/
     - cp usr/lib/libagros_*.so appimage/usr/lib/
     - cp usr/lib/libsolver_plugin_*.so appimage/usr/lib/
@@ -115,7 +115,7 @@ deploy-linux:
     - rm -rf appimage/usr/share/metainfo
 
     # build appimage
-    - appimagetool-x86_64.AppImage  appimage/
+    - appimagetool-x86_64.AppImage appimage/
     
     # upload to agros2d
     - curl -T Agros_Suite-x86_64.AppImage -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
