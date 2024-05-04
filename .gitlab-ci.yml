@@ -81,6 +81,7 @@ deploy-linux:
     - linux
 
   script: 
+    - cd build
     # rm files
     - rm -rf appimage 
 
