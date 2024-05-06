@@ -52,7 +52,7 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     m_study->updateParametersAndFunctionals = std::bind(&LogOptimizationDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
     
-    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int w = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
     int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);

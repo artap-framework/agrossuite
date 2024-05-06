@@ -234,7 +234,7 @@ LogViewDialog::LogViewDialog(QWidget *parent, ConnectLog *connectLog) : QDialog(
     setWindowTitle("Log View");
     setWindowFlags(Qt::Window);
 
-    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int w = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
     int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);
@@ -275,7 +275,7 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
 
     createControls();
 
-    int w = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int w = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
     int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);

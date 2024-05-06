@@ -96,7 +96,7 @@ void PostprocessorSceneMeshWidget::createControls()
     foreach (QString key, paletteTypeStringKeys())
         cmbOrderPaletteOrder->addItem(paletteTypeString(paletteTypeFromStringKey(key)), paletteTypeFromStringKey(key));
 
-    chkShowOrderColorbar = new QCheckBox(tr("Show colorbar"), this);    
+    chkShowOrderColorbar = new QCheckBox(tr("Colorbar"), this);
 
     QGridLayout *gridLayoutOrder = new QGridLayout();
     gridLayoutOrder->setColumnStretch(1, 1);

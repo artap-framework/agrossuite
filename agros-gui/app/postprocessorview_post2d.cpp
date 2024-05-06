@@ -148,7 +148,7 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
 
     // color bar
-    chkShowScalarColorBar = new QCheckBox(tr("Show colorbar"), this);
+    chkShowScalarColorBar = new QCheckBox(tr("Colorbar"), this);
 
     // log scale
     chkScalarFieldRangeLog = new QCheckBox(tr("Log. scale"));

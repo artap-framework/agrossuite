@@ -49,25 +49,25 @@ bool compileExpression(const QString &exprString, exprtk::expression<double> &ex
         }
         else
         {
-            QString str = QObject::tr("exprtk error: %1, expression: %2: ").
+            QString strerr = QObject::tr("exprtk error: %1, expression: %2: ").
                     arg(QString::fromStdString(m_exprtkParser->error())).
                     arg(exprString);
 
-            for (int i = 0; i < m_exprtkParser->error_count(); ++i)
+            for (std::size_t i = 0; i < m_exprtkParser->error_count(); ++i)
             {
-                exprtk::parser_error::type error = m_exprtkParser->get_error(i);
+                exprtk::parser_error::type err = m_exprtkParser->get_error(i);
 
                 str += QObject::tr("error: %1, position: %2, type: [%3], message: %4, expression: %5; ").
                         arg(i).
-                        arg(error.token.position).
-                        arg(QString::fromStdString(exprtk::parser_error::to_str(error.mode))).
-                        arg(QString::fromStdString(error.diagnostic)).
+                        arg(err.token.position).
+                        arg(QString::fromStdString(exprtk::parser_error::to_str(err.mode))).
+                        arg(QString::fromStdString(err.diagnostic)).
                         arg(exprString);
             }
 
             // qDebug() << str;
             if (error)
-                *error = str;
+                *error = strerr;
 
             return false;
         }

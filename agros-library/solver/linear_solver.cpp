@@ -105,8 +105,7 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
 
     if (!solver.isEmpty())
     {
-        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Solver - %1").arg(solver));
-
+        // Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Solver - %1").arg(solver));
         PluginSolverInterface *s = Agros::loadSolver(solver);
         s->solve(system, rhs, sln);
     }
