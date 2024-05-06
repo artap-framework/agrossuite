@@ -84,7 +84,6 @@ private:
 
     void createControls();
     QWidget *createControlsOptilab();
-    QWidget *createControlsComputation();
 
 signals:
     void studySelected(Study *study);

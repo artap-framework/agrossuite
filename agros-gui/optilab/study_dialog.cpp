@@ -154,7 +154,7 @@ void LogOptimizationDialog::createControls()
 
     currentFunctionalsNode = new QTreeWidgetItem(currentNode);
     currentFunctionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
-    currentFunctionalsNode->setText(0, tr("Functionals"));
+    currentFunctionalsNode->setText(0, tr("Goal Functions"));
     currentFunctionalsNode->setExpanded(true);
 
     auto *optimalNode = new QTreeWidgetItem(trvProgress);
@@ -173,7 +173,7 @@ void LogOptimizationDialog::createControls()
 
     optimalFunctionalsNode = new QTreeWidgetItem(optimalNode);
     optimalFunctionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
-    optimalFunctionalsNode->setText(0, tr("Functionals"));
+    optimalFunctionalsNode->setText(0, tr("Goal Functions"));
     optimalFunctionalsNode->setExpanded(true);
 
     foreach (Parameter parameter, m_study->parameters())
@@ -534,23 +534,23 @@ void StudyDialog::createControls()
 
 QWidget *StudyDialog::createParametersAndFunctionals()
 {
-    QVBoxLayout *layoutParameters = new QVBoxLayout();
+    auto *layoutParameters = new QVBoxLayout();
     layoutParameters->addWidget(createParameters());
 
-    QGroupBox *grpParameters = new QGroupBox(tr("Parameters"));
+    auto *grpParameters = new QGroupBox(tr("Parameters"));
     grpParameters->setLayout(layoutParameters);
 
-    QVBoxLayout *layoutFunctionals = new QVBoxLayout();
+    auto *layoutFunctionals = new QVBoxLayout();
     layoutFunctionals->addWidget(createFunctionals());
 
-    QGroupBox *grpFunctionals = new QGroupBox(tr("Functionals"));
+    auto *grpFunctionals = new QGroupBox(tr("Goal Functions"));
     grpFunctionals->setLayout(layoutFunctionals);
 
-    QVBoxLayout *layoutPF = new QVBoxLayout();
+    auto *layoutPF = new QVBoxLayout();
     layoutPF->addWidget(grpParameters);
     layoutPF->addWidget(grpFunctionals);
     
-    QWidget *widget = new QWidget(this);
+    auto *widget = new QWidget(this);
     widget->setLayout(layoutPF);
     
     return widget;

@@ -90,7 +90,7 @@
 #define STUDIES "studies"
 #define RECIPES "recipes"
 
-PostDeal::PostDeal(Computation *computation) :
+PostDeal::PostDeal(Computation* computation) :
     m_computation(computation),
     m_isProcessed(false),
     m_activeViewField(nullptr),
@@ -107,28 +107,37 @@ PostDeal::~PostDeal()
 
 void PostDeal::processRangeContour()
 {
-    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(PostprocessorSetting::ShowContourView).toBool()))
+    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(
+        PostprocessorSetting::ShowContourView).toBool()))
     {
-        Agros::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"),
+                                   tr("Contour view (%1)").arg(
+                                       m_computation->setting()->value(PostprocessorSetting::ContourVariable).
+                                                      toString()));
 
         QString variableName = m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString();
-        Module::LocalVariable variable = m_activeViewField->localVariable(m_computation->config()->coordinateType(), variableName);
+        Module::LocalVariable variable = m_activeViewField->localVariable(
+            m_computation->config()->coordinateType(), variableName);
 
         m_contourValues.clear();
 
         if (variable.isScalar())
             viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                              m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                                                              m_computation->setting()->value(
+                                                                  PostprocessorSetting::ContourVariable).toString()),
                              PhysicFieldVariableComp_Scalar,
                              m_contourValues,
-                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
+                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(
+                                 PostprocessorSetting::DeformContour).toBool()));
 
         else
             viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                              m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                                                              m_computation->setting()->value(
+                                                                  PostprocessorSetting::ContourVariable).toString()),
                              PhysicFieldVariableComp_Magnitude,
                              m_contourValues,
-                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
+                             (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(
+                                 PostprocessorSetting::DeformContour).toBool()));
     }
 }
 
@@ -141,24 +150,31 @@ void PostDeal::processRangeScalar()
     }
 
     if ((m_computation->isSolved()) && (m_activeViewField)
-            && ((m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
-                || (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
+        && ((m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
+            || (((SceneViewPost3DMode)m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt())
+                == SceneViewPost3DMode_ScalarView3D)))
     {
-        Agros::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"),
+                                   tr("Scalar view (%1)").arg(
+                                       m_computation->setting()->value(
+                                           PostprocessorSetting::ScalarVariable).toString()));
 
         viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                          m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
-                         (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt(),
+                                                          m_computation->setting()->value(
+                                                              PostprocessorSetting::ScalarVariable).toString()),
+                         (PhysicFieldVariableComp)m_computation->setting()->value(
+                             PostprocessorSetting::ScalarVariableComp).toInt(),
                          m_scalarValues,
-                         (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool()));
+                         (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(
+                             PostprocessorSetting::DeformScalar).toBool()));
 
         // min and max value
         if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
         {
-            double min =  numeric_limits<double>::max();
+            double min = numeric_limits<double>::max();
             double max = -numeric_limits<double>::max();
 
-            foreach (PostTriangle triangle, m_scalarValues)
+            foreach(PostTriangle triangle, m_scalarValues)
             {
                 double valueMin = std::min(std::min(triangle.values[0], triangle.values[1]), triangle.values[2]);
                 double valueMax = std::max(std::max(triangle.values[0], triangle.values[1]), triangle.values[2]);
@@ -175,10 +191,12 @@ void PostDeal::processRangeScalar()
 
 void PostDeal::processRangeVector()
 {
-    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(PostprocessorSetting::ShowVectorView).toBool()))
+    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(
+        PostprocessorSetting::ShowVectorView).toBool()))
     {
         bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
+        foreach(Module::LocalVariable variable,
+                m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
         {
             if (variable.id() == m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString())
             {
@@ -187,16 +205,21 @@ void PostDeal::processRangeVector()
             }
         }
 
-        Agros::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()));
+        Agros::log()->printMessage(tr("Post View"),
+                                   tr("Vector view (%1)").arg(
+                                       m_computation->setting()->value(
+                                           PostprocessorSetting::VectorVariable).toString()));
 
         viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                          m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                                                          m_computation->setting()->value(
+                                                              PostprocessorSetting::VectorVariable).toString()),
                          PhysicFieldVariableComp_X,
                          m_vectorXValues,
                          false);
 
         viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                          m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                                                          m_computation->setting()->value(
+                                                              PostprocessorSetting::VectorVariable).toString()),
                          PhysicFieldVariableComp_Y,
                          m_vectorYValues,
                          false);
@@ -247,18 +270,18 @@ void PostDeal::processSolved()
 
 void PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
                                 PhysicFieldVariableComp physicFieldVariableComp,
-                                QList<PostTriangle> &list,
+                                QList<PostTriangle>& list,
                                 bool deform)
 {
     // QTime time;
     // time.start();
 
-    dealii::DataPostprocessorScalar<2> *post = activeViewField()->plugin()->filter(m_computation,
-                                                                                   activeViewField(),
-                                                                                   activeTimeStep(),
-                                                                                   activeAdaptivityStep(),
-                                                                                   physicFieldVariable.id(),
-                                                                                   physicFieldVariableComp);
+    dealii::DataPostprocessorScalar<2>* post = activeViewField()->plugin()->filter(m_computation,
+        activeViewField(),
+        activeTimeStep(),
+        activeAdaptivityStep(),
+        physicFieldVariable.id(),
+        physicFieldVariableComp);
 
     MultiArray ma = activeMultiSolutionArray();
 
@@ -266,11 +289,12 @@ void PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
     data_out.attach_dof_handler(ma.doFHandler());
     data_out.add_data_vector(ma.solution(), *post);
     // deform shape
-    if (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool())
+    if (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).
+                                                                  toBool())
     {
         std::vector<std::string> solution_names;
-        solution_names.push_back ("x_displacement");
-        solution_names.push_back ("y_displacement");
+        solution_names.push_back("x_displacement");
+        solution_names.push_back("y_displacement");
 
         data_out.add_data_vector(ma.solution(), solution_names);
     }
@@ -300,31 +324,41 @@ void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
         setActiveAdaptivityStep(NOT_FOUND_SO_FAR);
 
         // set default variables
-        Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable(m_computation->config()->coordinateType());
-        Module::LocalVariable vectorVariable = m_activeViewField->defaultViewVectorVariable(m_computation->config()->coordinateType());
+        Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable(
+            m_computation->config()->coordinateType());
+        Module::LocalVariable vectorVariable = m_activeViewField->defaultViewVectorVariable(
+            m_computation->config()->coordinateType());
 
         QString scalarVariableDefault = scalarVariable.id();
-        PhysicFieldVariableComp scalarVariableCompDefault = scalarVariable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
+        PhysicFieldVariableComp scalarVariableCompDefault = scalarVariable.isScalar()
+                                                                ? PhysicFieldVariableComp_Scalar
+                                                                : PhysicFieldVariableComp_Magnitude;
         QString contourVariableDefault = scalarVariable.id();
         QString vectorVariableDefault = vectorVariable.id();
 
-        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
+        foreach(Module::LocalVariable local,
+                m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
             if (m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString() == local.id())
             {
-                scalarVariableDefault = m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString();
-                scalarVariableCompDefault = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt();
+                scalarVariableDefault = m_computation->setting()->value(PostprocessorSetting::ScalarVariable).
+                                                       toString();
+                scalarVariableCompDefault = (PhysicFieldVariableComp)m_computation->setting()->value(
+                    PostprocessorSetting::ScalarVariableComp).toInt();
             }
             if (m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString() == local.id())
             {
-                contourVariableDefault = m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString();
+                contourVariableDefault = m_computation->setting()->value(PostprocessorSetting::ContourVariable).
+                                                        toString();
             }
         }
-        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
+        foreach(Module::LocalVariable local,
+                m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
             if (m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString() == local.id())
             {
-                vectorVariableDefault = m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString();
+                vectorVariableDefault = m_computation->setting()->value(PostprocessorSetting::VectorVariable).
+                                                       toString();
             }
         }
 
@@ -364,30 +398,33 @@ MultiArray PostDeal::activeMultiSolutionArray()
 
 // ************************************************************************************************
 
-PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2>(),
-    m_computation(parentProblem), m_fieldInfo(fieldInfo)
+PostDataOut::PostDataOut(FieldInfo* fieldInfo, Computation* parentProblem) : dealii::DataOut<2>(),
+                                                                             m_computation(parentProblem),
+                                                                             m_fieldInfo(fieldInfo)
 {
     // select only cells with material without none marker
-    this->set_cell_selection([this](const typename dealii::DataOut<2>::cell_iterator &cell)
+    this->set_cell_selection([this](const typename dealii::DataOut<2>::cell_iterator& cell)
     {
         if (cell->is_active())
-            return !(this->m_computation->scene()->labels->at(cell->material_id() - 1)->marker(this->m_fieldInfo)->isNone());
+            return !(this->m_computation->scene()->labels->at(cell->material_id() - 1)->marker(this->m_fieldInfo)->
+                           isNone());
         else
             return false;
     });
 }
 
-void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
+void PostDataOut::compute_nodes(QList<PostTriangle>& values, bool deform)
 {
     values.clear();
 
     // min and max value
-    double min =  numeric_limits<double>::max();
+    double min = numeric_limits<double>::max();
     double max = -numeric_limits<double>::max();
-    double minDeform =  numeric_limits<double>::max();
+    double minDeform = numeric_limits<double>::max();
     double maxDeform = -numeric_limits<double>::max();
 
-    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    for (std::vector<dealii::DataOutBase::Patch<2>>::const_iterator patch = patches.begin(); patch != patches.end(); ++
+         patch)
     {
         for (unsigned int i = 0; i < (patch->n_subdivisions + 1) * (patch->n_subdivisions + 1); i++)
         {
@@ -398,7 +435,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
 
             if (deform)
             {
-                double value = sqrt(patch->data(1, i)*patch->data(1, i) + patch->data(2, i)*patch->data(2, i));
+                double value = sqrt(patch->data(1, i) * patch->data(1, i) + patch->data(2, i) * patch->data(2, i));
 
                 minDeform = std::min(min, value);
                 maxDeform = std::max(max, value);
@@ -417,28 +454,29 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     dealii::Point<2> node0, node1, node2, node3;
 
     // loop over all patches
-    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    for (std::vector<dealii::DataOutBase::Patch<2>>::const_iterator patch = patches.begin(); patch != patches.end(); ++
+         patch)
     {
         const unsigned int n_subdivisions = patch->n_subdivisions;
         const unsigned int n = n_subdivisions + 1;
         unsigned int d1 = 1;
         unsigned int d2 = n;
 
-        for (unsigned int i2=0; i2<n-1; ++i2)
+        for (unsigned int i2 = 0; i2 < n - 1; ++i2)
         {
-            for (unsigned int i1=0; i1<n-1; ++i1)
+            for (unsigned int i1 = 0; i1 < n - 1; ++i1)
             {
                 // compute coordinates for this patch point
                 compute_node(node0, &*patch, i1, i2, 0, n_subdivisions);
-                compute_node(node1, &*patch, i1, i2+1, 0, n_subdivisions);
-                compute_node(node2, &*patch, i1+1, i2, 0, n_subdivisions);
-                compute_node(node3, &*patch, i1+1, i2+1, 0, n_subdivisions);
+                compute_node(node1, &*patch, i1, i2 + 1, 0, n_subdivisions);
+                compute_node(node2, &*patch, i1 + 1, i2, 0, n_subdivisions);
+                compute_node(node3, &*patch, i1 + 1, i2 + 1, 0, n_subdivisions);
 
                 // compute values
-                int index0 = i1*d1 + i2*d2;
-                int index1 = i1*d1 + (i2+1)*d2;
-                int index2 = (i1+1)*d1 + i2*d2;
-                int index3 = (i1+1)*d1 + (i2+1)*d2;
+                int index0 = i1 * d1 + i2 * d2;
+                int index1 = i1 * d1 + (i2 + 1) * d2;
+                int index2 = (i1 + 1) * d1 + i2 * d2;
+                int index3 = (i1 + 1) * d1 + (i2 + 1) * d2;
 
                 double value0 = patch->data(0, index0);
                 double value1 = patch->data(0, index1);
@@ -474,27 +512,27 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     }
 }
 
-void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
+void PostDataOut::compute_node(dealii::Point<2>& node, const dealii::DataOutBase::Patch<2>* patch,
                                const unsigned int xstep, const unsigned int ystep, const unsigned int zstep,
                                const unsigned int n_subdivisions)
 {
     if (patch->points_are_available)
     {
         unsigned int point_no = 0;
-        point_no += (n_subdivisions+1)*ystep;
-        for (unsigned int d=0; d<2; ++d)
-            node[d]=patch->data(patch->data.size(0)-2+d, point_no);
+        point_no += (n_subdivisions + 1) * ystep;
+        for (unsigned int d = 0; d < 2; ++d)
+            node[d] = patch->data(patch->data.size(0) - 2 + d, point_no);
     }
     else
     {
         // perform a dim-linear interpolation
-        const double stepsize=1./n_subdivisions, xfrac=xstep*stepsize;
+        const double stepsize = 1. / n_subdivisions, xfrac = xstep * stepsize;
 
-        node = (patch->vertices[1] * xfrac) + (patch->vertices[0] * (1-xfrac));
-        const double yfrac=ystep*stepsize;
+        node = (patch->vertices[1] * xfrac) + (patch->vertices[0] * (1 - xfrac));
+        const double yfrac = ystep * stepsize;
 
-        node*= 1-yfrac;
-        node += ((patch->vertices[3] * xfrac) + (patch->vertices[2] * (1-xfrac))) * yfrac;
+        node *= 1 - yfrac;
+        node += ((patch->vertices[3] * xfrac) + (patch->vertices[2] * (1 - xfrac))) * yfrac;
     }
 }
 
@@ -523,18 +561,16 @@ ProblemBase::~ProblemBase()
 int ProblemBase::numAdaptiveFields() const
 {
     int num = 0;
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->adaptivityType() != AdaptivityMethod_None)
-            num++;
+    foreach(FieldInfo* fieldInfo, m_fieldInfos) if (fieldInfo->adaptivityType() != AdaptivityMethod_None)
+        num++;
     return num;
 }
 
 int ProblemBase::numTransientFields() const
 {
     int num = 0;
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->analysisType() == AnalysisType_Transient)
-            num++;
+    foreach(FieldInfo* fieldInfo, m_fieldInfos) if (fieldInfo->analysisType() == AnalysisType_Transient)
+        num++;
     return num;
 }
 
@@ -545,23 +581,21 @@ bool ProblemBase::isTransient() const
 
 bool ProblemBase::isHarmonic() const
 {
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->analysisType() == AnalysisType_Harmonic)
-            return true;
+    foreach(FieldInfo* fieldInfo, m_fieldInfos) if (fieldInfo->analysisType() == AnalysisType_Harmonic)
+        return true;
 
     return false;
 }
 
 bool ProblemBase::determineIsNonlinear() const
 {
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->linearityType() != LinearityType_Linear)
-            return true;
+    foreach(FieldInfo* fieldInfo, m_fieldInfos) if (fieldInfo->linearityType() != LinearityType_Linear)
+        return true;
 
     return false;
 }
 
-bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parameters, bool apply)
+QStringList ProblemBase::checkAndApplyParameters(const QMap<QString, ProblemParameter>& parameters)
 {
     // store original parameters
     QMap<QString, ProblemParameter> parametersOriginal = m_config->parameters()->items();
@@ -570,15 +604,16 @@ bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parame
     m_config->parameters()->set(parameters.values());
 
     // apply new parameters
-    bool successfulRun = applyParametersInternal();
+    QStringList err = checkAndParameters(true);
+    bool successfulRun = err.isEmpty();
 
     // restore original parameters
-    if (!successfulRun || !apply)
+    if (!successfulRun)
     {
         m_config->parameters()->set(parametersOriginal.values());
 
         // apply original parameters
-        applyParametersInternal();
+        checkAndParameters();
     }
     else
     {
@@ -586,119 +621,130 @@ bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parame
         m_scene->invalidate();
     }
 
-    return successfulRun;
+    return err;
 }
 
-// apply parameters from m_config
-bool ProblemBase::applyParametersInternal()
+QStringList ProblemBase::checkAndParameters(bool printError)
 {
-    bool successfulRun = true;
+    QStringList str;
 
-    // check geometry
     // nodes
-    foreach (SceneNode *node, m_scene->nodes->items())
+    foreach(SceneNode *node, m_scene->nodes->items())
     {
         if (node->pointValue().x().isNumber() && node->pointValue().y().isNumber())
         {
-            continue;
         }
         else
         {
             if (!node->pointValue().x().isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
-                                         arg(m_scene->nodes->items().indexOf(node)).
-                                         arg(m_config->labelX()).
-                                         arg(node->pointValue().x().error()));
+                QString err = QObject::tr("Node %1 - Coord. %2: %3").
+                              arg(m_scene->nodes->items().indexOf(node)).
+                              arg(m_config->labelX()).
+                              arg(node->pointValue().x().error());
 
-                successfulRun = false;
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
             if (!node->pointValue().y().isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
-                                         arg(m_scene->nodes->items().indexOf(node)).
-                                         arg(m_config->labelY()).
-                                         arg(node->pointValue().y().error()));
+                QString err = tr("Node %1 - Coord. %2: %3").
+                              arg(m_scene->nodes->items().indexOf(node)).
+                              arg(m_config->labelY()).
+                              arg(node->pointValue().y().error());
 
-                successfulRun = false;
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
         }
     }
 
     // edges
-    foreach (SceneFace *edge, m_scene->faces->items())
+    foreach(SceneFace *edge, m_scene->faces->items())
     {
         if (edge->angleValue().isNumber())
         {
-            continue;
         }
         else
         {
             if (!edge->angleValue().isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
-                                         arg(m_scene->faces->items().indexOf(edge)).
-                                         arg(edge->angleValue().error()));
+                QString err = QObject::tr("Edge %1: %2").
+                              arg(m_scene->faces->items().indexOf(edge)).
+                              arg(edge->angleValue().error());
 
-                successfulRun = false;
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
         }
     }
 
     // labels
-    foreach (SceneLabel *label, m_scene->labels->items())
+    foreach(SceneLabel *label, m_scene->labels->items())
     {
         if (label->pointValue().x().isNumber() && label->pointValue().y().isNumber())
         {
-            continue;
         }
         else
         {
             if (!label->pointValue().x().isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
-                                         arg(m_scene->labels->items().indexOf(label)).
-                                         arg(m_config->labelX()).
-                                         arg(label->pointValue().x().error()));
+                QString err = QObject::tr("Label %1 - Coord. %2: %3").
+                              arg(m_scene->labels->items().indexOf(label)).
+                              arg(m_config->labelX()).
+                              arg(label->pointValue().x().error());
 
-                successfulRun = false;
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
             if (!label->pointValue().y().isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
-                                         arg(m_scene->labels->items().indexOf(label)).
-                                         arg(m_config->labelY()).
-                                         arg(label->pointValue().y().error()));
+                QString err = QObject::tr("Label %1 - Coord. %2: %3").
+                              arg(m_scene->labels->items().indexOf(label)).
+                              arg(m_config->labelY()).
+                              arg(label->pointValue().y().error());
 
-                successfulRun = false;
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
         }
     }
 
     // check materials
-    foreach (SceneMaterial* material, m_scene->materials->items())
+    foreach(SceneMaterial* material, m_scene->materials->items())
     {
-        foreach (size_t key, material->values().keys())
+        foreach(size_t key, material->values().keys())
         {
             if (!material->value(key)->isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
-                                         arg(key).arg(material->value(key).data()->toString()));
-                successfulRun = false;
+                QString err = QObject::tr("Material %1: %2").
+                              arg(material->name()).arg(material->value(key).data()->error());
+
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);;
             }
         }
     }
 
     // check boundaries
-    foreach (SceneBoundary* boundary, m_scene->boundaries->items())
+    foreach(SceneBoundary* boundary, m_scene->boundaries->items())
     {
-        foreach (size_t key, boundary->values().keys())
+        foreach(size_t key, boundary->values().keys())
         {
             if (!boundary->value(key)->isEvaluated())
             {
-                Agros::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
-                                         arg(key).arg(boundary->value(key).data()->toString()));
-                successfulRun = false;
+                QString err = QObject::tr("Boundary %1: %2").
+                              arg(boundary->name()).arg(boundary->value(key).data()->error());
+
+                str.append(err);
+                if (printError)
+                    Agros::log()->printError(QObject::tr("Parameters"), err);
             }
         }
     }
@@ -706,12 +752,15 @@ bool ProblemBase::applyParametersInternal()
     // check frequency
     if (!m_config->value(ProblemConfig::Frequency).value<Value>().isEvaluated())
     {
-        Agros::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
-                                 arg(m_config->value(ProblemConfig::Frequency).value<Value>().error()));
-        successfulRun = false;
+        QString err = QObject::tr("Frequency %1").
+            arg(m_config->value(ProblemConfig::Frequency).value<Value>().error());
+
+        str.append(err);
+        if (printError)
+            Agros::log()->printError(QObject::tr("Parameters"), err);
     }
 
-    return successfulRun;
+    return str;
 }
 
 void ProblemBase::clearFields()
@@ -720,11 +769,11 @@ void ProblemBase::clearFields()
     m_scene->clear();
 
     // clear couplings
-    foreach (CouplingInfo* couplingInfo, m_couplingInfos)
+    foreach(CouplingInfo* couplingInfo, m_couplingInfos)
         delete couplingInfo;
     m_couplingInfos.clear();
 
-    QMapIterator<QString, FieldInfo *> i(m_fieldInfos);
+    QMapIterator<QString, FieldInfo*> i(m_fieldInfos);
     while (i.hasNext())
     {
         i.next();
@@ -744,7 +793,7 @@ void ProblemBase::clearFieldsAndConfig()
     m_config->clear();
 }
 
-void ProblemBase::addField(FieldInfo *field)
+void ProblemBase::addField(FieldInfo* field)
 {
     // remove field
     if (hasField(field->fieldId()))
@@ -761,7 +810,7 @@ void ProblemBase::addField(FieldInfo *field)
     m_scene->fieldsChange();
 }
 
-void ProblemBase::removeField(FieldInfo *field)
+void ProblemBase::removeField(FieldInfo* field)
 {
     // first remove references to markers of this field from all edges and labels
     m_scene->faces->removeFieldMarkers(field);
@@ -783,11 +832,11 @@ void ProblemBase::synchronizeCouplings()
     bool changed = false;
 
     // add missing
-    foreach (FieldInfo* targetField, m_fieldInfos)
+    foreach(FieldInfo* targetField, m_fieldInfos)
     {
         QStringList couplings = targetField->plugin()->couplings();
 
-        foreach (FieldInfo* sourceField, m_fieldInfos)
+        foreach(FieldInfo* sourceField, m_fieldInfos)
         {
             if (sourceField == targetField)
                 continue;
@@ -800,7 +849,8 @@ void ProblemBase::synchronizeCouplings()
                 {
                     m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField->fieldId(),
                                                                        targetField->fieldId(),
-                                                                       targetField->plugin()->couplingJson(sourceField->fieldId())->name);
+                                                                       targetField->plugin()->couplingJson(
+                                                                           sourceField->fieldId())->name);
                     changed = true;
                 }
             }
@@ -808,15 +858,18 @@ void ProblemBase::synchronizeCouplings()
     }
 
     // remove extra
-    foreach (CouplingInfo *couplingInfo, m_couplingInfos)
+    foreach(CouplingInfo *couplingInfo, m_couplingInfos)
     {
         if (!(m_fieldInfos.contains(couplingInfo->sourceFieldId()) &&
-              m_fieldInfos.contains(couplingInfo->targetFieldId()) &&
-              isCouplingAvailable(couplingInfo->sourceFieldId(), m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
-                                  couplingInfo->targetFieldId(), m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
-                                  CouplingType_Weak)))
+            m_fieldInfos.contains(couplingInfo->targetFieldId()) &&
+            isCouplingAvailable(couplingInfo->sourceFieldId(),
+                                m_fieldInfos[couplingInfo->sourceFieldId()]->analysisType(),
+                                couplingInfo->targetFieldId(),
+                                m_fieldInfos[couplingInfo->targetFieldId()]->analysisType(),
+                                CouplingType_Weak)))
         {
-            QPair<QString, QString> key = QPair<QString, QString>(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId());
+            QPair<QString, QString> key = QPair<QString, QString>(couplingInfo->sourceFieldId(),
+                                                                  couplingInfo->targetFieldId());
             m_couplingInfos.remove(key);
 
             changed = true;
@@ -861,7 +914,7 @@ bool ProblemBase::mesh()
 #ifdef Q_OS_WIN
         meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal(this));
 #else
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
+            meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
         // meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal(this));
 #endif
             break;
@@ -869,7 +922,9 @@ bool ProblemBase::mesh()
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH(this));
             break;
         default:
-            Agros::log()->printError(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+            Agros::log()->printError(tr("Mesh generator error"),
+                                     tr("Mesh generator '%1' is not supported.").arg(
+                                         meshTypeString(config()->meshType())));
             assert(0);
             break;
         }
@@ -905,7 +960,7 @@ bool ProblemBase::mesh()
         // catching all other exceptions. This is not safe at all
         Agros::log()->printWarning(tr("Mesh"), e.what());
     }
-    catch (dealii::ExceptionBase &e)
+    catch (dealii::ExceptionBase& e)
     {
         qDebug() << e.what();
         Agros::log()->printWarning(tr("Mesh (deal.II)"), e.what());
@@ -922,7 +977,7 @@ bool ProblemBase::mesh()
     return false;
 }
 
-void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
+void ProblemBase::readInitialMeshFromFile(const QString& problemDir)
 {
     try
     {
@@ -944,7 +999,7 @@ void ProblemBase::readInitialMeshFromFile(const QString &problemDir)
     }
 }
 
-void ProblemBase::readProblemFromJson(const QString &fileName)
+void ProblemBase::readProblemFromJson(const QString& fileName)
 {
     // QTime time;
     // time.start();
@@ -970,7 +1025,7 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
     // qDebug() << "readProblemFromJson" << time.elapsed();
 }
 
-void ProblemBase::importProblemFromA2D(const QString &fileName)
+void ProblemBase::importProblemFromA2D(const QString& fileName)
 {
     //    try
     //    {
@@ -1224,7 +1279,7 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
     //    }
 }
 
-void ProblemBase::writeProblemToJson(const QString &fileName)
+void ProblemBase::writeProblemToJson(const QString& fileName)
 {
     // QTime time;
     // time.start();
@@ -1251,7 +1306,7 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
     // qDebug() << "writeProblemToJson" << time.elapsed();
 }
 
-void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
+void ProblemBase::readProblemFromJsonInternal(QJsonObject& rootJson)
 {
     // config
     QJsonObject configJson = rootJson[CONFIG].toObject();
@@ -1274,7 +1329,9 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
 
         m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
         if (i != m_scene->nodes->count() - 1)
-            throw AgrosException(tr("Node with coordinates (%1, %2) is too close to an existing node.").arg(nodeJson[X].toString()).arg(nodeJson[Y].toString()));
+            throw AgrosException(
+                tr("Node with coordinates (%1, %2) is too close to an existing node.").arg(nodeJson[X].toString()).arg(
+                    nodeJson[Y].toString()));
     }
 
     // qWarning() << "nodes" << m_scene->nodes->count();
@@ -1286,8 +1343,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject faceJson = facesJson[i].toObject();
 
         QJsonArray listJson = faceJson[LIST].toArray();
-        SceneNode *nodeFrom = m_scene->nodes->at(listJson[0].toInt());
-        SceneNode *nodeTo = m_scene->nodes->at(listJson[1].toInt());
+        SceneNode* nodeFrom = m_scene->nodes->at(listJson[0].toInt());
+        SceneNode* nodeTo = m_scene->nodes->at(listJson[1].toInt());
 
         int segments = faceJson[SEGMENTS].toInt();
 
@@ -1327,7 +1384,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
     {
         QJsonObject fieldJson = fieldsJson[i].toObject();
 
-        FieldInfo *fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
+        FieldInfo* fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
 
         // settings
         QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
@@ -1349,14 +1406,14 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
             QJsonObject boundaryJson = boundariesJson[j].toObject();
 
             // read marker
-            SceneBoundary *bound = new SceneBoundary(m_scene,
+            SceneBoundary* bound = new SceneBoundary(m_scene,
                                                      fieldInfo,
                                                      boundaryJson[NAME].toString(),
                                                      boundaryJson[TYPE].toString());
 
             // default values
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundaryJson[TYPE].toString());
-            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+            foreach(Module::BoundaryTypeVariable variable, boundaryType.variables())
                 bound->setValue(variable.id(), Value(this));
 
             QJsonArray boundaryTypesJson = boundaryJson[BOUNDARY_TYPES].toArray();
@@ -1389,12 +1446,12 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
             QJsonObject materialJson = materialsJson[j].toObject();
 
             // read marker
-            SceneMaterial *mat = new SceneMaterial(m_scene,
+            SceneMaterial* mat = new SceneMaterial(m_scene,
                                                    fieldInfo,
                                                    materialJson[NAME].toString());
 
             // default values
-            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+            foreach(Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
                 mat->setValue(variable.id(), Value(this));
 
             QJsonArray materialTypesJson = materialJson[MATERIAL_TYPES].toArray();
@@ -1437,12 +1494,12 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject couplingJson = couplingsJson[i].toObject();
 
         // couplings
-        FieldInfo *fieldInfo = new FieldInfo(couplingJson[TARGET_FIELDID].toString());
+        FieldInfo* fieldInfo = new FieldInfo(couplingJson[TARGET_FIELDID].toString());
         QStringList couplings = fieldInfo->plugin()->couplings();
 
         if (couplings.contains(couplingJson[SOURCE_FIELDID].toString()))
         {
-            CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
+            CouplingInfo* cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
                                              couplingJson[TARGET_FIELDID].toString());
             cpl->setCouplingType(couplingTypeFromStringKey(couplingJson[TYPE].toString()));
         }
@@ -1452,8 +1509,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
     m_scene->invalidate();
 }
 
-void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
-{    
+void ProblemBase::writeProblemToJsonInternal(QJsonObject& rootJson)
+{
     // config
     QJsonObject configJson;
     m_config->save(configJson);
@@ -1465,7 +1522,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
     // nodes
     QJsonArray nodesJson;
     int inode = 0;
-    foreach (SceneNode *node, m_scene->nodes->items())
+    foreach(SceneNode *node, m_scene->nodes->items())
     {
         QJsonObject nodeJson;
 
@@ -1482,7 +1539,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
     // edges
     QJsonArray edgesJson;
     int iedge = 0;
-    foreach (SceneFace *edge, m_scene->faces->items())
+    foreach(SceneFace *edge, m_scene->faces->items())
     {
         QJsonObject edgeJson;
 
@@ -1504,7 +1561,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
     // labels
     QJsonArray labelsJson;
     int ilabel = 0;
-    foreach (SceneLabel *label, m_scene->labels->items())
+    foreach(SceneLabel *label, m_scene->labels->items())
     {
         QJsonObject labelJson;
 
@@ -1524,7 +1581,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
 
     // fields
     QJsonArray fieldsJson;
-    foreach (FieldInfo *fieldInfo, fieldInfos())
+    foreach(FieldInfo *fieldInfo, fieldInfos())
     {
         QJsonObject fieldJson;
         fieldJson[FIELDID] = fieldInfo->fieldId();
@@ -1536,7 +1593,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
 
         // polynomial order
         QJsonArray labelOrderJson;
-        QMapIterator<SceneLabel *, int> labelOrderIterator(fieldInfo->labelsPolynomialOrder());
+        QMapIterator<SceneLabel*, int> labelOrderIterator(fieldInfo->labelsPolynomialOrder());
         while (labelOrderIterator.hasNext())
         {
             labelOrderIterator.next();
@@ -1552,12 +1609,12 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         // boundaries
         QJsonArray boundariesJson;
         int iboundary = 1;
-        foreach (SceneBoundary *bound, m_scene->boundaries->filter(fieldInfo).items())
+        foreach(SceneBoundary *bound, m_scene->boundaries->filter(fieldInfo).items())
         {
             QJsonObject boundaryJson;
 
             QJsonArray boundaryFacesJson;
-            foreach (SceneFace *edge, m_scene->faces->items())
+            foreach(SceneFace *edge, m_scene->faces->items())
             {
                 if (edge->hasMarker(bound))
                     boundaryFacesJson.append(m_scene->faces->items().indexOf(edge));
@@ -1565,8 +1622,8 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             boundaryJson[BOUNDARY_FACES] = boundaryFacesJson;
 
             QJsonArray boundaryTypesJson;
-            const QMap<size_t, QSharedPointer<Value> > values = bound->values();
-            for (QMap<size_t, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            const QMap<size_t, QSharedPointer<Value>> values = bound->values();
+            for (QMap<size_t, QSharedPointer<Value>>::const_iterator it = values.begin(); it != values.end(); ++it)
             {
                 QJsonObject type;
                 type[ID] = bound->valueName(it.key());
@@ -1587,14 +1644,14 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         fieldJson[BOUNDARIES] = boundariesJson;
 
         // materials
-        QJsonArray  materialsJson;
+        QJsonArray materialsJson;
         int imaterial = 1;
-        foreach (SceneMaterial *mat, m_scene->materials->filter(fieldInfo).items())
+        foreach(SceneMaterial *mat, m_scene->materials->filter(fieldInfo).items())
         {
             QJsonObject materialJson;
 
             QJsonArray materialLabelsJson;
-            foreach (SceneLabel *label, m_scene->labels->items())
+            foreach(SceneLabel *label, m_scene->labels->items())
             {
                 if (label->hasMarker(mat))
                     materialLabelsJson.append(m_scene->labels->items().indexOf(label));
@@ -1602,8 +1659,8 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
             materialJson[MATERIAL_LABELS] = materialLabelsJson;
 
             QJsonArray materialTypesJson;
-            const QMap<size_t, QSharedPointer<Value> > values = mat->values();
-            for (QMap<size_t, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            const QMap<size_t, QSharedPointer<Value>> values = mat->values();
+            for (QMap<size_t, QSharedPointer<Value>>::const_iterator it = values.begin(); it != values.end(); ++it)
             {
                 QJsonObject type;
                 type[ID] = mat->valueName(it.key());
@@ -1628,7 +1685,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
 
     // couplings
     QJsonArray couplingsJson;
-    foreach (CouplingInfo *couplingInfo, couplingInfos())
+    foreach(CouplingInfo *couplingInfo, couplingInfos())
     {
         QJsonObject couplingJson;
 
@@ -1644,16 +1701,16 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
 
 // computation
 
-Computation::Computation(const QString &problemDir) : ProblemBase(),
-    m_lastTimeElapsed(QTime()),
-    m_isSolving(false),
-    m_abort(false),
-    m_isPostprocessingRunning(false),
-    m_setting(new PostprocessorSetting(this)),
-    m_problemSolver(new ProblemSolver(this)),
-    m_solutionStore(new SolutionStore(this)),
-    m_results(new ComputationResults()),
-    m_postDeal(new PostDeal(this))
+Computation::Computation(const QString& problemDir) : ProblemBase(),
+                                                      m_lastTimeElapsed(QTime()),
+                                                      m_isSolving(false),
+                                                      m_abort(false),
+                                                      m_isPostprocessingRunning(false),
+                                                      m_setting(new PostprocessorSetting(this)),
+                                                      m_problemSolver(new ProblemSolver(this)),
+                                                      m_solutionStore(new SolutionStore(this)),
+                                                      m_results(new ComputationResults()),
+                                                      m_postDeal(new PostDeal(this))
 {
     if (problemDir.isEmpty())
     {
@@ -1672,7 +1729,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
 }
 
 Computation::~Computation()
-{   
+{
     clearSolution();
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 
@@ -1684,7 +1741,7 @@ Computation::~Computation()
 }
 
 void Computation::readFromProblem()
-{    
+{
     clearFields();
 
     // copy config from problem
@@ -1694,38 +1751,39 @@ void Computation::readFromProblem()
     m_scene->clear();
     m_scene->copy(Agros::problem()->scene());
 
-    foreach (QString fieldId, Agros::problem()->fieldInfos().keys())
+    foreach(QString fieldId, Agros::problem()->fieldInfos().keys())
     {
-        FieldInfo *originFieldInfo = Agros::problem()->fieldInfo(fieldId);
-        FieldInfo *fieldInfo = new FieldInfo(fieldId);
+        FieldInfo* originFieldInfo = Agros::problem()->fieldInfo(fieldId);
+        FieldInfo* fieldInfo = new FieldInfo(fieldId);
         fieldInfo->copy(originFieldInfo);
 
         // polynomial order
-        foreach (SceneLabel *originLabel, originFieldInfo->labelsPolynomialOrder().keys())
+        foreach(SceneLabel *originLabel, originFieldInfo->labelsPolynomialOrder().keys())
         {
-            SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
+            SceneLabel* label = m_scene->labels->items().at(
+                Agros::problem()->scene()->labels->items().indexOf(originLabel));
 
             fieldInfo->setLabelPolynomialOrder(label, originFieldInfo->labelsPolynomialOrder()[originLabel]);
         }
 
         // boundaries
-        foreach (SceneBoundary *originBoundary, Agros::problem()->scene()->boundaries->items())
+        foreach(SceneBoundary *originBoundary, Agros::problem()->scene()->boundaries->items())
         {
             if (originBoundary->fieldInfo() != originFieldInfo)
                 continue;
 
-            SceneBoundary *bound = new SceneBoundary(m_scene,
+            SceneBoundary* bound = new SceneBoundary(m_scene,
                                                      fieldInfo,
                                                      originBoundary->name(),
                                                      originBoundary->type());
 
             // default values
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(bound->type());
-            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+            foreach(Module::BoundaryTypeVariable variable, boundaryType.variables())
                 bound->setValue(variable.id(), Value(this));
 
             // boundaries
-            foreach (size_t originValueIndex, originBoundary->values().keys())
+            foreach(size_t originValueIndex, originBoundary->values().keys())
             {
                 QSharedPointer<Value> originValue = originBoundary->value(originValueIndex);
 
@@ -1734,9 +1792,10 @@ void Computation::readFromProblem()
             }
 
             // add boundary to the edge marker
-            foreach (SceneFace *originFace, Agros::problem()->scene()->faces->items())
+            foreach(SceneFace *originFace, Agros::problem()->scene()->faces->items())
             {
-                SceneFace *face = m_scene->faces->items().at(Agros::problem()->scene()->faces->items().indexOf(originFace));
+                SceneFace* face = m_scene->faces->items().at(
+                    Agros::problem()->scene()->faces->items().indexOf(originFace));
 
                 if (originFace->hasMarker(originBoundary))
                     face->addMarker(bound);
@@ -1746,21 +1805,21 @@ void Computation::readFromProblem()
         }
 
         // materials
-        foreach (SceneMaterial *originMaterial, Agros::problem()->scene()->materials->items())
+        foreach(SceneMaterial *originMaterial, Agros::problem()->scene()->materials->items())
         {
             if (originMaterial->fieldInfo() != originFieldInfo)
                 continue;
 
-            SceneMaterial *mat = new SceneMaterial(m_scene,
+            SceneMaterial* mat = new SceneMaterial(m_scene,
                                                    fieldInfo,
                                                    originMaterial->name());
 
             // default values
-            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+            foreach(Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
                 mat->setValue(variable.id(), Value(this));
 
             // materials
-            foreach (size_t originValueIndex, originMaterial->values().keys())
+            foreach(size_t originValueIndex, originMaterial->values().keys())
             {
                 QSharedPointer<Value> originValue = originMaterial->value(originValueIndex);
 
@@ -1769,9 +1828,10 @@ void Computation::readFromProblem()
             }
 
             // add label to the label marker
-            foreach (SceneLabel *originLabel, Agros::problem()->scene()->labels->items())
+            foreach(SceneLabel *originLabel, Agros::problem()->scene()->labels->items())
             {
-                SceneLabel *label = m_scene->labels->items().at(Agros::problem()->scene()->labels->items().indexOf(originLabel));
+                SceneLabel* label = m_scene->labels->items().at(
+                    Agros::problem()->scene()->labels->items().indexOf(originLabel));
 
                 if (originLabel->hasMarker(originMaterial))
                     label->addMarker(mat);
@@ -1788,9 +1848,10 @@ void Computation::readFromProblem()
     }
 
     // couplings
-    foreach (CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
+    foreach(CouplingInfo *couplingInfo, Agros::problem()->couplingInfos())
     {
-        m_couplingInfos[qMakePair(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId())]->setCouplingType(couplingInfo->couplingType());
+        m_couplingInfos[qMakePair(couplingInfo->sourceFieldId(), couplingInfo->targetFieldId())]->setCouplingType(
+            couplingInfo->couplingType());
     }
 
     // default values
@@ -1878,8 +1939,9 @@ void Computation::solveInit()
 
         // refine mesh
         int maxNumOfRefinements = 0;
-        foreach (FieldInfo *fieldInfo, m_fieldInfos)
-            maxNumOfRefinements = std::max(maxNumOfRefinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
+        foreach(FieldInfo *fieldInfo, m_fieldInfos)
+            maxNumOfRefinements = std::max(maxNumOfRefinements,
+                                           fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
         m_calculationMesh.refine_global(maxNumOfRefinements);
     }
     else
@@ -1903,7 +1965,8 @@ void Computation::solve()
 
     if ((m_fieldInfos.size() > 1) && isTransient() && (numAdaptiveFields() >= 1))
     {
-        Agros::log()->printError(tr("Solver"), tr("Space adaptivity for transient coupled problems not possible at the moment."));
+        Agros::log()->printError(tr("Solver"),
+                                 tr("Space adaptivity for transient coupled problems not possible at the moment."));
         return;
     }
 
@@ -1915,7 +1978,9 @@ void Computation::solve()
 
     if (Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
-        Agros::log()->printWarning(tr("Solver"), tr("Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings."));
+        Agros::log()->printWarning(tr("Solver"),
+                                   tr(
+                                       "Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings."));
     }
 
     try
@@ -1936,7 +2001,8 @@ void Computation::solve()
         m_lastTimeElapsed = milisecondsToTime(time.elapsed());
 
         // elapsed time
-        Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
+        Agros::log()->printMessage(QObject::tr("Solver"),
+                                   QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
 
         m_abort = false;
         m_isSolving = false;
@@ -1987,9 +2053,10 @@ void Computation::propagateBoundaryMarkers()
     dealii::Triangulation<2>::cell_iterator cell_initial = m_initialMesh.begin();
     dealii::Triangulation<2>::cell_iterator cell_calculation = m_calculationMesh.begin();
 
-    for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)   // loop over all cells, not just active ones
+    for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)
+    // loop over all cells, not just active ones
     {
-        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+        for (int f = 0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
         {
             if (cell_unrefined->face(f)->user_index() != 0)
             {
@@ -2051,7 +2118,7 @@ void Computation::clearFieldsAndConfig()
         QFile::remove(fn);
 }
 
-void Computation::readProblemFromJsonInternal(QJsonObject &rootJson)
+void Computation::readProblemFromJsonInternal(QJsonObject& rootJson)
 {
     ProblemBase::readProblemFromJsonInternal(rootJson);
 
@@ -2063,7 +2130,7 @@ void Computation::readProblemFromJsonInternal(QJsonObject &rootJson)
     m_results->load(rootJson);
 }
 
-void Computation::writeProblemToJsonInternal(QJsonObject &rootJson)
+void Computation::writeProblemToJsonInternal(QJsonObject& rootJson)
 {
     ProblemBase::writeProblemToJsonInternal(rootJson);
 
@@ -2078,8 +2145,8 @@ void Computation::writeProblemToJsonInternal(QJsonObject &rootJson)
 // *****************************************************************************************************************************
 
 Problem::Problem() : ProblemBase(),
-    m_studies(new Studies()),
-    m_recipes(new ResultRecipes())
+                     m_studies(new Studies()),
+                     m_recipes(new ResultRecipes())
 {
 }
 
@@ -2089,7 +2156,7 @@ Problem::~Problem()
     delete m_recipes;
 }
 
-void Problem::removeField(FieldInfo *field)
+void Problem::removeField(FieldInfo* field)
 {
     // remove recipes
     m_recipes->removeAll(field);
@@ -2102,7 +2169,7 @@ QString Problem::problemFileName() const
     return QString("%1/problem.json").arg(cacheProblemDir());
 }
 
-void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
+void Problem::readProblemFromJsonInternal(QJsonObject& rootJson)
 {
     ProblemBase::readProblemFromJsonInternal(rootJson);
 
@@ -2114,7 +2181,7 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject studyJson = studiesJson[i].toObject();
         StudyType type = studyTypeFromStringKey(studyJson[TYPE].toString());
 
-        Study *study = Study::factory(type);
+        Study* study = Study::factory(type);
         study->load(studyJson);
 
         m_studies->addStudy(study);
@@ -2128,20 +2195,20 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject recipeJson = recipesJson[i].toObject();
         ResultRecipeType type = resultRecipeTypeFromStringKey(recipeJson[TYPE].toString());
 
-        ResultRecipe *recipe = ResultRecipe::factory(type);
+        ResultRecipe* recipe = ResultRecipe::factory(type);
         recipe->load(recipeJson);
 
         m_recipes->addRecipe(recipe);
     }
 }
 
-void Problem::writeProblemToJsonInternal(QJsonObject &rootJson)
+void Problem::writeProblemToJsonInternal(QJsonObject& rootJson)
 {
     ProblemBase::writeProblemToJsonInternal(rootJson);
 
     // studies
     QJsonArray studiesJson;
-    foreach (Study *study, m_studies->items())
+    foreach(Study *study, m_studies->items())
     {
         QJsonObject studyJson;
         studyJson[TYPE] = studyTypeToStringKey(study->type());
@@ -2152,7 +2219,7 @@ void Problem::writeProblemToJsonInternal(QJsonObject &rootJson)
 
     // recipes
     QJsonArray recipesJson;
-    foreach (ResultRecipe *recipe, m_recipes->items())
+    foreach(ResultRecipe *recipe, m_recipes->items())
     {
         QJsonObject recipeJson;
         recipe->save(recipeJson);
@@ -2198,7 +2265,7 @@ void Problem::clearFieldsAndConfig()
     m_fileName = "";
 }
 
-void Problem::readProblemFromArchive(const QString &fileName)
+void Problem::readProblemFromArchive(const QString& fileName)
 {
     clearFieldsAndConfig();
 
@@ -2280,7 +2347,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
     m_scene->invalidate();
 }
 
-void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFile)
+void Problem::writeProblemToArchive(const QString& fileName, bool onlyProblemFile)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -2304,7 +2371,7 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     }
 }
 
-void Problem::readProblemFromFile(const QString &fileName)
+void Problem::readProblemFromFile(const QString& fileName)
 {
     QFileInfo fileInfo(fileName);
 
@@ -2341,7 +2408,7 @@ void Problem::readProblemFromFile(const QString &fileName)
         clearFieldsAndConfig();
         Agros::log()->printError(tr("Problem"), e.toString());
     }
-    catch (AgrosException &e)
+    catch (AgrosException& e)
     {
         clearFieldsAndConfig();
         Agros::log()->printError(tr("Problem"), e.toString());

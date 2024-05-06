@@ -203,7 +203,7 @@ void ProblemConfig::checkVariableName(const QString &keyToCheck, const QString &
         throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(keyToCheck));
 
     // keywords - time, x, y, r, z, value
-    if (keyToCheck == "time" || keyToCheck == "value" || keyToCheck == "x" || keyToCheck == "y" || keyToCheck == "r" || keyToCheck == "z")
+    if (keyToCheck.toLower() == "time" || keyToCheck.toLower() == "value" || keyToCheck.toLower() == "x" || keyToCheck.toLower() == "y" || keyToCheck.toLower() == "r" || keyToCheck.toLower() == "z")
         throw AgrosException(QObject::tr("Variable is reserved keyword: %1.").arg(keyToCheck));
 
     // parameters

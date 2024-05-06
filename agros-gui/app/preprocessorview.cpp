@@ -999,7 +999,14 @@ void PreprocessorWidget::doDelete()
             QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
             parameters.remove(key);
 
-            Agros::problem()->checkAndApplyParameters(parameters);
+            QStringList err = Agros::problem()->checkAndApplyParameters(parameters);
+            if (!err.isEmpty())
+            {
+                QString msg;
+                foreach (QString str, err)
+                    msg += str + "\n";
+                QMessageBox::critical(this, tr("Parameters error"), msg);
+            }
         }
         else if (type == PreprocessorWidget::ModelFunction)
         {
