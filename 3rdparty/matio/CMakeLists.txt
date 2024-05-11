@@ -5,9 +5,8 @@ add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
 IF(MSVC)
   ADD_CUSTOM_COMMAND(
-        COMMAND   copy ARGS matioConfigWin.h matioConfig.h OUTPUT matioConfig.h
-        DEPENDS    matioConfigWin.h
-        OUTPUTS   matioConfig.h)
+        COMMAND  ${CMAKE_COMMAND} -E copy ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfigWin.h ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfig.h 
+	OUTPUT matioConfig.h DEPENDS  ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfigWin.h})
 ELSE()
   ADD_CUSTOM_COMMAND(
         COMMAND   cp ARGS matioConfigLinux.h matioConfig.h OUTPUT matioConfig.h
