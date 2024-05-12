@@ -4,14 +4,9 @@ set_property(SOURCE matioConfig.h PROPERTY SKIP_AUTOMOC ON)
 add_custom_target(MATIO_CONFIG ALL DEPENDS matioConfig.h)
 
 IF(MSVC)
-  ADD_CUSTOM_COMMAND(
-        COMMAND  ${CMAKE_COMMAND} -E copy ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfigWin.h ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfig.h 
-	OUTPUT matioConfig.h DEPENDS  ${CMAKE_AGROS_DIRECTORY}3rdparty/matio/matioConfigWin.h})
+  configure_file(matioConfigWin.h matioConfig.h COPYONLY)
 ELSE()
-  ADD_CUSTOM_COMMAND(
-        COMMAND   cp ARGS matioConfigLinux.h matioConfig.h OUTPUT matioConfig.h
-        DEPENDS    matioConfigLinux.h
-        OUTPUTS   matioConfig.h)
+  configure_file(matioConfigLinux.h matioConfig.h COPYONLY)
 ENDIF()
 
 SET(SOURCES endian.c

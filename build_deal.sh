@@ -17,7 +17,7 @@ cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPA
 make -j12
 cd ../..
 # copy deal
-cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2
+cp -f dealii/build/lib/libdeal_II.so.9.5.2 build/usr/lib/libdeal_II.so.9.5.2
 
 # cache stats
 ccache --show-stats 

@@ -44,7 +44,7 @@ ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
 void ParameterDialog::createControls()
 {
     setWindowTitle(tr("Parameter: %1").arg(m_key));
-    setMinimumWidth(350);
+    setMinimumWidth(450);
 
     lblParametersError = new QLabel();
 
@@ -69,8 +69,9 @@ void ParameterDialog::createControls()
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(doReject()));
 
     QVBoxLayout *layoutParametersWidget = new QVBoxLayout();
-    layoutParametersWidget->addLayout(layoutParametersEdit);
+    layoutParametersWidget->addLayout(layoutParametersEdit, 1);
     layoutParametersWidget->addWidget(lblParametersError);
+    layoutParametersWidget->addStretch();
     layoutParametersWidget->addWidget(buttonBox);
 
     setLayout(layoutParametersWidget);
@@ -116,10 +117,20 @@ bool ParameterDialog::save()
     if (!m_key.isEmpty() && txtParameterName->text() != m_key)
         parameters.remove(m_key);
 
-    if (Agros::problem()->checkAndApplyParameters(parameters))
+    QStringList err = Agros::problem()->checkAndApplyParameters(parameters);
+    if (err.isEmpty())
     {
         Agros::problem()->scene()->invalidate();
         return true;
+    }
+    else
+    {
+        QString msg;
+        foreach (QString str, err)
+            msg += str + "\n";
+
+        lblParametersError->setText(msg);
+        lblParametersError->setVisible(true);
     }
 
     return false;
@@ -130,7 +141,7 @@ bool ParameterDialog::remove()
     QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     parameters.remove(m_key);
 
-    if (Agros::problem()->checkAndApplyParameters(parameters))
+    if (Agros::problem()->checkAndApplyParameters(parameters).isEmpty())
     {
         Agros::problem()->scene()->invalidate();
         return true;

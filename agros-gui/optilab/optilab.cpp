@@ -113,6 +113,10 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     }
 
     createControls();
+
+    connect(trvOptilab, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doItemContextMenu(const QPoint &)));
+    connect(trvOptilab, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvOptilab, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -125,14 +129,16 @@ OptiLabWidget::~OptiLabWidget()
     QSettings settings;
     settings.setValue("OptiLab/OptilabTreeColumnWidth0", trvOptilab->columnWidth(0));
     settings.setValue("OptiLab/OptilabTreeColumnWidth1", trvOptilab->columnWidth(1));
+    settings.setValue("OptiLab/ComputationTreeColumnWidth0", trvComputation->columnWidth(0));
+    settings.setValue("OptiLab/ComputationTreeColumnWidth1", trvComputation->columnWidth(1));
 }
 
 void OptiLabWidget::createControls()
 {
-    auto *layout = new QHBoxLayout();
+    auto *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(createControlsOptilab());
-    layout->addWidget(createControlsComputation());
+    // layout->addWidget(createControlsComputation());
 
     setLayout(layout);
 }
@@ -164,6 +170,10 @@ QWidget *OptiLabWidget::createControlsOptilab()
     connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
     actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
+
+    auto *actExport = new QAction(tr("Export"), this);
+    actExport->setIcon(icon("menu_function"));
+    connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
 
     auto *mnuRecipe = new QMenu(tr("New recipe"), this);
     mnuRecipe->addAction(actNewRecipeLocalValue);
@@ -204,47 +214,35 @@ QWidget *OptiLabWidget::createControlsOptilab()
 
     toolBarLeft->addWidget(toolButtonStudies);
     toolBarLeft->addWidget(toolButtonRecipes);
+    toolBarLeft->addSeparator();
+    toolBarLeft->addAction(actExport);
 
-    QStringList headers;
-    headers << tr("Key") << tr("Value");
+    QStringList headersOptilab;
+    headersOptilab << tr("Key") << tr("Value");
     trvOptilab = new QTreeWidget(this);
     trvOptilab->setColumnCount(2);
     trvOptilab->setColumnWidth(0, settings.value("OptiLab/OptilabTreeColumnWidth0", 90).toInt());
     trvOptilab->setColumnWidth(1, settings.value("OptiLab/OptilabTreeColumnWidth1", 130).toInt());
     trvOptilab->setHeaderHidden(false);
-    trvOptilab->setHeaderLabels(headers);
+    trvOptilab->setHeaderLabels(headersOptilab);
     trvOptilab->setContextMenuPolicy(Qt::CustomContextMenu);
     trvOptilab->setMouseTracking(true);
     // trvOptilab->setUniformRowHeights(true);
     trvOptilab->setExpandsOnDoubleClick(false);
     trvOptilab->setIndentation(trvOptilab->indentation() - 2);
 
-    connect(trvOptilab, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doItemContextMenu(const QPoint &)));
-    connect(trvOptilab, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvOptilab, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
-
-    auto *layoutStudies = new QGridLayout();
-    layoutStudies->setContentsMargins(2, 2, 2, 2);
-    layoutStudies->addWidget(toolBarLeft, 0, 0, 1, 2);
-    layoutStudies->addWidget(trvOptilab, 1, 0, 1, 2);
-
-    auto *widgetStudies = new QWidget(this);
-    widgetStudies->setMinimumWidth(340);
-    widgetStudies->setMaximumWidth(340);
-    widgetStudies->setLayout(layoutStudies);
-
-    return widgetStudies;
-}
-
-QWidget *OptiLabWidget::createControlsComputation()
-{
-    // parameters
+    // computations
+    QStringList headersComputarion;
+    headersComputarion << tr("Position") << tr("Status");
     trvComputation = new QTreeWidget(this);
     trvComputation->setMouseTracking(true);
-    trvComputation->setHeaderHidden(true);
-    trvComputation->setMinimumWidth(200);
-    trvComputation->setColumnWidth(0, 200);
+    trvComputation->setHeaderHidden(false);
+    trvComputation->setHeaderLabels(headersComputarion);
+    trvComputation->setColumnCount(2);
+    trvComputation->setColumnWidth(0, settings.value("OptiLab/ComputationTreeColumnWidth0", 50).toInt());
+    trvComputation->setColumnWidth(1, settings.value("OptiLab/ComputationTreeColumnWidth1", 200).toInt());
     trvComputation->setContextMenuPolicy(Qt::CustomContextMenu);
+    trvComputation->setIndentation(trvOptilab->indentation() - 2);
 
     connect(trvComputation, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doComputationContextMenu(const QPoint &)));
     connect(trvComputation, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doComputationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -260,28 +258,18 @@ QWidget *OptiLabWidget::createControlsComputation()
     mnuComputations->addSeparator();
     mnuComputations->addAction(actComputationDelete);
 
-    auto *actExport = new QAction(tr("Export"), this);
-    actExport->setIcon(icon("menu_function"));
-    connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
+    auto *layoutStudies = new QVBoxLayout();
+    layoutStudies->setContentsMargins(2, 2, 2, 2);
+    layoutStudies->addWidget(toolBarLeft, 0);
+    layoutStudies->addWidget(trvOptilab, 3);
+    layoutStudies->addWidget(trvComputation, 2);
 
-    // left toolbar
-    auto *toolBarComputation = new QToolBar();
-    toolBarComputation->setProperty("topbar", true);
-    toolBarComputation->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    auto *widgetStudies = new QWidget(this);
+    widgetStudies->setMinimumWidth(340);
+    widgetStudies->setMaximumWidth(340);
+    widgetStudies->setLayout(layoutStudies);
 
-    toolBarComputation->addAction(actExport);
-
-    auto *layoutComputation = new QVBoxLayout();
-    layoutComputation->setContentsMargins(2, 2, 2, 2);
-    layoutComputation->addWidget(toolBarComputation);
-    layoutComputation->addWidget(trvComputation);
-
-    auto *widgetComputation = new QWidget(this);
-    widgetComputation->setMinimumWidth(220);
-    widgetComputation->setMaximumWidth(220);
-    widgetComputation->setLayout(layoutComputation);
-
-    return widgetComputation;
+    return widgetStudies;
 }
 
 void OptiLabWidget::refresh()
@@ -328,11 +316,11 @@ void OptiLabWidget::refresh()
 
         // study
         auto *studyNode = new QTreeWidgetItem(studiesNode);
-        studyNode->setText(0, tr("%1").arg(studyTypeString(study->type())));
+        studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
         studyNode->setIcon(0, icon("menu_recipe"));
         studyNode->setFont(0, fnt);
-        studyNode->setData(0, Qt::UserRole, k);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        studyNode->setData(2, Qt::UserRole, k);
         studyNode->setExpanded(true);
         if (m_optilab->study() && m_optilab->study() == study)
             nodeSelected = studyNode;
@@ -341,8 +329,8 @@ void OptiLabWidget::refresh()
         auto *parametersNode = new QTreeWidgetItem(studyNode);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setData(0, Qt::UserRole, k);
         parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        parametersNode->setData(2, Qt::UserRole, k);
         parametersNode->setExpanded(true);
 
         foreach (Parameter parameter, study->parameters())
@@ -358,10 +346,11 @@ void OptiLabWidget::refresh()
 
         // functionals
         auto *functionalsNode = new QTreeWidgetItem(studyNode);
-        functionalsNode->setText(0, tr("Functionals"));
+        functionalsNode->setText(0, tr("Goal Functions"));
         functionalsNode->setFont(0, fnt);
         functionalsNode->setData(0, Qt::UserRole, study->variant());
         functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        functionalsNode->setData(2, Qt::UserRole, k);
         functionalsNode->setExpanded(true);
 
         foreach (Functional functional, study->functionals())
@@ -424,9 +413,9 @@ void OptiLabWidget::exportData()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
         {
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
             QList<ComputationSet> computationSets = study->computationSets(study->value(Study::View_Filter).toString());
 
@@ -509,9 +498,9 @@ void OptiLabWidget::studyChanged(Study *study)
             int currentComputationSetCount = 0;
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
-                QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
-                // item->setText(0, computation->problemDir());
-                item->setText(0, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
+                auto *item = new QTreeWidgetItem(itemComputationSet);
+                item->setText(0, QString("%1 / %2").arg(i+1).arg(currentComputationSetCount+1));
+                item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
                 item->setData(0, Qt::UserRole, computation->problemDir());
 
                 currentComputationSetCount++;
@@ -525,7 +514,8 @@ void OptiLabWidget::studyChanged(Study *study)
                 }
             }
 
-            itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(currentComputationSetCount));
+            itemComputationSet->setText(0, tr("%1").arg(computationSets[i].name()));
+            itemComputationSet->setText(1, tr("%1 computations)").arg(currentComputationSetCount));
         }
 
         // set study to optilab view
@@ -552,9 +542,9 @@ void OptiLabWidget::solveStudy()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
         {
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
             auto *log = new LogOptimizationDialog(study);
             log->show();
@@ -614,9 +604,6 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
             actRunStudy->setEnabled(true);
-
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
-            studyChanged(study);
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
@@ -634,6 +621,13 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+
+        // change study
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
+        {
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+            studyChanged(study);
+        }
     }
 }
 
@@ -645,7 +639,7 @@ void OptiLabWidget::doItemProperties()
         if (type == OptiLabWidget::OptilabStudy)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
@@ -1325,7 +1319,7 @@ void OptiLab::doComputationSelected(const QString &key)
 
             // functionals
             QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(trvResults);
-            functionalsNode->setText(0, tr("Functionals"));
+            functionalsNode->setText(0, tr("Goal Functions"));
             functionalsNode->setFont(0, fnt);
             functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
             functionalsNode->setExpanded(true);

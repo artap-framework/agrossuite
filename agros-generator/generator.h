@@ -27,9 +27,10 @@
 #include "ctemplate/template.h"
 #include "../../resources_source/classes/module_xml.h"
 
-const QString GENERATOR_TEMPLATEROOT = "resources_source/generator";
-const QString GENERATOR_DOCROOT = "resources_source/doc/source/modules";
-const QString GENERATOR_PLUGINROOT = "plugins";
+const QString GENERATOR_RESOURCES = "../../resources_source";
+const QString GENERATOR_TEMPLATEROOT = GENERATOR_RESOURCES + "/generator";
+const QString GENERATOR_DOCROOT = GENERATOR_RESOURCES + "/doc/source/modules";
+const QString GENERATOR_PLUGINROOT = "../../plugins";
 
 class LexicalAnalyser;
 
