@@ -44,12 +44,15 @@ SET(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # Link Zlib
-FIND_PACKAGE(ZLIB REQUIRED)
+IF(MSVC)
+    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+ELSE() 
+ FIND_PACKAGE(ZLIB REQUIRED)
+ENDIF()
 
 # Link OpenGL when needed.
 IF(MSVC)
     FIND_PACKAGE(OpenGL REQUIRED)
-    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 ENDIF()
 
 find_package(Qt6 COMPONENTS Core REQUIRED)
@@ -133,6 +136,9 @@ configure_file(
   resources_source/resources.rc.cmake
   resources_source/resources.rc)
 
+IF(MSVC)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/agros-library/util)
+ENDIF()
 # Include OUR header files location
 INCLUDE(IncludeSubdirs.cmake)
 
