@@ -30,17 +30,6 @@
 const int ParenthesisMatcherPropertyId = QTextFormat::UserProperty;
 const int ErrorMarkerPropertyId = QTextFormat::UserProperty + 1;
 
-
-#ifdef Q_WS_X11
-    const QFont FONT = QFont("Monospace", 9);
-#endif
-#ifdef Q_WS_WIN
-    const QFont FONT = QFont("Courier New", 9);
-#endif
-#ifdef Q_WS_MAC
-    const QFont FONT = QFont("Monaco", 12);
-#endif
-
 // ************************************************************************************************************
 
 TextBlockData::TextBlockData()
@@ -374,7 +363,7 @@ ScriptEditor::ScriptEditor(QWidget *parent)
 {
     lineNumberArea = new ScriptEditorLineNumberArea(this);
 
-    setFont(FONT);
+    setFont(defaultFixedFont(9));
     // setTabStopWidth(fontMetrics().width(TABS));
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setTabChangesFocus(false);

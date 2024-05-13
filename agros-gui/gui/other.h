@@ -45,8 +45,11 @@ enum AlphabetColor
     AlphabetColor_Red,
     AlphabetColor_Yellow
 };
+
 // get color icon with letter
 QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
+
+QFont defaultFixedFont(int size = 10);
 
 class SolveThread : public QThread
 {

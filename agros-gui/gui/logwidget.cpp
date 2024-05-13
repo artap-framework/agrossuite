@@ -310,7 +310,6 @@ LogDialog::~LogDialog()
 
 void LogDialog::createControls()
 {
-
     connect(m_connectLog, SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
     connect(m_connectLog, SIGNAL(updateNonlinearChart(SolverAgros::Phase, const QVector<double>, const QVector<double>)),
            this, SLOT(updateNonlinearChartInfo(SolverAgros::Phase, const QVector<double>, const QVector<double>)));
