@@ -8,9 +8,7 @@ First install the following free packages:
 - Python (http://www.python.org)
 - dxflib (http://www.ribbonsoft.com)
 - ctemplate (http://code.google.com/p/ctemplate)
-- poly2tri (http://code.google.com/p/poly2tri)
 - Triangle (http://www.cs.cmu.edu/~quake/triangle.html)
-- UMFPACK (http://www.cise.ufl.edu/research/sparse/umfpack/)
 - MUMPS (http://graal.ens-lyon.fr/MUMPS)
 
 If you are using a Debian-like system, install the required libraries by following commands:

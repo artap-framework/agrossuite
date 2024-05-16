@@ -53,5 +53,30 @@ private:
     struct triangulateio triOut;
 };
 
+class AGROS_LIBRARY_API MeshGeneratorTriangleFast : public MeshGenerator
+{
+public:
+    struct Triangle
+    {
+        Triangle(const Point &a, const Point &b, const Point &c) : a(a), b(b), c(c)
+        {
+        }
+
+        Point a, b, c;
+    };
+
+    MeshGeneratorTriangleFast(ProblemBase *problem);
+
+    virtual bool mesh();
+    void clear();
+    inline QMap<SceneLabel*, QList<Triangle> > polygonTriangles() const { return m_polygonTriangles; }
+
+private:
+    bool writeToTriangle();
+    bool readTriangleMeshFormat();
+
+    struct triangulateio triOut;
+    QMap<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > m_polygonTriangles;
+};
 
 #endif //MESHGENERATOR_TRIANGLE_H

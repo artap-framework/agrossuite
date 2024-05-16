@@ -20,8 +20,6 @@
 #ifndef SCENEVIEWGEOMETRY_H
 #define SCENEVIEWGEOMETRY_H
 
-#include "util/loops.h"
-
 #include "sceneview_common2d.h"
 
 class SceneFaceCommandAdd;

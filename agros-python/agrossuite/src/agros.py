@@ -13,7 +13,6 @@ else:
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_python.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_triangle.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_dxflib.so")
-	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_poly2tri.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_quazip.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_matio.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_nlopt2.so")

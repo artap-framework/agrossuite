@@ -21,12 +21,11 @@
 
 #include "util/util.h"
 #include "util/global.h"
-#include "util/loops.h"
+#include "util/constants.h"
+#include <mesh/meshgenerator_triangle.h>
 
 #include "scene.h"
 #include "solver/problem.h"
-
-#include "util/constants.h"
 
 #include "scenebasic.h"
 #include "scenenode.h"
@@ -848,7 +847,7 @@ void SceneViewPost2D::paintPostprocessorSelectedVolume()
 
         glColor4d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2], 0.5);
 
-        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_postprocessorWidget->currentComputation()->scene()->loopsInfo()->polygonTriangles());
+        QMapIterator<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > i(m_postprocessorWidget->currentComputation()->scene()->fastMeshInfo()->polygonTriangles());
         glBegin(GL_TRIANGLES);
         while (i.hasNext())
         {
@@ -856,7 +855,7 @@ void SceneViewPost2D::paintPostprocessorSelectedVolume()
 
             if (i.key()->isSelected())
             {
-                foreach (LoopsInfo::Triangle triangle, i.value())
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
                 {
                     glVertex2d(triangle.a.x, triangle.a.y);
                     glVertex2d(triangle.b.x, triangle.b.y);

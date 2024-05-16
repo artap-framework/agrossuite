@@ -19,9 +19,10 @@
 
 #include "sceneview_geometry.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "util/util.h"
 #include "util/global.h"
-#include "util/loops.h"
 #include "util/constants.h"
 #include "logview.h"
 
@@ -492,12 +493,12 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
                 if (str.length() > 0)
                     str = str.left(str.length() - 2);
 
-                QList<LoopsInfo::Triangle> triangles = Agros::problem()->scene()->loopsInfo()->polygonTriangles()[label];
+                QList<MeshGeneratorTriangleFast::Triangle> triangles = Agros::problem()->scene()->fastMeshInfo()->polygonTriangles()[label];
 
                 RectPoint boundingBox(Point(numeric_limits<double>::max(),  numeric_limits<double>::max()),
                                       Point(-numeric_limits<double>::max(), -numeric_limits<double>::max()));
                 double area = 0.0;
-                foreach (LoopsInfo::Triangle triangle, triangles)
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, triangles)
                 {
                     boundingBox.start.x = qMin(boundingBox.start.x, triangle.a.x);
                     boundingBox.end.x = qMax(boundingBox.end.x, triangle.a.x);
@@ -1268,7 +1269,7 @@ void SceneViewProblem::paintGeometry()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_TRIANGLES);
-            QMapIterator<SceneLabel *, QList<LoopsInfo::Triangle> > i(Agros::problem()->scene()->loopsInfo()->polygonTriangles());
+            QMapIterator<SceneLabel *, QList<MeshGeneratorTriangleFast::Triangle> > i(Agros::problem()->scene()->fastMeshInfo()->polygonTriangles());
             while (i.hasNext())
             {
                 i.next();
@@ -1286,7 +1287,7 @@ void SceneViewProblem::paintGeometry()
                 else
                     glColor4f(0.3f, 0.1f, 0.7, 0.10f);
 
-                foreach (LoopsInfo::Triangle triangle, i.value())
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
                 {
                     glVertex2d(triangle.a.x, triangle.a.y);
                     glVertex2d(triangle.b.x, triangle.b.y);

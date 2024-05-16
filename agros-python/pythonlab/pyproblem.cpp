@@ -19,6 +19,8 @@
 
 #include "pyproblem.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "solver/problem_result.h"
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
@@ -261,7 +263,7 @@ void PyComputation::clear()
 
 void PyComputation::solve()
 {
-    computation()->scene()->loopsInfo()->processPolygonTriangles(true);
+    computation()->scene()->fastMeshInfo()->mesh();
     computation()->solve();
 
     if (!computation()->isSolved())

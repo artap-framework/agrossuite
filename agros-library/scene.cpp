@@ -19,9 +19,10 @@
 
 #include "scene.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "util/util.h"
 #include "util/global.h"
-#include "util/loops.h"
 #include "util/dxf_filter.h"
 
 #include "util/util.h"
@@ -116,7 +117,7 @@ ostream& operator<<(ostream& output, FieldInfo& id)
 // ************************************************************************************************************************
 
 Scene::Scene(ProblemBase *problem) : m_problem(problem),
-    m_loopsInfo(QSharedPointer<LoopsInfo>(new LoopsInfo(this))),
+    m_meshGeneratorFast(QSharedPointer<MeshGeneratorTriangleFast>(new MeshGeneratorTriangleFast(problem))),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 {    
@@ -125,7 +126,7 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem),
 
 Scene::~Scene()
 {
-    m_loopsInfo->clear();
+    m_meshGeneratorFast->clear();
 
     // clear
     clear();
@@ -326,8 +327,8 @@ void Scene::checkGeometryAssignement()
 void Scene::clear()
 {
     // loops
-    if (!m_loopsInfo.isNull())
-        m_loopsInfo->clear();
+    if (!m_meshGeneratorFast.isNull())
+        m_meshGeneratorFast->clear();
 
     // geometry
     nodes->clear();
@@ -347,9 +348,6 @@ void Scene::clear()
     m_lyingEdgeNodes.clear();
     m_numberOfConnectedNodeEdges.clear();
     m_crossings.clear();
-
-    if (!m_loopsInfo.isNull())
-        m_loopsInfo->processPolygonTriangles(true);
 
     invalidate();
 }
@@ -431,7 +429,13 @@ void Scene::invalidate()
     findNumberOfConnectedNodeEdges();
     findCrossings();
 
-    if (!m_loopsInfo.isNull()) m_loopsInfo->processPolygonTriangles(true);
+    if (!m_meshGeneratorFast.isNull())
+    {
+        // QElapsedTimer timer2;
+        // timer2.start();
+        m_meshGeneratorFast->mesh();
+        // qInfo() << "fast mesh: \t" << timer2.nsecsElapsed() / 1000 << "microseconds";
+    }
 }
 
 void Scene::fieldsChange()

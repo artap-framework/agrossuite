@@ -20,7 +20,6 @@
 #include "sceneview_common3d.h"
 
 #include "util/global.h"
-#include "util/loops.h"
 
 #include "sceneview_data.h"
 #include "scene.h"

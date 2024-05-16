@@ -46,7 +46,6 @@
 #include "logview.h"
 
 #include "mesh/meshgenerator_triangle.h"
-#include "mesh/meshgenerator_gmsh.h"
 
 #include "optilab/study.h"
 
@@ -918,9 +917,6 @@ bool ProblemBase::mesh()
         // meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal(this));
 #endif
             break;
-        case MeshType_GMSH_Quad:
-            meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH(this));
-            break;
         default:
             Agros::log()->printError(tr("Mesh generator error"),
                                      tr("Mesh generator '%1' is not supported.").arg(
@@ -929,8 +925,13 @@ bool ProblemBase::mesh()
             break;
         }
 
+        QElapsedTimer timer;
+        timer.start();
+
         if (meshGenerator->mesh())
         {
+            qInfo() << "meshGenerator->mesh(): \t\t" << timer.nsecsElapsed() / 1000 << "microseconds";
+
             // load mesh
             m_initialMesh.copy_triangulation(meshGenerator->triangulation());
             // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
