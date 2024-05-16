@@ -25,7 +25,6 @@
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
-#include "util/loops.h"
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
