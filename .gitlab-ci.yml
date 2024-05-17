@@ -152,7 +152,6 @@ build-windows:
     # Build Agros
     - cd ..
     - cd ..
-    - mkdir build
     - cd build
     - cmake -S .. -B .
     - cmake --build . --config Release --parallel 12  -j 12
