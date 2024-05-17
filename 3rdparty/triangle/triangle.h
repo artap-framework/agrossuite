@@ -253,7 +253,14 @@
 #define VOID void
 #define TRILIBRARY
 
-struct triangulateio {
+#ifdef _MSC_VER
+   #define AGROS_LIBRARY_API __declspec(dllexport)
+   #define Long __int64
+#else
+#define Long long
+#endif
+
+AGROS_LIBRARY_API struct  triangulateio {
   REAL *pointlist;                                               /* In / out */
   REAL *pointattributelist;                                      /* In / out */
   int *pointmarkerlist;                                          /* In / out */
@@ -285,9 +292,9 @@ struct triangulateio {
 };
 
 #ifdef ANSI_DECLARATORS
-void triangulate(char *, struct triangulateio *, struct triangulateio *,
+AGROS_LIBRARY_API void  triangulate(char *, struct triangulateio *, struct triangulateio *,
                  struct triangulateio *);
-void trifree(VOID *memptr);
+AGROS_LIBRARY_API void  trifree(VOID *memptr);
 #else /* not ANSI_DECLARATORS */
 void triangulate();
 void trifree();

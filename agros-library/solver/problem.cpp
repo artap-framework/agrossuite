@@ -910,12 +910,7 @@ bool ProblemBase::mesh()
         switch (config()->meshType())
         {
         case MeshType_Triangle_QuadFineDivision:
-#ifdef Q_OS_WIN
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal(this));
-#else
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
-        // meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal(this));
-#endif
             break;
         default:
             Agros::log()->printError(tr("Mesh generator error"),

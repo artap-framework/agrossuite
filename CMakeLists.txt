@@ -12,7 +12,7 @@ ENDIF()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake /usr/lib/x86_64-linux-gnu/cmake/Qt6)
 
-SET(DEAL_II_BUILD_TYPE "Release")
+SET(DEAL_II_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 SET(DEAL_II_DIR "dealii/build")
 FIND_PACKAGE(deal.II HINTS ${DEAL_II_DIR})
 deal_ii_initialize_cached_variables()
@@ -20,9 +20,7 @@ message("deal.II: ${DEAL_II_VERSION}")
 message("deal.II: ${DEAL_II_TARGET}")
 
 # Allow to override the default values in CMake.vars:
-IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    INCLUDE(CMake.vars.Linux OPTIONAL)
-ELSE()
+IF(MSVC)
     INCLUDE(CMake.vars.Windows OPTIONAL)
 ENDIF()
 INCLUDE(CMake.vars OPTIONAL)

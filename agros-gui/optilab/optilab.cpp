@@ -180,7 +180,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
 
-    mnuOptilab =  new QMenu(trvOptilab);
+    mnuOptilab =  new QMenu(tr("Optilab"));
     mnuOptilab->addMenu(mnuStudies);
     mnuOptilab->addMenu(mnuRecipe);
     mnuOptilab->addSeparator();
