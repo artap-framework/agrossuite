@@ -22,7 +22,7 @@
 #include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
-#include <mesh/meshgenerator_triangle.h>
+#include "util/loops.h"
 
 #include "scene.h"
 #include "solver/problem.h"

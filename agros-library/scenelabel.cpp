@@ -22,6 +22,7 @@
 #include <mesh/meshgenerator_triangle.h>
 
 #include "util/util.h"
+#include "util/loops.h"
 #include "util/global.h"
 
 #include "scene.h"

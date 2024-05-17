@@ -76,6 +76,8 @@ SET(SOURCES
     util/table.cpp
     util/script_generator.cpp
     value.cpp
+        util/loops.cpp
+        util/loops.h
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})

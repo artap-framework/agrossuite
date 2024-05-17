@@ -24,6 +24,7 @@
 #include "util/util.h"
 #include "util/global.h"
 #include "util/dxf_filter.h"
+#include "util/loops.h"
 
 #include "util/util.h"
 #include "value.h"

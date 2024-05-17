@@ -24,6 +24,7 @@
 #include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
+#include "util/loops.h"
 #include "logview.h"
 
 #include "scene.h"
@@ -34,14 +35,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarkerdialog.h"
-#include "scenebasicselectdialog.h"
 
-#include "gui/physicalfield.h"
-
-#include "solver/module.h"
-#include "solver/field.h"
-#include "solver/problem.h"
-#include "solver/problem_config.h"
 
 SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
     : SceneViewCommon2D(parent)

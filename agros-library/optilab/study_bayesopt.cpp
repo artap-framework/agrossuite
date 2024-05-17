@@ -27,6 +27,7 @@
 #include "parameter.h"
 
 #include "util/global.h"
+#include "util/loops.h"
 #include "solver/problem.h"
 
 #include "scene.h"

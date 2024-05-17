@@ -19,7 +19,7 @@
 
 #include "pyproblem.h"
 
-#include <mesh/meshgenerator_triangle.h>
+#include "util/loops.h"
 
 #include "solver/problem_result.h"
 #include "solver/coupling.h"

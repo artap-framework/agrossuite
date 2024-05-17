@@ -925,13 +925,8 @@ bool ProblemBase::mesh()
             break;
         }
 
-        QElapsedTimer timer;
-        timer.start();
-
         if (meshGenerator->mesh())
         {
-            qInfo() << "meshGenerator->mesh(): \t\t" << timer.nsecsElapsed() / 1000 << "microseconds";
-
             // load mesh
             m_initialMesh.copy_triangulation(meshGenerator->triangulation());
             // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
