@@ -96,6 +96,15 @@ QIcon iconAlphabet(const QChar &letter, AlphabetColor color)
         return icon(QString("alphabet/%1/imageback").arg(directory));
 }
 
+QFont defaultFixedFont(int size)
+{
+    static int loadedFontID = QFontDatabase::addApplicationFont(":fixed-font.ttf");
+    static QFont font = QFontDatabase::applicationFontFamilies(loadedFontID).at(0);
+
+    font.setPointSize(size);
+    return font;
+}
+
 // ************************************************************************************************************************
 
 void SolveThread::run()

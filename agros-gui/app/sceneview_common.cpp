@@ -210,7 +210,7 @@ void SceneViewCommon::printAt(int penX, int penY, const QString &text, int fontS
 
     QPainter painter(this);
     painter.setPen(Qt::black);
-    painter.setFont(QFont("Fixed", fontSize));
+    painter.setFont(defaultFixedFont(fontSize));
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     painter.drawText(textPosX, textPosY, text); // z = pointT4.z + distOverOp / 4
     painter.end();
