@@ -711,7 +711,10 @@ bool MeshGeneratorTriangle::writeToTriangle()
     //    -s  Force segments into mesh by splitting (instead of using CDT).
     //    -C  Check consistency of final mesh.
     //    -Q  Quiet:  No terminal output except errors.
-    char const *triSwitches = "pq31.0eAazInQo2";
+
+    // set mesh quality angle
+    char const *triSwitches = QString("pq%1eAazInQo2").arg(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt()).toStdString().c_str();
+    // char const *triSwitches = "pq31.0eAazInQo2";
     triangulate((char *) triSwitches, &triIn, &triOut, (struct triangulateio *) NULL);
 
     free(triIn.pointlist);
