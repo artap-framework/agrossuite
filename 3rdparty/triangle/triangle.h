@@ -257,7 +257,8 @@
    #define AGROS_LIBRARY_API __declspec(dllexport)
    #define Long __int64
 #else
-#define Long long
+    #define Long long
+    #define AGROS_LIBRARY_API
 #endif
 
 AGROS_LIBRARY_API struct  triangulateio {
