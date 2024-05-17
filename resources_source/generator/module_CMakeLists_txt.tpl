@@ -9,7 +9,11 @@ ENDIF()
 
 # This overrides CXX flags for MSVC
 IF(MSVC)
-	SET(DEAL_LIBRARY ${CMAKE_AGROS_SOURCE}/dealii/build/lib/deal_II.lib)
+	IF(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+	  SET(DEAL_LIBRARY ${CMAKE_AGROS_SOURCE}/dealii/build/lib/deal_II.lib)
+	ELSE()
+           SET(DEAL_LIBRARY ${CMAKE_AGROS_SOURCE}/dealii/build/lib/deal_II.g.lib)
+	ENDIF()
 	SET(DXFLIB_LIBRARY ${CMAKE_SOURCE_DIR}/../usr/lib/agros_3rdparty_dxflib.lib)
 	SET(NLOPTLIB_LIBRARY ${CMAKE_SOURCE_DIR}/../usr/lib/agros_3rdparty_nlopt2.lib)
 	SET(MATIO_LIBRARY ${CMAKE_SOURCE_DIR}/../usr/lib/agros_3rdparty_matio.lib)
