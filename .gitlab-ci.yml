@@ -154,9 +154,10 @@ build-windows:
     - cd ..
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -S .. -B .
     - cmake --build . --config Release --parallel 12  -j 12
     # Generation and build of plugins
+    - cd ..
     - .\usr\build\agros_generator.exe
     - cd plugins
     - cmake .
