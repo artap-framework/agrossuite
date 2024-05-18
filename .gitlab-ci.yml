@@ -154,14 +154,14 @@ build-windows:
     - cd ..
     - cd build
     - cmake -S .. -B .
-    - cmake --build . --config Release --parallel 12  -j 12
+    - cmake --build . --config Release --parallel 12  -j 12 | Out-Null 
     # Generation and build of plugins
     - .\usr\bin\agros_generator.exe
     - cd plugins
     - cmake .
-    - cmake --build . --config Release  --parallel 12 -j 12
+    - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
     - cd ..
-    - xcopy ".\dealii\build\lib\deal_II.lib" ".usr\libs" /Y  
+    - xcopy "..\dealii\build\lib\deal_II.lib" ".usr\libs" /Y  
     # deploy
     # - iscc.exe agros.iss
     # - cd setup
