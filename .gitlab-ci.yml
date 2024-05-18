@@ -161,7 +161,7 @@ build-windows:
     - cmake .
     - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
     - cd ..
-    - xcopy "..\dealii\build\lib\deal_II.lib" ".usr\libs" /Y  
+    - xcopy "..\dealii\build\lib\deal_II.lib" ".usr\libs\" /Y  
     # deploy
     # - iscc.exe agros.iss
     # - cd setup
