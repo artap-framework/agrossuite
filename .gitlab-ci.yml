@@ -171,6 +171,7 @@ build-windows:
   artifacts:
     paths:
       - .\dealii\build\include
+      - .\build\usr\bin
 
   cache:
     policy: pull-push
