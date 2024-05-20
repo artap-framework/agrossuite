@@ -168,6 +168,10 @@ build-windows:
     # - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
     # - cd ..
    
+  artifacts:
+    paths:
+      - .\dealii\build\include
+
   cache:
     policy: pull-push
     unprotect: false
