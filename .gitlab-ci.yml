@@ -204,7 +204,7 @@ test-windows:
     - cd ..
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
+    - copy "C:\Users\vboxuser\Documents\Release\agros2d\build\usr\bin\*.dll" .\env\Lib\site-packages\agrossuite
     - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
