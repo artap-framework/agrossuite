@@ -140,7 +140,6 @@ build-windows:
     # - ccache --show-stats   
 
   script:   
-    - git clean -fdx
     - git submodule init
     - git submodule update
     - xcopy "C:\agros_dependencies\include\boost\ptr_container"  "C:\gitlab-runner\builds\SgMYSKUTm\0\agros\agros2d\dealii\bundled\boost-1.70.0\include\boost\ptr_container\" /s /e /Y 
