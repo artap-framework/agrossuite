@@ -178,7 +178,7 @@ build-windows:
   cache:
     paths:
       - .\build
-      - .\deal\build
+      - .\dealii\build
 
 test-windows:
   stage: test
