@@ -146,14 +146,14 @@ build-windows:
     # Build DEAL
     - cd dealii
     - mkdir -p build
-    - cd build
+    # - cd build
     - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/include/zlib" -DZLIB_LIBRARY="C:/agros_dependencies/Release/libs/zlib.lib" .. | Out-Null
     - cmake --build . --config Release --parallel 12 -j 12 | Out-Null 
     # Build Agros
     - cd ..
     - cd ..
     # - mkdir -p build
-    - cd build
+    # - cd build
     - cmake -S .. -B .
     - cmake --build . --config Release --parallel 12  -j 12 | Out-Null 
     # Generation and build of plugins
