@@ -171,8 +171,14 @@ build-windows:
    
   artifacts:
     paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
       # - .\build\usr\bin
+    
+  cache:
+    paths:
+      - .\build
+      - .\deal\build
 
 test-windows:
   stage: test
