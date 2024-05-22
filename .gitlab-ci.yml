@@ -173,12 +173,12 @@ build-windows:
     paths:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
-      - .\dealii\build\lib
+   #   - .\dealii\build\lib
     
-  cache:
-    paths:
-      - .\build
-      - .\dealii\build\lib
+  # cache:
+  #  paths:
+  #    - .\build\bin
+  #    - .\dealii\build\lib
 
 test-windows:
   stage: test
