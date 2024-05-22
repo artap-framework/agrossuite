@@ -178,7 +178,6 @@ build-windows:
   cache:
     paths:
       - .\build
-      - .\dealii\build
 
 test-windows:
   stage: test
