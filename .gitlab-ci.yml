@@ -176,7 +176,7 @@ build-windows:
       - .\dealii\build\lib
     
   cache:
-  #  paths:
+    paths:
       - .\build\bin
       - .\dealii\build\lib\cmake
 
