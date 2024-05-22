@@ -188,6 +188,7 @@ test-windows:
     - win11
   
   script:
+    - cd build
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
