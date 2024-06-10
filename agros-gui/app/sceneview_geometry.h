@@ -39,6 +39,7 @@ class SceneViewProblem : public SceneViewCommon2D
     Q_OBJECT
 signals:
     void sceneGeometryModeChanged(SceneGeometryMode sceneMode);
+    void sceneGeometryChanged();
 
 public slots:
     virtual void clear();

@@ -127,7 +127,6 @@ configure_file(
 # copy resources
 file(COPY ${PROJECT_SOURCE_DIR}/resources_source DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/resources DESTINATION ${PROJECT_BINARY_DIR}/usr/share/agrossuite)
-file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Linux DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Windows DESTINATION ${PROJECT_BINARY_DIR})
 
 # python wrapper

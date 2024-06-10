@@ -13,7 +13,6 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${CMAKE_AGROS_SOURCE}/deali
 
 # Allow to override the default values in CMake.vars:
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    INCLUDE(../CMake.vars.Linux OPTIONAL)
 ELSE()
     INCLUDE(../CMake.vars.Windows OPTIONAL)
 ENDIF()

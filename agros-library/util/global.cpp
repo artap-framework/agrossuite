@@ -119,7 +119,7 @@ void initSingleton()
     QCoreApplication::setApplicationVersion(versionString());
     QCoreApplication::setOrganizationName("agros");
     QCoreApplication::setOrganizationDomain("agros");
-    QCoreApplication::setApplicationName("Agros Suite");
+    QCoreApplication::setApplicationName("agros");
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
     // force number format

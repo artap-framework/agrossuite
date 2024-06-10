@@ -47,7 +47,7 @@ AboutDialog::~AboutDialog()
 void AboutDialog::createControls()
 {
     QTabWidget *tab = new QTabWidget();
-    tab->addTab(createAgros(), tr("Agros Suite"));
+    tab->addTab(createAgros(), tr("agros"));
     tab->addTab(createDealii(), tr("deal.ii"));
     tab->addTab(createLibraries(), tr("Libraries"));
     tab->addTab(createLicense(), tr("License"));
@@ -74,8 +74,8 @@ void AboutDialog::createControls()
 
 QWidget *AboutDialog::createAgros()
 {
-    QLabel *labelContent = new QLabel(tr("<h3>Agros Suite %1</h3>"
-                                         "Agros Suite is a multiplatform multiphysics application for the solution of partial differential equations (PDE) "
+    QLabel *labelContent = new QLabel(tr("<h3>agros %1</h3>"
+                                         "agros is a multiplatform multiphysics application for the solution of partial differential equations (PDE) "
                                          "based on the <a href=\"http://dealii.org/\">deal.ii</a> library using higher order finite element method "
                                          "(<i>hp</i>-FEM) with automatic adaptivity.<br/><br/>"
                                          "Web page: <a href=\"http://agros2d.org/\">http://agros2d.org/</a><br/>"

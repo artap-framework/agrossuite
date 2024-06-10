@@ -133,17 +133,6 @@ ProblemWidget::ProblemWidget(QWidget *parent) : QWidget(parent)
 
 void ProblemWidget::createControls()
 {
-    // fields toolbar
-    /*
-    fieldsToolbar = new FieldsToobar();
-    QVBoxLayout *layoutFields = new QVBoxLayout();
-    layoutFields->addWidget(fieldsToolbar);
-    layoutFields->addStretch();
-
-    QGroupBox *grpFieldsToolbar = new QGroupBox(tr("Physical fields"));
-    grpFieldsToolbar->setLayout(layoutFields);
-    */
-
     // problem
     cmbCoordinateType = new QComboBox();
     // mesh type
@@ -243,7 +232,6 @@ void ProblemWidget::createControls()
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(grpGeneral);
-    // layoutArea->addWidget(grpFieldsToolbar);
     layout->addWidget(grpCouplings);
     layout->addWidget(grpHarmonicAnalysis);
     layout->addWidget(grpTransientAnalysis);
@@ -300,7 +288,6 @@ void ProblemWidget::load()
     lblTransientTimeTotal->setText(QString("Total time (s)"));
 
     // couplings
-    // fieldsToolbar->refresh();
     couplingsWidget->refresh();
 
     grpCouplings->setVisible(Agros::problem()->couplingInfos().count() > 0);

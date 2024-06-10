@@ -206,7 +206,7 @@ void MainWindow::createActions()
     actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
 
-    actAbout = new QAction(tr("About &Agros Suite"), this);
+    actAbout = new QAction(tr("About &agros"), this);
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
 

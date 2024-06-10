@@ -338,6 +338,62 @@ void PreprocessorWidget::createControls()
     trvWidget->setColumnWidth(1, 175);
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
+    QFont fnt = trvWidget->font();
+    fnt.setBold(true);
+
+    // problem
+    problemNode = new QTreeWidgetItem(trvWidget);
+    problemNode->setText(0, tr("Problem"));
+    problemNode->setFont(0, fnt);
+    problemNode->setIcon(0, icon("problem"));
+    problemNode->setToolTip(0, problemPropertiesToString());
+    problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
+    problemNode->setExpanded(true);
+
+    parametersNode = new QTreeWidgetItem(problemNode);
+    parametersNode->setText(0, tr("Parameters"));
+    parametersNode->setIcon(0, icon("menu_parameter"));
+    parametersNode->setFont(0, fnt);
+    parametersNode->setExpanded(true);
+
+    functionNode = new QTreeWidgetItem(problemNode);
+    functionNode->setText(0, tr("Functions"));
+    functionNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+    functionNode->setFont(0, fnt);
+    functionNode->setExpanded(true);
+
+    // fields
+    fieldsNode = new QTreeWidgetItem(trvWidget);
+    fieldsNode->setText(0, tr("Fields"));
+    fieldsNode->setIcon(0, icon("menu_field"));
+    fieldsNode->setFont(0, fnt);
+    fieldsNode->setExpanded(true);
+
+    // geometry
+    geometryNode = new QTreeWidgetItem(trvWidget);
+    geometryNode->setText(0, tr("Geometry"));
+    geometryNode->setIcon(0, icon("geometry"));
+    geometryNode->setFont(0, fnt);
+    geometryNode->setExpanded(false);
+
+    // nodes
+    nodesNode = new QTreeWidgetItem(geometryNode);
+    nodesNode->setText(0, tr("Nodes"));
+    nodesNode->setIcon(0, iconAlphabet('N', AlphabetColor_Green));
+    nodesNode->setFont(0, fnt);
+
+    // edges
+    edgesNode = new QTreeWidgetItem(geometryNode);
+    edgesNode->setText(0, tr("Edges"));
+    edgesNode->setIcon(0, iconAlphabet('E', AlphabetColor_Green));
+    edgesNode->setFont(0, fnt);
+
+    // labels
+    labelsNode = new QTreeWidgetItem(geometryNode);
+    labelsNode->setText(0, tr("Labels"));
+    labelsNode->setIcon(0, iconAlphabet('L', AlphabetColor_Green));
+    labelsNode->setFont(0, fnt);
+
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
     txtViewNodes->setVisible(false);
@@ -427,30 +483,16 @@ void PreprocessorWidget::refresh()
 
     trvWidget->blockSignals(true);
     trvWidget->setUpdatesEnabled(false);
-    trvWidget->clear();
+    // trvWidget->clear();
 
     QFont fnt = trvWidget->font();
     fnt.setBold(true);
 
-    // problem
-    auto *problemNode = new QTreeWidgetItem(trvWidget);
-    problemNode->setText(0, tr("Problem"));
-    problemNode->setFont(0, fnt);
-    problemNode->setIcon(0, icon("problem"));
-    problemNode->setToolTip(0, problemPropertiesToString());
-    problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
-    problemNode->setExpanded(true);
-
     // parameters
+    foreach(auto i, parametersNode->takeChildren()) delete i;
     QMap<QString, ProblemParameter> parameters = Agros::problem()->config()->parameters()->items();
     if (parameters.count() > 0)
     {
-        auto *parametersNode = new QTreeWidgetItem(problemNode);
-        parametersNode->setText(0, tr("Parameters"));
-        parametersNode->setIcon(0, icon("menu_parameter"));
-        parametersNode->setFont(0, fnt);
-        parametersNode->setExpanded(true);
-
         foreach (QString key, parameters.keys())
         {
             auto *item = new QTreeWidgetItem(parametersNode);
@@ -463,14 +505,9 @@ void PreprocessorWidget::refresh()
 
     // functions
     ProblemFunctions *functions = Agros::problem()->config()->functions();
+    foreach(auto i, functionNode->takeChildren()) delete i;
     if (functions->items().count() > 0)
     {
-        auto *functionNode = new QTreeWidgetItem(problemNode);
-        functionNode->setText(0, tr("Functions"));
-        functionNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
-        functionNode->setFont(0, fnt);
-        functionNode->setExpanded(true);
-
         foreach (ProblemFunction *function, functions->items())
         {
             auto *item = new QTreeWidgetItem(functionNode);
@@ -481,14 +518,8 @@ void PreprocessorWidget::refresh()
         }
     }
 
-    // fields
-    auto *fieldsNode = new QTreeWidgetItem(trvWidget);
-    fieldsNode->setText(0, tr("Fields"));
-    fieldsNode->setIcon(0, icon("menu_field"));
-    fieldsNode->setFont(0, fnt);
-    fieldsNode->setExpanded(true);
-
     // field and markers
+    foreach(auto i, fieldsNode->takeChildren()) delete i;
     foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         // field
@@ -541,25 +572,11 @@ void PreprocessorWidget::refresh()
         }
     }
 
-    // geometry
-    auto *geometryNode = new QTreeWidgetItem(trvWidget);
-    geometryNode->setText(0, tr("Geometry"));
-    geometryNode->setIcon(0, icon("geometry"));
-    geometryNode->setFont(0, fnt);
-    geometryNode->setExpanded(false);
-
-    // nodes
-    auto *nodesNode = new QTreeWidgetItem(geometryNode);
-    nodesNode->setText(0, tr("Nodes"));
-    nodesNode->setIcon(0, iconAlphabet('N', AlphabetColor_Green));
-    nodesNode->setFont(0, fnt);
-
+    foreach(auto i, nodesNode->takeChildren()) delete i;
     int inode = 0;
     foreach (SceneNode *node, Agros::problem()->scene()->nodes->items())
     {
         auto *item = new QTreeWidgetItem(nodesNode);
-
-        // item->setText(0, QString("%1. [%2; %3] ").arg(inode).arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
         item->setText(0, QString("%1").arg(inode));
         item->setText(1, QString("[%1; %2] ").arg(node->point().x, 0, 'e', 2).arg(node->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->nodes->items().indexOf(node));
@@ -568,17 +585,11 @@ void PreprocessorWidget::refresh()
         inode++;
     }
 
-    // edges
-    auto *edgesNode = new QTreeWidgetItem(geometryNode);
-    edgesNode->setText(0, tr("Edges"));
-    edgesNode->setIcon(0, iconAlphabet('E', AlphabetColor_Green));
-    edgesNode->setFont(0, fnt);
-
+    foreach(auto i, edgesNode->takeChildren()) delete i;
     int iface = 0;
     foreach (SceneFace *face, Agros::problem()->scene()->faces->items())
     {
         auto *item = new QTreeWidgetItem(edgesNode);
-
         item->setText(0, QString("%1. %2 m").
                       arg(iface).arg((face->angle() < EPS_ZERO) ? (face->nodeEnd()->point() - face->nodeStart()->point()).magnitude() : face->radius() * face->angle() / 180.0 * M_PI, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->faces->items().indexOf(face));
@@ -587,18 +598,11 @@ void PreprocessorWidget::refresh()
         iface++;
     }
 
-    // labels
-    auto *labelsNode = new QTreeWidgetItem(geometryNode);
-    labelsNode->setText(0, tr("Labels"));
-    labelsNode->setIcon(0, iconAlphabet('L', AlphabetColor_Green));
-    labelsNode->setFont(0, fnt);
-
     int ilabel = 0;
+    foreach(auto i, labelsNode->takeChildren()) delete i;
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         auto *item = new QTreeWidgetItem(labelsNode);
-
-        // item->setText(0, QString("%1. [%2; %3]").arg(ilabel).arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
         item->setText(0, QString("%1").arg(ilabel));
         item->setText(1, QString("[%1; %2]").arg(label->point().x, 0, 'e', 2).arg(label->point().y, 0, 'e', 2));
         item->setData(0, Qt::UserRole, Agros::problem()->scene()->labels->items().indexOf(label));

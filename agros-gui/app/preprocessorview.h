@@ -98,6 +98,14 @@ private:
     QSplitter *splitter;
 
     QTreeWidget *trvWidget;
+    QTreeWidgetItem *problemNode;
+    QTreeWidgetItem *parametersNode;
+    QTreeWidgetItem *functionNode;
+    QTreeWidgetItem *fieldsNode;
+    QTreeWidgetItem *geometryNode;
+    QTreeWidgetItem *nodesNode;
+    QTreeWidgetItem *edgesNode;
+    QTreeWidgetItem *labelsNode;
 
     QAction *actProperties;
     QAction *actDelete;
