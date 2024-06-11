@@ -18,6 +18,9 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "study_bayesopt.h"
+
+#include <mesh/meshgenerator_triangle.h>
+
 #include "bayesopt/include/prob_distribution.hpp"
 
 #include "study.h"
@@ -141,7 +144,7 @@ bool BayesOptProblem::checkReachability(const vectord &x)
         // invalidate scene (parameter update)
         computation->clearSolution();
         computation->scene()->invalidate();
-        computation->scene()->loopsInfo()->processPolygonTriangles(true);
+        computation->scene()->fastMeshInfo()->mesh();
         computation->scene()->invalidate();
 
         computation->scene()->checkGeometryResult();

@@ -165,7 +165,8 @@ public:
     int numAdaptiveFields() const;
 
     // check and apply parameters
-    bool checkAndApplyParameters(QMap<QString, ProblemParameter> parameters, bool apply = true);
+    QStringList checkAndApplyParameters(const QMap<QString, ProblemParameter> &parameters);
+    QStringList checkAndParameters(bool printError = false);
 
     // field
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }

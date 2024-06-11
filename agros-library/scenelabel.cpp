@@ -19,9 +19,11 @@
 
 #include "scenelabel.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "util/util.h"
-#include "util/global.h"
 #include "util/loops.h"
+#include "util/global.h"
 
 #include "scene.h"
 #include "scenebasic.h"
@@ -75,12 +77,12 @@ SceneLabel *SceneLabel::findLabelAtPoint(Scene *scene, const Point &point)
 {
     try
     {
-        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(scene->loopsInfo()->polygonTriangles());
+        QMapIterator<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > i(scene->fastMeshInfo()->polygonTriangles());
         while (i.hasNext())
         {
             i.next();
 
-            foreach (LoopsInfo::Triangle triangle, i.value())
+            foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
             {
                 bool b1 = (point.x - triangle.b.x) * (triangle.a.y - triangle.b.y) - (triangle.a.x - triangle.b.x) * (point.y - triangle.b.y) < 0.0;
                 bool b2 = (point.x - triangle.c.x) * (triangle.b.y - triangle.c.y) - (triangle.b.x - triangle.c.x) * (point.y - triangle.c.y) < 0.0;
@@ -108,7 +110,7 @@ SceneLabel *SceneLabel::findClosestLabel(Scene *scene, const Point &point)
     SceneLabel *labelClosest = findLabelAtPoint(scene, point);
 
     // find the nearest label by position
-    if (!labelClosest && scene->loopsInfo()->isProcessPolygonError())
+    if (!labelClosest)
     {
         double distance = numeric_limits<double>::max();
         foreach (SceneLabel *label, scene->labels->items())

@@ -47,7 +47,7 @@ AboutDialog::~AboutDialog()
 void AboutDialog::createControls()
 {
     QTabWidget *tab = new QTabWidget();
-    tab->addTab(createAgros(), tr("Agros Suite"));
+    tab->addTab(createAgros(), tr("agros"));
     tab->addTab(createDealii(), tr("deal.ii"));
     tab->addTab(createLibraries(), tr("Libraries"));
     tab->addTab(createLicense(), tr("License"));
@@ -74,8 +74,8 @@ void AboutDialog::createControls()
 
 QWidget *AboutDialog::createAgros()
 {
-    QLabel *labelContent = new QLabel(tr("<h3>Agros Suite %1</h3>"
-                                         "Agros Suite is a multiplatform multiphysics application for the solution of partial differential equations (PDE) "
+    QLabel *labelContent = new QLabel(tr("<h3>agros %1</h3>"
+                                         "agros is a multiplatform multiphysics application for the solution of partial differential equations (PDE) "
                                          "based on the <a href=\"http://dealii.org/\">deal.ii</a> library using higher order finite element method "
                                          "(<i>hp</i>-FEM) with automatic adaptivity.<br/><br/>"
                                          "Web page: <a href=\"http://agros2d.org/\">http://agros2d.org/</a><br/>"
@@ -158,9 +158,7 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>libdxfrw:</b> LibreCAD DXF library (<a href=\"http://sourceforge.net/projects/libdxfrw/\">libdxfrw</a>)<br/>"
                                          "<b>ctemplate:</b> Simple but powerful template language for C++ (<a href=\"http://code.google.com/p/ctemplate/\">ctemplate</a>)<br/>"
                                          "<b>matio:</b> MAT File I/O Library (<a href=\"http://sourceforge.net/projects/matio/\">matio</a>)<br/>"
-                                         "<b>poly2tri:</b> A 2D constrained Delaunay triangulation library (<a href=\"http://code.google.com/p/poly2tri/\">poly2tri</a>)<br/>"                                         
                                          "<b>Triangle:</b> Jonathan Richard Shewchuk (<a href=\"http://www.cs.cmu.edu/~quake/triangle.html\">Triangle</a>)<br/>"
-                                         "<b>Eigen:</b> A C++ template library for linear algebra (<a href=\"https://eigen.tuxfamily.org/\">Eigen</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
                                          "<b>QCustomChart:</b> QCustomChart (<a href=\"http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/\">Qt Plotting Widget</a>)<br/>"
                                          "<b>BayesOpt:</b> Bayesian optimization library (<a href=\"https://github.com/rmcantin/bayesopt/\">BayesOpt</a>)<br/>"

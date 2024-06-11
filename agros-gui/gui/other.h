@@ -45,8 +45,11 @@ enum AlphabetColor
     AlphabetColor_Red,
     AlphabetColor_Yellow
 };
+
 // get color icon with letter
 QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
+
+QFont defaultFixedFont(int size = 10);
 
 class SolveThread : public QThread
 {
@@ -69,7 +72,6 @@ private slots:
  private:
      Computation *m_computation;
 };
-
 
 class StringAction : public QAction
 {
@@ -100,4 +102,10 @@ private:
     QString m_value;
 };
 
-#endif // OTHER_H
+QString createToolTip(const QString &title, const QMap<QString, QString> &items);
+QString createTooltipOperateOnNodes();
+QString createTooltipOperateOnEdges();
+QString createTooltipOperateOnLabels();
+void createTooltipOperate(QMap<QString, QString> &items);
+
+#endif

@@ -20,8 +20,6 @@
 #ifndef SCENEVIEWGEOMETRY_H
 #define SCENEVIEWGEOMETRY_H
 
-#include "util/loops.h"
-
 #include "sceneview_common2d.h"
 
 class SceneFaceCommandAdd;
@@ -41,6 +39,7 @@ class SceneViewProblem : public SceneViewCommon2D
     Q_OBJECT
 signals:
     void sceneGeometryModeChanged(SceneGeometryMode sceneMode);
+    void sceneGeometryChanged();
 
 public slots:
     virtual void clear();

@@ -19,10 +19,12 @@
 
 #include "sceneview_geometry_simple.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "util/util.h"
 #include "util/global.h"
-#include "util/loops.h"
 #include "util/constants.h"
+#include "util/loops.h"
 #include "logview.h"
 
 #include "scene.h"
@@ -33,14 +35,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarkerdialog.h"
-#include "scenebasicselectdialog.h"
 
-#include "gui/physicalfield.h"
-
-#include "solver/module.h"
-#include "solver/field.h"
-#include "solver/problem.h"
-#include "solver/problem_config.h"
 
 SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
     : SceneViewCommon2D(parent)
@@ -132,7 +127,7 @@ void SceneViewSimpleGeometry::paintGeometry()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_TRIANGLES);
-            QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_problem->scene()->loopsInfo()->polygonTriangles());
+            QMapIterator<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > i(m_problem->scene()->fastMeshInfo()->polygonTriangles());
             while (i.hasNext())
             {
                 i.next();
@@ -142,7 +137,7 @@ void SceneViewSimpleGeometry::paintGeometry()
                 else
                     glColor4f(0.3, 0.1, 0.7, 0.10);
 
-                foreach (LoopsInfo::Triangle triangle, i.value())
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
                 {
                     glVertex2d(triangle.a.x, triangle.a.y);
                     glVertex2d(triangle.b.x, triangle.b.y);
@@ -308,7 +303,7 @@ void SceneViewChartSimpleGeometry::paintGeometry()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_TRIANGLES);
-            QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_postprocessorWidget->currentComputation()->scene()->loopsInfo()->polygonTriangles());
+            QMapIterator<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > i(m_postprocessorWidget->currentComputation()->scene()->fastMeshInfo()->polygonTriangles());
             while (i.hasNext())
             {
                 i.next();
@@ -318,7 +313,7 @@ void SceneViewChartSimpleGeometry::paintGeometry()
                 else
                     glColor4f(0.3, 0.1, 0.7, 0.10);
 
-                foreach (LoopsInfo::Triangle triangle, i.value())
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
                 {
                     glVertex2d(triangle.a.x, triangle.a.y);
                     glVertex2d(triangle.b.x, triangle.b.y);

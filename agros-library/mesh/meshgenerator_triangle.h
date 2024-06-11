@@ -53,5 +53,4 @@ private:
     struct triangulateio triOut;
 };
 
-
 #endif //MESHGENERATOR_TRIANGLE_H

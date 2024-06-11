@@ -172,6 +172,7 @@ void ProblemConfig::setStringKeys()
     m_configKey[TimeTotal] = "TimeTotal";
     m_configKey[Coordinate] = "Coordinate";
     m_configKey[Mesh] = "Mesh";
+    m_configKey[MeshQualityAngle] = "MeshQualityAngle";
 
     m_configKey[GridStep] = "GridStep";
     m_configKey[SnapToGrid] = "SnapToGrid";
@@ -190,6 +191,7 @@ void ProblemConfig::setDefaultValues()
     m_configDefault[TimeTotal] = 10.0;
     m_configDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
     m_configDefault[Mesh] = QVariant::fromValue(MeshType_Triangle_QuadFineDivision);
+    m_configDefault[MeshQualityAngle] = 31;
 
     m_configDefault[GridStep] = 0.05;
     m_configDefault[SnapToGrid] = true;
@@ -203,7 +205,7 @@ void ProblemConfig::checkVariableName(const QString &keyToCheck, const QString &
         throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(keyToCheck));
 
     // keywords - time, x, y, r, z, value
-    if (keyToCheck == "time" || keyToCheck == "value" || keyToCheck == "x" || keyToCheck == "y" || keyToCheck == "r" || keyToCheck == "z")
+    if (keyToCheck.toLower() == "time" || keyToCheck.toLower() == "value" || keyToCheck.toLower() == "x" || keyToCheck.toLower() == "y" || keyToCheck.toLower() == "r" || keyToCheck.toLower() == "z")
         throw AgrosException(QObject::tr("Variable is reserved keyword: %1.").arg(keyToCheck));
 
     // parameters

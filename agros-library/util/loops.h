@@ -17,14 +17,40 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef UTIL_LOOPS_H
-#define UTIL_LOOPS_H
+#ifndef LOOPS_H
+#define LOOPS_H
 
-class Scene;
-class SceneLabel;
-class SceneFace;
+#include "mesh/meshgenerator.h"
+#include "mesh/meshgenerator_triangle.h"
 
-#include "util/point.h"
+class LoopsInfo;
+
+class AGROS_LIBRARY_API MeshGeneratorTriangleFast : public MeshGenerator
+{
+public:
+    struct Triangle
+    {
+        Triangle(const Point &a, const Point &b, const Point &c) : a(a), b(b), c(c)
+        {
+        }
+
+        Point a, b, c;
+    };
+
+    MeshGeneratorTriangleFast(ProblemBase *problem);
+
+    virtual bool mesh();
+    void clear();
+    inline QMap<SceneLabel*, QList<Triangle> > polygonTriangles() const { return m_polygonTriangles; }
+
+private:
+    bool writeToTriangle();
+    bool readTriangleMeshFormat();
+
+    struct triangulateio triOut;
+    QMap<SceneLabel*, QList<MeshGeneratorTriangleFast::Triangle> > m_polygonTriangles;
+    QSharedPointer<LoopsInfo> m_loopsInfo;
+};
 
 class AGROS_LIBRARY_API LoopsInfo : public QObject
 {
@@ -92,13 +118,11 @@ public:
     inline QList<int> outsideLoops() const { return m_outsideLoops; }
     inline QMap<SceneLabel*, QList<int> > labelLoops() const { return m_labelLoops; }
 
-    // polygon triangles
-    inline QMap<SceneLabel*, QList<Triangle> > polygonTriangles() const { return m_polygonTriangles; }
 
     inline bool isProcessPolygonError() { return m_isProcessPolygonError; }
 
     void clear();
-    void processPolygonTriangles(bool force = false);
+    void processPolygons();
 
 private:
     Scene *m_scene;
@@ -115,8 +139,6 @@ private:
 
     QList<int> m_outsideLoops;
 
-    QMap<SceneLabel*, QList<Triangle> > m_polygonTriangles;
-
     void processLoops();
 
     Intersection intersects(Point point, double tangent, SceneFace* edge);
@@ -124,7 +146,6 @@ private:
     int intersectionsParity(Point point, QList<LoopsNodeEdgeData> loop);
     bool isInsideSeg(double angleSegStart, double angleSegEnd, double angle);
 
-    QList<Triangle> triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes, const Point& steiner);
     int windingNumber(Point point, QList<LoopsNodeEdgeData> loop);
     bool areSameLoops(QList<LoopsNodeEdgeData> loop1, QList<LoopsNodeEdgeData> loop2);
     bool areEdgeDuplicities(QList<LoopsNodeEdgeData> loop);
@@ -134,6 +155,4 @@ private:
     void addEdgePoints(QList<Point> *polyline, const SceneFace &edge, bool reverse = false);
 };
 
-
-#endif // UTIL_LOOPS_H
-
+#endif //LOOPS_H

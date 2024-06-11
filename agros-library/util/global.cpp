@@ -58,8 +58,8 @@ QStringList pluginList(const QString &data)
 {
     QString pluginPath = "";
 
-    if (isPluginDir(data + "/libs/"))
-        pluginPath = data + "/libs/";
+    if (isPluginDir(data + "/lib/"))
+        pluginPath = data + "/lib/";
     else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
@@ -85,8 +85,8 @@ QStringList solverList(const QString &data)
 {
     QString pluginPath = "";
 
-    if (isPluginDir(data + "/libs/"))
-        pluginPath = data + "/libs/";
+    if (isPluginDir(data + "/lib/"))
+        pluginPath = data + "/lib/";
     else if (QCoreApplication::instance() && isPluginDir(QCoreApplication::applicationDirPath() + "/../lib/"))
         pluginPath = QCoreApplication::applicationDirPath() + "/../lib/";
 
@@ -119,7 +119,7 @@ void initSingleton()
     QCoreApplication::setApplicationVersion(versionString());
     QCoreApplication::setOrganizationName("agros");
     QCoreApplication::setOrganizationDomain("agros");
-    QCoreApplication::setApplicationName("Agros Suite");
+    QCoreApplication::setApplicationName("agros");
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
     // force number format
@@ -241,7 +241,7 @@ void Agros::readPlugins()
     foreach (QString pluginPath, pluginList(m_singleton->dataDir()))
     {
         // load new plugin
-        QPluginLoader *loader = new QPluginLoader(pluginPath);
+        auto *loader = new QPluginLoader(pluginPath);
 
         if (!loader)
         {
@@ -256,7 +256,7 @@ void Agros::readPlugins()
         }
 
         assert(loader->instance());
-        PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
+        auto *plugin = qobject_cast<PluginInterface *>(loader->instance());
         m_singleton->m_plugins[plugin->fieldId()] = plugin;
 
         delete loader;
@@ -266,7 +266,7 @@ void Agros::readPlugins()
     foreach (QString pluginPath, solverList(m_singleton->dataDir()))
     {
         // load new plugin
-        QPluginLoader *loader = new QPluginLoader(pluginPath);
+        auto *loader = new QPluginLoader(pluginPath);
 
         if (!loader)
         {
@@ -276,13 +276,12 @@ void Agros::readPlugins()
         if (!loader->load())
         {
             QString error = loader->errorString();
-            qInfo() << error;
             delete loader;
             throw AgrosPluginException(QObject::tr("Could not load 'solver_plugin_%1' (%2)").arg(pluginPath).arg(error));
         }
 
         assert(loader->instance());
-        PluginSolverInterface *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
+        auto *plugin = qobject_cast<PluginSolverInterface *>(loader->instance());
         m_singleton->m_solvers[plugin->name()] = plugin;
 
         delete loader;

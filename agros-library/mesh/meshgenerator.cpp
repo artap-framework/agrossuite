@@ -62,7 +62,6 @@
 
 #include "util/global.h"
 #include "util/conf.h"
-#include "util/loops.h"
 
 #include "scene.h"
 #include "scenebasic.h"
@@ -71,6 +70,7 @@
 #include "scenelabel.h"
 #include "scenemarker.h"
 #include "logview.h"
+#include "meshgenerator_triangle.h"
 
 #include "solver/module.h"
 
@@ -358,7 +358,7 @@ bool MeshGenerator::prepare(bool loops)
         try
         {
             m_problem->scene()->invalidate();
-            m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
+            // m_problem->scene()->fastMeshInfo()->mesh();
         }
         catch (AgrosMeshException& ame)
         {

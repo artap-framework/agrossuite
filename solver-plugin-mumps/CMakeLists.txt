@@ -9,9 +9,6 @@ IF(MSVC)
   SET(CMAKE_PREFIX_PATH "c:/Qt/6.5.3/msvc2019_64")
 ENDIF()
 
-# SET(DEBUG_FLAGS "-g")
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
-
 # Set global compiler parameters.
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wno-deprecated -Ofast")
@@ -23,16 +20,6 @@ ENDIF()
 
 # MUMPS
 IF(MSVC)
-  set(MUMPS_LIBRARIES "C:/agros_dependencies/source/mumps/build/dmumps.lib" "C:/agros_dependencies/source/mumps/build/mumps_common.lib"
-  "C:/agros_dependencies/source/mumps/build/pord.lib" "C:/agros_dependencies/source/mumps/build/mpiseq.lib" "C:/agros_dependencies/source/mumps/build/smumps.lib"
-  "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib"  "C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib/libmmd.lib")
-  link_directories("C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib" )
-  link_directories("C:/Program Files (x86)/Intel/oneAPI/compiler/latest/lib")
-  set(MKLROOT "C:/Program Files (x86)/Intel/oneAPI/mkl")
-  set(MUMPS_INCLUDE_DIR "C:/agros_dependencies/source/mumps/mumps/5.6.2/include")
-  set(BLAS_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_blas.lib")
-  set(LAPACK_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_intel_lp64.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib")
-  set(LAPACK_links "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib")
 ELSE()
   FIND_PACKAGE(MUMPS REQUIRED)
 ENDIF()

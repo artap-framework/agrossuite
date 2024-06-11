@@ -1,2 +1,0 @@
-# Agros Suite
-SET(CMAKE_BUILD_TYPE "ReleaseWithDebInfo")

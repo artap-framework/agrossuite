@@ -14,7 +14,6 @@ ELSE(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate/linux)
 ENDIF(WIN32)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/libdxfrw)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/poly2tri)
 
 # optimization
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/bayesopt/include)
@@ -28,8 +27,7 @@ SET(SOURCES
     logview.cpp
     mesh/meshgenerator.cpp
     mesh/meshgenerator_triangle.cpp
-    mesh/meshgenerator_gmsh.cpp
-    parser/lex.cpp
+        parser/lex.cpp
     optilab/doe.cpp
     optilab/study.cpp
     optilab/study_sweep.cpp
@@ -70,8 +68,7 @@ SET(SOURCES
     util/dxf_filter.cpp
     util/enums.cpp
     util/global.cpp
-    util/loops.cpp
-    util/util.cpp
+        util/util.cpp
     util/util_expr.cpp
     util/point.cpp
     util/system_utils.cpp
@@ -79,6 +76,8 @@ SET(SOURCES
     util/table.cpp
     util/script_generator.cpp
     value.cpp
+        util/loops.cpp
+        util/loops.h
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
@@ -93,5 +92,5 @@ foreach(LANGFILE ${lang_files})
 endforeach()
 
 DEAL_II_SETUP_TARGET(${PROJECT_NAME} RELEASE)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${TRIANGLE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QUAZIP_LIBRARY} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${CURL_LIBRARIES} ${BLAS_LIBRARIES} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${CTEMPLATE_LIBRARY} Qt6::Core Qt6::Network Qt6::Core5Compat)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${DEAL_II_LIBRARIES} ${TRIANGLE_LIBRARY} ${DXFLIB_LIBRARY} ${QUAZIP_LIBRARY} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${CURL_LIBRARIES} ${BLAS_LIBRARIES} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${CTEMPLATE_LIBRARY} Qt6::Core Qt6::Network Qt6::Core5Compat)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

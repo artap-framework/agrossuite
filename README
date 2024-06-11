@@ -1,7 +1,7 @@
-Agros Suite - An application for solution of physical fields
+agros - An application for solution of physical fields
 ============================================================
 
-Agros Suite is a multiplatform application for the solution of physical problems based on the deal.II library, developed by the group at the University of West Bohemia in Pilsen. Agros Suite is distributed under the GNU General Public License.
+agros is a multiplatform application for the solution of physical problems based on the deal.II library, developed by the group at the University of West Bohemia in Pilsen. agros is distributed under the GNU General Public License.
 
 Supported Physical fields
 -------------------------

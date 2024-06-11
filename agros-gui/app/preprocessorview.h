@@ -98,6 +98,14 @@ private:
     QSplitter *splitter;
 
     QTreeWidget *trvWidget;
+    QTreeWidgetItem *problemNode;
+    QTreeWidgetItem *parametersNode;
+    QTreeWidgetItem *functionNode;
+    QTreeWidgetItem *fieldsNode;
+    QTreeWidgetItem *geometryNode;
+    QTreeWidgetItem *nodesNode;
+    QTreeWidgetItem *edgesNode;
+    QTreeWidgetItem *labelsNode;
 
     QAction *actProperties;
     QAction *actDelete;
@@ -120,9 +128,6 @@ private:
 
     QString problemPropertiesToString();
     QString fieldPropertiesToString(FieldInfo *fieldInfo);
-    // QTreeWidgetItem *propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value,
-    //                                 PreprocessorWidget::Type type = PreprocessorWidget::Undefined,
-    //                                 const QString &data = "");
 
 private slots:
     void doContextMenu(const QPoint &pos);

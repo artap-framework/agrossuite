@@ -19,24 +19,392 @@
 
 #include "loops.h"
 
-#include <cmath>
-
-#include "mesh/meshgenerator.h"
+#include "util/global.h"
 
 #include "scene.h"
+#include "scenebasic.h"
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "util/global.h"
-#include "poly2tri.h"
-
-#include "scene.h"
+#include "solver/problem.h"
+#include "solver/problem_config.h"
+#include "logview.h"
 
 #ifdef DEAL_II_WITH_TBB
 #include "tbb/tbb.h"
 tbb::mutex processMutex;
 #endif
+
+MeshGeneratorTriangleFast::MeshGeneratorTriangleFast(ProblemBase *problem)
+    : MeshGenerator(problem), m_loopsInfo(nullptr)
+{
+}
+
+
+bool MeshGeneratorTriangleFast::mesh()
+{
+    Agros::log()->printMessage(tr("Fast Mesh Generator"), tr("Triangle"));
+
+    clear();
+
+    // process polygon and loops (find laying labels)
+    m_loopsInfo->processPolygons();
+
+    // create triangle files
+    if (writeToTriangle())
+    {
+        // convert triangle mesh
+        if (readTriangleMeshFormat())
+             return true;
+    }
+
+    return false;
+}
+
+void MeshGeneratorTriangleFast::clear()
+{
+    nodeList.clear();
+    edgeList.clear();
+    elementList.clear();
+
+    m_polygonTriangles.clear();
+
+    if (m_loopsInfo == nullptr)
+        m_loopsInfo = QSharedPointer<LoopsInfo>(new LoopsInfo(m_problem->scene()));
+    else
+        m_loopsInfo->clear();
+}
+
+bool MeshGeneratorTriangleFast::writeToTriangle()
+{
+    // basic check
+    if (m_problem->scene()->nodes->length() < 3)
+    {
+        Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+        return false;
+    }
+    if (m_problem->scene()->faces->length() < 3)
+    {
+        Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+        return false;
+    }
+
+    struct triangulateio triIn;
+
+    // nodes
+    QList<MeshNode> inNodes;
+    int nodesCount = 0;
+    for (int i = 0; i<m_problem->scene()->nodes->length(); i++)
+    {
+        inNodes.append(MeshNode(i,
+                                m_problem->scene()->nodes->at(i)->point().x,
+                                m_problem->scene()->nodes->at(i)->point().y,
+                                0));
+        nodesCount++;
+    }
+
+    // edges
+    QList<MeshEdge> inEdges;
+    int edgesCount = 0;
+    for (int i = 0; i<m_problem->scene()->faces->length(); i++)
+    {
+        if (m_problem->scene()->faces->at(i)->angle() == 0)
+        {
+            inEdges.append(MeshEdge(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart()),
+                                    m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd()),
+                                    i+1));
+
+            edgesCount++;
+        }
+        else
+        {
+            // arc
+            // add pseudo nodes
+            Point center = m_problem->scene()->faces->at(i)->center();
+            double radius = m_problem->scene()->faces->at(i)->radius();
+            double startAngle = atan2(center.y - m_problem->scene()->faces->at(i)->nodeStart()->point().y,
+                                      center.x - m_problem->scene()->faces->at(i)->nodeStart()->point().x) - M_PI;
+
+            int segments = m_problem->scene()->faces->at(i)->segments() * 2;
+            double theta = deg2rad(m_problem->scene()->faces->at(i)->angle()) / double(segments);
+
+            int nodeStartIndex = 0;
+            int nodeEndIndex = 0;
+            for (int j = 0; j < segments; j++)
+            {
+                double arc = startAngle + j*theta;
+
+                double x = radius * cos(arc);
+                double y = radius * sin(arc);
+
+                nodeEndIndex = nodesCount + 1;
+                if (j == 0)
+                {
+                    nodeStartIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart());
+                    nodeEndIndex = nodesCount;
+                }
+                if (j == segments - 1)
+                {
+                    nodeEndIndex = m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd());
+                }
+                if ((j > 0) && (j < segments))
+                {
+                    inNodes.append(MeshNode(nodesCount,
+                                            center.x + x,
+                                            center.y + y,
+                                            0));
+
+                    nodesCount++;
+                }
+
+                inEdges.append(MeshEdge(nodeStartIndex,
+                                        nodeEndIndex,
+                                        i+1));
+
+                edgesCount++;
+                nodeStartIndex = nodeEndIndex;
+            }
+        }
+    }
+
+    // labels and holes
+    QList<MeshLabel> inLabels;
+    int labelsCount = 0;
+    QList<MeshNode> inHoles;
+    int holesCount = 0;
+    foreach (SceneLabel *label, m_problem->scene()->labels->items())
+    {
+        if (label->markersCount() > 0)
+        {
+            inLabels.append(MeshLabel(labelsCount,
+                                      label->point().x,
+                                      label->point().y,
+                                      m_problem->scene()->labels->items().indexOf(label) + 1,
+                                      label->area()));
+            labelsCount++;
+        }
+        else
+        {
+            inHoles.append(MeshNode(holesCount,
+                                    label->point().x,
+                                    label->point().y,
+                                    -1));
+
+            holesCount++;
+        }
+    }
+
+    // vertices
+    triIn.numberofpoints = inNodes.count();
+    triIn.numberofpointattributes = 0;
+    triIn.pointlist = (REAL *) malloc(triIn.numberofpoints * 2 * sizeof(REAL));
+    triIn.pointmarkerlist = (int *) malloc(triIn.numberofpoints * sizeof(int));
+
+    for (int i = 0; i < inNodes.count(); i++)
+    {
+        triIn.pointlist[2*i] = inNodes[i].x;
+        triIn.pointlist[2*i+1] = inNodes[i].y;
+        triIn.pointmarkerlist[i] = -1;
+    }
+
+    // segments
+    triIn.numberofsegments = inEdges.count();
+    triIn.segmentlist = (int *) malloc(triIn.numberofsegments * 2 * sizeof(int));
+    triIn.segmentmarkerlist = (int *) malloc(triIn.numberofsegments * sizeof(int));
+
+    for (int i = 0; i < inEdges.count(); i++)
+    {
+        triIn.segmentlist[2*i] = inEdges[i].node[0];
+        triIn.segmentlist[2*i+1] = inEdges[i].node[1];
+        triIn.segmentmarkerlist[i] = inEdges[i].marker;
+    }
+
+    // regions
+    triIn.numberofregions = inLabels.count();
+    triIn.regionlist = (REAL *) malloc(triIn.numberofregions * 4 * sizeof(REAL));
+
+    for (int i = 0; i < inLabels.count(); i++)
+    {
+        triIn.regionlist[4*i] = inLabels[i].x;
+        triIn.regionlist[4*i+1] = inLabels[i].y;
+        triIn.regionlist[4*i+2] = inLabels[i].marker;
+        triIn.regionlist[4*i+3] = inLabels[i].area;
+    }
+
+    // holes
+    triIn.numberofholes = inHoles.count();
+    triIn.holelist = (REAL *) malloc(triIn.numberofholes * 2 * sizeof(REAL));
+
+    for (int i = 0; i < inHoles.count(); i++)
+    {
+        triIn.holelist[2*i] = inHoles[i].x;
+        triIn.holelist[2*i+1] = inHoles[i].y;
+    }
+
+    // report(&triIn, 1, 0, 0, 1, 0, 0);
+
+    triOut.pointlist = (REAL *) NULL;            /* Not needed if -N switch used. */
+    triOut.pointmarkerlist = (int *) NULL; /* Not needed if -N or -B switch used. */
+    triOut.trianglelist = (int *) NULL;          /* Not needed if -E switch used. */
+    /* Not needed if -E switch used or number of triangle attributes is zero: */
+    triOut.triangleattributelist = (REAL *) NULL;
+    triOut.neighborlist = (int *) NULL;         /* Needed only if -n switch used. */
+    /* Needed only if segments are output (-p or -c) and -P not used: */
+    triOut.segmentlist = (int *) NULL;
+    /* Needed only if segments are output (-p or -c) and -P and -B not used: */
+    triOut.segmentmarkerlist = (int *) NULL;
+    triOut.edgelist = (int *) NULL;             /* Needed only if -e switch used. */
+    triOut.edgemarkerlist = (int *) NULL;   /* Needed if -e used and -B not used. */
+
+    //    -p  Triangulates a Planar Straight Line Graph (.poly file).
+    //    -r  Refines a previously generated mesh.
+    //    -q  Quality mesh generation.  A minimum angle may be specified.
+    //    -a  Applies a maximum triangle area constraint.
+    //    -u  Applies a user-defined triangle constraint.
+    //    -A  Applies attributes to identify triangles in certain regions.
+    //    -c  Encloses the convex hull with segments.
+    //    -D  Conforming Delaunay:  all triangles are truly Delaunay.
+    //    -j  Jettison unused vertices from output .node file.
+    //    -e  Generates an edge list.
+    //    -v  Generates a Voronoi diagram.
+    //    -n  Generates a list of triangle neighbors.
+    //    -g  Generates an .off file for Geomview.
+    //    -B  Suppresses output of boundary information.
+    //    -P  Suppresses output of .poly file.
+    //    -N  Suppresses output of .node file.
+    //    -E  Suppresses output of .ele file.
+    //    -I  Suppresses mesh iteration numbers.
+    //    -O  Ignores holes in .poly file.
+    //    -X  Suppresses use of exact arithmetic.
+    //    -z  Numbers all items starting from zero (rather than one).
+    //    -o2 Generates second-order subparametric elements.
+    //    -Y  Suppresses boundary segment splitting.
+    //    -S  Specifies maximum number of added Steiner points.
+    //    -i  Uses incremental method, rather than divide-and-conquer.
+    //    -F  Uses Fortune's sweepline algorithm, rather than d-and-c.
+    //    -l  Uses vertical cuts only, rather than alternating cuts.
+    //    -s  Force segments into mesh by splitting (instead of using CDT).
+    //    -C  Check consistency of final mesh.
+    //    -Q  Quiet:  No terminal output except errors.
+    char const *triSwitches = "peAazInQ";
+    triangulate((char *) triSwitches, &triIn, &triOut, (struct triangulateio *) NULL);
+
+    free(triIn.pointlist);
+    free(triIn.pointmarkerlist);
+    free(triIn.segmentlist);
+    free(triIn.segmentmarkerlist);
+    free(triIn.regionlist);
+    free(triIn.holelist);
+
+    return true;
+}
+
+bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
+{
+    // triangle nodes
+    int numberOfNodes = triOut.numberofpoints;
+    for (int i = 0; i < numberOfNodes; i++)
+    {
+        nodeList.append(Point(triOut.pointlist[2 * i],
+                        triOut.pointlist[2 * i + 1]));
+    }
+
+    // triangle edges
+    int numberOfEdges = triOut.numberofedges;
+    // for curvature
+    std::map<std::pair<int, int>, Point> centers;
+    std::map<std::pair<int, int>, double> sizes;
+    for (int i = 0; i < numberOfEdges; i++)
+    {
+        // marker conversion from triangle, where it starts from 1
+        edgeList.append(MeshEdge(triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1], triOut.edgemarkerlist[i] - 1));
+
+        if (triOut.edgemarkerlist[i] > 0)
+        {
+            SceneFace* sceneEdge = m_problem->scene()->faces->at(triOut.edgemarkerlist[i] - 1);
+
+            if (sceneEdge->angle() > 0.0)
+            {
+                int node_indices[2] = { triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1] };
+
+                centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
+                sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
+
+                for (int node_i = 0; node_i < 2; node_i++)
+                {
+                    Point p = nodeList[node_indices[node_i]];
+                    Point c = sceneEdge->center();
+                    double r = sceneEdge->radius();
+                    nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
+                }
+            }
+        }
+    }
+    int edgeCountLinear = edgeList.count();
+
+    // triangle elements
+    int numberOfElements = triOut.numberoftriangles;
+    for (int i = 0; i < numberOfElements; i++)
+    {
+        int marker = triOut.triangleattributelist[i];
+        if (marker == 0)
+        {
+            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
+            return false;
+        }
+
+        // vertices
+        int nodeA = triOut.trianglelist[3*i];
+        int nodeB = triOut.trianglelist[3*i+1];
+        int nodeC = triOut.trianglelist[3*i+2];
+
+        elementList.append(MeshElement(nodeA, nodeB, nodeC, marker - 1)); // marker conversion from triangle, where it starts from 1
+    }
+    int elementCountLinear = elementList.count();
+
+    // triangle neigh
+    for (int i = 0; i < triOut.numberoftriangles; i++)
+    {
+        elementList[i].neigh[0] = triOut.neighborlist[3*i];
+        elementList[i].neigh[1] = triOut.neighborlist[3*i+1];
+        elementList[i].neigh[2] = triOut.neighborlist[3*i+2];
+    }
+
+    free(triOut.pointlist);
+    free(triOut.pointmarkerlist);
+    free(triOut.trianglelist);
+    free(triOut.triangleattributelist);
+    free(triOut.neighborlist);
+    free(triOut.segmentlist);
+    free(triOut.segmentmarkerlist);
+    free(triOut.edgelist);
+    free(triOut.edgemarkerlist);
+
+    // elements
+    for (int element_i = 0; element_i < elementList.count(); element_i++)
+    {
+        MeshElement element = elementList[element_i];
+        if (element.isUsed)
+        {
+            SceneLabel *label = m_problem->scene()->labels->at(element.marker);
+
+            if (!m_polygonTriangles.contains(label))
+                m_polygonTriangles.insert(label, QList<MeshGeneratorTriangleFast::Triangle>());
+
+            // qInfo() << label << element.node[0] << element.node[1] << element.node[2];
+            m_polygonTriangles[label].append(MeshGeneratorTriangleFast::Triangle(
+                nodeList[element.node[0]],
+                nodeList[element.node[1]],
+                nodeList[element.node[2]]));
+        }
+    }
+
+    // qInfo() << "nodes" << nodeList.size() << "edges" <<  edgeList.size() << "elements" << elementList.size() << "polygonTriangles" << m_polygonTriangles.size();
+
+    return true;
+}
+
 
 const static int LOOPS_NON_EXISTING = -100000;
 const static double TOL = 0.001;
@@ -286,8 +654,7 @@ LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, Scene
 
 // *********************************************************************************************
 
-LoopsInfo::LoopsInfo(Scene *scene)
-    : QObject(), m_scene(scene)
+LoopsInfo::LoopsInfo(Scene *scene) : QObject(), m_scene(scene)
 {
 }
 
@@ -780,75 +1147,8 @@ void LoopsInfo::processLoops()
     }
 }
 
-QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyline, const QList<QList<Point> > &holes, const Point &steiner)
+void LoopsInfo::processPolygons()
 {
-    // create p2t structure
-    vector<p2t::Point*> polylineP2T;
-
-    foreach (Point point, polyline)
-        polylineP2T.push_back(new p2t::Point(point.x, point.y));
-
-    // create CDT
-    p2t::CDT cdt(polylineP2T);
-
-    vector<vector<p2t::Point*> > holesP2T;
-    foreach (QList<Point> hole, holes)
-    {
-        vector<p2t::Point*> holeP2T;
-
-        foreach (Point point, hole)
-            holeP2T.push_back(new p2t::Point(point.x, point.y));
-
-        holesP2T.push_back(holeP2T);
-        cdt.AddHole(holeP2T);
-    }
-
-    // add Steiner point
-    cdt.AddPoint(new p2t::Point(steiner.x, steiner.y));
-
-    // triangulate
-    cdt.Triangulate();
-
-    vector<p2t::Triangle*> tri = cdt.GetTriangles();
-
-    // convert
-    QList<Triangle> triangles;
-    for (int i = 0; i < tri.size(); i++)
-    {
-        p2t::Triangle *triangle = tri[i];
-
-        p2t::Point *a = triangle->GetPoint(0);
-        p2t::Point *b = triangle->GetPoint(1);
-        p2t::Point *c = triangle->GetPoint(2);
-
-        triangles.append(Triangle(Point(a->x, a->y),
-                                  Point(b->x, b->y),
-                                  Point(c->x, c->y)));
-    }
-
-    tri.clear();
-
-    // delete structures
-    for (size_t i = 0; i < polylineP2T.size(); i++)
-        delete polylineP2T.at(i);
-    polylineP2T.clear();
-
-    for (int i = 0; i < holesP2T.size(); i++)
-    {
-        for (size_t j = 0; j < holesP2T.at(i).size(); j++)
-            delete holesP2T.at(i).at(j);
-        holesP2T.at(i).clear();
-    }
-    holesP2T.clear();
-
-    return triangles;
-}
-
-void LoopsInfo::processPolygonTriangles(bool force)
-{
-    if (!force)
-        return;
-
     try
     {
         {
@@ -863,17 +1163,17 @@ void LoopsInfo::processPolygonTriangles(bool force)
                 processLoops();
 
                 QList<QList<Point> > polylines;
-                for (int i = 0; i < m_loops.size(); i++)
+                for (auto & loop : m_loops)
                 {
                     QList<Point> polyline;
 
                     // QList<Point> contour;
-                    for (int j = 0; j < m_loops[i].size(); j++)
+                    for (auto & innerLoop : loop)
                     {
-                        SceneFace *edge = m_scene->faces->items().at(m_loops[i][j].edge);
+                        SceneFace *edge = m_scene->faces->items().at(innerLoop.edge);
                         if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
                         {
-                            if (m_loops[i][j].reverse)
+                            if (innerLoop.reverse)
                                 addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(nullptr, edge->angle())), true);
                             else
                                 addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(nullptr, edge->angle())));
@@ -901,8 +1201,7 @@ void LoopsInfo::processPolygonTriangles(bool force)
 
                         if (!polyline.isEmpty())
                         {
-                            QList<Triangle> triangles = triangulateLabel(polyline, holes, label->point());
-                            m_polygonTriangles.insert(label, triangles);
+                            // QList<Triangle> triangles = triangulateLabel(polyline, holes, label->point());
                         }
                     }
                 }
@@ -932,6 +1231,5 @@ void LoopsInfo::clear()
     m_loops.clear();
     m_labelLoops.clear();
     m_outsideLoops.clear();
-
-    m_polygonTriangles.clear();
 }
+

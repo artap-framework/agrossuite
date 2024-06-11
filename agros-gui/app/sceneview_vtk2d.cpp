@@ -22,7 +22,6 @@
 #include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
-#include "util/loops.h"
 
 #include "gui/lineeditdouble.h"
 #include "gui/common.h"

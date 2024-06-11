@@ -27,17 +27,21 @@ build-linux:
     - mkdir -p build 
     - cd build 
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
-    - make -j12
+    - make -j10
     - cd ../../
+    #  agros
+    - mkdir -p build
     # copy deal
-    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 libs/libdeal_II.so.9.5.2 
-    - cmake . 
-    - make -j12    
+    - mkdir -p build/usr/lib 
+    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 build/usr/lib/libdeal_II.so.9.5.2     
+    - cd build
+    - cmake ..     
+    - make -j10    
     # generator
-    - ./agros_generator
+    - ./usr/bin/agros_generator
     - cd plugins
     - cmake .
-    - make -j12
+    - make -j10
     - cd ..
     # pip package
     # create python env
@@ -49,6 +53,7 @@ build-linux:
     - pip install pytest
     - pip install numpy
     - pip install agrossuite/. 
+    - cd ..
     
 test-linux:
   stage: test
@@ -58,7 +63,7 @@ test-linux:
     - linux
 
   script: 
-    - cd agros-python
+    - cd build/agros-python
     - source env/bin/activate    
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
@@ -76,6 +81,7 @@ deploy-linux:
     - linux
 
   script: 
+    - cd build
     # rm files
     - rm -rf appimage 
 
@@ -88,9 +94,11 @@ deploy-linux:
     - mkdir appimage/usr/share/agrossuite
 
     # copy binary files
-    - cp agros appimage/usr/bin/
-    - cp -r resources appimage/usr/share/agrossuite/resources/
-    - cp libs/libagros_plugin_*.so appimage/usr/lib/
+    - cp usr/bin/agros appimage/usr/bin/
+    - cp -r ../resources appimage/usr/share/agrossuite/resources/
+    - cp usr/lib/libagros_*.so appimage/usr/lib/
+    - cp usr/lib/libsolver_plugin_*.so appimage/usr/lib/
+    - cp usr/lib/libdeal*.so* appimage/usr/lib/
 
     # copy resources
     - cp -r resources_source/appimage/* appimage
@@ -100,14 +108,16 @@ deploy-linux:
     - strip appimage/usr/lib/*
 
     # qt 
+    - export QT_SELECT=6
     - export QMAKE=/usr/bin/qmake6 
-    - linuxdeploy-x86_64.AppImage --appdir appimage/ --executable agros --plugin qt --desktop-file resources_source/appimage/usr/share/applications/agros.desktop
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:usr/lib
+    - linuxdeploy-x86_64.AppImage --appdir appimage/ --executable usr/bin/agros --plugin qt --desktop-file resources_source/appimage/usr/share/applications/agros.desktop
 
     # rm metainfo
     - rm -rf appimage/usr/share/metainfo
 
     # build appimage
-    - appimagetool-x86_64.AppImage  appimage/
+    - appimagetool-x86_64.AppImage appimage/
     
     # upload to agros2d
     - curl -T Agros_Suite-x86_64.AppImage -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
@@ -119,38 +129,66 @@ build-windows:
     - win11
 
   before_script:
-    - $env:CCACHE_BASEDIR="$PWD"
-    - $env:CCACHE_DIR="$PWD/ccache"
-    - $env:CCACHE_COMPILERCHECK="content"
-    - ccache --zero-stats
-    - ccache --show-stats
+    # - $env:CCACHE_BASEDIR="$PWD"
+    # - $env:CCACHE_DIR="$PWD/ccache"
+    # - $env:CCACHE_COMPILERCHECK="content"
+    # - ccache --zero-stats
+    # - ccache --show-stats
 
   after_script:
-    - $env:CCACHE_DIR="$PWD/ccache"
-    - ccache --show-stats   
+    # - $env:CCACHE_DIR="$PWD/ccache"
+    # - ccache --show-stats   
 
   script:   
     - git submodule init
     - git submodule update
-    - xcopy "C:\agros_dependencies\source\boost_1_70_0\boost_1_70_0\boost\ptr_container"  "C:\Users\vboxuserREM\Documents\Release\agros2d\dealii\bundled\boost-1.70.0\include\boost\ptr_container\" /s /e /Y 
+    - xcopy "C:\agros_dependencies\include\boost\ptr_container"  "C:\gitlab-runner\builds\SgMYSKUTm\0\agros\agros2d\dealii\bundled\boost-1.70.0\include\boost\ptr_container\" /s /e /Y 
     # Build DEAL
     - cd dealii
-    - mkdir build
+    # - mkdir -p build
     - cd build
-    - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/source/zlib131/zlib-1.3.1" -DZLIB_LIBRARY="C:/agros_dependencies/source/zlib131/zlib-1.3.1/Release/zlib.lib" .. | Out-Null
+    - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/include/zlib" -DZLIB_LIBRARY="C:/agros_dependencies/Release/libs/zlib.lib" .. | Out-Null
     - cmake --build . --config Release --parallel 12 -j 12 | Out-Null 
     # Build Agros
     - cd ..
     - cd ..
-    - cmake . 
-    - cmake --build . --config Release --parallel 12  -j 12 
+    # - mkdir -p build
+    - cd build
+    - cmake -S .. -B .
+    - cmake --build . --config Release --parallel 12  -j 12 | Out-Null 
     # Generation and build of plugins
-    - .\agros_generator.exe
+    - .\usr\bin\agros_generator.exe
     - cd plugins
     - cmake .
-    - cmake --build . --config Release  --parallel 12 -j 12
+    - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
     - cd ..
-    - xcopy ".\dealii\build\lib\deal_II.lib" ".\libs" /Y 
+    - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
+    # deploy
+    # - iscc.exe agros.iss
+    # - cd setup
+    # - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
+    # - cd ..
+   
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
+      # - .\dealii\build\lib
+    
+  cache:
+    paths:
+      - .\build\bin
+      - .\dealii\build\lib\cmake
+
+test-windows:
+  stage: test
+  needs: ["build-windows"]
+  tags:
+    - agros
+    - win11
+  
+  script:
+    - cd build
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
@@ -161,32 +199,15 @@ build-windows:
     - cd agrossuite
     - pip install .
     - cd ..
-    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\agros2d\*.dll" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\triangle.exe" .\env\Lib\site-packages\agrossuite
-    - copy "C:\Users\vboxuser\Documents\Release\install\zlib.dll" .\env\Lib\site-packages\agrossuite
+    - copy "..\..\..\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
+    - copy "..\..\..\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
+    - copy "..\usr\bin\*.dll" .\env\Lib\site-packages\agrossuite
+    - copy "..\..\..\install\zlib.dll" .\env\Lib\site-packages\agrossuite
+    - cd tests
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
-    - Remove-Item -Path .\setup -Recurse
-    - iscc.exe agros.iss
-    - cd setup
-    - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/
-    
-test-windows:
-  stage: test
-  needs: ["build-windows"]
-  tags:
-    - agros
-    - win11
-  
-  script:
-    # - cd agros-python curl.exe -T .\setup\AgrosSuite.exe
-    # - .\env\Scripts\activate 
-    # - cd tests
-    # - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-    # - cd ..
-    # - cd ..
-    - dir
+    - cd ..
+
 
 deploy-windows:
     stage: deploy

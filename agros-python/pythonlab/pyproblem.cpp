@@ -19,11 +19,12 @@
 
 #include "pyproblem.h"
 
+#include "util/loops.h"
+
 #include "solver/problem_result.h"
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
-#include "util/loops.h"
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
@@ -261,7 +262,7 @@ void PyComputation::clear()
 
 void PyComputation::solve()
 {
-    computation()->scene()->loopsInfo()->processPolygonTriangles(true);
+    computation()->scene()->fastMeshInfo()->mesh();
     computation()->solve();
 
     if (!computation()->isSolved())

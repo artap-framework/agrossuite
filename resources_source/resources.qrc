@@ -10,7 +10,7 @@
         <file alias="menu_parameter.png">images/icons/menu_parameter.png</file>               
         <file alias="menu_recipe.png">images/icons/menu_recipe.png</file>               
         <file alias="menu_study.png">images/icons/menu_study.png</file>               
-	    <file alias="main_welcome.png">images/icons/main_welcome.png</file>
+	<file alias="main_welcome.png">images/icons/main_welcome.png</file>
         <file alias="main_problem.png">images/icons/main_problem.png</file>
         <file alias="main_results.png">images/icons/main_results.png</file>                           
         <file alias="main_optilab.png">images/icons/main_optilab.png</file>
@@ -276,5 +276,6 @@
         <file alias="lang/plugin_cs_CZ.qm">lang/cs_CZ.qm</file>                
         <file alias="lang/plugin_en_US.qm">lang/plugin_en_US.qm</file>                
         <file alias="lang/plugin_pl_PL.qm">lang/plugin_pl_PL.qm</file>                
+        <file alias="fixed-font.ttf">font/NotoMono-Regular.ttf</file>
     </qresource>
 </RCC>

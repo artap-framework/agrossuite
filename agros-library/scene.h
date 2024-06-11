@@ -31,7 +31,7 @@ class SceneLabel;
 class SceneBoundary;
 class SceneMaterial;
 struct SceneViewSettings;
-class LoopsInfo;
+class MeshGeneratorTriangleFast;
 
 class SceneNodeContainer;
 class SceneFaceContainer;
@@ -106,7 +106,7 @@ public:
     void highlightNone();
     int highlightedCount();
 
-    LoopsInfo *loopsInfo() const { return m_loopsInfo.data(); }
+    MeshGeneratorTriangleFast *fastMeshInfo() const { return m_meshGeneratorFast.data(); }
     QMultiMap<SceneFace *, SceneNode *> lyingEdgeNodes() const { return m_lyingEdgeNodes; }
     QMap<SceneNode *, int> numberOfConnectedNodeEdges() const { return m_numberOfConnectedNodeEdges; }
     QList<SceneFace *> crossings() const { return m_crossings; }
@@ -123,7 +123,7 @@ public:
 private:
     ProblemBase *m_problem;
 
-    QSharedPointer<LoopsInfo> m_loopsInfo;
+    QSharedPointer<MeshGeneratorTriangleFast> m_meshGeneratorFast;
     QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;
     QMap<SceneNode *, int> m_numberOfConnectedNodeEdges;
     QList<SceneFace *> m_crossings;

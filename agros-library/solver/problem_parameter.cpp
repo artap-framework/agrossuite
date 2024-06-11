@@ -228,6 +228,7 @@ void ProblemParameters::set(const QString &key, double val)
 
 void ProblemParameters::set(const QList<ProblemParameter> parameters)
 {
+    m_parameters.clear();
     foreach (ProblemParameter parameter, parameters)
         m_parameters[parameter.name()] = parameter;
 

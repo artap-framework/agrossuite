@@ -75,6 +75,7 @@ private:
 
     QComboBox *cmbCoordinateType;
     QComboBox *cmbMeshType;
+    QSpinBox *txtMeshQualitySize;
 
     // harmonic
     QGroupBox *grpHarmonicAnalysis;

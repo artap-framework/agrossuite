@@ -133,21 +133,14 @@ ProblemWidget::ProblemWidget(QWidget *parent) : QWidget(parent)
 
 void ProblemWidget::createControls()
 {
-    // fields toolbar
-    /*
-    fieldsToolbar = new FieldsToobar();
-    QVBoxLayout *layoutFields = new QVBoxLayout();
-    layoutFields->addWidget(fieldsToolbar);
-    layoutFields->addStretch();
-
-    QGroupBox *grpFieldsToolbar = new QGroupBox(tr("Physical fields"));
-    grpFieldsToolbar->setLayout(layoutFields);
-    */
-
     // problem
     cmbCoordinateType = new QComboBox();
     // mesh type
     cmbMeshType = new QComboBox();
+    // mesh size
+    txtMeshQualitySize = new QSpinBox();
+    txtMeshQualitySize->setMinimum(12);
+    txtMeshQualitySize->setMaximum(40);
 
     // general
     QGridLayout *layoutGeneral = new QGridLayout();
@@ -157,6 +150,8 @@ void ProblemWidget::createControls()
     layoutGeneral->addWidget(cmbCoordinateType, 0, 1);
     layoutGeneral->addWidget(new QLabel(tr("Mesh type:")), 1, 0);
     layoutGeneral->addWidget(cmbMeshType, 1, 1);
+    layoutGeneral->addWidget(new QLabel(tr("Mesh quality angle:")), 2, 0);
+    layoutGeneral->addWidget(txtMeshQualitySize, 2, 1);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
@@ -237,7 +232,6 @@ void ProblemWidget::createControls()
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(grpGeneral);
-    // layoutArea->addWidget(grpFieldsToolbar);
     layout->addWidget(grpCouplings);
     layout->addWidget(grpHarmonicAnalysis);
     layout->addWidget(grpTransientAnalysis);
@@ -271,6 +265,9 @@ void ProblemWidget::load()
     // mesh type
     cmbMeshType->setCurrentIndex(cmbMeshType->findData(Agros::problem()->config()->meshType()));
 
+    // mesh quality angle
+    txtMeshQualitySize->setValue(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt());
+
     // harmonic magnetic
     grpHarmonicAnalysis->setVisible(Agros::problem()->isHarmonic());
     txtFrequency->setValue(Agros::problem()->config()->value(ProblemConfig::Frequency).value<Value>());
@@ -291,7 +288,6 @@ void ProblemWidget::load()
     lblTransientTimeTotal->setText(QString("Total time (s)"));
 
     // couplings
-    // fieldsToolbar->refresh();
     couplingsWidget->refresh();
 
     grpCouplings->setVisible(Agros::problem()->couplingInfos().count() > 0);
@@ -306,6 +302,8 @@ void ProblemWidget::save()
 
     Agros::problem()->config()->setCoordinateType((CoordinateType) cmbCoordinateType->itemData(cmbCoordinateType->currentIndex()).toInt());
     Agros::problem()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
+    // mesh quality angle
+    Agros::problem()->config()->setValue(ProblemConfig::MeshQualityAngle, txtMeshQualitySize->value());
 
     Agros::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
     Agros::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());

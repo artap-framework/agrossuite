@@ -56,7 +56,8 @@ QToolBar[modulebar="true"] > QToolButton:checked {
 
 /* GENERAL */
 
-/* 
+/*
+
 QWidget {
   background-color: #404142;
 

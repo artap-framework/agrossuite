@@ -19,10 +19,12 @@
 
 #include "sceneview_geometry.h"
 
+#include <mesh/meshgenerator_triangle.h>
+
 #include "util/util.h"
 #include "util/global.h"
-#include "util/loops.h"
 #include "util/constants.h"
+#include "util/loops.h"
 #include "logview.h"
 
 #include "scene.h"
@@ -98,15 +100,18 @@ void SceneViewProblem::createActionsGeometry()
 
     // scene - operate on items
     actOperateOnNodes = new QAction(icon("geometry_node"), tr("&Nodes"), this);
+    actOperateOnNodes->setToolTip(createTooltipOperateOnNodes());
     actOperateOnNodes->setShortcut(Qt::Key_F2);
     actOperateOnNodes->setCheckable(true);
     actOperateOnNodes->setChecked(true);
 
     actOperateOnEdges = new QAction(icon("geometry_edge"), tr("&Edges"), this);
+    actOperateOnEdges->setToolTip(createTooltipOperateOnEdges());
     actOperateOnEdges->setShortcut(Qt::Key_F3);
     actOperateOnEdges->setCheckable(true);
 
     actOperateOnLabels = new QAction(icon("geometry_label"), tr("&Labels"), this);
+    actOperateOnLabels->setToolTip(createTooltipOperateOnLabels());
     actOperateOnLabels->setShortcut(Qt::Key_F4);
     actOperateOnLabels->setCheckable(true);
 
@@ -427,10 +432,11 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
             {
                 Agros::problem()->scene()->highlightNone();
                 node->setHighlighted(true);
-                setToolTip(tr("<h3>Node</h3>Point: [%1; %2]<br/>Index: %3").
-                           arg(node->point().x, 0, 'g', 3).
-                           arg(node->point().y, 0, 'g', 3).
-                           arg(Agros::problem()->scene()->nodes->items().indexOf(node)));
+                QMap<QString, QString> items;
+                items[tr("Point")] = QString("[%1; %2]").arg(node->point().x, 0, 'g', 3).
+                                                              arg(node->point().y, 0, 'g', 3);
+                items[tr("Index")] = QString("%1").arg(Agros::problem()->scene()->nodes->items().indexOf(node));
+                setToolTip(createToolTip(tr("Node"), items));
                 update();
             }
         }
@@ -444,7 +450,7 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
                 QString str;
                 foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
-                    str = str + QString("%1 (%2), ").
+                    str += QString("%1 (%2), ").
                             arg(edge->hasMarker(fieldInfo) ? edge->marker(fieldInfo)->name() : "-").
                             arg(fieldInfo->name());
                 }
@@ -453,14 +459,16 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
 
                 Agros::problem()->scene()->highlightNone();
                 edge->setHighlighted(true);
-                setToolTip(tr("<h3>Edge</h3><b>Point:</b> [%1; %2] - [%3; %4]<br/><b>Boundary conditions:</b> %5<br/><b>Angle:</b> %7 deg.<br/><b>Index:</b> %8").
-                           arg(edge->nodeStart()->point().x, 0, 'g', 3).
-                           arg(edge->nodeStart()->point().y, 0, 'g', 3).
-                           arg(edge->nodeEnd()->point().x, 0, 'g', 3).
-                           arg(edge->nodeEnd()->point().y, 0, 'g', 3).
-                           arg(str).
-                           arg(edge->angle(), 0, 'f', 0).
-                           arg(Agros::problem()->scene()->faces->items().indexOf(edge)));
+                QMap<QString, QString> items;
+                items[tr("Start point")] = QString("[%1; %2]").arg(edge->nodeStart()->point().x, 0, 'g', 3).
+                                                                    arg(edge->nodeStart()->point().y, 0, 'g', 3);
+                items[tr("End point")] = QString("[%1; %2]").arg(edge->nodeEnd()->point().x, 0, 'g', 3).
+                                                                  arg(edge->nodeEnd()->point().y, 0, 'g', 3);
+                items[tr("Boundary conditions")] = str;
+                items[tr("Angle")] = QString("%1").arg(edge->angle(), 0, 'f', 0);
+                items[tr("Index")] = QString("%1").arg(Agros::problem()->scene()->faces->items().indexOf(edge));
+                setToolTip(createToolTip(tr("Edge"), items));
+
                 update();
             }
         }
@@ -476,7 +484,7 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
                 QString str, polynomial_order;
                 foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
                 {
-                    str = str + QString("%1 (%2), ").
+                    str += QString("%1 (%2), ").
                             arg(label->hasMarker(fieldInfo) ? label->marker(fieldInfo)->name() : "-").
                             arg(fieldInfo->name());
                     polynomial_order = polynomial_order + QString("%1 (%2), ").
@@ -486,12 +494,12 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
                 if (str.length() > 0)
                     str = str.left(str.length() - 2);
 
-                QList<LoopsInfo::Triangle> triangles = Agros::problem()->scene()->loopsInfo()->polygonTriangles()[label];
+                QList<MeshGeneratorTriangleFast::Triangle> triangles = Agros::problem()->scene()->fastMeshInfo()->polygonTriangles()[label];
 
                 RectPoint boundingBox(Point(numeric_limits<double>::max(),  numeric_limits<double>::max()),
                                       Point(-numeric_limits<double>::max(), -numeric_limits<double>::max()));
                 double area = 0.0;
-                foreach (LoopsInfo::Triangle triangle, triangles)
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, triangles)
                 {
                     boundingBox.start.x = qMin(boundingBox.start.x, triangle.a.x);
                     boundingBox.end.x = qMax(boundingBox.end.x, triangle.a.x);
@@ -515,13 +523,15 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
                 }
 
                 label->setHighlighted(true);
-                setToolTip(tr("<h3>Label</h3><b>Point:</b> [%1; %2]<br/><b>Area:</b> %3<br/><b>Material:</b> %4<br/><b>Polynomial order:</b> %5<br/><b>Index:</b> %6").
-                           arg(label->point().x, 0, 'g', 3).
-                           arg(label->point().y, 0, 'g', 3).
-                           arg(QString("[%1; %2], [%3; %4], %5").arg(boundingBox.start.x).arg(boundingBox.start.y).arg(boundingBox.end.x).arg(boundingBox.end.y).arg(area)).
-                           arg(str).
-                           arg(polynomial_order).
-                           arg(Agros::problem()->scene()->labels->items().indexOf(label)));
+
+                QMap<QString, QString> items;
+                items[tr("Point")] = QString("[%1; %2]").arg(label->point().x, 0, 'g', 3).
+                                                              arg(label->point().y, 0, 'g', 3);
+                items[tr("Materials")] = str;
+                items[tr("Polynomial order")] = QString("%1").arg(polynomial_order);
+                items[tr("Index")] = QString("%1").arg(Agros::problem()->scene()->labels->items().indexOf(label));
+                setToolTip(createToolTip(tr("Label"), items));
+
                 update();
             }
         }
@@ -1260,7 +1270,7 @@ void SceneViewProblem::paintGeometry()
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             glBegin(GL_TRIANGLES);
-            QMapIterator<SceneLabel *, QList<LoopsInfo::Triangle> > i(Agros::problem()->scene()->loopsInfo()->polygonTriangles());
+            QMapIterator<SceneLabel *, QList<MeshGeneratorTriangleFast::Triangle> > i(Agros::problem()->scene()->fastMeshInfo()->polygonTriangles());
             while (i.hasNext())
             {
                 i.next();
@@ -1278,7 +1288,7 @@ void SceneViewProblem::paintGeometry()
                 else
                     glColor4f(0.3f, 0.1f, 0.7, 0.10f);
 
-                foreach (LoopsInfo::Triangle triangle, i.value())
+                foreach (MeshGeneratorTriangleFast::Triangle triangle, i.value())
                 {
                     glVertex2d(triangle.a.x, triangle.a.y);
                     glVertex2d(triangle.b.x, triangle.b.y);

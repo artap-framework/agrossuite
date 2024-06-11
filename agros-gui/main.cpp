@@ -44,7 +44,7 @@ public:
         setApplicationVersion(versionString());
         setOrganizationName("agros");
         setOrganizationDomain("agros");
-        setApplicationName("Agros Suite");
+        setApplicationName("agros");
 
         // force number format
         QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         // dealii::MultithreadInfo::set_thread_limit(1);
 
         // command line info
-        TCLAP::CmdLine cmd("Agros Suite", ' ', versionString().toStdString());
+        TCLAP::CmdLine cmd("agros", ' ', versionString().toStdString());
 
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Open problem", false, "", "string");
 

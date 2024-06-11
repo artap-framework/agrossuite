@@ -56,6 +56,7 @@ public:
         TimeTotal,
         Coordinate,
         Mesh,
+        MeshQualityAngle,
         // general
         GridStep,
         SnapToGrid
