@@ -713,10 +713,13 @@ bool MeshGeneratorTriangle::writeToTriangle()
     //    -Q  Quiet:  No terminal output except errors.
 
     // set mesh quality angle
-    char const *triSwitches = QString("pq%1eAazInQo2").arg(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt()).toStdString().c_str();
-    // char const *triSwitches = "pq31.0eAazInQo2";
-    triangulate((char *) triSwitches, &triIn, &triOut, (struct triangulateio *) NULL);
-
+    
+    #ifdef _MSC_VER  
+        char const *triSwitches = "pq31.0eAazInQo2";
+    #else
+        char const* triSwitches = QString("pq%1eAazInQo2").arg(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt()).toStdString().c_str();
+    #endif
+    triangulate((char*)triSwitches, &triIn, &triOut, (struct triangulateio*)NULL);
     free(triIn.pointlist);
     free(triIn.pointmarkerlist);
     free(triIn.segmentlist);
