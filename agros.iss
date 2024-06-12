@@ -1,8 +1,8 @@
 [Setup]
 
 #define AppName "Agros Suite"
-#define AppVersion GetFileVersion("agros.exe")
-#define AppDate GetFileDateTimeString("agros.exe", "mm/dd/yyyy", "/", ":") 
+#define AppVersion GetVersionNumbersString(".\build\usr\bin\agros.exe")
+#define AppDate GetFileDateTimeString(".\build\usr\bin\agros.exe", "mm/dd/yyyy", "/", ":") 
 ; #define OutputBaseFileName "AgrosSuite" + "_" + AppVersion + "." + GetDateTimeString('yyyymmdd', '', '')
 #define OutputBaseFileName "AgrosSuite"
 
@@ -29,16 +29,17 @@ WizardSmallImageFile=resources_source\images\setup\SetupModernSmall.bmp
 [Languages]
 
 [Files]
-Source: agros_library.dll; DestDir: {app}; DestName: agros_library.dll
-Source: libs\*.dll; DestDir: {app}/libs
-Source: agros.exe; DestDir: {app}; DestName: Agros.exe
-Source: solver_plugin_MUMPS.dll; DestDir: {app}; DestName: solver_plugin_MUMPS.dll
+;Source: agros_library.dll; DestDir: {app}; DestName: agros_library.dll
+Source: .\build\usr\bin\agros.exe; DestDir: {app}; DestName: Agros.exe
+
+Source: .\build\usr\lib\*.dll; DestDir: {app}/lib
 Source: resources\images\agros.ico; DestDir: {app}; DestName: Agros.ico
 Source: resources\*; DestDir: {app}/resources; Flags: recursesubdirs
 
-Source: ..\install\*; DestDir: {app}; Flags: recursesubdirs
-; VC++ 2013 runtime
-Source: "..\install\VC_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
+Source: .\build\usr\bin\*; DestDir: {app}; Flags: recursesubdirs
+
+Source: ..\install\Others\*; DestDir: {app}; Flags: recursesubdirs
+Source: "..\install\Microsoft\VC_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
 [Icons]
 Name: {group}\Agros; Filename: {app}\Agros.exe; WorkingDir: {app}
@@ -59,7 +60,10 @@ Root: HKCR; SubKey: Agros.Data\Shell\Open\Command; ValueType: string; ValueData:
 Root: HKCR; Subkey: Agros.Data\DefaultIcon; ValueType: string; ValueData: {app}\Agros.ico; Flags: uninsdeletevalue
 
 [INI]
-Filename: {app}\Agros2D.url; Section: InternetShortcut; Key: URL; String: http://www.agros2d.org/
+Filename: {app}\AgrosSuite.url; Section: InternetShortcut; Key: URL; String: http://www.agros2d.org/
+
+[Run]
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/quiet /norestart"; Flags: waituntilterminated
 
 [UninstallDelete]
 Type: files; Name: {app}\Agros2D.url
