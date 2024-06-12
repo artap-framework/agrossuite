@@ -200,7 +200,7 @@ message("---------------------")
 message("\n")
 
 # pixmap
-FILE(GLOB PIXMAP_FILES "resources/images/agros.xpm")
+FILE(GLOB PIXMAP_FILES "resources/images/agros.png")
 # desktop
 FILE(GLOB DESKTOP_FILES "agros.desktop")
 # resources

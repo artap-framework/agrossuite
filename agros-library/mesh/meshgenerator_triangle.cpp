@@ -783,7 +783,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         int marker = triOut.triangleattributelist[i];
         if (marker == 0)
         {
-            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
+            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas in mesh do not have a marker"));
             return false;
         }
 
@@ -839,7 +839,6 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
             elementList.append(MeshElement(nodeNA, nodeC, nodeNB, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
         }
     }
-    int elementCountLinear = elementList.count();
 
     // triangle neigh
     for (int i = 0; i < triOut.numberoftriangles; i++)
