@@ -288,6 +288,7 @@ bool MeshGeneratorTriangleFast::writeToTriangle()
     //    -C  Check consistency of final mesh.
     //    -Q  Quiet:  No terminal output except errors.
     char const *triSwitches = "peAazInQ";
+    // char const *triSwitches = "pq31.0eAazInQo2";
     triangulate((char *) triSwitches, &triIn, &triOut, (struct triangulateio *) NULL);
 
     free(triIn.pointlist);
@@ -347,7 +348,12 @@ bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
     int numberOfElements = triOut.numberoftriangles;
     for (int i = 0; i < numberOfElements; i++)
     {
-        int marker = triOut.triangleattributelist[i];
+        int marker = 0;
+        if (i <= triOut.numberoftriangleattributes)
+        {
+            marker = triOut.triangleattributelist[i];
+        }
+
         if (marker == 0)
         {
             Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
