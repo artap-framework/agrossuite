@@ -166,7 +166,7 @@ build-windows:
     # deploy
     - iscc.exe agros.iss
     - cd setup
-    - curl.exe -T AgrosSuite.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/    
+    - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/    
    
   artifacts:
     paths:
