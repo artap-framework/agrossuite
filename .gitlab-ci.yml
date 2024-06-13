@@ -164,6 +164,7 @@ build-windows:
     - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
     # deploy
+    - cd ..
     - iscc.exe agros.iss
     - cd setup
     - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/    
