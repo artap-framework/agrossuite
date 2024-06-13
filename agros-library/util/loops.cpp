@@ -288,6 +288,7 @@ bool MeshGeneratorTriangleFast::writeToTriangle()
     //    -C  Check consistency of final mesh.
     //    -Q  Quiet:  No terminal output except errors.
     char const *triSwitches = "peAazInQ";
+    // char const *triSwitches = "pq31.0eAazInQo2";
     triangulate((char *) triSwitches, &triIn, &triOut, (struct triangulateio *) NULL);
 
     free(triIn.pointlist);
@@ -341,16 +342,24 @@ bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
             }
         }
     }
-    int edgeCountLinear = edgeList.count();
 
     // triangle elements
+    bool all_elements = true;
     int numberOfElements = triOut.numberoftriangles;
     for (int i = 0; i < numberOfElements; i++)
     {
-        int marker = triOut.triangleattributelist[i];
-        if (marker == 0)
+        int marker = 0;
+        if (triOut.triangleattributelist)
         {
-            Agros::log()->printError(tr("Mesh Generator"), tr("Some areas do not have a marker"));
+            marker = triOut.triangleattributelist[i];
+            if (marker == 0)
+            {
+                Agros::log()->printError(tr("Mesh Generator"), tr("Some areas in loops do not have a marker"));
+
+            }
+        }
+        else
+        {
             return false;
         }
 
@@ -361,10 +370,9 @@ bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
 
         elementList.append(MeshElement(nodeA, nodeB, nodeC, marker - 1)); // marker conversion from triangle, where it starts from 1
     }
-    int elementCountLinear = elementList.count();
 
     // triangle neigh
-    for (int i = 0; i < triOut.numberoftriangles; i++)
+    for (int i = 0; i < numberOfElements; i++)
     {
         elementList[i].neigh[0] = triOut.neighborlist[3*i];
         elementList[i].neigh[1] = triOut.neighborlist[3*i+1];

@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="agros-pixmap.png">images/agros-pixmap.png</file>
         <file alias="agros-logo.png">images/agros-logo.png</file>
         <file alias="agros.png">images/agros.png</file>
         <file alias="menu_boundary.png">images/icons/menu_boundary.png</file>               
@@ -10,7 +9,7 @@
         <file alias="menu_parameter.png">images/icons/menu_parameter.png</file>               
         <file alias="menu_recipe.png">images/icons/menu_recipe.png</file>               
         <file alias="menu_study.png">images/icons/menu_study.png</file>               
-	<file alias="main_welcome.png">images/icons/main_welcome.png</file>
+	    <file alias="main_welcome.png">images/icons/main_welcome.png</file>
         <file alias="main_problem.png">images/icons/main_problem.png</file>
         <file alias="main_results.png">images/icons/main_results.png</file>                           
         <file alias="main_optilab.png">images/icons/main_optilab.png</file>
