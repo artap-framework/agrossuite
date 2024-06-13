@@ -1,10 +1,10 @@
 [Setup]
 
-#define AppName "Agros Suite"
+#define AppName "Agros"
 #define AppVersion GetVersionNumbersString(".\build\usr\bin\agros.exe")
 #define AppDate GetFileDateTimeString(".\build\usr\bin\agros.exe", "mm/dd/yyyy", "/", ":") 
 ; #define OutputBaseFileName "AgrosSuite" + "_" + AppVersion + "." + GetDateTimeString('yyyymmdd', '', '')
-#define OutputBaseFileName "AgrosSuite"
+#define OutputBaseFileName "Agros"
 
 AppName={#AppName}
 AppVerName={#AppName} {#AppVersion} ({#AppDate})
@@ -12,13 +12,13 @@ OutputBaseFilename={#OutputBaseFileName}
 DefaultGroupName=Agros Suite
 LicenseFile=COPYING
 
-AppId=Agros Suite
+AppId=Agros
 AppPublisher=hpfem.org
 AppCopyright=hpfem.org
 AppPublisherURL=http://www.agros2d.org/
-AppMutex=Agros Suite
+AppMutex=Agros
 OutputDir=setup
-DefaultDirName={pf}\Agros Suite
+DefaultDirName={pf}\Agros
 UninstallDisplayIcon={app}\images\agros.ico
 Compression=lzma/max
 PrivilegesRequired=admin
@@ -43,7 +43,7 @@ Source: "..\install\Microsoft\VC_redist.x64.exe"; DestDir: {tmp}; Flags: deletea
 
 [Icons]
 Name: {group}\Agros; Filename: {app}\Agros.exe; WorkingDir: {app}
-Name: {group}\Web pages; Filename: {app}\Agros2D.url
+Name: {group}\Web pages; Filename: {app}\Agros.url
 Name: {group}\COPYING; Filename: {app}\COPYING
 Name: {group}\Uninstall; Filename: {uninstallexe}
 Name: {commondesktop}\Agros; Filename: {app}\Agros.exe; WorkingDir: {app}; Tasks: desktopicon
