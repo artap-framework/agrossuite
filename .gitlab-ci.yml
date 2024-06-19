@@ -198,7 +198,7 @@ test-windows:
     - pip install pytest
     - pip install numpy
     - cd agrossuite
-    - rmdir /S /Q .\_skbuild
+    - rmdir /S .\_skbuild
     - pip install .    
     - cd ..
     # - copy "..\..\..\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
