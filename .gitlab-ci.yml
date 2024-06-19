@@ -200,10 +200,10 @@ test-windows:
     - cd agrossuite
     - pip install .
     - cd ..
-    - copy "..\..\..\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
-    - copy "..\..\..\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
-    - copy "..\usr\bin\*.dll" .\env\Lib\site-packages\agrossuite
-    - copy "..\..\..\install\zlib.dll" .\env\Lib\site-packages\agrossuite
+    # - copy "..\..\..\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
+    # - copy "..\..\..\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
+    # - copy "..\usr\bin\*.dll" .\env\Lib\site-packages\agrossuite
+    # - copy "..\..\..\install\zlib.dll" .\env\Lib\site-packages\agrossuite
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
