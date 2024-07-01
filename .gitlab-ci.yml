@@ -168,26 +168,6 @@ build-windows:
     - windeployqt.exe .
     - cd ..
     - cd .. 
-    - cd agros-python 
-    - python -m venv env
-    - .\env\Scripts\activate
-    - pip install cython
-    - pip install scikit-build
-    - pip install pytest
-    - pip install numpy
-    - cd agrossuite
-    - Remove-Item -Path .\_skbuild\ -Recurse
-    - pip install .    
-    - cd ..
-    - xcopy "..\..\..\install\Others\*.*"  ".\env\Lib\site-packages\agrossuite\" /Y
-    - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\" /Y   
-    - xcopy "..\usr\bin\*.dll" ".\env\Lib\site-packages\agrossuite\" /Y
-    - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
-    - cd tests
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-    - cd ..
-    - cd ..
-
     - cd ..
     - iscc.exe agros.iss
     - cd setup
@@ -213,7 +193,28 @@ test-windows:
     - win11
   
   script:
-   - dir
+    - cd agros-python 
+    - python -m venv env
+    - .\env\Scripts\activate
+    - pip install cython
+    - pip install scikit-build
+    - pip install pytest
+    - pip install numpy
+    - cd agrossuite
+    - Remove-Item -Path .\_skbuild\ -Recurse
+    - pip install .    
+    - cd ..
+    - xcopy "..\..\..\install\Others\*.*"  ".\env\Lib\site-packages\agrossuite\" /Y
+    - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\" /Y
+    - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y   
+    - xcopy "..\usr\bin\*.dll" ".\env\Lib\site-packages\agrossuite\" /Y
+    - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
+    - cd tests
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ..
+    - cd ..
+
+
 
 deploy-windows:
     stage: deploy
