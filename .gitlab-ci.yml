@@ -173,13 +173,13 @@ build-windows:
     paths:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
-      # - .\dealii\build\lib
     
-  cache:
-    paths:
-      - .\build\bin
-      - .\build\lib
-      - .\dealii\build
+    
+  # cache:
+  #  paths:
+  #    - .\build\bin
+  #    - .\build\lib
+  #    - .\dealii\build
 
 test-windows:
   stage: test
@@ -201,10 +201,7 @@ test-windows:
     - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
-    # - copy "..\..\..\install\Qt6Core.dll" .\env\Lib\site-packages\agrossuite
-    # - copy "..\..\..\install\Qt6Core5Compat.dll" .\env\Lib\site-packages\agrossuite
-    # - copy "..\usr\bin\*.dll" .\env\Lib\site-packages\agrossuite
-    # - copy "..\..\..\install\zlib.dll" .\env\Lib\site-packages\agrossuite
+
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
