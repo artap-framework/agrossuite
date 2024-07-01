@@ -166,7 +166,8 @@ build-windows:
     - xcopy "..\..\install\Others\*.dll" "..\build\usr\bin\" /Y
     - cd .\usr\bin
     - windeployqt.exe .
-     
+    - cd ..
+    - cd .. 
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
