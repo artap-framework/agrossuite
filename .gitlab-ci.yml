@@ -163,7 +163,24 @@ build-windows:
     - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
     - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
-    # deploy
+    
+    - cd agros-python 
+    - python -m venv env
+    - .\env\Scripts\activate
+    - pip install cython
+    - pip install scikit-build
+    - pip install pytest
+    - pip install numpy
+    - cd agrossuite
+    - Remove-Item -Path .\_skbuild\ -Recurse
+    - pip install .    
+    - cd ..
+
+    - cd tests
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ..
+    - cd ..
+
     - cd ..
     - iscc.exe agros.iss
     - cd setup
@@ -189,24 +206,7 @@ test-windows:
     - win11
   
   script:
-    - cd build
-    - cd agros-python 
-    - python -m venv env
-    - .\env\Scripts\activate
-    - pip install cython
-    - pip install scikit-build
-    - pip install pytest
-    - pip install numpy
-    - cd agrossuite
-    - Remove-Item -Path .\_skbuild\ -Recurse
-    - pip install .    
-    - cd ..
-
-    - cd tests
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
-    - cd ..
-    - cd ..
-
+   - dir
 
 deploy-windows:
     stage: deploy
