@@ -8,7 +8,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 if platform.system() == 'Windows':
-	pass
+	ctypes.cdll.LoadLibrary(path + "/lib/libagros_python.so")
 else:
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_python.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_triangle.so")
