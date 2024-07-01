@@ -163,7 +163,10 @@ build-windows:
     - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
     - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
-    
+    - xcopy "..\..\install\Others\*.dll" "..\build\usr\bin\" /Y
+    - cd .\usr\bin
+    - windeployqt.exe .
+     
     - cd agros-python 
     - python -m venv env
     - .\env\Scripts\activate
@@ -175,7 +178,10 @@ build-windows:
     - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
-
+    - xcopy "..\..\..\install\Others\*.*" " ".\env\Lib\site-packages\agrossuite\" /Y
+    - xcopy "..\usr\bin\agros_library.dll .\env\Lib\site-packages\agrossuite\" /Y   
+    - xcopy "..\usr\bin\*.dll .\env\Lib\site-packages\agrossuite\" /Y
+    - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
     - cd tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
