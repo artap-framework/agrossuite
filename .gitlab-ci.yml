@@ -212,7 +212,7 @@ test-windows:
     - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
     - xcopy ".\env\Lib\site-packages\agrossuite\libifcoremd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
     - xcopy ".\env\Lib\site-packages\agrossuite\libmmd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
-    - cd tests
+    - cd .\env\Lib\site-packages\agrossuite\tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
     - cd ..
