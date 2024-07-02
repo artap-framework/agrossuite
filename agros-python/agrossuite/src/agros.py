@@ -11,8 +11,16 @@ if platform.system() == 'Windows':
 	ctypes.cdll.LoadLibrary(path + "/agros_library.dll")
 	ctypes.cdll.LoadLibrary(path + "/agros_python.dll")
 	ctypes.cdll.LoadLibrary(path + "/agros_3rdparty_triangle.dll")
-	if os.path.isfile(path + "solver_plugin_MUMPS.dll"):
-		ctypes.cdll.LoadLibrary(path + "solver_plugin_MUMPS.dll")
+	ctypes.cdll.LoadLibrary(path + "/agros_3rdparty_triangle.dll")
+
+	if os.path.isfile(path + "/lib/solver_plugin_MUMPS.dll"):
+		try:
+			ctypes.cdll.LoadLibrary(path + "/lib/solver_plugin_MUMPS.dll")
+			ctypes.cdll.LoadLibrary(path + "/lib/libifcoremd.dll")
+			ctypes.cdll.LoadLibrary(path + "/lib/libmmd.dll")
+
+		except Exception as e:
+			print(f'Error: {e}')
 else:
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_python.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_triangle.so")
