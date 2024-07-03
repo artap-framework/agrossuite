@@ -717,7 +717,7 @@ bool MeshGeneratorTriangle::writeToTriangle()
     #ifdef _MSC_VER  
         char const *triSwitches = "pq31.0eAazInQo2";
     #else
-        char const* triSwitches = QString("pq%1eAazInQo2").arg(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt()).toStdString().c_str();
+        char const* triSwitches = QString("pq%1.0eAazInQo2").arg(Agros::problem()->config()->value(ProblemConfig::MeshQualityAngle).toInt()).toStdString().c_str();
     #endif
     triangulate((char*)triSwitches, &triIn, &triOut, (struct triangulateio*)NULL);
     free(triIn.pointlist);

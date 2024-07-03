@@ -330,7 +330,6 @@ void MainWindow::createMain()
     QToolBar *tlbLeftBar = new QToolBar();
     tlbLeftBar->setOrientation(Qt::Vertical);
     tlbLeftBar->setProperty("leftbar", true);
-    tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     tlbLeftBar->addAction(exampleWidget->actExamples);
