@@ -9,7 +9,7 @@
 AppName={#AppName}
 AppVerName={#AppName} {#AppVersion} ({#AppDate})
 OutputBaseFilename={#OutputBaseFileName}
-DefaultGroupName=Agros Suite
+DefaultGroupName=Agros
 LicenseFile=COPYING
 
 AppId=Agros
@@ -35,9 +35,7 @@ Source: .\build\usr\bin\solver_plugin_MUMPS.dll; DestDir: {app}/lib
 Source: .\build\usr\lib\*.dll; DestDir: {app}/lib
 Source: resources\images\agros.ico; DestDir: {app}; DestName: Agros.ico
 Source: resources\*; DestDir: {app}/resources; Flags: recursesubdirs
-
-Source: .\build\usr\bin\*; DestDir: {app}; Flags: recursesubdirs
-
+Source: .\build\usr\bin\*; Excludes: "python3.dll, python312.dll, solver_plugin_MUMPS.dll"; DestDir: {app}; Flags: recursesubdirs; 
 Source: ..\install\Others\*; DestDir: {app}; Flags: recursesubdirs
 Source: "..\install\Microsoft\VC_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
@@ -60,7 +58,7 @@ Root: HKCR; SubKey: Agros.Data\Shell\Open\Command; ValueType: string; ValueData:
 Root: HKCR; Subkey: Agros.Data\DefaultIcon; ValueType: string; ValueData: {app}\Agros.ico; Flags: uninsdeletevalue
 
 [INI]
-Filename: {app}\AgrosSuite.url; Section: InternetShortcut; Key: URL; String: http://www.agros2d.org/
+Filename: {app}\Agros.url; Section: InternetShortcut; Key: URL; String: http://www.agros2d.org/
 
 [Run]
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/quiet /norestart"; Flags: waituntilterminated
