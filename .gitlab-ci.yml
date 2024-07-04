@@ -53,6 +53,8 @@ build-linux:
     - pip install pytest
     - pip install numpy
 
+    # strip shared objects
+    - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
     # build wheel
     - pip wheel agrossuite/.
     # install package
@@ -134,12 +136,13 @@ deploy-linux-wheel:
     - linux
 
   script: 
-    - cd build/agros-python
+    - cd build/agros-python/
     - source env/bin/activate    
 
     # upload to pypi
     - pip install twine
-    - python3 -m twine upload agrossuite-*
+        
+    # - python3 -m twine upload agrossuite-*.whl
 
     - cd ../..
 
