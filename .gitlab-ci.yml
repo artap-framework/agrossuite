@@ -52,6 +52,10 @@ build-linux:
     - pip install scikit-build
     - pip install pytest
     - pip install numpy
+
+    # build wheel
+    - pip wheel agrossuite/.
+    # install package
     - pip install agrossuite/. 
     - cd ..
     
@@ -79,9 +83,6 @@ deploy-linux-appimage:
   tags:
     - agros
     - linux
-  dependencies:
-    - build-linux    
-    - test-linux    
 
   script: 
     - cd build
@@ -131,17 +132,11 @@ deploy-linux-wheel:
   tags:
     - agros
     - linux
-  dependencies:
-    - build-linux    
-    - test-linux    
 
   script: 
     - cd build/agros-python
     - source env/bin/activate    
 
-    # build wheel
-    - pip wheel agrossuite/.
-    
     # upload to pypi
     - pip install twine
     - python3 -m twine upload agrossuite-*
