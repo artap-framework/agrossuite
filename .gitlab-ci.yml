@@ -73,7 +73,7 @@ test-linux:
     reports:
       junit: report.xml
     
-deploy-linux:
+deploy-linux-appimage:
   stage: deploy
   needs: ["test-linux"]
   tags:
@@ -121,6 +121,31 @@ deploy-linux:
     
     # upload to agros2d
     - curl -T Agros_Suite-x86_64.AppImage -u "$agros2d_ftp_user:$agros2d_ftp_password" ftp://agros2d.org/linux/
+
+deploy-linux-wheel:
+  stage: deploy
+  needs: ["test-linux"]
+  tags:
+    - agros
+    - linux
+
+  script: 
+    - cd build/agros-python
+    - source env/bin/activate    
+
+    # build wheel
+    - pip wheel agrossuite/.
+    
+    # upload to pypi
+    - pip install twine
+    - python3 -m twine upload agrossuite-*
+
+    - cd ../..
+
+
+
+
+
       
 build-windows:
   stage: build
