@@ -79,6 +79,9 @@ deploy-linux-appimage:
   tags:
     - agros
     - linux
+  dependencies:
+    - build-linux    
+    - test-linux    
 
   script: 
     - cd build
@@ -128,6 +131,9 @@ deploy-linux-wheel:
   tags:
     - agros
     - linux
+  dependencies:
+    - build-linux    
+    - test-linux    
 
   script: 
     - cd build/agros-python
