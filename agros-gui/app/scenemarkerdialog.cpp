@@ -334,6 +334,7 @@ SceneBoundaryDialog::SceneBoundaryDialog(SceneBoundary *boundary, QWidget *paren
     : QDialog(parent), m_boundary(boundary)
 {
     setWindowTitle(tr("Boundary condition - %1").arg(boundary->fieldInfo()->name()));
+    setWindowIcon(icon("menu_boundary"));
 
     layout = new QGridLayout();
     txtName = new QLineEdit(this);
@@ -425,6 +426,7 @@ SceneMaterialDialog::SceneMaterialDialog(SceneMaterial *material, QWidget *paren
     : QDialog(parent), m_material(material)
 {
     setWindowTitle(tr("Material - %1").arg(material->fieldInfo()->name()));
+    setWindowIcon(icon("menu_material"));
 
     layout = new QGridLayout();
     txtName = new QLineEdit(this);

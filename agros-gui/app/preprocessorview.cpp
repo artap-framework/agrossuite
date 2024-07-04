@@ -168,14 +168,19 @@ void PreprocessorWidget::createActions()
 
         StringAction* actionField = new StringAction(this, it.key(), it.value());
         actionField->setIcon(icon("fields/" + it.key()));
+        actionField->setIconVisibleInMenu(true);
         connect(actionField, SIGNAL(triggered(QString)), this, SLOT(doNewField(QString)));
         actNewFields[it.key()] = actionField;
 
         StringAction* actionBoundary = new StringAction(this, it.key(), it.value());
+        actionBoundary->setIcon(icon("fields/" + it.key()));
+        actionBoundary->setIconVisibleInMenu(true);
         connect(actionBoundary, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
         actNewBoundaries[it.key()] = actionBoundary;
 
         StringAction* actionMaterial = new StringAction(this, it.key(), it.value());
+        actionMaterial->setIcon(icon("fields/" + it.key()));
+        actionMaterial->setIconVisibleInMenu(true);
         connect(actionMaterial, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
         actNewMaterials[it.key()] = actionMaterial;
     }
@@ -628,11 +633,7 @@ void PreprocessorWidget::refresh()
     mnuFields->clear();
     foreach(StringAction *fieldAction, actNewFields.values())
         if (!Agros::problem()->fieldInfos().keys().contains(fieldAction->key()))
-        {
-            fieldAction->setIcon(icon("fields/" + fieldAction->key()));
-            fieldAction->setIconVisibleInMenu(true);
             mnuFields->addAction(fieldAction);
-        }
 
     // create menu
     createMenu();
