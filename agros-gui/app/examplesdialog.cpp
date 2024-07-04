@@ -49,7 +49,7 @@ ExamplesWidget::ExamplesWidget(QWidget *parent)
     createActions();
 
     trvRecentFiles = new QTreeWidget(this);
-    trvRecentFiles->setMinimumWidth(300);
+    trvRecentFiles->setMinimumWidth(350);
     trvRecentFiles->setMouseTracking(true);
     trvRecentFiles->setColumnCount(1);
     trvRecentFiles->setIconSize(QSize(24, 24));
@@ -59,7 +59,7 @@ ExamplesWidget::ExamplesWidget(QWidget *parent)
     connect(trvRecentFiles, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doRecentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     trvExamples = new QTreeWidget(this);
-    trvExamples->setMinimumWidth(300);
+    trvExamples->setMinimumWidth(350);
     trvExamples->setMouseTracking(true);
     trvExamples->setColumnCount(1);
     trvExamples->setIconSize(QSize(24, 24));
@@ -184,7 +184,7 @@ void ExamplesWidget::readRecentFiles()
 
     QTreeWidgetItem *trvRecentProblems = new QTreeWidgetItem(trvRecentFiles);
     trvRecentProblems->setText(0, tr("Recent problems"));
-    trvRecentProblems->setIcon(0, icon("fields/empty"));
+    trvRecentProblems->setIcon(0, icon("recent"));
     trvRecentProblems->setFont(0, fnt);
     trvRecentProblems->setExpanded(true);
 

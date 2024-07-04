@@ -28,6 +28,7 @@
         <file alias="geometry.png">images/icons/geometry.png</file>
         <file alias="problem.png">images/icons/problem.png</file>
         <file alias="optilab.png">images/icons/optilab.png</file>
+        <file alias="recent.png">images/icons/recent.png</file>
         <file alias="problem_properties.png">images/icons/problem_properties.png</file>
         <file alias="geometry_add.png">images/icons/geometry_add.png</file>
         <file alias="geometry_node.png">images/icons/geometry_node.png</file>
