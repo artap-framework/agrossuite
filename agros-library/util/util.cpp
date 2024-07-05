@@ -187,11 +187,11 @@ QString compatibleFilename(const QString &fileName)
 QString tempProblemDir()
 {
 #ifdef Q_WS_WIN
-    static QString str = QString("%1/agros2d/%2").
+    static QString str = QString("%1/agros/%2").
             arg(QDir::temp().absolutePath()).
             arg(QString::number(QCoreApplication::applicationPid()));
 #else
-    static QString str = QString("%1/agros2d-%2/%3").
+    static QString str = QString("%1/agros-%2/%3").
             arg(QDir::temp().absolutePath()).
             arg(getenv("USER")).
             arg(QString::number(QCoreApplication::applicationPid()));

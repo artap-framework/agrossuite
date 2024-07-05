@@ -155,9 +155,12 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
     renderer.render(&painter);
 
     // Save, image format based on file extension
-    image.save(tempProblemDir() + "/geometry.png");
+    QString imgName = tempProblemDir() + "/geometry.png";
+    if (QFile::exists(imgName))
+        QFile::remove(imgName);
+    image.save(imgName);
 
-    problemInfo.SetValue("GEOMETRY_PNG", QString(tempProblemDir() + "/geometry.png").toStdString());
+    problemInfo.SetValue("GEOMETRY_PNG", QString(imgName).toStdString());
 
     // parameters
     QMap<QString, ProblemParameter> parameters = problem->config()->parameters()->items();
