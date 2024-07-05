@@ -83,7 +83,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
 
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS", compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
 
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
@@ -155,9 +155,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
     renderer.render(&painter);
 
     // Save, image format based on file extension
-    QString imgName = tempProblemDir() + "/geometry.png";
-    if (QFile::exists(imgName))
-        QFile::remove(imgName);
+    QString imgName = tempProblemDir() + QString("/geometry_%1.png").arg(QRandomGenerator::global()->generate());
     image.save(imgName);
 
     problemInfo.SetValue("GEOMETRY_PNG", QString(imgName).toStdString());
@@ -277,7 +275,12 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem, const QString &nam
 
     ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/problem.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
+    webEdit->clear();
     webEdit->setHtml(QString::fromStdString(info));
+    // qInfo() << QString::fromStdString(info);
+
+    // remove image
+    QFile::remove(imgName);
 }
 
 // info
