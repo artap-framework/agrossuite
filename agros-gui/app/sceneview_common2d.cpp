@@ -233,7 +233,7 @@ void SceneViewCommon2D::paintRulers()
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        glColor3d(0.95, 0.95, 0.95);
+        glColor3d(m_windowColor[0], m_windowColor[1], m_windowColor[2]);
 
         glBegin(GL_QUADS);
         glVertex2d(cornerMin.x, cornerMax.y + rulersArea.y);

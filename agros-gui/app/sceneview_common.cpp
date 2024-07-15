@@ -85,13 +85,19 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
       m_labelPostSize(0),
       m_lastPos(QPoint()),
       m_zoomRegion(false),
-      m_zoomRegionPos(QPointF())
+      m_zoomRegionPos(QPointF()),
+      m_windowColor{0, 0, 0}
 {
     createActions();
 
     setMouseTracking(true);
     setFocusPolicy(Qt::WheelFocus);
     setContextMenuPolicy(Qt::DefaultContextMenu);
+
+    QPalette p;
+    m_windowColor[0] = p.window().color().red() / 255.0;
+    m_windowColor[1] = p.window().color().green() / 255.0;
+    m_windowColor[2] = p.window().color().blue() / 255.0;
 
     setMinimumSize(200, 200);
 }

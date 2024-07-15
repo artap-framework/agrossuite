@@ -87,6 +87,9 @@ protected:
     bool m_zoomRegion;
     QPointF m_zoomRegionPos;
 
+    // window color
+    double m_windowColor[3];
+
     // problem (preprocessor vs. computation)
     virtual ProblemBase *problem() const = 0;
 
