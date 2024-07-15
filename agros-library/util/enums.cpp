@@ -202,7 +202,6 @@ void initLists()
 
     // Mesh Type
     meshTypeList.insert(MeshType_Triangle_QuadFineDivision, "triangle");
-    meshTypeList.insert(MeshType_GMSH_Quad, "gmsh_quad");
 
     timeStepMethodList.insert(TimeStepMethod_Fixed, "fixed");
     timeStepMethodList.insert(TimeStepMethod_BDFTolerance, "adaptive");
@@ -577,8 +576,6 @@ QString meshTypeString(MeshType meshType)
     {
     case MeshType_Triangle_QuadFineDivision:
         return QObject::tr("Triangle (quad)");
-    case MeshType_GMSH_Quad:
-        return QObject::tr("GMSH (quad)");
     default:
         std::cerr << "Mesh type '" + QString::number(meshType).toStdString() + "' is not implemented. meshTypeString(MeshType meshType)" << endl;
         throw;

@@ -105,8 +105,7 @@ enum CouplingType
 enum MeshType
 {
     MeshType_Undefined = -1,
-    MeshType_Triangle_QuadFineDivision = 0,
-    MeshType_GMSH_Quad = 5,
+    MeshType_Triangle_QuadFineDivision = 0
 };
 Q_DECLARE_METATYPE(MeshType)
 
