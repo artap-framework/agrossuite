@@ -389,19 +389,19 @@ void PreprocessorWidget::createControls()
     // nodes
     nodesNode = new QTreeWidgetItem(geometryNode);
     nodesNode->setText(0, tr("Nodes"));
-    nodesNode->setIcon(0, iconAlphabet('N', AlphabetColor_Green));
+    nodesNode->setIcon(0, icon("geometry_node"));
     nodesNode->setFont(0, fnt);
 
     // edges
     edgesNode = new QTreeWidgetItem(geometryNode);
     edgesNode->setText(0, tr("Edges"));
-    edgesNode->setIcon(0, iconAlphabet('E', AlphabetColor_Green));
+    edgesNode->setIcon(0, icon("geometry_edge"));
     edgesNode->setFont(0, fnt);
 
     // labels
     labelsNode = new QTreeWidgetItem(geometryNode);
     labelsNode->setText(0, tr("Labels"));
-    labelsNode->setIcon(0, iconAlphabet('L', AlphabetColor_Green));
+    labelsNode->setIcon(0, icon("geometry_label"));
     labelsNode->setFont(0, fnt);
 
     txtViewNodes = new QTextEdit(this);
