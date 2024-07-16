@@ -295,31 +295,45 @@ void SceneViewPost2D::paintScalarField()
 
     loadProjection2d(true);
 
-    if (m_listScalarField == -1)
-    {
-        if (m_postprocessorWidget->currentComputation()->postDeal()->scalarValues().isEmpty()) return;
+    if (m_postprocessorWidget->currentComputation()->postDeal()->scalarValues().isEmpty()) {
+        std::cerr << "Scalar values are empty." << std::endl;
+        return;
+    }
 
-        paletteCreate();
+    paletteCreate();
 
+    // range
+    double rangeMin = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble();
+    double rangeMax = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble();
+    double irange = 1.0 / (rangeMax - rangeMin);
+    // special case: constant solution
+    if (fabs(rangeMax - rangeMin) < EPS_ZERO)
+        irange = 1.0;
+
+    // set texture for coloring
+    glEnable(GL_TEXTURE_1D);
+    glBindTexture(GL_TEXTURE_1D, m_textureScalar);
+
+    // Kontrola, zda je textura platná
+    GLint textureBinding;
+    glGetIntegerv(GL_TEXTURE_BINDING_1D, &textureBinding);
+    if (textureBinding != m_textureScalar) {
+        std::cerr << "Texture binding failed." << std::endl;
+        return;
+    }
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+    // set texture transformation matrix
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glTranslated(m_texShift, 0.0, 0.0);
+    glScaled(m_texScale, 1.0, 1.0); // opravený scaling
+
+    // Create or regenerate display list
+    if (m_listScalarField == -1) {
         m_listScalarField = glGenLists(1);
         glNewList(m_listScalarField, GL_COMPILE);
-
-        // range
-        double irange = 1.0 / (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
-        // special case: constant solution
-        if (fabs(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) < EPS_ZERO)
-            irange = 1.0;
-
-        // set texture for coloring
-        glEnable(GL_TEXTURE_1D);
-        glBindTexture(GL_TEXTURE_1D, m_textureScalar);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-        // set texture transformation matrix
-        glMatrixMode(GL_TEXTURE);
-        glLoadIdentity();
-        glTranslated(m_texShift, 0.0, 0.0);
-        glScaled(m_texScale, 0.0, 0.0);
 
         glBegin(GL_TRIANGLES);
         foreach (PostTriangle triangle, m_postprocessorWidget->currentComputation()->postDeal()->scalarValues())
@@ -327,40 +341,48 @@ void SceneViewPost2D::paintScalarField()
             if (!m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
             {
                 double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                if (avgValue < m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
+                if (avgValue < rangeMin || avgValue > rangeMax)
                     continue;
             }
 
             for (int j = 0; j < 3; j++)
             {
+                double texCoord;
                 if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool())
-                    glTexCoord1d(log10((double) (1 + (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt() - 1))
-                                       * (triangle.values[j] - m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange) / log10((double) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt()));
+                    texCoord = log10((1 + (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt() - 1)) * (triangle.values[j] - rangeMin) * irange) / log10(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt());
                 else
-                    glTexCoord1d((triangle.values[j] - m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
+                    texCoord = (triangle.values[j] - rangeMin) * irange;
 
+                glTexCoord1d(texCoord);
                 glVertex2d(triangle.vertices[j][0], triangle.vertices[j][1]);
             }
         }
         glEnd();
 
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        glDisable(GL_TEXTURE_1D);
-
-        // switch-off texture transform
-        glMatrixMode(GL_TEXTURE);
-        glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW);
-
         glEndList();
-
-        glCallList(m_listScalarField);
     }
-    else
+
+    // Call the display list
+    glCallList(m_listScalarField);
+
+    // Disable texture and reset texture transform
+    glDisable(GL_TEXTURE_1D);
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+
+    // Ensure all OpenGL commands are executed
+    glFlush();
+    glFinish();
+
+    // Check for OpenGL errors
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
     {
-        glCallList(m_listScalarField);
+        std::cerr << "OpenGL Error: " << error << std::endl;
     }
 }
+
 
 void SceneViewPost2D::paintContours()
 {

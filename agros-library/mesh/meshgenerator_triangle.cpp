@@ -59,9 +59,6 @@ bool MeshGeneratorTriangleExternal::mesh()
        args.append("-pPq31.0eAazQIno2");
        args.append(QString("%2").arg(tempProblemFileName()));
 
-        // Windows - could you try?
-        args.append(QString("%2").arg(tempProblemFileName()));
-
        process->start(command, args, QIODeviceBase::ReadOnly);
 
        if (!process->waitForStarted())
