@@ -175,24 +175,12 @@ bool MeshGeneratorTriangleFast::writeToTriangle()
     int holesCount = 0;
     foreach (SceneLabel *label, m_problem->scene()->labels->items())
     {
-        if (label->markersCount() > 0)
-        {
-            inLabels.append(MeshLabel(labelsCount,
-                                      label->point().x,
-                                      label->point().y,
-                                      m_problem->scene()->labels->items().indexOf(label) + 1,
-                                      label->area()));
-            labelsCount++;
-        }
-        else
-        {
-            inHoles.append(MeshNode(holesCount,
-                                    label->point().x,
-                                    label->point().y,
-                                    -1));
-
-            holesCount++;
-        }
+        inLabels.append(MeshLabel(labelsCount,
+                                  label->point().x,
+                                  label->point().y,
+                                  m_problem->scene()->labels->items().indexOf(label) + 1,
+                                  label->area()));
+        labelsCount++;
     }
 
     // vertices
