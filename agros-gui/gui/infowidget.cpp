@@ -55,7 +55,6 @@
 InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     : QWidget(parent)
 {
-    // webEdit = new QTextEdit();
     webEdit = new QTextBrowser();
     webEdit->setOpenExternalLinks(true);
     webEdit->setReadOnly(true);
