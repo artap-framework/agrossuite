@@ -34,7 +34,8 @@ public:
     ~InfoWidgetGeneral();
 
 protected:    
-    QTextEdit *webEdit;
+    // QTextEdit *webEdit;
+    QTextBrowser *webEdit;
 
 public slots:
     void clear();

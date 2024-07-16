@@ -21,7 +21,7 @@
         <li><h3>Fluid flow</h3></li>
         <li><h3>Acoustics</h3></li>
     </ul>
-    <p>Agros is open-source and developed at the Faculty of Electrical Engineering, University of West Bohemia. For more details, visit the official website <b>www.agros2d.org<b>.</p>	
+    <p>Agros is open-source and developed at the Faculty of Electrical Engineering, University of West Bohemia. For more details, visit the official website <b><a href="http://www.agros2d.org/" target="_blank">www.agros2d.org</a><b>.</p>
     <div class="cleaner"></div>
 </body>
 </html>
