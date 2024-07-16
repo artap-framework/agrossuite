@@ -6,7 +6,6 @@
 </head>
 <body>
 
-<!-- <img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS}}" /> -->
 <h2>{{NAME}}</h2>
 <h4>&nbsp;</h4>
 

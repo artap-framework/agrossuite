@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="generator" content="Agros Suite" />
+	<meta name="generator" content="agros" />
 </head>
 <body>
 <h1>{{LABEL}}</h1>

@@ -302,11 +302,16 @@ void InfoWidget::welcome()
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");
 
-    problemInfo.SetValue("AGROS", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("AGROS_LOGO", "file:///" + compatibleFilename(QDir(Agros::dataDir() + TEMPLATEROOT + "/agros_logo.png").absolutePath()).toStdString());
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(Agros::dataDir()).absolutePath()).arg(TEMPLATEROOT)).toString().toStdString());
 
     ctemplate::ExpandTemplate(compatibleFilename(Agros::dataDir() + TEMPLATEROOT + "/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
     webEdit->setHtml(QString::fromStdString(info));
+}
+
+void InfoWidget::empty()
+{
+    webEdit->setHtml("");
 }
 

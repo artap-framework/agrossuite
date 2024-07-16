@@ -35,25 +35,17 @@ public:
 
     QAction *actExamples;
 
-    void initRecentFile();
-
 signals:
     void problemOpen(const QString &fileName);
     void formOpen(const QString &fileName, const QString &formName);
 
-public slots:
-    void readRecentFiles();
-
 private slots:
-    void doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doRecentItemDoubleClicked(QTreeWidgetItem *item, int column);
     void doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doExampleItemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
     InfoWidget *infoWidget;
 
-    QTreeWidget *trvRecentFiles;
     QTreeWidget *trvExamples;
     QString m_selectedRecentFilename;
     QString m_selectedRecentFormFilename;
@@ -62,12 +54,10 @@ private:
 
     QString m_expandedGroup;
 
-    QSplitter *splitter;
-
     void createActions();
 
-    void readExamples();
-    int readExamples(QDir dir, QTreeWidgetItem *parentItem);
+    void readTree();
+    int readTutorials(QDir dir, QTreeWidgetItem *parentItem);
 
     void problemInfo(const QString &fileName);
     QList<QIcon> problemIcons(const QString &fileName);

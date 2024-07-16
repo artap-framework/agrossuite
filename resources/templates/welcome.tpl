@@ -5,7 +5,7 @@
     <meta name="generator" content="Agros" />
 </head>
 <body>
-	<img src="resources\templates\agros_logo.PNG"/>
+	<img src="{{AGROS_LOGO}}" />
     <p><strong>Agros</strong> is a free scientific tool for 2D finite element method simulations. It offers a simple GUI with a geometry editor and hp-adaptivity for fast solutions. It allows for the solution of the following fields and their multiphysics coupling. The OptiLab module also allows for multi-objective optimization.</p>
     <ul>
         <li><h3>Electromagnetic fields</h3></li>

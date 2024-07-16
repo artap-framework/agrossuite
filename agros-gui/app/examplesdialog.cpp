@@ -48,16 +48,6 @@ ExamplesWidget::ExamplesWidget(QWidget *parent)
 
     createActions();
 
-    trvRecentFiles = new QTreeWidget(this);
-    trvRecentFiles->setMinimumWidth(350);
-    trvRecentFiles->setMouseTracking(true);
-    trvRecentFiles->setColumnCount(1);
-    trvRecentFiles->setIconSize(QSize(24, 24));
-    trvRecentFiles->setHeaderHidden(true);
-
-    connect(trvRecentFiles, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doRecentItemDoubleClicked(QTreeWidgetItem *, int)));
-    connect(trvRecentFiles, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doRecentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-
     trvExamples = new QTreeWidget(this);
     trvExamples->setMinimumWidth(350);
     trvExamples->setMouseTracking(true);
@@ -68,37 +58,23 @@ ExamplesWidget::ExamplesWidget(QWidget *parent)
     connect(trvExamples, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doExampleItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvExamples, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doExampleItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    QSettings settings;
-    splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);    
-    splitter->addWidget(trvRecentFiles);
-    splitter->addWidget(trvExamples);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 2);
-    splitter->restoreState(settings.value("ExamplesWidget/SplitterState").toByteArray());
-    splitter->restoreGeometry(settings.value("ExamplesWidget/SplitterGeometry").toByteArray());
-
     // scene - info widget
     infoWidget = new InfoWidget(this);
 
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(splitter);
+    layout->addWidget(trvExamples);
     layout->addWidget(infoWidget);
     layout->setStretch(1, 1);
 
     setLayout(layout);
 
-    readExamples();
-    readRecentFiles();
+    readTree();
 
     infoWidget->welcome();
 }
 
 ExamplesWidget::~ExamplesWidget()
 {
-    QSettings settings;
-    settings.setValue("ExamplesWidget/SplitterState", splitter->saveState());
-    settings.setValue("ExamplesWidget/SplitterGeometry", splitter->saveGeometry());
 }
 
 void ExamplesWidget::createActions()
@@ -108,58 +84,30 @@ void ExamplesWidget::createActions()
     actExamples->setCheckable(true);
 }
 
-void ExamplesWidget::initRecentFile()
-{
-    QTreeWidgetItem *mainTreeItem = trvRecentFiles->topLevelItem(0);
-    if (mainTreeItem->childCount() > 0)
-    {
-        QTreeWidgetItem *selected = mainTreeItem->child(0);
-        selected->setSelected(true);
-        doRecentItemChanged(selected, nullptr);
-    }
-}
-
-void ExamplesWidget::doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    m_selectedRecentFilename.clear();
-    if (current)
-    {
-        m_selectedRecentFilename = current->data(0, Qt::UserRole).toString();
-        if (!m_selectedRecentFilename.isEmpty())
-        {
-            problemInfo(m_selectedRecentFilename);
-            return;
-        }
-    }
-
-    infoWidget->welcome();
-}
-
-void ExamplesWidget::doRecentItemDoubleClicked(QTreeWidgetItem *item, int column)
-{
-    if (trvRecentFiles->currentItem())
-    {
-        if (!m_selectedRecentFilename.isEmpty())
-        {
-            emit problemOpen(m_selectedRecentFilename);
-        }
-    }
-}
-
 void ExamplesWidget::doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     m_selectedExampleFilename.clear();
     if (current)
     {
         m_selectedExampleFilename = current->data(0, Qt::UserRole).toString();
-        if (!m_selectedExampleFilename.isEmpty())
+
+        if (m_selectedExampleFilename == "welcome")
+        {
+            infoWidget->welcome();
+        }
+        else if (!m_selectedExampleFilename.isEmpty())
         {
             problemInfo(m_selectedExampleFilename);
-            return;
+        }
+        else
+        {
+            infoWidget->empty();
         }
     }
-
-    infoWidget->welcome();
+    else
+    {
+        infoWidget->empty();
+    }
 }
 
 void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -173,16 +121,26 @@ void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int colum
     }
 }
 
-void ExamplesWidget::readRecentFiles()
+void ExamplesWidget::readTree()
 {
+    // clear listview
+    trvExamples->clear();
+
     QSettings settings;
 
-    trvRecentFiles->clear();
-
-    QFont fnt = trvRecentFiles->font();
+    QFont fnt = trvExamples->font();
     fnt.setBold(true);
 
-    QTreeWidgetItem *trvRecentProblems = new QTreeWidgetItem(trvRecentFiles);
+    // welcome
+    QTreeWidgetItem *trvWelcome = new QTreeWidgetItem(trvExamples);
+    trvWelcome->setText(0, tr("Welcome"));
+    trvWelcome->setIcon(0, icon("agros"));
+    trvWelcome->setData(0, Qt::UserRole, "welcome");
+    trvWelcome->setFont(0, fnt);
+    trvWelcome->setExpanded(true);
+
+    // read recent
+    QTreeWidgetItem *trvRecentProblems = new QTreeWidgetItem(trvExamples);
     trvRecentProblems->setText(0, tr("Recent problems"));
     trvRecentProblems->setIcon(0, icon("recent"));
     trvRecentProblems->setFont(0, fnt);
@@ -206,23 +164,22 @@ void ExamplesWidget::readRecentFiles()
             item->setIcon(0, icon("fields/empty"));
     }
 
-    infoWidget->welcome();
-}
-
-void ExamplesWidget::readExamples()
-{
-    // clear listview
-    trvExamples->clear();
-
+    // read tutorials
     QDir dir(QString("%1/resources/examples").arg(Agros::dataDir()));
     dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
 
-    readExamples(dir, trvExamples->invisibleRootItem());
+    readTutorials(dir, trvExamples->invisibleRootItem());
+
+    infoWidget->welcome();
 }
 
-int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
+int ExamplesWidget::readTutorials(QDir dir, QTreeWidgetItem *parentItem)
 {
-    int count = 0;
+    QFont fnt = trvExamples->font();
+    fnt.setBold(true);
+
+    // read tutorials
+    int countTutorials = 0;
 
     QFileInfoList listExamples = dir.entryInfoList();
     for (int i = 0; i < listExamples.size(); ++i)
@@ -233,9 +190,6 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
 
         if (fileInfo.isDir())
         {
-            QFont fnt = trvExamples->font();
-            fnt.setBold(true);
-
             QTreeWidgetItem *dirItem = new QTreeWidgetItem(parentItem);
             dirItem->setText(0, fileInfo.fileName());
             dirItem->setFont(0, fnt);
@@ -249,7 +203,7 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
                 dirItem->setExpanded(true);
 
             // recursive read
-            int numberOfProblems = readExamples(fileInfo.absoluteFilePath(), dirItem);
+            int numberOfProblems = readTutorials(fileInfo.absoluteFilePath(), dirItem);
 
             if (numberOfProblems == 0)
             {
@@ -259,7 +213,7 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
             }
 
             // increase counter
-            count += numberOfProblems;
+            countTutorials += numberOfProblems;
         }
         else if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
@@ -276,8 +230,8 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
             exampleProblemItem->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
 
             // increase counter
-            count++;
-        }        
+            countTutorials++;
+        }
         else if (fileInfo.suffix() == "ui")
         {
             QTreeWidgetItem *exampleFormItem = new QTreeWidgetItem(parentItem);
@@ -286,11 +240,11 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
             exampleFormItem->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
 
             // increase counter
-            count++;
+            countTutorials++;
         }
     }
 
-    return count;
+    return countTutorials;
 }
 
 void ExamplesWidget::problemInfo(const QString &fileName)
@@ -340,10 +294,6 @@ void ExamplesWidget::problemInfo(const QString &fileName)
 
             return;
         }
-    }
-    else
-    {
-        infoWidget->welcome();
     }
 }
 

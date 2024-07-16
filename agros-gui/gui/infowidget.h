@@ -55,6 +55,7 @@ signals:
 
 public slots:
     void welcome();
+    void empty();
 
 };
 
