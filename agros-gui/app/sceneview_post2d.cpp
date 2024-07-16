@@ -417,7 +417,7 @@ void SceneViewPost2D::paintContours()
             // value range
             double step = (rangeMax-rangeMin) / m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContoursCount).toInt();
 
-            glLineWidth(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContoursWidth).toFloat());
+            glLineWidth(CONTOURSWIDTH                                                                                                                                                                                                                   );
             glColor3d(COLORCONTOURS[0], COLORCONTOURS[1], COLORCONTOURS[2]);
 
             glBegin(GL_LINES);
