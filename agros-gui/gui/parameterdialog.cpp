@@ -44,6 +44,7 @@ ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
 void ParameterDialog::createControls()
 {
     setWindowTitle(tr("Parameter: %1").arg(m_key));
+    setWindowIcon(icon("menu_parameter"));
     setMinimumWidth(450);
 
     lblParametersError = new QLabel();
