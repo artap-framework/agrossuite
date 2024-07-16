@@ -331,7 +331,8 @@ void SceneViewPost2D::paintScalarField()
     glScaled(m_texScale, 1.0, 1.0); // opravený scaling
 
     // Create or regenerate display list
-    if (m_listScalarField == -1) {
+    if (m_listScalarField == -1)
+    {
         m_listScalarField = glGenLists(1);
         glNewList(m_listScalarField, GL_COMPILE);
 

@@ -134,7 +134,7 @@ void ExamplesWidget::readTree()
     // welcome
     QTreeWidgetItem *trvWelcome = new QTreeWidgetItem(trvExamples);
     trvWelcome->setText(0, tr("Welcome"));
-    trvWelcome->setIcon(0, icon("agros"));
+    trvWelcome->setIcon(0, icon("main_welcome_inverted"));
     trvWelcome->setData(0, Qt::UserRole, "welcome");
     trvWelcome->setFont(0, fnt);
     trvWelcome->setExpanded(true);
