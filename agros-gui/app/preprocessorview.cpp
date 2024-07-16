@@ -368,7 +368,7 @@ void PreprocessorWidget::createControls()
 
     functionNode = new QTreeWidgetItem(problemNode);
     functionNode->setText(0, tr("Functions"));
-    functionNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+    functionNode->setIcon(0, icon("menu_function"));
     functionNode->setFont(0, fnt);
     functionNode->setExpanded(true);
 

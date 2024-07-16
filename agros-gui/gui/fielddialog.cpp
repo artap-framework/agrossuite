@@ -718,6 +718,7 @@ void FieldWidget::doNonlinearRelativeChangeOfSolutions(int state)
 FieldDialog::FieldDialog(FieldInfo *fieldInfo, QWidget *parent) : QDialog(parent)
 {
     setWindowTitle(fieldInfo->name());
+    setWindowIcon(icon("fields/" + fieldInfo->fieldId()));
 
     fieldWidget = new FieldWidget(fieldInfo, this);
 

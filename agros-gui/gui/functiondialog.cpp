@@ -44,6 +44,8 @@ int ProblemFunctionDialog::showDialog()
 void ProblemFunctionDialog::createControls()
 {
     setWindowTitle(tr("Function: %1").arg(m_function->name()));
+    setWindowIcon(icon("menu_function"));
+
     setMinimumWidth(600);
     setMinimumHeight(400);
 

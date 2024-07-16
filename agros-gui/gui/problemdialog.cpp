@@ -373,6 +373,7 @@ void ProblemWidget::transientChanged()
 ProblemDialog::ProblemDialog(QWidget *parent)  : QDialog(parent)
 {
     setWindowTitle(tr("Problem properties"));
+    setWindowIcon(icon("problem"));
 
     problemWidget = new ProblemWidget(this);
 
