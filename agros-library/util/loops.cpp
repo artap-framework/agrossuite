@@ -175,24 +175,12 @@ bool MeshGeneratorTriangleFast::writeToTriangle()
     int holesCount = 0;
     foreach (SceneLabel *label, m_problem->scene()->labels->items())
     {
-        if (label->markersCount() > 0)
-        {
-            inLabels.append(MeshLabel(labelsCount,
-                                      label->point().x,
-                                      label->point().y,
-                                      m_problem->scene()->labels->items().indexOf(label) + 1,
-                                      label->area()));
-            labelsCount++;
-        }
-        else
-        {
-            inHoles.append(MeshNode(holesCount,
-                                    label->point().x,
-                                    label->point().y,
-                                    -1));
-
-            holesCount++;
-        }
+        inLabels.append(MeshLabel(labelsCount,
+                                  label->point().x,
+                                  label->point().y,
+                                  m_problem->scene()->labels->items().indexOf(label) + 1,
+                                  label->area()));
+        labelsCount++;
     }
 
     // vertices
@@ -393,14 +381,14 @@ bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
     for (int element_i = 0; element_i < elementList.count(); element_i++)
     {
         MeshElement element = elementList[element_i];
-        if (element.isUsed)
+        if (element.isUsed && element.marker != -1)
         {
             SceneLabel *label = m_problem->scene()->labels->at(element.marker);
 
             if (!m_polygonTriangles.contains(label))
                 m_polygonTriangles.insert(label, QList<MeshGeneratorTriangleFast::Triangle>());
 
-            // qInfo() << label << element.node[0] << element.node[1] << element.node[2];
+            // qInfo() << label << element.marker << element.node[0] << element.node[1] << element.node[2];
             m_polygonTriangles[label].append(MeshGeneratorTriangleFast::Triangle(
                 nodeList[element.node[0]],
                 nodeList[element.node[1]],
