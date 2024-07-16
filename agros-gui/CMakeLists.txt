@@ -38,6 +38,7 @@ SET(SOURCES main.cpp
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
+    gui/slidervalue.cpp
     gui/checkversion.cpp
     app/chartdialog.cpp
     app/confdialog.cpp
@@ -94,6 +95,7 @@ SET(HEADERS gui/about.h
     gui/valuedatatabledialog.h
     gui/valuelineedit.h
     gui/valuetimedialog.h
+    gui/slidervalue.h
     gui/checkversion.h
     app/chartdialog.h
     app/confdialog.h

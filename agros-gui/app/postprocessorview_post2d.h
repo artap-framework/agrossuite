@@ -26,6 +26,8 @@
 class SceneViewPost2D;
 class LineEditDouble;
 class ResultsView;
+class SliderValue;
+class SliderDoubleValue;
 
 class PostprocessorScenePost2DWidget : public PostprocessorSceneWidget
 {
@@ -60,22 +62,22 @@ private:
     QCheckBox *chkShowScalarColorBar;
     QComboBox *cmbPalette;
     QCheckBox *chkPaletteFilter;
-    QSpinBox *txtPaletteSteps;
+    SliderValue *sldPaletteSteps;
     QCheckBox *chkScalarFieldRangeLog;
     LineEditDouble *txtScalarFieldRangeBase;
-    QSpinBox *txtScalarDecimalPlace;
+    SliderValue *sldScalarDecimalPlace;
 
     // contours
     QComboBox *cmbPost2DContourVariable;
-    QSpinBox *txtContoursCount;
-    QDoubleSpinBox *txtContourWidth;
+    SliderValue *sldContoursCount;
+    SliderValue *sldContourWidth;
     QCheckBox *chkContourDeform;
 
     // vector field
     QCheckBox *chkVectorProportional;
     QCheckBox *chkVectorColor;
-    QSpinBox *txtVectorCount;
-    QDoubleSpinBox *txtVectorScale;
+    SliderValue *sldVectorCount;
+    SliderValue *sldVectorScale;
     QComboBox *cmbVectorType;
     QComboBox *cmbVectorCenter;
     QCheckBox *chkVectorDeform;

@@ -23,6 +23,7 @@
 #include "util/global.h"
 
 #include "gui/lineeditdouble.h"
+#include "gui/slidervalue.h"
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 
@@ -138,14 +139,18 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     connect(chkPaletteFilter, SIGNAL(stateChanged(int)), this, SLOT(doPaletteFilter(int)));
 
     // steps
-    txtPaletteSteps = new QSpinBox(this);
-    txtPaletteSteps->setMinimum(PALETTESTEPSMIN);
-    txtPaletteSteps->setMaximum(PALETTESTEPSMAX);
+    sldPaletteSteps = new SliderValue(Qt::Horizontal, this);
+    sldPaletteSteps->setMinimum(PALETTESTEPSMIN);
+    sldPaletteSteps->setMaximum(PALETTESTEPSMAX);
 
     // decimal places
-    txtScalarDecimalPlace = new QSpinBox(this);
-    txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
-    txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
+    // txtScalarDecimalPlace = new SliderValue(this);
+    // txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
+    // txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
+    sldScalarDecimalPlace = new SliderValue(Qt::Horizontal, this);
+    sldScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
+    sldScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
+    sldScalarDecimalPlace->setTickInterval(1);
 
     // color bar
     chkShowScalarColorBar = new QCheckBox(tr("Colorbar"), this);
@@ -170,10 +175,10 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     gridLayoutScalarFieldPalette->addWidget(cmbPalette, 0, 1);
     gridLayoutScalarFieldPalette->addWidget(chkShowScalarColorBar, 0, 2);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Steps:")), 2, 0);
-    gridLayoutScalarFieldPalette->addWidget(txtPaletteSteps, 2, 1);
+    gridLayoutScalarFieldPalette->addWidget(sldPaletteSteps, 2, 1);
     gridLayoutScalarFieldPalette->addWidget(chkPaletteFilter, 2, 2);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Decimal places:")), 3, 0);
-    gridLayoutScalarFieldPalette->addWidget(txtScalarDecimalPlace, 3, 1);
+    gridLayoutScalarFieldPalette->addWidget(sldScalarDecimalPlace, 3, 1);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 4, 0);
     gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 4, 1);
     gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 4, 2);
@@ -220,21 +225,20 @@ QWidget *PostprocessorScenePost2DWidget::postContourAdvancedWidget()
     grpContourField->setLayout(layoutContourField);
 
     // contours
-    txtContoursCount = new QSpinBox(this);
-    txtContoursCount->setMinimum(CONTOURSCOUNTMIN);
-    txtContoursCount->setMaximum(CONTOURSCOUNTMAX);
-    txtContourWidth = new QDoubleSpinBox(this);
-    txtContourWidth->setMinimum(CONTOURSWIDTHMIN);
-    txtContourWidth->setMaximum(CONTOURSWIDTHMAX);
-    txtContourWidth->setSingleStep(0.1);
+    sldContoursCount = new SliderValue(Qt::Horizontal, this);
+    sldContoursCount->setMinimum(CONTOURSCOUNTMIN);
+    sldContoursCount->setMaximum(CONTOURSCOUNTMAX);
+    sldContourWidth = new SliderValue(10, this);
+    sldContourWidth->setMinimum(CONTOURSWIDTHMIN);
+    sldContourWidth->setMaximum(CONTOURSWIDTHMAX);
 
     QGridLayout *layoutAdvancedContours = new QGridLayout();
     layoutAdvancedContours->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdvancedContours->setColumnStretch(1, 1);
     layoutAdvancedContours->addWidget(new QLabel(tr("Number of contours:")), 1, 0);
-    layoutAdvancedContours->addWidget(txtContoursCount, 1, 1);
+    layoutAdvancedContours->addWidget(sldContoursCount, 1, 1);
     layoutAdvancedContours->addWidget(new QLabel(tr("Contour width:")), 2, 0);
-    layoutAdvancedContours->addWidget(txtContourWidth, 2, 1);
+    layoutAdvancedContours->addWidget(sldContourWidth, 2, 1);
 
     QGroupBox *grpAdvancedContour = new QGroupBox(tr("Advanced"));
     grpAdvancedContour->setLayout(layoutAdvancedContours);
@@ -274,14 +278,12 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     // vectors
     chkVectorProportional = new QCheckBox(tr("Proportional"), this);
     chkVectorColor = new QCheckBox(tr("Color (b/w)"), this);
-    txtVectorCount = new QSpinBox(this);
-    txtVectorCount->setMinimum(VECTORSCOUNTMIN);
-    txtVectorCount->setMaximum(VECTORSCOUNTMAX);
-    txtVectorScale = new QDoubleSpinBox(this);
-    txtVectorScale->setDecimals(2);
-    txtVectorScale->setSingleStep(0.1);
-    txtVectorScale->setMinimum(VECTORSSCALEMIN);
-    txtVectorScale->setMaximum(VECTORSSCALEMAX);
+    sldVectorCount = new SliderValue(Qt::Horizontal, this);
+    sldVectorCount->setMinimum(VECTORSCOUNTMIN);
+    sldVectorCount->setMaximum(VECTORSCOUNTMAX);
+    sldVectorScale = new SliderValue(10, this);
+    sldVectorScale->setMinimum(VECTORSSCALEMIN);
+    sldVectorScale->setMaximum(VECTORSSCALEMAX);
     cmbVectorType = new QComboBox();
     foreach (QString key, vectorTypeStringKeys())
         cmbVectorType->addItem(vectorTypeString(vectorTypeFromStringKey(key)), vectorTypeFromStringKey(key));
@@ -293,10 +295,10 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     layoutAdvancedVectors->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdvancedVectors->setColumnStretch(1, 1);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Number of vectors:")), 0, 0);
-    layoutAdvancedVectors->addWidget(txtVectorCount, 0, 1);
+    layoutAdvancedVectors->addWidget(sldVectorCount, 0, 1);
     layoutAdvancedVectors->addWidget(chkVectorProportional, 0, 2);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Scale:")), 1, 0);
-    layoutAdvancedVectors->addWidget(txtVectorScale, 1, 1);
+    layoutAdvancedVectors->addWidget(sldVectorScale, 1, 1);
     layoutAdvancedVectors->addWidget(chkVectorColor, 1, 2);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Type:")), 2, 0);
     layoutAdvancedVectors->addWidget(cmbVectorType, 2, 1);
@@ -392,7 +394,7 @@ void PostprocessorScenePost2DWidget::doScalarFieldRangeAuto(int state)
 
 void PostprocessorScenePost2DWidget::doPaletteFilter(int state)
 {
-    txtPaletteSteps->setEnabled(!chkPaletteFilter->isChecked());
+    sldPaletteSteps->setEnabled(!chkPaletteFilter->isChecked());
 }
 
 void PostprocessorScenePost2DWidget::refresh()
@@ -465,22 +467,22 @@ void PostprocessorScenePost2DWidget::load()
     cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::PaletteType).toInt()));
     chkPaletteFilter->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::PaletteFilter).toBool());
     doPaletteFilter(chkPaletteFilter->checkState());
-    txtPaletteSteps->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::PaletteSteps).toInt());
+    sldPaletteSteps->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::PaletteSteps).toInt());
     chkScalarDeform->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::DeformScalar).toBool());
     chkScalarDeform->setVisible(m_fieldWidget->selectedField()->hasDeformableShape());
 
     // contours
-    txtContoursCount->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursCount).toInt());
-    txtContourWidth->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursWidth).toDouble());
+    sldContoursCount->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursCount).toInt());
+    sldContourWidth->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursWidth).toDouble());
     chkContourDeform->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::DeformContour).toBool());
     chkContourDeform->setVisible(m_fieldWidget->selectedField()->hasDeformableShape());
 
     // vector field
     chkVectorProportional->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorProportional).toBool());
     chkVectorColor->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorColor).toBool());
-    txtVectorCount->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorCount).toInt());
-    txtVectorCount->setToolTip(tr("Width and height of bounding box over vector count."));
-    txtVectorScale->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble());
+    sldVectorCount->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorCount).toInt());
+    sldVectorCount->setToolTip(tr("Width and height of bounding box over vector count."));
+    sldVectorScale->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble());
     cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorType).toInt()));
     cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::VectorCenter).toInt()));
     chkVectorDeform->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::DeformVector).toBool());
@@ -491,7 +493,7 @@ void PostprocessorScenePost2DWidget::load()
     chkScalarFieldRangeLog->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool());
     doScalarFieldLog(chkScalarFieldRangeLog->checkState());
     txtScalarFieldRangeBase->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toDouble());
-    txtScalarDecimalPlace->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt());
+    sldScalarDecimalPlace->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt());
     chkScalarFieldRangeAuto->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool());
     doScalarFieldRangeAuto(chkScalarFieldRangeAuto->checkState());
     txtScalarFieldRangeMin->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
@@ -521,19 +523,19 @@ void PostprocessorScenePost2DWidget::save()
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowScalarColorBar, chkShowScalarColorBar->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::PaletteType, (PaletteType) cmbPalette->itemData(cmbPalette->currentIndex()).toInt());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::PaletteFilter, chkPaletteFilter->isChecked());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::PaletteSteps, txtPaletteSteps->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::PaletteSteps, sldPaletteSteps->value());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::DeformScalar, chkScalarDeform->isChecked());
 
     // contours
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursCount, txtContoursCount->value());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursWidth, txtContourWidth->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursCount, sldContoursCount->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursWidth, sldContourWidth->value());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::DeformContour, chkContourDeform->isChecked());
 
     // vector field
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorProportional, chkVectorProportional->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorColor, chkVectorColor->isChecked());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorCount, txtVectorCount->value());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorScale, txtVectorScale->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorCount, sldVectorCount->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorScale, sldVectorScale->value());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorType, (VectorType) cmbVectorType->itemData(cmbVectorType->currentIndex()).toInt());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::VectorCenter, (VectorCenter) cmbVectorCenter->itemData(cmbVectorCenter->currentIndex()).toInt());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::DeformVector, chkVectorDeform->isChecked());
@@ -541,5 +543,5 @@ void PostprocessorScenePost2DWidget::save()
     // scalar view
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarDecimalPlace, txtScalarDecimalPlace->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarDecimalPlace, sldScalarDecimalPlace->value());
 }

@@ -41,7 +41,7 @@ const bool EXPERIMENTALFEATURES = false;
 
 const int PALETTEENTRIES = 256;
 const double VECTORSSCALEMIN = 0.1;
-const double VECTORSSCALEMAX = 20.0;
+const double VECTORSSCALEMAX = 10.0;
 const int SCALARDECIMALPLACEMIN = 0;
 const int SCALARDECIMALPLACEMAX = 10;
 const double CONTOURSWIDTHMIN = 0.1;
