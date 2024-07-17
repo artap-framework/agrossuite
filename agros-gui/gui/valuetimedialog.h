@@ -23,11 +23,11 @@
 #include "util/util.h"
 #include "util/point.h"
 #include "gui/other.h"
+#include "gui/chart.h"
 #include "value.h"
 
 #include "datatable.h"
 
-class QCustomPlot;
 class FieldInfo;
 class ValueLineEdit;
 
@@ -43,7 +43,10 @@ public:
     void setValue(Value value);
 
 private:
-    QCustomPlot *chart;
+    ChartView *chartView;
+    QValueAxis *axisX;
+    QValueAxis *axisFunction;
+    QLineSeries *valueSeries;
 
     QPushButton *btnOk;
     QPushButton *btnClose;

@@ -26,8 +26,6 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 ProblemFunctionDialog::ProblemFunctionDialog(ProblemFunction *function, QWidget *parent)
     : QDialog(parent), m_function(function)
 {    
@@ -73,33 +71,54 @@ void ProblemFunctionDialog::createControls()
     lblError->setVisible(false);
 
     // chart
-    chart = new QCustomPlot(this);
-    chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    chart->xAxis->setLabel(tr("value"));
-    chart->yAxis->setLabel(tr("function"));
-    chart->yAxis2->setLabel(tr("derivative"));
-    chart->yAxis2->setVisible(true);
-    chart->legend->setVisible(true);
+    auto chart = new QChart();
+    // chart->legend()->hide();
+    // chart->setTitle(tr("Functions"));
 
-    graphValueLine = chart->addGraph(chart->xAxis, chart->yAxis);
-    graphValueLine->setLineStyle(QCPGraph::lsLine);
-    graphValueLine->setPen(QPen(Qt::blue));
-    graphValueLine->setName(tr("Value"));
-    graphValueLine->addToLegend();
+    // axis x
+    axisX = new QValueAxis;
+    axisX->setLabelFormat("%g");
+    axisX->setGridLineVisible(true);
+    axisX->setTitleText(tr("value"));
+    chart->addAxis(axisX, Qt::AlignBottom);
 
-    graphValueScatter = chart->addGraph(chart->xAxis, chart->yAxis);
-    graphValueScatter->setLineStyle(QCPGraph::lsNone);
-    graphValueScatter->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 7));
-    graphValueScatter->setPen(QPen(Qt::gray));
-    graphValueScatter->removeFromLegend();
+    // axis y
+    axisFunction = new QValueAxis;
+    axisFunction->setLabelFormat("%g");
+    axisFunction->setGridLineVisible(true);
+    axisFunction->setTitleText(tr("function"));
+    chart->addAxis(axisFunction, Qt::AlignLeft);
 
-    graphDerivativeLine = chart->addGraph(chart->xAxis, chart->yAxis2);
-    graphDerivativeLine->setLineStyle(QCPGraph::lsLine);
-    graphDerivativeLine->setPen(QPen(Qt::red));
-    graphDerivativeLine->setName(tr("Derivative"));
-    graphDerivativeLine->addToLegend();
+    axisDerivative = new QValueAxis;
+    axisDerivative->setLabelFormat("%g");
+    axisDerivative->setGridLineVisible(true);
+    axisDerivative->setTitleText(tr("derivative"));
+    chart->addAxis(axisDerivative, Qt::AlignRight);
 
-    // dialog buttons
+    // attach axis
+    valueSeries = new QLineSeries();
+    valueSeries->setUseOpenGL(true);
+    valueSeries->setName(tr("Value"));
+    chart->addSeries(valueSeries);
+    valueSeries->attachAxis(axisX);
+    valueSeries->attachAxis(axisFunction);
+
+    // valueSeriesScatter = new QScatterSeries();
+    // valueSeriesScatter->setUseOpenGL(true);
+    // valueSeriesScatter->setMarkerSize(12.0);
+    // chart->addSeries(valueSeriesScatter);
+    // valueSeriesScatter->attachAxis(axisX);
+    // valueSeriesScatter->attachAxis(axisFunction);
+
+    derivativeSeries = new QLineSeries();
+    derivativeSeries->setUseOpenGL(true);
+    derivativeSeries->setName(tr("Derivative"));
+    chart->addSeries(derivativeSeries);
+    derivativeSeries->attachAxis(axisX);
+    derivativeSeries->attachAxis(axisDerivative);
+
+    chartView = new ChartView(chart);
+
     // dialog buttons
     btnOk = new QPushButton(tr("Ok"));
     btnOk->setDefault(true);
@@ -119,7 +138,7 @@ void ProblemFunctionDialog::createControls()
     layoutParametersWidget->addLayout(layoutEdit);
     layoutParametersWidget->addWidget(createCustomControls());
     layoutParametersWidget->addWidget(lblError);
-    layoutParametersWidget->addWidget(chart, 1);
+    layoutParametersWidget->addWidget(chartView, 1);
     layoutParametersWidget->addLayout(layoutButtons);
 
     setLayout(layoutParametersWidget);
@@ -141,6 +160,8 @@ void ProblemFunctionDialog::load()
     txtLowerBound->setValue(m_function->lowerBound());
     txtUpperBound->setValue(m_function->upperBound());
     txtFunctionName->setText(m_function->name());
+
+    doPlot();
 }
 
 bool ProblemFunctionDialog::save()
@@ -185,8 +206,8 @@ bool ProblemFunctionDialog::checkRange()
 
 void ProblemFunctionDialog::doPlot()
 {
-    chart->rescaleAxes();
-    chart->replot(QCustomPlot::rpQueuedRefresh);
+    // fit to chart
+    chartView->fitToData();
 }
 
 void ProblemFunctionDialog::functionNameTextChanged(const QString &str)
@@ -238,9 +259,9 @@ QWidget *ProblemFunctionAnalyticDialog::createCustomControls()
 
 void ProblemFunctionAnalyticDialog::load()
 {
-    ProblemFunctionDialog::load();
-
     txtExpression->setText(function()->expression());
+
+    ProblemFunctionDialog::load();
 }
 
 bool ProblemFunctionAnalyticDialog::save()
@@ -260,24 +281,31 @@ void ProblemFunctionAnalyticDialog::doPlot()
     // set expression
     function()->setExpression(txtExpression->text());
 
-    QVector<double> values;
-    QVector<double> valuesFunction;
-    QVector<double> valuesDerivative;
-
     int numberOfSteps = 100;
     double step = (txtUpperBound->value() - txtLowerBound->value()) / (numberOfSteps - 1);
+
+    // block signals
+    valueSeries->blockSignals(true);
+    // valueSeriesScatter->blockSignals(true);
+    derivativeSeries->blockSignals(true);
+
+    valueSeries->clear();
+    // valueSeriesScatter->clear();
+    derivativeSeries->clear();
 
     for (int i = 0; i < numberOfSteps; i++)
     {
         double val = i * step;
 
-        values.append(val);
-        valuesFunction.append(function()->value(val));
-        valuesDerivative.append(function()->derivative(val));
+        valueSeries->append(val, function()->value(val));
+        // valueSeriesScatter->append(val, function()->value(val));
+        derivativeSeries->append(val, function()->derivative(val));
     }
 
-    graphValueLine->setData(values, valuesFunction);
-    graphDerivativeLine->setData(values, valuesDerivative);
+    // unblock signals
+    valueSeries->blockSignals(false);
+    // valueSeriesScatter->blockSignals(false);
+    derivativeSeries->blockSignals(false);
 
     ProblemFunctionDialog::doPlot();
 }
