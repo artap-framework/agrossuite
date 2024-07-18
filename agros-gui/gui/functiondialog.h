@@ -22,11 +22,10 @@
 
 #include "util/util.h"
 #include "gui/other.h"
+#include "gui/chart.h"
 #include "solver/problem_function.h"
 
 class LineEditDouble;
-class QCustomPlot;
-class QCPGraph;
 
 class ProblemFunctionDialog : public QDialog
 {
@@ -45,10 +44,13 @@ protected:
     LineEditDouble *txtUpperBound;
     LineEditDouble *txtLowerBound;
 
-    QCustomPlot *chart;
-    QCPGraph *graphValueLine;
-    QCPGraph *graphValueScatter;
-    QCPGraph *graphDerivativeLine;
+    ChartView *chartView;
+    QValueAxis *axisX;
+    QValueAxis *axisFunction;
+    QValueAxis *axisDerivative;
+    QLineSeries *valueSeries;
+    // QScatterSeries *valueSeriesScatter;
+    QLineSeries *derivativeSeries;
 
     QPushButton *btnOk;
     QPushButton *btnClose;

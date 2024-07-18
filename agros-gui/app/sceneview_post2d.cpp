@@ -331,7 +331,8 @@ void SceneViewPost2D::paintScalarField()
     glScaled(m_texScale, 1.0, 1.0); // opravený scaling
 
     // Create or regenerate display list
-    if (m_listScalarField == -1) {
+    if (m_listScalarField == -1)
+    {
         m_listScalarField = glGenLists(1);
         glNewList(m_listScalarField, GL_COMPILE);
 
@@ -416,7 +417,7 @@ void SceneViewPost2D::paintContours()
             // value range
             double step = (rangeMax-rangeMin) / m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContoursCount).toInt();
 
-            glLineWidth(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContoursWidth).toInt());
+            glLineWidth(CONTOURSWIDTH                                                                                                                                                                                                                   );
             glColor3d(COLORCONTOURS[0], COLORCONTOURS[1], COLORCONTOURS[2]);
 
             glBegin(GL_LINES);

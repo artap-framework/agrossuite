@@ -10,6 +10,7 @@
         <file alias="menu_recipe.png">images/icons/menu_recipe.png</file>               
         <file alias="menu_study.png">images/icons/menu_study.png</file>               
 	    <file alias="main_welcome.png">images/icons/main_welcome.png</file>
+        <file alias="main_welcome_inverted.png">images/icons/main_welcome_inverted.png</file>
         <file alias="main_problem.png">images/icons/main_problem.png</file>
         <file alias="main_results.png">images/icons/main_results.png</file>                           
         <file alias="main_optilab.png">images/icons/main_optilab.png</file>

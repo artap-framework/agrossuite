@@ -65,12 +65,10 @@ private:
     SliderValue *sldPaletteSteps;
     QCheckBox *chkScalarFieldRangeLog;
     LineEditDouble *txtScalarFieldRangeBase;
-    SliderValue *sldScalarDecimalPlace;
 
     // contours
     QComboBox *cmbPost2DContourVariable;
     SliderValue *sldContoursCount;
-    SliderValue *sldContourWidth;
     QCheckBox *chkContourDeform;
 
     // vector field

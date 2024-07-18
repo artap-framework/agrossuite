@@ -143,15 +143,6 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     sldPaletteSteps->setMinimum(PALETTESTEPSMIN);
     sldPaletteSteps->setMaximum(PALETTESTEPSMAX);
 
-    // decimal places
-    // txtScalarDecimalPlace = new SliderValue(this);
-    // txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
-    // txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
-    sldScalarDecimalPlace = new SliderValue(Qt::Horizontal, this);
-    sldScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
-    sldScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
-    sldScalarDecimalPlace->setTickInterval(1);
-
     // color bar
     chkShowScalarColorBar = new QCheckBox(tr("Colorbar"), this);
 
@@ -177,8 +168,6 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Steps:")), 2, 0);
     gridLayoutScalarFieldPalette->addWidget(sldPaletteSteps, 2, 1);
     gridLayoutScalarFieldPalette->addWidget(chkPaletteFilter, 2, 2);
-    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Decimal places:")), 3, 0);
-    gridLayoutScalarFieldPalette->addWidget(sldScalarDecimalPlace, 3, 1);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 4, 0);
     gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 4, 1);
     gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 4, 2);
@@ -228,17 +217,12 @@ QWidget *PostprocessorScenePost2DWidget::postContourAdvancedWidget()
     sldContoursCount = new SliderValue(Qt::Horizontal, this);
     sldContoursCount->setMinimum(CONTOURSCOUNTMIN);
     sldContoursCount->setMaximum(CONTOURSCOUNTMAX);
-    sldContourWidth = new SliderValue(10, this);
-    sldContourWidth->setMinimum(CONTOURSWIDTHMIN);
-    sldContourWidth->setMaximum(CONTOURSWIDTHMAX);
 
     QGridLayout *layoutAdvancedContours = new QGridLayout();
     layoutAdvancedContours->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdvancedContours->setColumnStretch(1, 1);
     layoutAdvancedContours->addWidget(new QLabel(tr("Number of contours:")), 1, 0);
     layoutAdvancedContours->addWidget(sldContoursCount, 1, 1);
-    layoutAdvancedContours->addWidget(new QLabel(tr("Contour width:")), 2, 0);
-    layoutAdvancedContours->addWidget(sldContourWidth, 2, 1);
 
     QGroupBox *grpAdvancedContour = new QGroupBox(tr("Advanced"));
     grpAdvancedContour->setLayout(layoutAdvancedContours);
@@ -473,7 +457,6 @@ void PostprocessorScenePost2DWidget::load()
 
     // contours
     sldContoursCount->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursCount).toInt());
-    sldContourWidth->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ContoursWidth).toDouble());
     chkContourDeform->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::DeformContour).toBool());
     chkContourDeform->setVisible(m_fieldWidget->selectedField()->hasDeformableShape());
 
@@ -493,7 +476,6 @@ void PostprocessorScenePost2DWidget::load()
     chkScalarFieldRangeLog->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool());
     doScalarFieldLog(chkScalarFieldRangeLog->checkState());
     txtScalarFieldRangeBase->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toDouble());
-    sldScalarDecimalPlace->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt());
     chkScalarFieldRangeAuto->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool());
     doScalarFieldRangeAuto(chkScalarFieldRangeAuto->checkState());
     txtScalarFieldRangeMin->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
@@ -528,7 +510,6 @@ void PostprocessorScenePost2DWidget::save()
 
     // contours
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursCount, sldContoursCount->value());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ContoursWidth, sldContourWidth->value());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::DeformContour, chkContourDeform->isChecked());
 
     // vector field
@@ -543,5 +524,4 @@ void PostprocessorScenePost2DWidget::save()
     // scalar view
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ScalarDecimalPlace, sldScalarDecimalPlace->value());
 }

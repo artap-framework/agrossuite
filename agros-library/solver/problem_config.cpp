@@ -278,7 +278,6 @@ void PostprocessorSetting::setStringKeys()
     m_settingKey[ContourVariable] = "ContourVariable";
     m_settingKey[ShowContourView] = "ShowContourView";
     m_settingKey[ContoursCount] = "ContoursCount";
-    m_settingKey[ContoursWidth] = "ContoursWidth";
     m_settingKey[ShowScalarView] = "ShowScalarView";
     m_settingKey[ShowScalarColorBar] = "ShowScalarColorBar";
     m_settingKey[ScalarVariable] = "ScalarVariable";
@@ -288,7 +287,6 @@ void PostprocessorSetting::setStringKeys()
     m_settingKey[PaletteSteps] = "PaletteSteps";
     m_settingKey[ScalarRangeLog] = "ScalarRangeLog";
     m_settingKey[ScalarRangeBase] = "ScalarRangeBase";
-    m_settingKey[ScalarDecimalPlace] = "ScalarDecimalPlace";
     m_settingKey[ScalarRangeAuto] = "ScalarRangeAuto";
     m_settingKey[ScalarRangeMin] = "ScalarRangeMin";
     m_settingKey[ScalarRangeMax] = "ScalarRangeMax";
@@ -368,7 +366,6 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[ContourVariable] = QString();
     m_settingDefault[ShowContourView] = false;
     m_settingDefault[ContoursCount] = 15;
-    m_settingDefault[ContoursWidth] = 1.0;
     m_settingDefault[ShowScalarView] = true;
     m_settingDefault[ShowScalarColorBar] = true;
     m_settingDefault[ScalarVariable] = QString();
@@ -378,7 +375,6 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[PaletteSteps] = 30;
     m_settingDefault[ScalarRangeLog] = false;
     m_settingDefault[ScalarRangeBase] = 10;
-    m_settingDefault[ScalarDecimalPlace] = 4;
     m_settingDefault[ScalarRangeAuto] = true;
     m_settingDefault[ScalarRangeMin] = 0.0;
     m_settingDefault[ScalarRangeMax] = 1.0;

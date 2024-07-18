@@ -305,7 +305,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon* sceneView
 
         sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? 1.1*sceneView->m_labelPostSize : 0.0),
                                scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                               QString::number(value, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()));
+                               QString::number(value, 'e', SCALARDECIMALPLACE));
     }
 
     // variable

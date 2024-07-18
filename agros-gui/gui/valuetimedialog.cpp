@@ -26,8 +26,6 @@
 #include "solver/problem_config.h"
 #include "solver/problem_parameter.h"
 
-#include "qcustomplot/qcustomplot.h"
-
 #include "util/util_expr.h"
 
 ValueTimeDialog::ValueTimeDialog(QWidget *parent) : QDialog(parent)
@@ -80,14 +78,34 @@ void ValueTimeDialog::createControls()
     connect(cmbPresets, SIGNAL(currentIndexChanged(int)), this, SLOT(presetsChanged(int)));
 
     // chart
-    chart = new QCustomPlot();
-    // axis labels
-    chart->xAxis->setLabel(tr("time"));
-    chart->yAxis->setLabel(tr("value"));
-    chart->addGraph();
+    auto chart = new QChart();
+    chart->legend()->hide();
+
+    // axis x
+    axisX = new QValueAxis;
+    axisX->setLabelFormat("%g");
+    axisX->setGridLineVisible(true);
+    axisX->setTitleText(tr("time"));
+    chart->addAxis(axisX, Qt::AlignBottom);
+
+    // axis y
+    axisFunction = new QValueAxis;
+    axisFunction->setLabelFormat("%g");
+    axisFunction->setGridLineVisible(true);
+    axisFunction->setTitleText(tr("function"));
+    chart->addAxis(axisFunction, Qt::AlignLeft);
+
+    // attach axis
+    valueSeries = new QLineSeries();
+    valueSeries->setUseOpenGL(true);
+    chart->addSeries(valueSeries);
+    valueSeries->attachAxis(axisX);
+    valueSeries->attachAxis(axisFunction);
+
+    chartView = new ChartView(chart);
 
     QGridLayout *controlsLayout = new QGridLayout();
-    controlsLayout->addWidget(chart, 0, 0, 1, 4);
+    controlsLayout->addWidget(chartView, 0, 0, 1, 4);
     controlsLayout->setRowStretch(0, 1);
     controlsLayout->addWidget(new QLabel(tr("Function:")), 1, 0);
     controlsLayout->addWidget(txtLineEdit, 1, 1);
@@ -169,10 +187,11 @@ void ValueTimeDialog::plotFunction()
     double totalTime = txtTimeTotal->value().number();
 
     // time step
-    double dt = totalTime / (count + 1);
+    double dt = totalTime / (count - 1);
 
-    QVector<double> pointsVector;
-    QVector<double> valuesVector;
+    // block signals
+    valueSeries->blockSignals(true);
+    valueSeries->clear();
 
     Value val(m_problem, txtLineEdit->text());
     if (val.isTimeDependent())
@@ -181,14 +200,15 @@ void ValueTimeDialog::plotFunction()
         {
             double num = val.numberAtTime(i*dt);
 
-            pointsVector.append(i*dt);
-            valuesVector.append(num);
+            valueSeries->append(i*dt, num);
         }
     }
 
-    chart->graph(0)->setData(pointsVector, valuesVector);
-    chart->rescaleAxes();
-    chart->replot(QCustomPlot::rpQueuedRefresh);
+    // unblock signals
+    valueSeries->blockSignals(false);
+
+    // fit
+    chartView->fitToData();
 }
 
 void ValueTimeDialog::doAccept()

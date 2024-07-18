@@ -41,20 +41,15 @@ const bool EXPERIMENTALFEATURES = false;
 
 const int PALETTEENTRIES = 256;
 const double VECTORSSCALEMIN = 0.1;
-const double VECTORSSCALEMAX = 10.0;
-const int SCALARDECIMALPLACEMIN = 0;
-const int SCALARDECIMALPLACEMAX = 10;
-const double CONTOURSWIDTHMIN = 0.1;
-const double CONTOURSWIDTHMAX = 5.0;
+const double VECTORSSCALEMAX = 5.0;
+const int SCALARDECIMALPLACE = 4;
+const double CONTOURSWIDTH = 1.0;
 const int VECTORSCOUNTMIN = 1;
 const int VECTORSCOUNTMAX = 500;
 const int CONTOURSCOUNTMIN = 1;
 const int CONTOURSCOUNTMAX = 100;
 const int PALETTESTEPSMIN = 3;
-const int PALETTESTEPSMAX = PALETTEENTRIES;
-
-// command argument
-const QString COMMANDS_BUILD_PLUGIN = "./agros2d_plugin_compiler.sh %1";
+const int PALETTESTEPSMAX = 50;
 
 // cache size
 const int CACHE_SIZE = 10;
