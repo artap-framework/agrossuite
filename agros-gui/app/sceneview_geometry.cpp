@@ -823,7 +823,7 @@ void SceneViewProblem::mousePressEvent(QMouseEvent *event)
     }
 
     refreshActions();
-
+    emit this->sceneGeometryChanged();
     SceneViewCommon2D::mousePressEvent(event);
 }
 

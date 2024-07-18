@@ -143,6 +143,8 @@ void PreprocessorWidget::createActions()
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewEdge);
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewLabel);
 
+    connect(m_sceneViewProblem, SIGNAL(sceneGeometryChanged()), this, SLOT(refresh()));
+
     // actNewBoundary->setShortcut(QKeySequence("Alt+B"));
     // actNewMaterial->setShortcut(QKeySequence("Alt+M"));
 
