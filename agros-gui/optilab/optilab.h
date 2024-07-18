@@ -20,98 +20,16 @@
 #ifndef OPTILAB_H
 #define OPTILAB_H
 
-#include <QWidget>
-
 #include "util/util.h"
-#include "util/enums.h"
 #include "util/point.h"
 #include "gui/other.h"
-
-#include "qcustomplot.h"
-#include <QtCharts>
+#include "gui/chart.h"
 
 class OptiLab;
 class Study;
 class Computation;
 class SceneViewSimpleGeometry;
-
-class OptiLabWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    OptiLabWidget(OptiLab *parent);
-    ~OptiLabWidget();
-
-    QAction *actRunStudy;
-
-public slots:
-    void refresh();
-    void exportData();
-
-private:
-    enum Type
-    {
-        Undefined = 0,
-        OptilabStudy,
-        OptilabParameter,
-        OptilabFunctional,
-        OptilabRecipe,
-    };
-
-    OptiLab *m_optilab;
-
-    QToolBar *toolBarLeft;
-    QToolButton *toolButtonStudies;
-    QToolButton *toolButtonRecipes;
-    QTreeWidget *trvOptilab;
-
-    // ser
-    QMenu *mnuOptilab;
-    QMap<QString, StringAction *> actNewStudies;
-    QAction *actNewRecipeLocalValue;
-    QAction *actNewRecipeSurfaceIntegral;
-    QAction *actNewRecipeVolumeIntegral;
-
-    QAction *actProperties;
-    QAction *actDelete;
-
-    // computation;
-    QTreeWidget *trvComputation;
-    QMenu *mnuComputations;
-    QAction *actComputationDelete;
-    QAction *actComputationSolve;
-
-
-    void createControls();
-    QWidget *createControlsOptilab();
-
-signals:
-    void studySelected(Study *study);
-    void computationSelected(const QString &key);
-    void chartRefreshed(const QString &key);
-
-private slots:
-    void doItemDoubleClicked(QTreeWidgetItem *item, int role);
-    void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doItemProperties();
-    void doItemDelete();
-    void doItemContextMenu(const QPoint &pos);
-    void doComputationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
-    void doComputationSelected(const QString &key);
-    void doComputationContextMenu(const QPoint &pos);
-    void doComputationDelete(bool);
-    void doComputationSolve(bool);
-
-    void doNewRecipeLocalValue();
-    void doNewRecipeSurfaceIntegral();
-    void doNewRecipeVolumeIntegral();
-    void doNewRecipe(ResultRecipeType type);
-    void doNewStudy(const QString &key);
-
-    void studyChanged(Study *study);
-
-    void solveStudy();
-};
+class OptiLabWidget;
 
 class OptiLab : public QWidget
 {
@@ -122,21 +40,19 @@ public:
 
     QAction *actSceneModeOptiLab;
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
-
-    void setStudy(Study *study);
-    inline Study *study() { return m_study; }
-
-signals:
-    void computationSelected(const QString &key);
+    inline Study *selectedStudy() { return m_selectedStudy; }
 
 public slots:
     void refresh();
 
-    void doComputationSelected(const QString &key);
-    void doChartRefreshed(const QString &key = "");
+    void doStudySelected(Study *study);
+    void doComputationChanged(int index);
+    void doComputationSelected(const QString &problemDir);
+    void doComputationSolve(bool ok);
+    void doChartRefreshed(const QString &problemDir = "");
 
 private:
-    Study *m_study;
+    Study *m_selectedStudy;
 
     OptiLabWidget *m_optiLabWidget;
     SceneViewSimpleGeometry *geometryViewer;
@@ -154,9 +70,16 @@ private:
     QScatterSeries *resultsStatMinMaxSeries;
     QScatterSeries *resultsStatMeanSeries;
     QScatterSeries *resultsStatMedianSeries;
-    QValueAxis *axisX;
-    QValueAxis *axisY;
+    QValueAxis *axisStatX;
+    QValueAxis *axisStatY;
 
+    // computation
+    QComboBox *cmbComputations;
+    QMenu *mnuComputations;
+    QAction *actComputationDelete;
+    QAction *actComputationSolve;
+
+    // results
     QTreeWidget *trvResults;
     QMenu *mnuResults;
 
@@ -166,14 +89,17 @@ private:
     QAction *actResultsFindMinimum;
     QAction *actResultsFindMaximum;
 
-    QCustomPlot *chart;
-    QCPItemLine *chartTrendLine;
-    QList<QCPGraph *> chartGraphCharts;
-    QCPGraph *chartGraphAverageValue;
-    QCPGraph *chartGraphAverageValueChannelLower;
-    QCPGraph *chartGraphAverageValueChannelUpper;
-    QCPGraph *chartGraphSelectedComputation;
-    QCPGraph *chartGraphParetoFront;
+    ChartView *chartView;
+    QValueAxis *axisX;
+    QValueAxis *axisY;
+    QLineSeries *trendLineSeries;
+    QScatterSeries *valueSeries;
+    QLineSeries *averageValueSeries;
+    QLineSeries *averageValueLowerSeries;
+    QLineSeries *averageValueUpperSeries;
+    QAreaSeries *averageValueAreaSeries;
+    QLineSeries *paretoFrontSeries;
+
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
@@ -188,7 +114,7 @@ private:
     QWidget *createControlsGeometryAndStats();
     QWidget *createControlsChart();
     QWidget *createControlsResults();
-    QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
+    // QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
 
     void resultsFindExtrem(bool minimum);
 
@@ -208,8 +134,7 @@ private slots:
     void resultsSetHorizontal(bool checked);
     void resultsSetVertical(bool checked);
 
-    void graphClicked(QCPAbstractPlottable *plottable, int code, QMouseEvent *event);
-    void graphMouseDoubleClick(QMouseEvent *event);
+    void chartClicked(const QPointF &point);
 
     void doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
 

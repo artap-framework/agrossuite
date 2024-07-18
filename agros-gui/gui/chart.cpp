@@ -27,9 +27,9 @@
 QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points)
 {
     qreal minX = std::numeric_limits<qreal>::max();
-    qreal maxX = std::numeric_limits<qreal>::min();
+    qreal maxX = -std::numeric_limits<qreal>::max();
     qreal minY = std::numeric_limits<qreal>::max();
-    qreal maxY = std::numeric_limits<qreal>::min();
+    qreal maxY = -std::numeric_limits<qreal>::max();
 
     for (int i = 0; i < points.size(); i++)
     {
@@ -51,22 +51,25 @@ QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points)
 
 void fitToDataChart(QChart *chart)
 {
-    // qInfo() << "fit series: " << chart->series().size();
+    // only works for line and scatter chart
+    QList<QPointF> points;
     foreach(QAbstractSeries *series, chart->series())
     {
-        // only works for line and scatter chart
-        QList<QPointF> points;
         if (series->type() == QAbstractSeries::SeriesTypeLine)
         {
-            points = dynamic_cast<QLineSeries *>(series)->points();
+            auto s = dynamic_cast<QLineSeries *>(series);
+            foreach(QPointF point, s->points())
+                points.append(point);
         }
         else if (series->type() == QAbstractSeries::SeriesTypeScatter)
         {
-            points = dynamic_cast<QScatterSeries *>(series)->points();
+            auto s = dynamic_cast<QScatterSeries *>(series);
+            foreach(QPointF point, s->points())
+                points.append(point);
         }
         else if (series->type() == QAbstractSeries::SeriesTypeArea)
         {
-            QAreaSeries *area = dynamic_cast<QAreaSeries *>(series);
+            auto *area = dynamic_cast<QAreaSeries *>(series);
             // add upper
             foreach(QPointF point, area->upperSeries()->points())
                 points.append(point);
@@ -74,9 +77,14 @@ void fitToDataChart(QChart *chart)
             foreach(QPointF point, area->lowerSeries()->points())
                 points.append(point);
         }
+    }
 
-        QPair<QPointF, QPointF> axesRange = findMinMax(points);
+    // find min and max
+    QPair<QPointF, QPointF> axesRange = findMinMax(points);
 
+    // apply to axes
+    foreach(QAbstractSeries *series, chart->series())
+    {
         // qInfo() << minX << maxX << minY << maxY;
         foreach(QAbstractAxis *axis, series->attachedAxes())
         {
@@ -116,8 +124,6 @@ void fitToDataChart(QChart *chart)
 //            }
         }
     }
-
-    // qInfo() << "fit ok";
 }
 
 Crosshairs::Crosshairs(QChart *chart) :
@@ -179,7 +185,7 @@ void Crosshairs::updatePosition(QPointF position)
 
 // *******************************************************************************************************************************************
 
-ChartView::ChartView(QChart *chart, QWidget *parent) : QChartView(parent)
+ChartView::ChartView(QChart *chart, bool showCrosshair, QWidget *parent) : QChartView(parent), m_crosshairs(nullptr)
 {
     if (chart == nullptr)
     {
@@ -198,7 +204,8 @@ ChartView::ChartView(QChart *chart, QWidget *parent) : QChartView(parent)
     setChart(m_chart);
 
     // crosshairs
-    m_crosshairs = new Crosshairs(m_chart);
+    if (showCrosshair)
+        m_crosshairs = new Crosshairs(m_chart);
 
     setRenderHint(QPainter::Antialiasing);
     // setRubberBand(QChartView::RectangleRubberBand);
@@ -208,6 +215,7 @@ ChartView::ChartView(QChart *chart, QWidget *parent) : QChartView(parent)
 void ChartView::fitToData()
 {
     fitToDataChart(m_chart);
+    repaint();
 }
 
 void ChartView::resizeEvent(QResizeEvent *event)
@@ -241,6 +249,7 @@ void ChartView::mousePressEvent(QMouseEvent *event)
 
     if (m_isTouching)
         return;
+
     QChartView::mousePressEvent(event);
 }
 
@@ -257,7 +266,8 @@ void ChartView::mouseMoveEvent(QMouseEvent *event)
     }
 
     // crosshairs
-    m_crosshairs->updatePosition(event->pos());
+    if (m_crosshairs)
+        m_crosshairs->updatePosition(event->pos());
 
     if (m_isTouching)
         return;

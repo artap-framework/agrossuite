@@ -72,6 +72,7 @@ SET(SOURCES main.cpp
     # app/sceneview_vtk2d.cpp
     app/videodialog.cpp    
     optilab/optilab.cpp
+    optilab/optilab_widget.cpp
     optilab/study_dialog.cpp
     optilab/study_methoddialog.cpp)
 
@@ -130,6 +131,7 @@ SET(HEADERS gui/about.h
     # app/sceneview_vtk2d.h
     app/videodialog.h    
     optilab/optilab.h
+    optilab/optilab_widget.h
     optilab/study_dialog.h
     optilab/study_methoddialog.h)
 

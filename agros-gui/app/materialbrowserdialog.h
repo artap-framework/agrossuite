@@ -22,9 +22,9 @@
 
 #include "util/util.h"
 #include "gui/other.h"
+#include "gui/chart.h"
 
 class LineEditDouble;
-class QCustomPlot;
 
 struct LibraryMaterial
 {
@@ -135,7 +135,11 @@ private:
     QGroupBox *widNonlinearFunction;
     QGroupBox *widChartNonlinear;
     QStackedLayout *layoutNonlinearType;
-    QCustomPlot *chartNonlinear;
+
+    ChartView *chartView;
+    QValueAxis *axisX;
+    QValueAxis *axisFunction;
+    QLineSeries *valueSeries;
 
     QPushButton *btnDeleteProperty;
 

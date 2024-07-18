@@ -352,7 +352,7 @@ void PreprocessorWidget::createControls()
     problemNode->setFont(0, fnt);
     problemNode->setIcon(0, icon("problem"));
     problemNode->setToolTip(0, problemPropertiesToString());
-    // problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
+    problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemNode->setExpanded(true);
 
     auto problemPropertiesNode = new QTreeWidgetItem(problemNode);
@@ -539,7 +539,7 @@ void PreprocessorWidget::refresh()
         fieldNode->setIcon(0, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
-        // fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
+        fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
 
         auto fieldPropertiesNode = new QTreeWidgetItem(fieldNode);

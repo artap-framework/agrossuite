@@ -29,7 +29,6 @@
 #include "gui/lineeditdouble.h"
 
 #include "ctemplate/template.h"
-#include "qcustomplot/qcustomplot.h"
 
 #ifdef DEAL_II_WITH_TBB
 #include "tbb/mutex.h"
@@ -391,14 +390,14 @@ void MaterialEditDialog::createControls()
     widNonlinearFunction = new QGroupBox(tr("Nonlinear function"));
     widNonlinearFunction->setLayout(layoutFunction);
     
-    chartNonlinear = new QCustomPlot();
-    chartNonlinear->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    chartNonlinear->setMinimumHeight(120);
-    chartNonlinear->addGraph();
-    chartNonlinear->graph(0)->setLineStyle(QCPGraph::lsLine);
+    // chartNonlinear = new QxCustomPlot();
+    // chartNonlinear->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    // chartNonlinear->setMinimumHeight(120);
+    // chartNonlinear->addGraph();
+    // chartNonlinear->graph(0)->setLineStyle(QCPGraph::lsLine);
     
     QHBoxLayout *layoutChartNonlinear = new QHBoxLayout();
-    layoutChartNonlinear->addWidget(chartNonlinear);
+    // layoutChartNonlinear->addWidget(chartNonlinear);
     
     widChartNonlinear = new QGroupBox(tr("Chart"));
     widChartNonlinear->setLayout(layoutChartNonlinear);
@@ -706,9 +705,9 @@ void MaterialEditDialog::drawChart()
         }
     }
 
-    chartNonlinear->graph(0)->setData(keys, values);
-    chartNonlinear->rescaleAxes();
-    chartNonlinear->replot(QCustomPlot::rpQueuedRefresh);
+    // chartNonlinear->graph(0)->setData(keys, values);
+    // chartNonlinear->rescaleAxes();
+    // chartNonlinear->replot(QxCustomPlot::rpQueuedRefresh);
 }
 
 LibraryMaterial::Property MaterialEditDialog::writeProperty()
@@ -1026,29 +1025,29 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
                     maxValue = fmax(maxValue, values[i]);
                 }
 
-                QPen pen;
-                pen.setColor(Qt::darkGray);
-                pen.setWidth(2);
-
-                QCustomPlot customPlot;
-                // create graph and assign data to it:
-                customPlot.addGraph();
-                customPlot.graph(0)->setData(keys, values);
-                customPlot.graph(0)->setLineStyle(QCPGraph::lsLine);
-                customPlot.graph(0)->setPen(pen);
-                customPlot.graph(0)->setBrush(QBrush(QColor(255, 0, 0, 20)));
-                // give the axes some labels:
-                customPlot.xAxis->setLabel(QString("%0 (%1)").arg(prop.independent_shortname).arg(prop.independent_unit));
-                customPlot.yAxis->setLabel(QString("%0 (%1)").arg(prop.shortname).arg(prop.unit));
-                // set axes ranges, so we see all data:
-                customPlot.xAxis->setRange(minKey, maxKey);
-                customPlot.yAxis->setRange(minValue, maxValue);
-                customPlot.graph(0)->rescaleAxes();
-                customPlot.replot();
+                // QPen pen;
+                // pen.setColor(Qt::darkGray);
+                // pen.setWidth(2);
+                //
+                // QxCustomPlot customPlot;
+                // // create graph and assign data to it:
+                // customPlot.addGraph();
+                // customPlot.graph(0)->setData(keys, values);
+                // customPlot.graph(0)->setLineStyle(QCPGraph::lsLine);
+                // customPlot.graph(0)->setPen(pen);
+                // customPlot.graph(0)->setBrush(QBrush(QColor(255, 0, 0, 20)));
+                // // give the axes some labels:
+                // customPlot.xAxis->setLabel(QString("%0 (%1)").arg(prop.independent_shortname).arg(prop.independent_unit));
+                // customPlot.yAxis->setLabel(QString("%0 (%1)").arg(prop.shortname).arg(prop.unit));
+                // // set axes ranges, so we see all data:
+                // customPlot.xAxis->setRange(minKey, maxKey);
+                // customPlot.yAxis->setRange(minValue, maxValue);
+                // customPlot.graph(0)->rescaleAxes();
+                // customPlot.replot();
 
                 QDateTime currentTime(QDateTime::currentDateTime());
                 QString fn = QString("%1/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
-                customPlot.savePng(fn, 500, 180);
+                // customPlot.savePng(fn, 500, 180);
                 propSection->SetValue("PROPERTY_NONLINEAR_PNG", fn.toStdString());
 
                 propSection->ShowSection("PROPERTY_NONLINEAR");

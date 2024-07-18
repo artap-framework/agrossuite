@@ -50,6 +50,7 @@
 #include "chartdialog.h"
 #include "confdialog.h"
 #include "optilab/optilab.h"
+#include "optilab/optilab_widget.h"
 #include "materialbrowserdialog.h"
 #include "chartdialog.h"
 #include "examplesdialog.h"

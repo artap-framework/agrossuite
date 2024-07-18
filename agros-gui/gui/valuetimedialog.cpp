@@ -95,7 +95,7 @@ void ValueTimeDialog::createControls()
     axisFunction->setTitleText(tr("function"));
     chart->addAxis(axisFunction, Qt::AlignLeft);
 
-    // attach axis
+    // series
     valueSeries = new QLineSeries();
     valueSeries->setUseOpenGL(true);
     chart->addSeries(valueSeries);

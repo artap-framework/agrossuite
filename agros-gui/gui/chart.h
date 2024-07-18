@@ -43,7 +43,7 @@ private:
 class ChartView : public QChartView
 {
 public:
-    ChartView(QChart *chart = nullptr, QWidget *parent = nullptr);
+    ChartView(QChart *chart = nullptr, bool showCrosshair = true, QWidget *parent = nullptr);
 
     void fitToData();
 
