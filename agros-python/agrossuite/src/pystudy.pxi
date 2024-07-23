@@ -14,7 +14,7 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
         string type()
 
         void addParameter(string name, double lowerBound, double upperBound) except +
-        void addFunctional(string name, string expression, int weight) except +
+        void addGoalFunction(string name, string expression, int weight) except +
 
         void solve() except +
 
@@ -64,7 +64,7 @@ cdef class __Study__:
         self.thisptr.addParameter(name.encode(), lower_bound, upper_bound)
 
     def add_functional(self, name, expression, weight = 100):
-        self.thisptr.addFunctional(name.encode(), expression.encode(), weight)
+        self.thisptr.addGoalFunction(name.encode(), expression.encode(), weight)
 
     def type(self):
         return self.thisptr.type();

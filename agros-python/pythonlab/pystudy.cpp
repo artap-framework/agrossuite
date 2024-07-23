@@ -32,10 +32,10 @@ void PyStudy::addParameter(string name, double lowerBound, double upperBound)
     m_study->addParameter(Parameter(QString::fromStdString(name), lowerBound, upperBound));
 }
 
-void PyStudy::addFunctional(string name, string expression, int weight)
+void PyStudy::addGoalFunction(string name, string expression, int weight)
 {
     // TODO: check
-    m_study->addFunctional(GoalFunction(QString::fromStdString(name), QString::fromStdString(expression), weight));
+    m_study->addGoalFunction(GoalFunction(QString::fromStdString(name), QString::fromStdString(expression), weight));
 }
 
 void PyStudy::solve()

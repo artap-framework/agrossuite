@@ -42,7 +42,7 @@ public:
     inline std::string type() { return studyTypeToStringKey(m_study->type()).toStdString(); }
 
     void addParameter(std::string name, double lowerBound, double upperBound);
-    void addFunctional(std::string name, std::string expression, int weight = 100);
+    void addGoalFunction(std::string name, std::string expression, int weight = 100);
 
     void solve();
 
