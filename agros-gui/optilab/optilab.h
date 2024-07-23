@@ -59,27 +59,18 @@ private:
     QSharedPointer<Computation> m_selectedComputation;
 
     OptiLabWidget *m_optiLabWidget;
-    QTabWidget *tabStats;
     SceneViewSimpleGeometry *geometryViewer;
 
+    QGroupBox *groupBoxStatistics;
     QLabel *lblResultMin;
     QLabel *lblResultMax;
     QLabel *lblResultMean;
     QLabel *lblResultMedian;
     QLabel *lblResultVariance;
     QLabel *lblResultStdDev;
-    // QLabel *lblResultNormalCovariance; // normal distribution
-    // QLabel *lblResultNormalCorrelation; // normal distribution
 
     QComboBox *cmbAxisX;
     QComboBox *cmbAxisY;
-
-    QChart *resultsStatChart;
-    QScatterSeries *resultsStatMinMaxSeries;
-    QScatterSeries *resultsStatMeanSeries;
-    QScatterSeries *resultsStatMedianSeries;
-    QValueAxis *axisStatX;
-    QValueAxis *axisStatY;
 
     // computation
     QAction *actComputationSolve;
@@ -96,6 +87,7 @@ private:
     QLineSeries *trendLineSeries;
     QScatterSeries *valueSeries;
     QScatterSeries *valueSelectedSeries;
+    QScatterSeries *valueHoverSeries;
     QLineSeries *averageValueSeries;
     QLineSeries *averageValueLowerSeries;
     QLineSeries *averageValueUpperSeries;
@@ -106,10 +98,6 @@ private:
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
     QAction *actChartRescale;
-    QAction *actChartLogHorizontal;
-    QAction *actChartLogVertical;
-    QAction *actChartShowTrend;
-    QAction *actChartShowAverageValue;
     QAction *actChartParetoFront;
 
     void createControls();
@@ -121,15 +109,9 @@ private:
     void resultsFindExtrem(bool minimum);
     int findPointIndex(const QPointF &point);
 
-    QScatterSeries *createSeries(const QString &name);
-
 private slots:
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
-    void chartLogHorizontal(bool checked);
-    void chartLogVertical(bool checked);
-    void chartShowTrend(bool checked);
-    void chartShowAverageValue(bool checked);
     void chartShowParetoFront(bool checked);
 
     void chartClicked(const QPointF &point);

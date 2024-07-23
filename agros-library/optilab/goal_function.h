@@ -25,10 +25,10 @@
 
 class Computation;
 
-class AGROS_LIBRARY_API Functional
+class AGROS_LIBRARY_API GoalFunction
 {
 public:
-    Functional(const QString &name = "", const QString &expression = "", int weight = 100);
+    GoalFunction(const QString &name = "", const QString &expression = "", int weight = 100);
 
     void load(QJsonObject &object);
     void save(QJsonObject &object);

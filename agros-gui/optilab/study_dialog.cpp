@@ -185,13 +185,13 @@ void LogOptimizationDialog::createControls()
         itemBest->setText(0, parameter.name());
     }
 
-    foreach (Functional functional, m_study->functionals())
+    foreach (GoalFunction goal, m_study->goalFunctions())
     {
         auto *itemCurrent = new QTreeWidgetItem(currentFunctionalsNode);
-        itemCurrent->setText(0, functional.name());
+        itemCurrent->setText(0, goal.name());
 
         auto *itemBest = new QTreeWidgetItem(optimalFunctionalsNode);
-        itemBest->setText(0, functional.name());
+        itemBest->setText(0, goal.name());
     }
 
     // chart
@@ -292,9 +292,9 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     }
 
     // functionals
-    for (int i = 0; i < m_study->functionals().count(); i++)
+    for (int i = 0; i < m_study->goalFunctions().count(); i++)
     {
-        double value = computation->results()->value(m_study->functionals()[i].name());
+        double value = computation->results()->value(m_study->goalFunctions()[i].name());
 
         currentFunctionalsNode->child(i)->setText(1, QString::number(value));
 
@@ -700,14 +700,14 @@ void StudyDialog::readFunctionals()
 {
     trvFunctionalWidget->clear();
     
-    foreach (Functional functional, m_study->functionals())
+    foreach (GoalFunction goal, m_study->goalFunctions())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(trvFunctionalWidget);
         
-        item->setText(0, QString("%1").arg(functional.name()));
-        item->setData(0, Qt::UserRole, functional.name());
-        item->setText(1, QString("%1 \%").arg(functional.weight()));
-        item->setText(2, QString("%1").arg((functional.expression().count() < 45) ? functional.expression() : functional.expression().left(45) + "..."));
+        item->setText(0, QString("%1").arg(goal.name()));
+        item->setData(0, Qt::UserRole, goal.name());
+        item->setText(1, QString("%1 \%").arg(goal.weight()));
+        item->setText(2, QString("%1").arg((goal.expression().count() < 45) ? goal.expression() : goal.expression().left(45) + "..."));
     }
     
     doFunctionalItemChanged(nullptr, nullptr);
@@ -734,12 +734,12 @@ void StudyDialog::doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role)
 
 void StudyDialog::doFunctionalAdd(bool checked)
 {
-    Functional functional;
+    GoalFunction goal;
     
-    StudyFunctionalDialog dialog(m_study, &functional);
+    StudyGoalFunctionDialog dialog(m_study, &goal);
     if (dialog.exec() == QDialog::Accepted)
     {
-        m_study->addFunctional(functional);
+        m_study->addGoalFunction(goal);
         readFunctionals();
     }
 }
@@ -748,7 +748,7 @@ void StudyDialog::doFunctionalEdit(bool checked)
 {
     if (trvFunctionalWidget->currentItem())
     {
-        StudyFunctionalDialog dialog(m_study, &m_study->functional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
+        StudyGoalFunctionDialog dialog(m_study, &m_study->goal(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
         if (dialog.exec() == QDialog::Accepted)
         {
             readFunctionals();
@@ -760,7 +760,7 @@ void StudyDialog::doFunctionalRemove(bool checked)
 {
     if (trvFunctionalWidget->currentItem())
     {
-        m_study->removeFunctional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString());
+        m_study->removeGoalFunction(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString());
         
         readFunctionals();
     }
@@ -799,9 +799,9 @@ void StudyDialog::doDuplicate()
             foreach (Parameter parameter, m_study->parameters())
                 study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
             
-            // copy functionals
-            foreach (Functional functional, m_study->functionals())
-                study->addFunctional(Functional(functional.name(), functional.expression(), functional.weight()));
+            // copy goals
+            foreach (GoalFunction goal, m_study->goalFunctions())
+                study->addGoalFunction(GoalFunction(goal.name(), goal.expression(), goal.weight()));
             
             // clear and solve
             study->setValue(Study::General_ClearSolution, m_study->value(Study::General_ClearSolution).toBool());
@@ -811,8 +811,7 @@ void StudyDialog::doDuplicate()
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
                 Agros::problem()->studies()->addStudy(study);
-                
-                close();
+                accept();
             }
             else
             {
@@ -824,25 +823,25 @@ void StudyDialog::doDuplicate()
 
 // **************************************************************************************************************
 
-StudyFunctionalDialog::StudyFunctionalDialog(Study *study, Functional *functional, QWidget *parent)
-    : m_study(study), m_functional(functional)
+StudyGoalFunctionDialog::StudyGoalFunctionDialog(Study *study, GoalFunction *goal, QWidget *parent)
+    : m_study(study), m_goal(goal)
 {
     createControls();
 }
 
-void StudyFunctionalDialog::createControls()
+void StudyGoalFunctionDialog::createControls()
 {
-    setWindowTitle(tr("Functional: %1").arg(m_functional->name()));
+    setWindowTitle(tr("Goal function: %1").arg(m_goal->name()));
     setMinimumWidth(400);
 
     lblError = new QLabel();
     
-    txtName = new QLineEdit(m_functional->name());
+    txtName = new QLineEdit(m_goal->name());
     connect(txtName, SIGNAL(textChanged(QString)), this, SLOT(functionalNameTextChanged(QString)));
-    txtExpression = new QLineEdit(m_functional->expression());
+    txtExpression = new QLineEdit(m_goal->expression());
     txtWeight = new QSpinBox();
     txtWeight->setRange(0, 100);
-    txtWeight->setValue(m_functional->weight());
+    txtWeight->setValue(m_goal->weight());
     
     QGridLayout *layoutEdit = new QGridLayout();
     layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
@@ -870,16 +869,16 @@ void StudyFunctionalDialog::createControls()
         
     setLayout(layoutWidget);
     
-    if (!m_functional->name().isEmpty())
+    if (!m_goal->name().isEmpty())
         txtName->setFocus();
 }
 
-void StudyFunctionalDialog::functionalNameTextChanged(const QString &str)
+void StudyGoalFunctionDialog::functionalNameTextChanged(const QString &str)
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(checkFunctional(str));
 }
 
-bool StudyFunctionalDialog::checkFunctional(const QString &str)
+bool StudyGoalFunctionDialog::checkFunctional(const QString &str)
 {
     try
     {
@@ -894,12 +893,12 @@ bool StudyFunctionalDialog::checkFunctional(const QString &str)
         return false;
     }
     
-    foreach (Functional functional, m_study->functionals())
+    foreach (GoalFunction goal, m_study->goalFunctions())
     {
-        if (str == m_functional->name())
+        if (str == m_goal->name())
             continue;
         
-        if (str == functional.name())
+        if (str == goal.name())
         {
             lblError->setText(tr("Functional already exists."));
             lblError->setVisible(true);
@@ -914,13 +913,13 @@ bool StudyFunctionalDialog::checkFunctional(const QString &str)
     return true;
 }
 
-void StudyFunctionalDialog::doAccept()
+void StudyGoalFunctionDialog::doAccept()
 {
     if (checkFunctional(txtName->text()))
     {
-        m_functional->setName(txtName->text());
-        m_functional->setExpression(txtExpression->text());
-        m_functional->setWeight(txtWeight->value());
+        m_goal->setName(txtName->text());
+        m_goal->setExpression(txtExpression->text());
+        m_goal->setWeight(txtWeight->value());
         
         accept();
     }

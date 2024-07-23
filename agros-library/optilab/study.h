@@ -26,7 +26,7 @@
 
 #include "util/enums.h"
 #include "parameter.h"
-#include "functional.h"
+#include "goal_function.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 
@@ -199,27 +199,24 @@ public:
     enum ResultType
     {
         ResultType_Parameter,
-        ResultType_Functional,
+        ResultType_Goal,
         ResultType_Recipe,
-        ResultType_Other,
         ResultType_Steps
     };
 
     inline QString resultTypeToStringKey(ResultType type)
     {
         if (type == ResultType::ResultType_Parameter) return "parameter";
-        else if (type == ResultType::ResultType_Functional) return "functional";
+        else if (type == ResultType::ResultType_Goal) return "goal";
         else if (type == ResultType::ResultType_Recipe) return "recipe";
-        else if (type == ResultType::ResultType_Other) return "other";
         else assert(0);
     }
 
     inline ResultType resultTypeFromStringKey(const QString &type)
     {
         if (type == "parameter") return ResultType::ResultType_Parameter;
-        else if (type == "functional") return ResultType::ResultType_Functional;
+        else if (type == "goal") return ResultType::ResultType_Goal;
         else if (type == "recipe") return ResultType::ResultType_Recipe;
-        else if (type == "other") return ResultType::ResultType_Other;
         else assert(0);
     }
 
@@ -279,11 +276,11 @@ public:
     Parameter &parameter(const QString &name);
     QList<Parameter> &parameters() { return m_parameters; }
 
-    void addFunctional(Functional functional) { m_functionals.append(functional); }
-    void removeFunctional(const QString &name);
-    Functional &functional(const QString &name);
-    QList<Functional> &functionals() { return m_functionals; }
-    bool evaluateFunctionals(QSharedPointer<Computation> computation);
+    void addGoalFunction(GoalFunction goal) { m_goalFunctions.append(goal); }
+    void removeGoalFunction(const QString &name);
+    GoalFunction &goal(const QString &name);
+    QList<GoalFunction> &goalFunctions() { return m_goalFunctions; }
+    bool evaluateGoalFunctions(QSharedPointer<Computation> computation);
     void evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty = SolutionUncertainty());
     double evaluateSingleGoal(QSharedPointer<Computation> computation) const;
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
@@ -323,7 +320,7 @@ public:
 
 protected:
     QList<Parameter> m_parameters;
-    QList<Functional> m_functionals;
+    QList<GoalFunction> m_goalFunctions;
     QList<ComputationSet> m_computationSets;
 
     bool m_isSolving;

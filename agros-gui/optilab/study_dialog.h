@@ -32,7 +32,7 @@
 #include "gui/logwidget.h"
 #include "optilab/study.h"
 #include "optilab/parameter.h"
-#include "optilab/functional.h"
+#include "optilab/goal_function.h"
 
 class LineEditDouble;
 class Computation;
@@ -171,16 +171,16 @@ private slots:
     void doDuplicate();
 };
 
-class StudyFunctionalDialog : public QDialog
+class StudyGoalFunctionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    StudyFunctionalDialog(Study *study, Functional *functional, QWidget *parent = 0);
+    StudyGoalFunctionDialog(Study *study, GoalFunction *goal, QWidget *parent = 0);
 
 private:
     Study *m_study;
-    Functional *m_functional;
+    GoalFunction *m_goal;
 
     QDialogButtonBox *buttonBox;
     QLabel *lblError;

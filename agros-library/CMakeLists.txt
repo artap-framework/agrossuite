@@ -34,7 +34,7 @@ SET(SOURCES
     optilab/study_bayesopt.cpp
     optilab/study_nlopt.cpp
     optilab/parameter.cpp
-    optilab/functional.cpp
+        optilab/goal_function.cpp
     particle/particle_tracing.cpp
     particle/particle_forces.cpp
     scene.cpp

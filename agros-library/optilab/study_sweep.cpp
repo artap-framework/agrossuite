@@ -73,7 +73,6 @@ double SweepProblem::evaluateSample(const vectord& x)
         m_study->addComputation(computation);
 
         m_steps++;
-        qInfo() << "Sweep: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
         return value;
     }

@@ -111,9 +111,6 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedStudy(nullptr), m
 
 OptiLab::~OptiLab()
 {
-    QSettings settings;
-    settings.setValue("OptiLab/ResultsTreeColumnWidth0", trvResults->columnWidth(0));
-    settings.setValue("OptiLab/ResultsTreeColumnWidth1", trvResults->columnWidth(1));
 }
 
 QWidget *OptiLab::createControlsGeometryAndStats()
@@ -125,8 +122,6 @@ QWidget *OptiLab::createControlsGeometryAndStats()
     lblResultMedian = new QLabel();
     lblResultVariance = new QLabel();
     lblResultStdDev = new QLabel();
-    // lblResultNormalCovariance = new QLabel(); // normal distribution
-    // lblResultNormalCorrelation = new QLabel(); // normal distribution
 
     auto *layoutStatistics = new QGridLayout();
     layoutStatistics->addWidget(new QLabel(tr("Minimum:")), 0, 0);
@@ -142,86 +137,28 @@ QWidget *OptiLab::createControlsGeometryAndStats()
     layoutStatistics->addWidget(new QLabel(tr("Std. deviation:")), 6, 0);
     layoutStatistics->addWidget(lblResultStdDev, 6, 1);
     layoutStatistics->setRowStretch(10, 1);
-    // layoutStatistics->addWidget(new QLabel(tr("Covariance:")), 21, 0);
-    // layoutStatistics->addWidget(lblResultNormalCovariance, 21, 1);
-    // layoutStatistics->addWidget(new QLabel(tr("Correlation:")), 22, 0);
-    // layoutStatistics->addWidget(lblResultNormalCorrelation, 22, 1);
 
-    auto *widStatistics = new QWidget();
-    // widDist->setContentsMargins(0, 0, 0, 0);
-    widStatistics->setLayout(layoutStatistics);
-
-    resultsStatChart = new QChart();
-    resultsStatChart->legend()->setVisible(true);
-    resultsStatChart->legend()->setInteractive(true);
-    resultsStatChart->legend()->setAlignment(Qt::AlignBottom);
-    resultsStatChart->legend()->attachToChart();
-
-    axisStatX = new QValueAxis;
-    axisStatX->setLabelFormat("%g");
-    axisStatX->setGridLineVisible(false);
-    axisStatX->setLabelsVisible(false);
-    resultsStatChart->addAxis(axisStatX, Qt::AlignBottom);
-
-    // axis y
-    axisStatY = new QValueAxis;
-    axisStatY->setLabelFormat("%g");
-    axisStatY->setGridLineVisible(true);
-    // axisY->setTitleText(tr("objective"));
-    resultsStatChart->addAxis(axisStatY, Qt::AlignLeft);
-
-    resultsStatMinMaxSeries = createSeries("Min and max");
-    resultsStatMeanSeries = createSeries("Mean");
-    resultsStatMedianSeries = createSeries("Median");
+    groupBoxStatistics = new QGroupBox(tr("Statistics"));
+    groupBoxStatistics->setLayout(layoutStatistics);
+    groupBoxStatistics->setMaximumHeight(groupBoxStatistics->minimumSizeHint().height());
 
     geometryViewer = new SceneViewSimpleGeometry(this);
 
-    auto *statChartView = new QChartView();
-    statChartView->setRenderHint(QPainter::Antialiasing);
-    statChartView->setChart(resultsStatChart);
+    auto *layoutGeometry = new QVBoxLayout();
+    layoutGeometry->setContentsMargins(0, 0, 0, 0);
+    layoutGeometry->addWidget(groupBoxStatistics);
+    layoutGeometry->addWidget(geometryViewer);
 
-    tabStats = new QTabWidget();
-    tabStats->setMinimumHeight(250);
-    tabStats->setMaximumHeight(250);
-    tabStats->addTab(geometryViewer, tr("Geometry"));
-    tabStats->addTab(statChartView, tr("Statistics"));
-    tabStats->addTab(widStatistics, tr("Values"));
+    auto *widget = new QWidget();
+    widget->setLayout(layoutGeometry);
 
-    return tabStats;
-}
-
-QScatterSeries *OptiLab::createSeries(const QString &name)
-{
-    auto series = new QScatterSeries();
-    series->setName(name);
-    series->setMarkerSize(12.0);
-    resultsStatChart->addSeries(series);
-    series->attachAxis(axisStatX);
-    series->attachAxis(axisStatY);
-
-    return series;
+    return widget;
 }
 
 QWidget *OptiLab::createControlsChart()
 {
     actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
-
-    actChartLogHorizontal = new QAction(tr("Logarithmic scale (x-axis)"), this);
-    actChartLogHorizontal->setCheckable(true);
-    connect(actChartLogHorizontal, SIGNAL(triggered(bool)), this, SLOT(chartLogHorizontal(bool)));
-
-    actChartLogVertical = new QAction(tr("Logarithmic scale (y-axis)"), this);
-    actChartLogVertical->setCheckable(true);
-    connect(actChartLogVertical, SIGNAL(triggered(bool)), this, SLOT(chartLogVertical(bool)));
-
-    actChartShowTrend = new QAction(tr("Show trend line"), this);
-    actChartShowTrend->setCheckable(true);
-    connect(actChartShowTrend, SIGNAL(triggered(bool)), this, SLOT(chartShowTrend(bool)));
-
-    actChartShowAverageValue = new QAction(tr("Show average value"), this);
-    actChartShowAverageValue->setCheckable(true);
-    connect(actChartShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
 
     actChartParetoFront = new QAction(tr("Show Pareto front"), this);
     actChartParetoFront->setCheckable(true);
@@ -230,10 +167,6 @@ QWidget *OptiLab::createControlsChart()
     mnuChart = new QMenu(this);
     mnuChart->addAction(actChartRescale);
     mnuChart->addSection(tr("Chart properties"));
-    mnuChart->addAction(actChartLogHorizontal);
-    mnuChart->addAction(actChartLogVertical);
-    mnuChart->addAction(actChartShowTrend);
-    mnuChart->addAction(actChartShowAverageValue);
     mnuChart->addAction(actChartParetoFront);
 
     auto chart = new QChart();
@@ -259,10 +192,19 @@ QWidget *OptiLab::createControlsChart()
     valueSelectedSeries->setUseOpenGL(true);
     chart->addSeries(valueSelectedSeries);
     valueSelectedSeries->setPointsVisible(true);
-    valueSelectedSeries->setMarkerSize(15.0);
-    valueSelectedSeries->setColor(QColor(160, 80, 80));
+    valueSelectedSeries->setMarkerSize(17.0);
+    valueSelectedSeries->setColor(QColor(219, 13, 58));
     valueSelectedSeries->attachAxis(axisX);
     valueSelectedSeries->attachAxis(axisY);
+
+    valueHoverSeries = new QScatterSeries();
+    valueHoverSeries->setUseOpenGL(true);
+    chart->addSeries(valueHoverSeries);
+    valueHoverSeries->setPointsVisible(true);
+    valueHoverSeries->setMarkerSize(15.0);
+    valueHoverSeries->setColor(QColor(94, 3, 23));
+    valueHoverSeries->attachAxis(axisX);
+    valueHoverSeries->attachAxis(axisY);
 
     valueSeries = new QScatterSeries();
     valueSeries->setUseOpenGL(true);
@@ -279,7 +221,7 @@ QWidget *OptiLab::createControlsChart()
     trendLineSeries = new QLineSeries();
     trendLineSeries->setUseOpenGL(true);
     chart->addSeries(trendLineSeries);
-    trendLineSeries->setPen(QPen(QBrush(QColor(90, 175, 90)), 2, Qt::DashLine));
+    trendLineSeries->setPen(QPen(QBrush(QColor(90, 175, 90)), 1, Qt::DashLine));
     trendLineSeries->attachAxis(axisX);
     trendLineSeries->attachAxis(axisY);
 
@@ -302,7 +244,7 @@ QWidget *OptiLab::createControlsChart()
     averageValueAreaSeries = new QAreaSeries(averageValueLowerSeries, averageValueUpperSeries);
     chart->addSeries(averageValueAreaSeries);
     averageValueSeries->setBrush(QBrush(QColor(255, 50, 30, 10)));
-    averageValueAreaSeries->setOpacity(0.1);
+    averageValueAreaSeries->setOpacity(0.05);
     averageValueAreaSeries->attachAxis(axisX);
     averageValueAreaSeries->attachAxis(axisY);
 
@@ -321,27 +263,26 @@ QWidget *OptiLab::createControlsChart()
 
     chartView = new ChartView(chart, false);
     chartView->setChart(chart);
+    // QObject::connect(chartView, &QChartView::contextMenuEvent, this, &OptiLab::contextMenuEvent);
 
     return chartView;
 }
 
 QWidget *OptiLab::createControlsResults()
 {
-    QSettings settings;
-
     // treeview
     trvResults = new QTreeWidget(this);
     trvResults->setExpandsOnDoubleClick(false);
     // trvResults->setHeaderHidden(false);
     trvResults->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
-    // trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvResults->setContextMenuPolicy(Qt::CustomContextMenu);
     trvResults->setMouseTracking(true);
     trvResults->setUniformRowHeights(true);
     trvResults->setColumnCount(2);
-    trvResults->setColumnWidth(0, settings.value("OptiLab/ResultsTreeColumnWidth0", 80).toInt());
-    trvResults->setColumnWidth(1, settings.value("OptiLab/ResultsTreeColumnWidth1", 180).toInt());
     trvResults->setIndentation(trvResults->indentation() - 2);
+    // trvResults->resizeColumnToContents(0);
+    // trvResults->resizeColumnToContents(1);
 
     actComputationSolve = new QAction(icon("main_solve"), tr("Solve"), this);
     connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doSolveCurrentComputation(bool)));
@@ -371,7 +312,7 @@ QWidget *OptiLab::createControlsResults()
 
     auto *formLayout = new QFormLayout();
     formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
-    formLayout->addRow(tr("Vertical axis and results:"), cmbAxisY);
+    formLayout->addRow(tr("Vertical axis and statistics:"), cmbAxisY);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
@@ -429,59 +370,6 @@ void OptiLab::chartRescale(bool checked)
     chartView->fitToData();
 }
 
-void OptiLab::chartLogHorizontal(bool checked)
-{
-    // force rescale
-    bool rescale = (m_selectedStudy->value(Study::View_ChartLogHorizontal).toBool() != checked);
-
-    m_selectedStudy->setValue(Study::View_ChartLogHorizontal, checked);
-    actChartLogHorizontal->setChecked(checked);
-
-    // if (checked)
-    //     chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    // else
-    //     chart->xAxis->setScaleType(QCPAxis::stLinear);
-
-    if (rescale) chartRescale(true);
-}
-
-void OptiLab::chartLogVertical(bool checked)
-{
-    // force rescale
-    bool rescale = (m_selectedStudy->value(Study::View_ChartLogVertical).toBool() != checked);
-
-    m_selectedStudy->setValue(Study::View_ChartLogVertical, checked);
-    actChartLogVertical->setChecked(checked);
-
-    // if (checked)
-    //     chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    // else
-    //     chart->yAxis->setScaleType(QCPAxis::stLinear);
-
-    if (rescale) chartRescale(true);
-}
-
-void OptiLab::chartShowTrend(bool checked)
-{
-    m_selectedStudy->setValue(Study::View_ChartShowTrend, checked);
-    actChartShowTrend->setChecked(checked);
-
-    // chartTrendLine->setVisible(checked);
-    // chart->replot(QxCustomPlot::rpQueuedRefresh);
-}
-
-void OptiLab::chartShowAverageValue(bool checked)
-{
-    m_selectedStudy->setValue(Study::View_ChartShowAverageValue, checked);
-    actChartShowAverageValue->setChecked(checked);
-
-    // chartGraphAverageValue->setVisible(checked);
-    // chartGraphAverageValueChannelLower->setVisible(checked);
-    // chartGraphAverageValueChannelUpper->setVisible(checked);
-    //
-    // chart->replot(QxCustomPlot::rpQueuedRefresh);
-}
-
 void OptiLab::chartShowParetoFront(bool checked)
 {
     m_selectedStudy->setValue(Study::View_ChartShowParetoFront, checked);
@@ -525,7 +413,20 @@ void OptiLab::doStudySelected(Study *study)
         }
 
         // parameters, goal functions and recipes
+        QString currentNameX = "";
+        if (cmbAxisX->count() > 0)
+            currentNameX = cmbAxisX->currentText();
         cmbAxisX->clear();
+
+        QString currentNameY = "";
+        if (cmbAxisY->count() > 0)
+            currentNameY = cmbAxisY->currentText();
+        else if (study->goalFunctions().count() > 0)
+        {
+            // default
+            GoalFunction goal = study->goalFunctions().at(0);
+            currentNameY = tr("%1 (goal function)").arg(goal.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Goal, goal.name()));
+        }
         cmbAxisY->clear();
 
         // steps
@@ -540,10 +441,10 @@ void OptiLab::doStudySelected(Study *study)
         }
 
         // goal
-        foreach (Functional functional, study->functionals())
+        foreach (GoalFunction goal, study->goalFunctions())
         {
-            cmbAxisX->addItem(tr("%1 (goal function)").arg(functional.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Functional, functional.name())));
-            cmbAxisY->addItem(tr("%1 (goal function)").arg(functional.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Functional, functional.name())));
+            cmbAxisX->addItem(tr("%1 (goal function)").arg(goal.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Goal, goal.name())));
+            cmbAxisY->addItem(tr("%1 (goal function)").arg(goal.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Goal, goal.name())));
         }
 
         // recipes
@@ -552,6 +453,12 @@ void OptiLab::doStudySelected(Study *study)
             cmbAxisX->addItem(tr("%1 (recipe)").arg(recipe->name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Recipe, recipe->name())));
             cmbAxisY->addItem(tr("%1 (recipe)").arg(recipe->name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Recipe, recipe->name())));
         }
+
+        // select combobox
+        if (!currentNameX.isEmpty())
+            cmbAxisX->setCurrentText(currentNameX);
+        if (!currentNameY.isEmpty())
+            cmbAxisY->setCurrentText(currentNameY);
     }
 
     // actions
@@ -562,7 +469,6 @@ void OptiLab::doStudySelected(Study *study)
     cmbAxisX->setEnabled(m_selectedStudy != nullptr);
     cmbAxisY->setEnabled(m_selectedStudy != nullptr);
     trvResults->setEnabled(m_selectedStudy != nullptr);
-    tabStats->setEnabled(m_selectedStudy != nullptr);
     chartView->setEnabled(m_selectedStudy != nullptr);
 
     // select current computation
@@ -588,7 +494,8 @@ void OptiLab::doChartRefreshed(bool fitToData)
     averageValueUpperSeries->clear();
     trendLineSeries->clear();
 
-    if (!m_selectedStudy)
+    QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
+    if (computationSets.count() == 0)
     {
         // fit and replot chart
         axisX->setRange(-1, 1);
@@ -596,8 +503,6 @@ void OptiLab::doChartRefreshed(bool fitToData)
 
         return;
     }
-
-    QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
 
     // axis x label
     axisX->setTitleText(cmbAxisX->currentText());
@@ -648,9 +553,9 @@ void OptiLab::doChartRefreshed(bool fitToData)
                 dataSetY.append(computation->config()->parameters()->number(currentDataNameY));
 
             // functionals
-            if (currentDataResultAxisX == Study::ResultType::ResultType_Functional)
+            if (currentDataResultAxisX == Study::ResultType::ResultType_Goal)
                 dataSetX.append(computation->results()->value(currentDataNameX));
-            if (currentDataResultAxisY == Study::ResultType::ResultType_Functional)
+            if (currentDataResultAxisY == Study::ResultType::ResultType_Goal)
                 dataSetY.append(computation->results()->value(currentDataNameY));
 
             // recipes
@@ -726,60 +631,29 @@ void OptiLab::doChartRefreshed(bool fitToData)
         chartView->fitToData();
 
     // set actions
-    chartLogHorizontal(m_selectedStudy->value(Study::View_ChartLogHorizontal).toBool());
-    chartLogHorizontal(m_selectedStudy->value(Study::View_ChartLogVertical).toBool());
-    chartShowTrend(m_selectedStudy->value(Study::View_ChartShowTrend).toBool());
-    chartShowAverageValue(m_selectedStudy->value(Study::View_ChartShowAverageValue).toBool());
     chartShowParetoFront(m_selectedStudy->value(Study::View_ChartShowParetoFront).toBool());
 }
 
 void OptiLab::chartClicked(const QPointF &point)
 {
     int index = findPointIndex(point);
-
-    // qInfo() << index;
     if (index != -1)
         doComputationSelected(m_selectedStudyProblemDirs[index]);
 }
 
 void OptiLab::chartHovered(const QPointF &point, bool state)
 {
-    int index = findPointIndex(point);
+    if (!state)
+    {
+        valueHoverSeries->clear();
+        return;
+    }
 
+    int index = findPointIndex(point);
     if (index != -1)
     {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
-        if (computations.count() > 0)
-        {
-            QSharedPointer<Computation> selectedComputation = computations[m_selectedStudyProblemDirs[index]];
-
-            QString html = "<body style=\"font-size: 11px;\">";
-            html += QString("<h4>%1</h4>").arg(tr("Computation"));
-
-            // parameters
-            html += QString("<h5>%1</h5>").arg(tr("Parameters"));
-            html += "<table width=\"100%\">";
-            QMap<QString, ProblemParameter> parameters = selectedComputation->config()->parameters()->items();
-            foreach (Parameter parameter, m_selectedStudy->parameters())
-                html += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(parameter.name()).arg(parameters[parameter.name()].value());
-            html += "</table>";
-
-            // other
-            html += QString("<h5>%1</h5>").arg(tr("Other"));
-            html += "<table width=\"100%\">";
-            StringToDoubleMap results = m_selectedComputation->results()->items();
-            foreach (QString key, results.keys())
-                html += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(key).arg(QString::number(results[key]));
-            html += "</table>";
-
-            html += "</body>";
-
-            chartView->setToolTip(html);
-        }
-    }
-    else
-    {
-        chartView->setToolTip("");
+        valueHoverSeries->clear();
+        valueHoverSeries->append(valueSeries->points().at(index));
     }
 }
 
@@ -834,13 +708,6 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
         recipesNode->setExpanded(true);
 
-        // other
-        auto *otherNode = new QTreeWidgetItem(trvResults);
-        otherNode->setText(0, tr("Other"));
-        otherNode->setFont(0, fnt);
-        otherNode->setIcon(0, iconAlphabet('O', AlphabetColor_Purple));
-        otherNode->setExpanded(true);
-
         StringToDoubleMap results = m_selectedComputation->results()->items();
         foreach (QString key, results.keys())
         {
@@ -848,17 +715,12 @@ void OptiLab::doComputationSelected(const QString &problemDir)
             if (m_selectedComputation->results()->type(key) == ComputationResultType_Functional)
             {
                 item = new QTreeWidgetItem(functionalsNode);
-                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
+                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Goal);
             }
             else if (m_selectedComputation->results()->type(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipesNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
-            }
-            else if (m_selectedComputation->results()->type(key) == ComputationResultType_Other)
-            {
-                item = new QTreeWidgetItem(otherNode);
-                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Other);
             }
             else
                 assert(0);
@@ -892,14 +754,13 @@ void OptiLab::doResultChanged()
 {
     bool showStats = cmbAxisY->currentIndex() != -1;
 
+    groupBoxStatistics->setTitle(tr("Statistics - %1").arg(cmbAxisY->currentText()));
     lblResultMin->setText("-");
     lblResultMax->setText("-");
     lblResultMean->setText("-");
     lblResultMedian->setText("-");
     lblResultVariance->setText("-");
     lblResultStdDev->setText("-");
-    // lblResultNormalCovariance->setText("-");
-    // lblResultNormalCorrelation->setText("-");
 
     if (m_selectedStudy && showStats)
     {
@@ -922,8 +783,9 @@ void OptiLab::doResultChanged()
 
                 if (type == Study::ResultType_Parameter)
                     data.append(computation->config()->parameters()->number(key));
-                else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional || type == Study::ResultType_Other)
+                else if (type == Study::ResultType_Recipe || type == Study::ResultType_Goal)
                     data.append(computation->results()->value(key));
+
 
                 step.append(step.count());
             }
@@ -973,22 +835,6 @@ void OptiLab::doResultChanged()
                 lblResultMedian->setText(QString::number(stats.median()));
                 lblResultVariance->setText(QString::number(stats.variance()));
                 lblResultStdDev->setText(QString::number(stats.stdDev()));
-
-                // correlation and covariance
-                // StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
-                // lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
-                // lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
-
-                // chart
-                resultsStatMinMaxSeries->clear();
-                resultsStatMinMaxSeries->append(0, stats.min());
-                resultsStatMinMaxSeries->append(0, stats.max());
-                resultsStatMeanSeries->clear();
-                resultsStatMeanSeries->append(0, stats.mean());
-                resultsStatMedianSeries->clear();
-                resultsStatMedianSeries->append(0, stats.median());
-                axisStatX->setRange(-1, 1);
-                axisStatY->setRange(stats.min(), stats.max());
             }
         }
     }
@@ -1022,7 +868,7 @@ void OptiLab::resultsFindExtrem(bool minimum)
 
 void OptiLab::axisXChanged(int index)
 {
-    if (m_selectedStudy && index != -1)
+    if (index != -1)
     {
         doChartRefreshed(true);
     }
@@ -1030,7 +876,7 @@ void OptiLab::axisXChanged(int index)
 
 void OptiLab::axisYChanged(int index)
 {
-    if (m_selectedStudy && index != -1)
+    if (index != -1)
     {
         doResultChanged();
         doChartRefreshed(true);
@@ -1039,9 +885,8 @@ void OptiLab::axisYChanged(int index)
 
 int OptiLab::findPointIndex(const QPointF &point)
 {
-    QPointF area = chartView->chart()->mapToValue(QPointF(chartView->chart()->plotArea().width(), chartView->chart()->plotArea().height()));
-    double tolX = abs(area.x() / 100);
-    double tolY = abs(area.y() / 100);
+    double tolX = (axisX->max()-axisX->min()) / 100.0;
+    double tolY = (axisY->max()-axisY->min()) / 100.0;
 
     int index = -1;
     for (int i = 0; i < valueSeries->points().count(); i++)

@@ -122,7 +122,7 @@ void StudyNSGA2::solve()
     localNSGA2->set_seed(seed);
     localNSGA2->set_nreal(m_parameters.count());
     localNSGA2->set_nbin(0);
-    localNSGA2->set_nobj(m_functionals.count());
+    localNSGA2->set_nobj(m_goalFunctions.count());
     localNSGA2->set_ncon(0); // add a constraint due to possible simulation failures
     localNSGA2->set_popsize(value(NSGA2_popsize).toInt());
     localNSGA2->set_ngen(value(NSGA2_ngen).toInt());

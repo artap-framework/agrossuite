@@ -40,7 +40,7 @@
 SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
     : SceneViewCommon2D(parent)
 {
-    setMinimumSize(100, 50);
+    setMinimumSize(150, 250);
 }
 
 void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)

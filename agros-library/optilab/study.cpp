@@ -139,7 +139,7 @@ void Study::clear()
     m_setting = m_settingDefault;
 
     m_parameters.clear();
-    m_functionals.clear();
+    m_goalFunctions.clear();
     m_computationSets.clear();
 }
 
@@ -160,9 +160,9 @@ void Study::load(QJsonObject &object)
     for (int i = 0; i < functionalsJson.size(); i++)
     {
         QJsonObject parameterJson = functionalsJson[i].toObject();
-        Functional functional;
+        GoalFunction functional;
         functional.load(parameterJson);
-        m_functionals.append(functional);
+        m_goalFunctions.append(functional);
     }
 
     // computations
@@ -207,10 +207,10 @@ void Study::save(QJsonObject &object)
 
     // functionals
     QJsonArray functionalsJson;
-    foreach (Functional functional, m_functionals)
+    foreach (GoalFunction goal, m_goalFunctions)
     {
         QJsonObject functionalJson;
-        functional.save(functionalJson);
+        goal.save(functionalJson);
         functionalsJson.append(functionalJson);
     }
     object[FUNCTIONALS] = functionalsJson;
@@ -243,11 +243,11 @@ void Study::save(QJsonObject &object)
     object[CONFIG] = configJson;
 }
 
-bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
+bool Study::evaluateGoalFunctions(QSharedPointer<Computation> computation)
 {
     bool successfulRun = false;
-    foreach (Functional functional, m_functionals)
-        successfulRun = functional.evaluateExpression(computation);
+    foreach (GoalFunction goal, m_goalFunctions)
+        successfulRun = goal.evaluateExpression(computation);
 
     return successfulRun;
 }
@@ -273,7 +273,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
     }
 
     // evaluate functionals
-    evaluateFunctionals(computation);
+    evaluateGoalFunctions(computation);
     computation->writeProblemToJson();
 
     // update GUI
@@ -295,17 +295,17 @@ QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation) 
 
     // weight functionals
     int totalWeight = 0;
-    foreach (Functional functional, m_functionals)
-        totalWeight += functional.weight();
+    foreach (GoalFunction goal, m_goalFunctions)
+        totalWeight += goal.weight();
 
-    foreach (Functional functional, m_functionals)
+    foreach (GoalFunction goal, m_goalFunctions)
     {
-        if (functional.weight() > 0)
+        if (goal.weight() > 0)
         {
-            QString name = functional.name();
+            QString name = goal.name();
             double value = computation->results()->value(name);
 
-            values.append(((double) functional.weight() / totalWeight) * value);
+            values.append(((double) goal.weight() / totalWeight) * value);
         }
     }
 
@@ -343,24 +343,24 @@ Parameter &Study::parameter(const QString &name)
     assert(0);
 }
 
-void Study::removeFunctional(const QString &name)
+void Study::removeGoalFunction(const QString &name)
 {
-    for (int i = 0; i < m_functionals.count(); i++)
+    for (int i = 0; i < m_goalFunctions.count(); i++)
     {
-        if (m_functionals[i].name() == name)
+        if (m_goalFunctions[i].name() == name)
         {
-            m_functionals.removeAt(i);
+            m_goalFunctions.removeAt(i);
             break;
         }
     }
 }
 
-Functional &Study::functional(const QString &name)
+GoalFunction &Study::goal(const QString &name)
 {
-    for (int i = 0; i < m_functionals.count(); i++)
+    for (int i = 0; i < m_goalFunctions.count(); i++)
     {
-        if (m_functionals[i].name() == name)
-            return m_functionals[i];
+        if (m_goalFunctions[i].name() == name)
+            return m_goalFunctions[i];
     }
 
     assert(0);
@@ -568,7 +568,7 @@ QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &k
             double val = NAN;
             if (type == ResultType_Parameter)
                 val = computation->config()->parameters()->number(key);
-            else if (type == ResultType_Recipe || type == ResultType_Functional || type == ResultType_Other)
+            else if (type == ResultType_Recipe || type == ResultType_Goal)
                 val = computation->results()->value(key);
             else
                 assert(0);

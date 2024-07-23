@@ -17,7 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "functional.h"
+#include "goal_function.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 
@@ -29,26 +29,26 @@ const QString TYPE = "type";
 const QString EXPRESSION = "expression";
 const QString WEIGHT = "weight";
 
-Functional::Functional(const QString &name, const QString &expression, int weight) :
+GoalFunction::GoalFunction(const QString &name, const QString &expression, int weight) :
     m_name(name), m_expression(expression), m_weight(weight)
 {
 }
 
-void Functional::load(QJsonObject &object)
+void GoalFunction::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
     m_expression = object[EXPRESSION].toString();
     m_weight = object[WEIGHT].toInt();
 }
 
-void Functional::save(QJsonObject &object)
+void GoalFunction::save(QJsonObject &object)
 {
     object[NAME] = m_name;
     object[EXPRESSION] = m_expression;
     object[WEIGHT] = m_weight;
 }
 
-bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
+bool GoalFunction::evaluateExpression(QSharedPointer<Computation> computation)
 {
     // symbol table
     exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parameters()->symbolTable();

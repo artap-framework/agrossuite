@@ -50,7 +50,7 @@ private:
         Undefined = 0,
         OptilabStudy,
         OptilabParameter,
-        OptilabFunctional,
+        OptilabGoalFunction,
         OptilabRecipe,
     };
 

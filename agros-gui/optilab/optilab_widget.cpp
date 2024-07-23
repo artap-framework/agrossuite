@@ -257,14 +257,14 @@ void OptiLabWidget::refresh()
         functionalsNode->setData(2, Qt::UserRole, k);
         functionalsNode->setExpanded(true);
 
-        foreach (Functional functional, study->functionals())
+        foreach (GoalFunction goal, study->goalFunctions())
         {
             auto *item = new QTreeWidgetItem(functionalsNode);
 
-            item->setText(0, QString("%1").arg(functional.name()));
-            item->setText(1, QString("%2 %").arg(functional.weight()));
-            item->setData(0, Qt::UserRole, functional.name());
-            item->setData(1, Qt::UserRole, OptiLabWidget::OptilabFunctional);
+            item->setText(0, QString("%1").arg(goal.name()));
+            item->setText(1, QString("%2 %").arg(goal.weight()));
+            item->setData(0, Qt::UserRole, goal.name());
+            item->setData(1, Qt::UserRole, OptiLabWidget::OptilabGoalFunction);
             item->setData(2, Qt::UserRole, k);
         }
     }
@@ -304,7 +304,7 @@ void OptiLabWidget::solveStudy()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabGoalFunction || type == OptiLabWidget::OptilabParameter)
         {
             Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
@@ -356,7 +356,7 @@ void OptiLabWidget::exportData()
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
-        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabGoalFunction || type == OptiLabWidget::OptilabParameter)
         {
             Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
@@ -438,7 +438,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             // optilab - parameter
             actProperties->setEnabled(true);
         }
-        else if (type == OptiLabWidget::OptilabFunctional)
+        else if (type == OptiLabWidget::OptilabGoalFunction)
         {
             // optilab - functional
             actProperties->setEnabled(true);
@@ -451,7 +451,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
         }
 
         // change study
-        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabFunctional || type == OptiLabWidget::OptilabParameter)
+        if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabGoalFunction || type == OptiLabWidget::OptilabParameter)
         {
             selected = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
         }
@@ -487,13 +487,13 @@ void OptiLabWidget::doItemProperties()
                 refresh();
             }
         }
-        else if (type == OptiLabWidget::OptilabFunctional)
+        else if (type == OptiLabWidget::OptilabGoalFunction)
         {
             // study
             Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
-            QString functional = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
+            QString goal = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
 
-            StudyFunctionalDialog dialog(study, &study->functional(functional));
+            StudyGoalFunctionDialog dialog(study, &study->goal(goal));
             if (dialog.exec() == QDialog::Accepted)
             {
                 refresh();

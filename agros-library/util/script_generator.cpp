@@ -604,12 +604,12 @@ QString ScriptGenerator::createPythonFromModel()
             }
 
             // functionals
-            foreach (Functional functional, study->functionals())
-                str += QString("study_%1.add_functional(\"%2\", \"%3\", %4)\n").
+            foreach (GoalFunction goal, study->goalFunctions())
+                str += QString("study_%1.add_goal(\"%2\", \"%3\", %4)\n").
                         arg(studyTypeToStringKey(study->type())).
-                        arg(functional.name()).
-                        arg(functional.expression()).
-                        arg(functional.weight());
+                        arg(goal.name()).
+                        arg(goal.expression()).
+                        arg(goal.weight());
 
             // settings
             str += QString("study_%1.clear_solution = %2\n").

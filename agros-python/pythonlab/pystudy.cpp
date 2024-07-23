@@ -35,7 +35,7 @@ void PyStudy::addParameter(string name, double lowerBound, double upperBound)
 void PyStudy::addFunctional(string name, string expression, int weight)
 {
     // TODO: check
-    m_study->addFunctional(Functional(QString::fromStdString(name), QString::fromStdString(expression), weight));
+    m_study->addFunctional(GoalFunction(QString::fromStdString(name), QString::fromStdString(expression), weight));
 }
 
 void PyStudy::solve()
