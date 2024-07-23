@@ -27,8 +27,7 @@ SET(SOURCES
     logview.cpp
     mesh/meshgenerator.cpp
     mesh/meshgenerator_triangle.cpp
-        parser/lex.cpp
-    optilab/doe.cpp
+    parser/lex.cpp
     optilab/study.cpp
     optilab/study_sweep.cpp
     optilab/study_nsga2.cpp
@@ -68,16 +67,16 @@ SET(SOURCES
     util/dxf_filter.cpp
     util/enums.cpp
     util/global.cpp
-        util/util.cpp
+    util/util.cpp
     util/util_expr.cpp
     util/point.cpp
     util/system_utils.cpp
     util/spline.cpp
     util/table.cpp
     util/script_generator.cpp
+    util/loops.cpp
+    util/loops.h
     value.cpp
-        util/loops.cpp
-        util/loops.h
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})

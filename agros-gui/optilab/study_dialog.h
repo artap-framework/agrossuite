@@ -150,10 +150,6 @@ protected:
     QCheckBox *chkClearSolution;
     QCheckBox *chkSolveProblem;
 
-    QCheckBox *chkDoE;
-    LineEditDouble *txtDoEDeviation;
-    QSpinBox *txtDoESweepSamples;
-
     virtual void load();
     virtual void save();
 

@@ -228,12 +228,6 @@ public:
         General_ClearSolution,
         General_SolveProblem,
 
-        General_DoE,
-        General_DoE_Deviation,
-
-        General_DoE_SweepSamples,
-        General_DoE_SweepMethod,
-
         NLopt_xtol_rel,
         NLopt_xtol_abs,
         NLopt_ftol_rel,
@@ -293,9 +287,6 @@ public:
     void evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty = SolutionUncertainty());
     double evaluateSingleGoal(QSharedPointer<Computation> computation) const;
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
-
-    double doeEvaluatePoint(const QVector<double> &x);
-    void doeCompute(QSharedPointer<Computation> computation, QVector<double> init, double optinalValue = NAN);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> computationSets(const QString &filter = "") const;

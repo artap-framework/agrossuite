@@ -487,28 +487,9 @@ void StudyDialog::createControls()
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
-    
-    chkDoE = new QCheckBox(tr("Enable DoE"));
-    txtDoEDeviation = new LineEditDouble();
-    txtDoEDeviation->setBottom(0.0);
-    txtDoESweepSamples = new QSpinBox();
-    txtDoESweepSamples->setMinimum(1);
-    txtDoESweepSamples->setMaximum(1000);
-
-    QGridLayout *layoutDoE = new QGridLayout();
-    layoutDoE->addWidget(chkDoE, 0, 1, 1, 2);
-    layoutDoE->addWidget(new QLabel(tr("Deviation (%):")), 1, 1);
-    layoutDoE->addWidget(txtDoEDeviation, 1, 2);
-    layoutDoE->addWidget(new QLabel(tr("Number of Samples:")), 2, 1);
-    layoutDoE->addWidget(txtDoESweepSamples, 2, 2);
-    layoutDoE->setRowStretch(10, 1);
-
-    QGroupBox *grpDoE = new QGroupBox(tr("Design of Experiments"));
-    grpDoE->setLayout(layoutDoE);
 
     QHBoxLayout *layoutOrdinary = new QHBoxLayout();
     layoutOrdinary->addWidget(grpGeneral);
-    layoutOrdinary->addWidget(grpDoE);
 
     QVBoxLayout *layoutStudy = new QVBoxLayout();
     layoutStudy->addLayout(layoutOrdinary);
@@ -795,20 +776,12 @@ void StudyDialog::load()
 {
     chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
     chkSolveProblem->setChecked(m_study->value(Study::General_SolveProblem).toBool());
-
-    chkDoE->setChecked(m_study->value(Study::General_DoE).toBool());
-    txtDoEDeviation->setValue(m_study->value(Study::General_DoE_Deviation).toDouble());
-    txtDoESweepSamples->setValue(m_study->value(Study::General_DoE_SweepSamples).toInt());
 }
 
 void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
     m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
-
-    m_study->setValue(Study::General_DoE, chkDoE->isChecked());
-    m_study->setValue(Study::General_DoE_Deviation, txtDoEDeviation->value());
-    m_study->setValue(Study::General_DoE_SweepSamples, txtDoESweepSamples->value());
 }
 
 void StudyDialog::doDuplicate()
