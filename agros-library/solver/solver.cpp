@@ -85,7 +85,6 @@
 #include "logview.h"
 #include "bdf2.h"
 
-#include <functional>
 #include <typeinfo>
 
 #include <boost/config.hpp>

@@ -70,7 +70,6 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
             obj[i] = values[i];
 
         localSteps++;
-        qInfo() << "NSGA-II: step " << localSteps << "/" << localStudy->estimatedNumberOfSteps();
     }
     catch (AgrosSolverException &e)
     {
