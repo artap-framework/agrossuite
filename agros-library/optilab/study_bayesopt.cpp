@@ -287,7 +287,7 @@ void StudyBayesOpt::solve()
     }
 
     // sort computations
-    // QString parameterName = m_functionals[0].name();
+    // QString parameterName = m_goalFunctions[0].name();
     // m_computationSets.last().sort(parameterName);
 
     // vectord result = bayesOptProblem.getFinalResult();

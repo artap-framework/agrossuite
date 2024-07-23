@@ -57,35 +57,16 @@
 #include "field.h"
 #include "problem.h"
 #include "solver/problem_config.h"
-//#include "module.h"
-#include "coupling.h"
-#include "scene.h"
-#include "sceneedge.h"
-#include "scenelabel.h"
-#include "scenemarker.h"
-#include "solutionstore.h"
-#include "plugin_interface.h"
-#include "logview.h"
-#include "plugin_interface.h"
-#include "plugin_solver_interface.h"
-#include "weak_form.h"
-#include "bdf2.h"
 
-#include <functional>
-#include <typeinfo>
+#include "coupling.h"
+#include "logview.h"
+#include "plugin_solver_interface.h"
 
 SolverLinearSolver::SolverLinearSolver(const FieldInfo *fieldInfo)
     : m_fieldInfo(fieldInfo)
 {
 
 }
-
-//  if (!reuseDecomposition)
-//      direct_solver.initialize(system);
-//  else
-//      qDebug() << "LU decomposition has been reused";
-
-//  direct_solver.vmult(sln, rhs);
 
 void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &system,
                                              dealii::Vector<double> &rhs,
