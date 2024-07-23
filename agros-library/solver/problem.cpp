@@ -2238,6 +2238,11 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation)
     return m_currentComputation;
 }
 
+void Problem::setCurrentComputation(QSharedPointer<Computation> computation)
+{
+    m_currentComputation = computation;
+}
+
 void Problem::clearFieldsAndConfig()
 {
     // clear all computations

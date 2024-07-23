@@ -25,7 +25,7 @@
 
 #include <QtCharts>
 
-QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points);
+QRectF findMinMax(const QList<QPointF>& points);
 void fitToDataChart(QChart *chart);
 
 class Crosshairs

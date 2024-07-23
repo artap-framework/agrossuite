@@ -410,25 +410,6 @@ void OptiLabWidget::exportData()
     }
 }
 
-//     for (int i = 0; i < trvComputation->topLevelItemCount(); i++)
-//     {
-//         for (int j = 0; j < trvComputation->topLevelItem(i)->childCount(); j++)
-//         {
-//             QTreeWidgetItem *item = trvComputation->topLevelItem(i)->child(j);
-//             if (item->data(0, Qt::UserRole).toString() == key)
-//             {
-//                 trvComputation->setCurrentItem(item);
-//                 trvComputation->scrollToItem(item);
-//
-//                 // refresh chart
-//                 if (!key.isEmpty() && Agros::computations().contains(key))
-//                     emit chartRefreshed(Agros::computations()[key]->problemDir());
-//
-//                 return;
-//             }
-//         }
-//     }
-
 void OptiLabWidget::doItemDoubleClicked(QTreeWidgetItem *item, int role)
 {
     doItemProperties();
@@ -555,7 +536,7 @@ void OptiLabWidget::doItemDelete()
         if (type == OptiLabWidget::OptilabStudy)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             if (QMessageBox::question(this, tr("Delete"), tr("Study '%1' will be pernamently deleted. Are you sure?").
                                       arg(studyTypeString(study->type())), tr("&Yes"), tr("&No")) == 0)
             {

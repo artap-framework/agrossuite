@@ -72,8 +72,9 @@ private slots:
     void doDocumentSaveGeometry();    
     void doCreatePythonFromModel();
 
-    void doSolve();
+    void doSolveCurrentComputation();
     void doSolveNewComputation();
+    void doSolveComputation(Computation *computation);
     void doSolveFinished();
 
     void doOptions();

@@ -234,11 +234,14 @@ void MainWindow::createActions()
 
     actSolve = new QAction(icon("main_solve"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence("Alt+S"));
-    connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
+    connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolveCurrentComputation()));
 
     actSolveNewComputation = new QAction(icon("main_solvenew"), tr("&Solve new"), this);
     actSolveNewComputation->setShortcut(QKeySequence(tr("Alt+Shift+S")));
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
+
+    // solve from optilab
+    connect(optiLab, SIGNAL(doSolveCurrentComputation(Computation *)), this, SLOT(doSolveComputation(Computation *)));
 
     actSceneModeGroup = new QActionGroup(this);
     actSceneModeGroup->addAction(exampleWidget->actExamples);
@@ -636,30 +639,27 @@ void MainWindow::doCreatePythonFromModel()
     scriptDialog->show();
 }
 
-void MainWindow::doSolve()
+void MainWindow::doSolveCurrentComputation()
 {
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(false);
-
-    logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
-    logDialog->show();
-
-    // solve thread
-    SolveThread *solveThread = new SolveThread(computation.data());
-    connect(solveThread, SIGNAL(finished()), this, SLOT(doSolveFinished()));
-    solveThread->startCalculation();
+    doSolveComputation(computation.data());
 }
 
 void MainWindow::doSolveNewComputation()
 {
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
+    doSolveComputation(computation.data());
+}
 
-    logDialog = new LogDialog(computation.data(), tr("Solver"), m_connectLog);
+void MainWindow::doSolveComputation(Computation *computation)
+{
+    logDialog = new LogDialog(computation, tr("Solver"), m_connectLog);
     logDialog->show();
 
     // solve thread
-    SolveThread *solveThread = new SolveThread(computation.data());
+    auto *solveThread = new SolveThread(computation);
     connect(solveThread, SIGNAL(finished()), this, SLOT(doSolveFinished()));
     solveThread->startCalculation();
 }
@@ -918,6 +918,6 @@ void MainWindow::showEvent(QShowEvent *event)
         m_startupProblemFilename = "";
 
         if (m_startupExecute)
-            doSolve();
+            doSolveCurrentComputation();
     }
 }

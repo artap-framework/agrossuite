@@ -610,8 +610,6 @@ void Study::setDefaultValues()
     m_settingDefault[General_DoE_SweepMethod] = 1;
 
     m_settingDefault[View_Filter] = QString();
-    m_settingDefault[View_ChartHorizontal] = QString();
-    m_settingDefault[View_ChartVertical] = QString();
     m_settingDefault[View_ChartLogHorizontal] = false;
     m_settingDefault[View_ChartLogVertical] = false;
     m_settingDefault[View_ChartShowAverageValue] = true;
@@ -631,8 +629,6 @@ void Study::setStringKeys()
     m_settingKey[General_DoE_SweepMethod] = "General_DoE_SweepMethod";
 
     m_settingKey[View_Filter] = "View_Filter";
-    m_settingKey[View_ChartHorizontal] = "View_ChartHorizontal";
-    m_settingKey[View_ChartVertical] = "View_ChartVertical";
     m_settingKey[View_ChartLogHorizontal] = "View_ChartLogHorizontal";
     m_settingKey[View_ChartLogVertical] = "View_ChartLogVertical";
     m_settingKey[View_ChartShowAverageValue] = "View_ChartShowAverageValue";

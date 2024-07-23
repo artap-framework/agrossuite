@@ -96,7 +96,7 @@ private:
 
 // ***************************************************************************************************************************************
 
-OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedStudy(nullptr)
+OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedStudy(nullptr), m_selectedComputation(nullptr)
 {
     actSceneModeOptiLab = new QAction(icon("main_optilab"), tr("OptiLab"), this);
     actSceneModeOptiLab->setShortcut(Qt::Key_F8);
@@ -176,15 +176,15 @@ QWidget *OptiLab::createControlsGeometryAndStats()
 
     geometryViewer = new SceneViewSimpleGeometry(this);
 
-    auto *chartView = new QChartView();
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setChart(resultsStatChart);
+    auto *statChartView = new QChartView();
+    statChartView->setRenderHint(QPainter::Antialiasing);
+    statChartView->setChart(resultsStatChart);
 
-    auto *tabStats = new QTabWidget();
+    tabStats = new QTabWidget();
     tabStats->setMinimumHeight(250);
     tabStats->setMaximumHeight(250);
     tabStats->addTab(geometryViewer, tr("Geometry"));
-    tabStats->addTab(chartView, tr("Statistics"));
+    tabStats->addTab(statChartView, tr("Statistics"));
     tabStats->addTab(widStatistics, tr("Values"));
 
     return tabStats;
@@ -255,29 +255,39 @@ QWidget *OptiLab::createControlsChart()
     axisY->setTitleText(tr("y"));
     chart->addAxis(axisY, Qt::AlignLeft);
 
+    valueSelectedSeries = new QScatterSeries();
+    valueSelectedSeries->setUseOpenGL(true);
+    chart->addSeries(valueSelectedSeries);
+    valueSelectedSeries->setPointsVisible(true);
+    valueSelectedSeries->setMarkerSize(15.0);
+    valueSelectedSeries->setColor(QColor(160, 80, 80));
+    valueSelectedSeries->attachAxis(axisX);
+    valueSelectedSeries->attachAxis(axisY);
+
     valueSeries = new QScatterSeries();
     valueSeries->setUseOpenGL(true);
     chart->addSeries(valueSeries);
+    valueSeries->setPointsVisible(true);
     valueSeries->setMarkerSize(10.0);
-    valueSeries->setSelectedColor(QColor(60, 180, 180));
+    valueSeries->setColor(QColor(80, 120, 160));
     valueSeries->attachAxis(axisX);
     valueSeries->attachAxis(axisY);
     QObject::connect(valueSeries, &QScatterSeries::clicked, this, &OptiLab::chartClicked);
+    QObject::connect(valueSeries, &QScatterSeries::hovered, this, &OptiLab::chartHovered);
 
     // chart trend line
     trendLineSeries = new QLineSeries();
     trendLineSeries->setUseOpenGL(true);
-    // trendLineSeries->setPen(QPen(QBrush(QColor(60, 75, 90)), 2, Qt::DashLine));
-    trendLineSeries->setColor(QColor(60, 75, 90));
     chart->addSeries(trendLineSeries);
+    trendLineSeries->setPen(QPen(QBrush(QColor(90, 175, 90)), 2, Qt::DashLine));
     trendLineSeries->attachAxis(axisX);
     trendLineSeries->attachAxis(axisY);
 
     // mean value
     averageValueSeries = new QLineSeries();
     averageValueSeries->setUseOpenGL(true);
-    averageValueSeries->setPen(QPen(QBrush(QColor(140, 140, 140)), 2, Qt::DotLine));
     chart->addSeries(averageValueSeries);
+    averageValueSeries->setPen(QPen(QBrush(QColor(140, 140, 140)), 1, Qt::DotLine));
     averageValueSeries->attachAxis(axisX);
     averageValueSeries->attachAxis(axisY);
 
@@ -319,13 +329,6 @@ QWidget *OptiLab::createControlsResults()
 {
     QSettings settings;
 
-    // computations
-    cmbComputations = new QComboBox(this);
-    connect(cmbComputations, SIGNAL(currentIndexChanged(int)), this, SLOT(doComputationChanged(int)));
-
-    actComputationSolve = new QAction(tr("Solve problem"), this);
-    connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doComputationSolve(bool)));
-
     // treeview
     trvResults = new QTreeWidget(this);
     trvResults->setExpandsOnDoubleClick(false);
@@ -339,35 +342,42 @@ QWidget *OptiLab::createControlsResults()
     trvResults->setColumnWidth(0, settings.value("OptiLab/ResultsTreeColumnWidth0", 80).toInt());
     trvResults->setColumnWidth(1, settings.value("OptiLab/ResultsTreeColumnWidth1", 180).toInt());
     trvResults->setIndentation(trvResults->indentation() - 2);
-    connect(trvResults, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(resultsContextMenu(const QPoint &)));
-    connect(trvResults, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doResultChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    actResultsDependenceOnSteps = new QAction(tr("Dependence on the number of steps"), this);
-    connect(actResultsDependenceOnSteps, SIGNAL(triggered(bool)), this, SLOT(resultsDependenceOnSteps(bool)));
+    actComputationSolve = new QAction(icon("main_solve"), tr("Solve"), this);
+    connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doSolveCurrentComputation(bool)));
 
-    actResultsSetHorizontal = new QAction(tr("Set on horizontal axis"), this);
-    connect(actResultsSetHorizontal, SIGNAL(triggered(bool)), this, SLOT(resultsSetHorizontal(bool)));
-
-    actResultsSetVertical = new QAction(tr("Set on vertical axis"), this);
-    connect(actResultsSetVertical, SIGNAL(triggered(bool)), this, SLOT(resultsSetVertical(bool)));
-
-    actResultsFindMinimum = new QAction(tr("Find minimum"), this);
+    actResultsFindMinimum = new QAction(icon("geometry_rectangle"), tr("Find minimum"), this);
+    actResultsFindMinimum->setIconVisibleInMenu(true);
     connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
-    actResultsFindMaximum = new QAction(tr("Find maximum"), this);
+    actResultsFindMaximum = new QAction(icon("geometry_circle"), tr("Find maximum"), this);
+    actResultsFindMaximum->setIconVisibleInMenu(true);
     connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
 
-    mnuResults = new QMenu(trvResults);
-    mnuResults->addAction(actResultsDependenceOnSteps);
-    mnuResults->addAction(actResultsSetHorizontal);
-    mnuResults->addAction(actResultsSetVertical);
-    mnuResults->addSection(tr("Statistics"));
-    mnuResults->addAction(actResultsFindMinimum);
-    mnuResults->addAction(actResultsFindMaximum);
+    // left toolbar
+    auto toolBarComputation = new QToolBar();
+    toolBarComputation->setOrientation(Qt::Horizontal);
+    toolBarComputation->setProperty("modulebar", true);
+    toolBarComputation->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    toolBarComputation->addAction(actComputationSolve);
+    toolBarComputation->addSeparator();
+    toolBarComputation->addAction(actResultsFindMinimum);
+    toolBarComputation->addAction(actResultsFindMaximum);
+
+    cmbAxisX = new QComboBox(this);
+    connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
+    cmbAxisY = new QComboBox(this);
+    connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
+
+    auto *formLayout = new QFormLayout();
+    formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
+    formLayout->addRow(tr("Vertical axis and results:"), cmbAxisY);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
-    layoutResults->addWidget(cmbComputations);
+    layoutResults->addLayout(formLayout);
     layoutResults->addWidget(trvResults, 2);
+    layoutResults->addWidget(toolBarComputation);
 
     auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
@@ -391,7 +401,7 @@ void OptiLab::createControls()
 
     auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
-    widResults->setMaximumWidth(300);
+    widResults->setMaximumWidth(370);
     widResults->setLayout(layoutResults);
 
     auto layoutMain = new QHBoxLayout();
@@ -481,64 +491,15 @@ void OptiLab::chartShowParetoFront(bool checked)
     // chart->replot(QxCustomPlot::rpQueuedRefresh);
 }
 
-void OptiLab::resultsDependenceOnSteps(bool checked)
-{
-    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
-    {
-        m_selectedStudy->setValue(Study::View_ChartHorizontal, QString("step:"));
-        m_selectedStudy->setValue(Study::View_ChartVertical, QString("%1:%2").
-                          arg(m_selectedStudy->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
-                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
-
-        doChartRefreshed();
-    }
-}
-
-void OptiLab::resultsSetHorizontal(bool checked)
-{
-    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
-    {
-        m_selectedStudy->setValue(Study::View_ChartHorizontal, QString("%1:%2").
-                          arg(m_selectedStudy->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
-                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
-
-        doChartRefreshed();
-    }
-}
-
-void OptiLab::resultsSetVertical(bool checked)
-{
-    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
-    {
-        m_selectedStudy->setValue(Study::View_ChartVertical, QString("%1:%2").
-                          arg(m_selectedStudy->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
-                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
-
-        doChartRefreshed();
-    }
-}
-
-void OptiLab::resultsContextMenu(const QPoint &pos)
-{
-    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
-    {
-        mnuResults->exec(QCursor::pos());
-    }
-}
-
 void OptiLab::doStudySelected(Study *study)
 {
     m_selectedStudy = study;
 
-    doChartRefreshed();
-    geometryViewer->doZoomBestFit();
-    cmbComputations->blockSignals(true);
-
     // computations
     QString selectedComputationProblemDir = "";
-    if (cmbComputations->currentIndex() >= 0)
-        selectedComputationProblemDir = cmbComputations->currentData().toString();
-    cmbComputations->clear();
+    if (m_selectedComputation)
+        selectedComputationProblemDir = m_selectedComputation->problemDir();
+    m_selectedStudyProblemDirs.clear();
 
     // study
     if (m_selectedStudy)
@@ -549,19 +510,9 @@ void OptiLab::doStudySelected(Study *study)
         QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
         for (int i = 0; i < computationSets.size(); i++)
         {
-            int currentComputationSetCount = 0;
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
-                QString item = QString("%1 - %2 / %3 - %4 / %5")
-                    .arg(computationSets[i].name().at(0))
-                    .arg(i+1)
-                    .arg(currentComputationSetCount+1)
-                    .arg(computation->isSolved() ? tr("solved") : tr("not solved"))
-                    .arg(computation->results()->hasResults() ? tr("results") : tr("no results"));
-
-                cmbComputations->addItem(item, computation->problemDir());
-
-                currentComputationSetCount++;
+                m_selectedStudyProblemDirs.append(computation->problemDir());
 
                 // select minimum
                 double localMin = m_selectedStudy->evaluateSingleGoal(computation);
@@ -572,72 +523,93 @@ void OptiLab::doStudySelected(Study *study)
                 }
             }
         }
+
+        // parameters, goal functions and recipes
+        cmbAxisX->clear();
+        cmbAxisY->clear();
+
+        // steps
+        cmbAxisX->addItem(tr("steps"), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Steps, "")));
+        cmbAxisY->addItem(tr("steps"), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Steps, "")));
+
+        // parameters
+        foreach (Parameter parameter, m_selectedStudy->parameters())
+        {
+            cmbAxisX->addItem(tr("%1 (parameter)").arg(parameter.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Parameter, parameter.name())));
+            cmbAxisY->addItem(tr("%1 (parameter)").arg(parameter.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Parameter, parameter.name())));
+        }
+
+        // goal
+        foreach (Functional functional, study->functionals())
+        {
+            cmbAxisX->addItem(tr("%1 (goal function)").arg(functional.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Functional, functional.name())));
+            cmbAxisY->addItem(tr("%1 (goal function)").arg(functional.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Functional, functional.name())));
+        }
+
+        // recipes
+        foreach (ResultRecipe *recipe, Agros::problem()->recipes()->items())
+        {
+            cmbAxisX->addItem(tr("%1 (recipe)").arg(recipe->name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Recipe, recipe->name())));
+            cmbAxisY->addItem(tr("%1 (recipe)").arg(recipe->name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Recipe, recipe->name())));
+        }
     }
 
-    cmbComputations->blockSignals(false);
+    // actions
+    actComputationSolve->setEnabled(false);
+    actResultsFindMinimum->setEnabled(false);
+    actResultsFindMaximum->setEnabled(false);
+
+    cmbAxisX->setEnabled(m_selectedStudy != nullptr);
+    cmbAxisY->setEnabled(m_selectedStudy != nullptr);
+    trvResults->setEnabled(m_selectedStudy != nullptr);
+    tabStats->setEnabled(m_selectedStudy != nullptr);
+    chartView->setEnabled(m_selectedStudy != nullptr);
 
     // select current computation
-    if (cmbComputations->count() > 0 && !selectedComputationProblemDir.isEmpty())
+    if (m_selectedStudyProblemDirs.count() > 0 && !selectedComputationProblemDir.isEmpty())
     {
         doComputationSelected(selectedComputationProblemDir);
+
+        // replot chart
+        chartView->fitToData();
+        geometryViewer->doZoomBestFit();
     }
 }
 
-void OptiLab::doChartRefreshed(const QString &problemDir)
+void OptiLab::doChartRefreshed(bool fitToData)
 {
     m_computationMap.clear();
+
+    // series
     valueSeries->clear();
+    valueSelectedSeries->clear();
     averageValueSeries->clear();
     averageValueLowerSeries->clear();
     averageValueUpperSeries->clear();
+    trendLineSeries->clear();
 
     if (!m_selectedStudy)
     {
         // fit and replot chart
-        chartView->fitToData();
+        axisX->setRange(-1, 1);
+        axisY->setRange(-1, 1);
 
         return;
     }
 
-    // block signals
-    valueSeries->blockSignals(true);
-
     QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
 
-    QString chartX = m_selectedStudy->value(Study::View_ChartHorizontal).toString();
-    QString chartY = m_selectedStudy->value(Study::View_ChartVertical).toString();
+    // axis x label
+    axisX->setTitleText(cmbAxisX->currentText());
+    auto currentDataAxisX = cmbAxisX->currentData().value<QPair<Study::ResultType, QString> >();
+    Study::ResultType currentDataResultAxisX = currentDataAxisX.first;
+    QString currentDataNameX = currentDataAxisX.second;
 
-    if (chartX.isEmpty() || chartY.isEmpty())
-        return;
-
-    QString labelX = "-";
-    QString labelY = "-";
-
-    if (chartX.contains("step:"))
-        labelX = "step";
-    else if (chartX.contains("parameter:"))
-        labelX = tr("%1 (parameter)").arg(chartX.right(chartX.count() - 10));
-    else if (chartX.contains("functional:"))
-        labelX = tr("%1 (functional)").arg(chartX.right(chartX.count() - 11));
-    else if (chartX.contains("recipe:"))
-        labelX = tr("%1 (recipe)").arg(chartX.right(chartX.count() - 7));
-    else if (chartX.contains("other:"))
-        labelX = tr("%1 (other)").arg(chartX.right(chartX.count() - 6));
-    else
-        assert(0);
-
-    if (chartY.contains("step:"))
-        labelY = "step";
-    else if (chartY.contains("parameter:"))
-        labelY = tr("%1 (parameter)").arg(chartY.right(chartY.count() - 10));
-    else if (chartY.contains("functional:"))
-        labelY = tr("%1 (functional)").arg(chartY.right(chartY.count() - 11));
-    else if (chartY.contains("recipe:"))
-        labelY = tr("%1 (recipe)").arg(chartY.right(chartY.count() - 7));
-    else if (chartY.contains("other:"))
-        labelY = tr("%1 (other)").arg(chartY.right(chartY.count() - 6));
-    else
-        assert(0);
+    // axis y label
+    axisY->setTitleText(cmbAxisY->currentText());
+    auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
+    Study::ResultType currentDataResultAxisY = currentDataAxisY.first;
+    QString currentDataNameY = currentDataAxisY.second;
 
     // linear regression
     QVector<double> linRegDataX;
@@ -664,78 +636,37 @@ void OptiLab::doChartRefreshed(const QString &problemDir)
             step++;
 
             // steps
-            if (chartX.contains("step:"))
-            {
+            if (currentDataResultAxisX == Study::ResultType::ResultType_Steps)
                 dataSetX.append(step);
-            }
-            if (chartY.contains("step:"))
-            {
+            if (currentDataResultAxisY == Study::ResultType::ResultType_Steps)
                 dataSetY.append(step);
-            }
 
             // parameters
-            if (chartX.contains("parameter:"))
-            {
-                QString name = chartX.right(chartX.count() - 10);
-                double value = computation->config()->parameters()->number(name);
-                dataSetX.append(value);
-            }
-            if (chartY.contains("parameter:"))
-            {
-                QString name = chartY.right(chartY.count() - 10);
-                double value = computation->config()->parameters()->number(name);
-                dataSetY.append(value);
-            }
+            if (currentDataResultAxisX == Study::ResultType::ResultType_Parameter)
+                dataSetX.append(computation->config()->parameters()->number(currentDataNameX));
+            if (currentDataResultAxisY == Study::ResultType::ResultType_Parameter)
+                dataSetY.append(computation->config()->parameters()->number(currentDataNameY));
 
             // functionals
-            if (chartX.contains("functional:"))
-            {
-                QString name = chartX.right(chartX.count() - 11);
-                double value = computation->results()->value(name);
-                dataSetX.append(value);
-            }
-            if (chartY.contains("functional:"))
-            {
-                QString name = chartY.right(chartY.count() - 11);
-                double value = computation->results()->value(name);
-                dataSetY.append(value);
-            }
+            if (currentDataResultAxisX == Study::ResultType::ResultType_Functional)
+                dataSetX.append(computation->results()->value(currentDataNameX));
+            if (currentDataResultAxisY == Study::ResultType::ResultType_Functional)
+                dataSetY.append(computation->results()->value(currentDataNameY));
 
             // recipes
-            if (chartX.contains("recipe:"))
-            {
-                QString name = chartX.right(chartX.count() - 7);
-                double value = computation->results()->value(name);
-                dataSetX.append(value);
-            }
-            if (chartY.contains("recipe:"))
-            {
-                QString name = chartY.right(chartY.count() - 7);
-                double value = computation->results()->value(name);
-                dataSetY.append(value);
-            }
-
-            // other
-            if (chartX.contains("other:"))
-            {
-                QString name = chartX.right(chartX.count() - 6);
-                double value = computation->results()->value(name);
-                dataSetX.append(value);
-            }
-            if (chartY.contains("other:"))
-            {
-                QString name = chartY.right(chartY.count() - 6);
-                double value = computation->results()->value(name);
-                dataSetY.append(value);
-            }
+            if (currentDataResultAxisX == Study::ResultType::ResultType_Recipe)
+                dataSetX.append(computation->results()->value(currentDataNameX));
+            if (currentDataResultAxisY == Study::ResultType::ResultType_Recipe)
+                dataSetY.append(computation->results()->value(currentDataNameY));
 
             // selected point
-            if (computation->problemDir() == problemDir)
+            if (m_selectedComputation)
             {
-                QVector<double> selectedX; selectedX << dataSetX.last();
-                QVector<double> selectedY; selectedY << dataSetY.last();
-
-                // chartGraphSelectedComputation->setData(selectedX, selectedY);
+                if (computation->problemDir() == m_selectedComputation->problemDir())
+                {
+                    valueSelectedSeries->clear();
+                    valueSelectedSeries->append(dataSetX.last(), dataSetY.last());
+                }
             }
 
             // computation map
@@ -751,23 +682,14 @@ void OptiLab::doChartRefreshed(const QString &problemDir)
 
         int colorFillIndex = i * paletteStep;
         const QColor colorFill(paletteDataAgros[colorFillIndex][0] * 255, paletteDataAgros[colorFillIndex][1] * 255, paletteDataAgros[colorFillIndex][2] * 255);
-        // int colorBrushIndex = abs(goal - minGoal) / (maxGoal - minGoal) * 255;
-        // const QColor colorBrush(paletteDataParuly[colorBrushIndexp][0] * 255, paletteDataParuly[colorBrushIndex][1] * 255, paletteDataParuly[colorBrushIndex][2] * 255);
 
         // add data to global array (for min and max computation)
         linRegDataX << dataSetX;
         linRegDataY << dataSetY;
 
-        // chartGraphChart->setData(dataSetX, dataSetY);
-        // chartGraphChart->setProperty("computationset_index", i);
-        // chartGraphChart->setName(computationSets[i].name());
-        // chartGraphChart->addToLegend();
-        // chartGraphChart->setLineStyle(QCPGraph::lsNone);
-        // chartGraphChart->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
-
         // add data
-        for (int i = 0; i < dataSetX.size(); i++)
-            valueSeries->append(dataSetX[i], dataSetY[i]);
+        for (int k = 0; k < dataSetX.size(); k++)
+            valueSeries->append(dataSetX[k], dataSetY[k]);
     }
 
     // Pareto front
@@ -797,15 +719,11 @@ void OptiLab::doChartRefreshed(const QString &problemDir)
 
         trendLineSeries->append(start.x(), start.y());
         trendLineSeries->append(end.x(), end.y());
-        // chartTrendLine->setHead(QCPLineEnding::esSpikeArrow);
-        // chartTrendLine->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
     }
 
-    // unblock signals
-    valueSeries->blockSignals(false);
-
-    // replot chart
-    chartView->fitToData();
+    // update chart
+    if (fitToData)
+        chartView->fitToData();
 
     // set actions
     chartLogHorizontal(m_selectedStudy->value(Study::View_ChartLogHorizontal).toBool());
@@ -815,196 +733,132 @@ void OptiLab::doChartRefreshed(const QString &problemDir)
     chartShowParetoFront(m_selectedStudy->value(Study::View_ChartShowParetoFront).toBool());
 }
 
-// QPair<double, double> OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
-// {
-//     // find min and max
-//     RectPoint bound;
-//     bound.start.x = numeric_limits<double>::max();
-//     bound.end.x = -numeric_limits<double>::max();
-//     bound.start.y = numeric_limits<double>::max();
-//     bound.end.y = -numeric_limits<double>::max();
-//
-//     for (QCPGraphDataContainer::const_iterator it = graph->data()->begin(); it != graph->data()->end(); ++it)
-//     {
-//         if (it->key < bound.start.x) bound.start.x = it->key;
-//         if (it->key > bound.end.x) bound.end.x = it->key;
-//         if (it->value < bound.start.y) bound.start.y = it->value;
-//         if (it->value > bound.end.y) bound.end.y = it->value;
-//     }
-//
-//     // find closest point
-//     QPair<double, double> selectedData;
-//     double dist = numeric_limits<double>::max();
-//     for (QCPGraphDataContainer::const_iterator it = graph->data()->begin(); it != graph->data()->end(); ++it)
-//     {
-//         double mag = Point((it->key - pos.x) / bound.width(),
-//                            (it->value - pos.y) / bound.height()).magnitudeSquared();
-//
-//         if (mag <= dist)
-//         {
-//             dist = mag;
-//             selectedData.first = it->key;
-//             selectedData.second = it->value;
-//         }
-//     }
-//
-//     return selectedData;
-// }
-
-// void OptiLab::graphClicked(QCPAbstractPlottable *plottable, int code, QMouseEvent *event)
-// {
-//     if (QCPGraph *graph = dynamic_cast<QCPGraph *>(plottable))
-//     {
-//         // find closest point
-//         QPair<double, double> selectedData = findClosestData(graph, Point(chart->xAxis->pixelToCoord(event->pos().x()),
-//                                                                           chart->yAxis->pixelToCoord(event->pos().y())));
-//
-//         QSharedPointer<Computation> selectedComputation = m_computationMap[graph->property("computationset_index").toInt()][selectedData];
-//         if (!selectedComputation.isNull())
-//         {
-//             QToolTip::hideText();
-//             QToolTip::showText(event->globalPos(),
-//                                tr("<table>"
-//                                   "<tr><th colspan=\"2\">%L1</th></tr>"
-//                                   "<tr><td>X:</td>" "<td>%L2</td></tr>"
-//                                   "<tr><td>Y:</td>" "<td>%L3</td></tr>"
-//                                   "</table>").
-//                                arg(graph->name().isEmpty() ? "..." : graph->name()).arg(selectedData.first).arg(selectedData.second), chart, chart->rect());
-//
-//             emit computationSelected(selectedComputation->problemDir());
-//         }
-//     }
-// }
-
 void OptiLab::chartClicked(const QPointF &point)
 {
-    int index = valueSeries->points().indexOf(point);
-    qInfo() << index;
+    int index = findPointIndex(point);
+
+    // qInfo() << index;
+    if (index != -1)
+        doComputationSelected(m_selectedStudyProblemDirs[index]);
+}
+
+void OptiLab::chartHovered(const QPointF &point, bool state)
+{
+    int index = findPointIndex(point);
+
+    if (index != -1)
+    {
+        QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
+        if (computations.count() > 0)
+        {
+            QSharedPointer<Computation> selectedComputation = computations[m_selectedStudyProblemDirs[index]];
+
+            QString html = "<body style=\"font-size: 11px;\">";
+            html += QString("<h4>%1</h4>").arg(tr("Computation"));
+
+            // parameters
+            html += QString("<h5>%1</h5>").arg(tr("Parameters"));
+            html += "<table width=\"100%\">";
+            QMap<QString, ProblemParameter> parameters = selectedComputation->config()->parameters()->items();
+            foreach (Parameter parameter, m_selectedStudy->parameters())
+                html += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(parameter.name()).arg(parameters[parameter.name()].value());
+            html += "</table>";
+
+            // other
+            html += QString("<h5>%1</h5>").arg(tr("Other"));
+            html += "<table width=\"100%\">";
+            StringToDoubleMap results = m_selectedComputation->results()->items();
+            foreach (QString key, results.keys())
+                html += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(key).arg(QString::number(results[key]));
+            html += "</table>";
+
+            html += "</body>";
+
+            chartView->setToolTip(html);
+        }
+    }
+    else
+    {
+        chartView->setToolTip("");
+    }
 }
 
 void OptiLab::doComputationSelected(const QString &problemDir)
 {
-    for (int i = 0; i < cmbComputations->count(); i++)
-    {
-        QString dir = cmbComputations->itemData(i).toString();
-        if (dir == problemDir)
-        {
-            cmbComputations->setCurrentIndex(i);
-            break;
-        }
-    }
-}
-
-void OptiLab::doComputationChanged(int index)
-{
-    if (cmbComputations->count() == 0)
-    {
-        geometryViewer->setProblem(QSharedPointer<ProblemBase>(nullptr));
-        trvResults->clear();
-        return;
-    }
-
-    qInfo() << "doComputationChanged " << index;
-    if (!m_selectedStudy)
-    {
-        geometryViewer->setProblem(QSharedPointer<ProblemBase>(nullptr));
-        trvResults->clear();
-        return;
-    }
-
-    QString problemDir = cmbComputations->currentData().toString();
-
-    // cache value
-    Study::ResultType selectedType = Study::ResultType_Parameter;
-    QString selectedKey = "";
-    QTreeWidgetItem *selectedItem = nullptr;
-    if (!problemDir.isEmpty() && trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
-    {
-        selectedType = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
-        selectedKey = trvResults->currentItem()->data(0, Qt::UserRole).toString();
-    }
-
-    trvResults->clear();
-
     QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
     if (computations.count() > 0)
     {
-        QSharedPointer<Computation> computation = computations[problemDir];
+        m_selectedComputation = computations[problemDir];
 
-        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(computation));
+        // cache value
+        auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
+        Study::ResultType selectedType = currentDataAxisY.first;
+        QString selectedKey = currentDataAxisY.second;
+
+        trvResults->clear();
+
+        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(m_selectedComputation));
 
         // fill treeview
         QFont fnt = trvResults->font();
         fnt.setBold(true);
 
         // parameters
-        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvResults);
+        auto *parametersNode = new QTreeWidgetItem(trvResults);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
         parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
         parametersNode->setExpanded(true);
 
-        QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
+        QMap<QString, ProblemParameter> parameters = m_selectedComputation->config()->parameters()->items();
         foreach (Parameter parameter, m_selectedStudy->parameters())
         {
-            QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
+            auto *parameterNode = new QTreeWidgetItem(parametersNode);
             parameterNode->setText(0, parameter.name());
             parameterNode->setText(1, QString::number(parameters[parameter.name()].value()));
             parameterNode->setData(0, Qt::UserRole, parameter.name());
             parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
-
-            if (selectedType == Study::ResultType::ResultType_Parameter && selectedKey == parameter.name())
-                selectedItem = parameterNode;
         }
 
         // functionals
-        QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(trvResults);
+        auto *functionalsNode = new QTreeWidgetItem(trvResults);
         functionalsNode->setText(0, tr("Goal Functions"));
         functionalsNode->setFont(0, fnt);
         functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
         functionalsNode->setExpanded(true);
 
         // recipes
-        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(trvResults);
+        auto *recipesNode = new QTreeWidgetItem(trvResults);
         recipesNode->setText(0, tr("Recipes"));
         recipesNode->setFont(0, fnt);
         recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
         recipesNode->setExpanded(true);
 
         // other
-        QTreeWidgetItem *otherNode = new QTreeWidgetItem(trvResults);
+        auto *otherNode = new QTreeWidgetItem(trvResults);
         otherNode->setText(0, tr("Other"));
         otherNode->setFont(0, fnt);
         otherNode->setIcon(0, iconAlphabet('O', AlphabetColor_Purple));
         otherNode->setExpanded(true);
 
-        StringToDoubleMap results = computation->results()->items();
+        StringToDoubleMap results = m_selectedComputation->results()->items();
         foreach (QString key, results.keys())
         {
             QTreeWidgetItem *item = nullptr;
-            if (computation->results()->type(key) == ComputationResultType_Functional)
+            if (m_selectedComputation->results()->type(key) == ComputationResultType_Functional)
             {
                 item = new QTreeWidgetItem(functionalsNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
-
-                if (selectedType == Study::ResultType::ResultType_Functional && selectedKey == key)
-                    selectedItem = item;
             }
-            else if (computation->results()->type(key) == ComputationResultType_Recipe)
+            else if (m_selectedComputation->results()->type(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipesNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
-
-                if (selectedType == Study::ResultType::ResultType_Recipe && selectedKey == key)
-                    selectedItem = item;
             }
-            else if (computation->results()->type(key) == ComputationResultType_Other)
+            else if (m_selectedComputation->results()->type(key) == ComputationResultType_Other)
             {
                 item = new QTreeWidgetItem(otherNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Other);
-
-                if (selectedType == Study::ResultType::ResultType_Other && selectedKey == key)
-                    selectedItem = item;
             }
             else
                 assert(0);
@@ -1015,30 +869,28 @@ void OptiLab::doComputationChanged(int index)
         }
 
         // paint chart
-        doChartRefreshed(problemDir);
+        doChartRefreshed();
 
-        // select item
-        if (selectedItem)
-            trvResults->setCurrentItem(selectedItem);
+        // actions
+        actComputationSolve->setEnabled(true);
+        actResultsFindMinimum->setEnabled(true);
+        actResultsFindMaximum->setEnabled(true);
     }
 }
 
-void OptiLab::doComputationSolve(bool ok)
+void OptiLab::doSolveCurrentComputation(bool ok)
 {
-    if (cmbComputations->count() > 0)
+    if (m_selectedComputation)
     {
-        QString key = cmbComputations->itemData(cmbComputations->currentIndex()).toString();
-        if (!key.isEmpty() && Agros::computations().contains(key))
-        {
-            SolveThread *solveThread = new SolveThread(Agros::computations()[key].data());
-            solveThread->startCalculation();
-        }
+        Agros::problem()->setCurrentComputation(m_selectedComputation);
+
+        emit doSolveCurrentComputation(m_selectedComputation.data());
     }
 }
 
-void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
+void OptiLab::doResultChanged()
 {
-    bool showStats = trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid();
+    bool showStats = cmbAxisY->currentIndex() != -1;
 
     lblResultMin->setText("-");
     lblResultMax->setText("-");
@@ -1053,8 +905,9 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
     {
         QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
 
-        Study::ResultType type = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
-        QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
+        auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
+        Study::ResultType type = currentDataAxisY.first;
+        QString key = currentDataAxisY.second;
 
         QVector<double> step;
         QVector<double> data;
@@ -1153,15 +1006,53 @@ void OptiLab::resultsFindMaximum(bool checked)
 
 void OptiLab::resultsFindExtrem(bool minimum)
 {
-    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    if (cmbAxisY->currentIndex() != -1)
     {
-        Study::ResultType type = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
-        QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
+        auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
+        Study::ResultType currentDataResultAxisY = currentDataAxisY.first;
+        QString currentDataNameY = currentDataAxisY.second;
 
         // extreme
-        QSharedPointer<Computation> selectedComputation = m_selectedStudy->findExtreme(type, key, minimum);
+        QSharedPointer<Computation> selectedComputation = m_selectedStudy->findExtreme(currentDataResultAxisY, currentDataNameY, minimum);
 
         if (!selectedComputation.isNull())
             doComputationSelected(selectedComputation->problemDir());
     }
+}
+
+void OptiLab::axisXChanged(int index)
+{
+    if (m_selectedStudy && index != -1)
+    {
+        doChartRefreshed(true);
+    }
+}
+
+void OptiLab::axisYChanged(int index)
+{
+    if (m_selectedStudy && index != -1)
+    {
+        doResultChanged();
+        doChartRefreshed(true);
+    }
+}
+
+int OptiLab::findPointIndex(const QPointF &point)
+{
+    QPointF area = chartView->chart()->mapToValue(QPointF(chartView->chart()->plotArea().width(), chartView->chart()->plotArea().height()));
+    double tolX = abs(area.x() / 100);
+    double tolY = abs(area.y() / 100);
+
+    int index = -1;
+    for (int i = 0; i < valueSeries->points().count(); i++)
+    {
+        QPointF p = valueSeries->points().at(i);
+        if ((abs(p.x() - point.x()) < tolX) && (abs(p.y() - point.y()) < tolY))
+        {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
 }

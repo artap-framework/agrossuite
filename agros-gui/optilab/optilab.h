@@ -42,19 +42,24 @@ public:
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
     inline Study *selectedStudy() { return m_selectedStudy; }
 
+signals:
+    void doSolveCurrentComputation(Computation *computation);
+
 public slots:
     void refresh();
 
     void doStudySelected(Study *study);
-    void doComputationChanged(int index);
     void doComputationSelected(const QString &problemDir);
-    void doComputationSolve(bool ok);
-    void doChartRefreshed(const QString &problemDir = "");
+    void doSolveCurrentComputation(bool ok);
+    void doChartRefreshed(bool fitToData = false);
 
 private:
     Study *m_selectedStudy;
+    QStringList m_selectedStudyProblemDirs;
+    QSharedPointer<Computation> m_selectedComputation;
 
     OptiLabWidget *m_optiLabWidget;
+    QTabWidget *tabStats;
     SceneViewSimpleGeometry *geometryViewer;
 
     QLabel *lblResultMin;
@@ -66,6 +71,9 @@ private:
     // QLabel *lblResultNormalCovariance; // normal distribution
     // QLabel *lblResultNormalCorrelation; // normal distribution
 
+    QComboBox *cmbAxisX;
+    QComboBox *cmbAxisY;
+
     QChart *resultsStatChart;
     QScatterSeries *resultsStatMinMaxSeries;
     QScatterSeries *resultsStatMeanSeries;
@@ -74,18 +82,11 @@ private:
     QValueAxis *axisStatY;
 
     // computation
-    QComboBox *cmbComputations;
-    QMenu *mnuComputations;
-    QAction *actComputationDelete;
     QAction *actComputationSolve;
 
     // results
     QTreeWidget *trvResults;
-    QMenu *mnuResults;
 
-    QAction *actResultsDependenceOnSteps;
-    QAction *actResultsSetHorizontal;
-    QAction *actResultsSetVertical;
     QAction *actResultsFindMinimum;
     QAction *actResultsFindMaximum;
 
@@ -94,6 +95,7 @@ private:
     QValueAxis *axisY;
     QLineSeries *trendLineSeries;
     QScatterSeries *valueSeries;
+    QScatterSeries *valueSelectedSeries;
     QLineSeries *averageValueSeries;
     QLineSeries *averageValueLowerSeries;
     QLineSeries *averageValueUpperSeries;
@@ -117,6 +119,7 @@ private:
     // QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
 
     void resultsFindExtrem(bool minimum);
+    int findPointIndex(const QPointF &point);
 
     QScatterSeries *createSeries(const QString &name);
 
@@ -129,17 +132,16 @@ private slots:
     void chartShowAverageValue(bool checked);
     void chartShowParetoFront(bool checked);
 
-    void resultsContextMenu(const QPoint &pos);
-    void resultsDependenceOnSteps(bool checked);
-    void resultsSetHorizontal(bool checked);
-    void resultsSetVertical(bool checked);
-
     void chartClicked(const QPointF &point);
+    void chartHovered(const QPointF &point, bool state);
 
-    void doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
+    void doResultChanged();
 
     void resultsFindMinimum(bool checked);
     void resultsFindMaximum(bool checked);
+
+    void axisXChanged(int index);
+    void axisYChanged(int index);
 };
 
 #endif // OPTILAB_H

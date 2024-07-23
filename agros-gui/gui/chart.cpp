@@ -24,7 +24,7 @@
 
 #include <QMouseEvent>
 
-QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points)
+QRectF findMinMax(const QList<QPointF>& points)
 {
     qreal minX = std::numeric_limits<qreal>::max();
     qreal maxX = -std::numeric_limits<qreal>::max();
@@ -46,7 +46,7 @@ QPair<QPointF, QPointF> findMinMax(const QList<QPointF>& points)
             maxY = points.at(i).y();
     }
 
-    return QPair<QPointF, QPointF>(QPointF(minX, minY), QPointF(maxX, maxY));
+    return {QPointF(minX, minY), QPointF(maxX, maxY)};
 }
 
 void fitToDataChart(QChart *chart)
@@ -80,7 +80,7 @@ void fitToDataChart(QChart *chart)
     }
 
     // find min and max
-    QPair<QPointF, QPointF> axesRange = findMinMax(points);
+    QRectF axesRange = findMinMax(points);
 
     // apply to axes
     foreach(QAbstractSeries *series, chart->series())
@@ -90,11 +90,11 @@ void fitToDataChart(QChart *chart)
         {
             if (axis->orientation() == Qt::Horizontal)
             {
-                axis->setRange(axesRange.first.x(), axesRange.second.x());
+                axis->setRange(axesRange.left(), axesRange.right());
             }
             if (axis->orientation() == Qt::Vertical)
             {
-                axis->setRange(axesRange.first.y(), axesRange.second.y());
+                axis->setRange(axesRange.top(), axesRange.bottom());
             }
 //            if (axis->orientation() == Qt::Horizontal)
 //            {
@@ -240,7 +240,7 @@ bool ChartView::viewportEvent(QEvent *event)
 
 void ChartView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::MiddleButton)
     {
         QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
         m_lastMousePos = event->pos();
@@ -256,7 +256,7 @@ void ChartView::mousePressEvent(QMouseEvent *event)
 void ChartView::mouseMoveEvent(QMouseEvent *event)
 {
     // pan the chart with a middle mouse drag
-    if (event->buttons() & Qt::LeftButton)
+    if (event->buttons() & Qt::MiddleButton)
     {
         auto dPos = event->pos() - m_lastMousePos;
         chart()->scroll(-dPos.x(), dPos.y());
@@ -277,7 +277,7 @@ void ChartView::mouseMoveEvent(QMouseEvent *event)
 
 void ChartView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::MiddleButton)
     {
          QApplication::restoreOverrideCursor();
     }

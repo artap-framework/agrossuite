@@ -331,8 +331,8 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     totalChart->addSeries(totalObjectiveUncertaintyArea);
 
     // set objective range
-    QPair<QPointF, QPointF> axesRange = findMinMax(totalObjectiveSeries->points());
-    axisObjective->setRange(axesRange.first.y(), axesRange.second.y());
+    QRectF axesRange = findMinMax(totalObjectiveSeries->points());
+    axisObjective->setRange(axesRange.top(), axesRange.bottom());
 
     m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     

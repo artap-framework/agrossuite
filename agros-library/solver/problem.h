@@ -243,6 +243,7 @@ public:
     ~Problem();
 
     QSharedPointer<Computation> createComputation(bool newComputation);
+    void setCurrentComputation(QSharedPointer<Computation> computation);
     inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
     void readProblemFromArchive(const QString &archiveFileName);

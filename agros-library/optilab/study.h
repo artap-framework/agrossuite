@@ -201,7 +201,8 @@ public:
         ResultType_Parameter,
         ResultType_Functional,
         ResultType_Recipe,
-        ResultType_Other
+        ResultType_Other,
+        ResultType_Steps
     };
 
     inline QString resultTypeToStringKey(ResultType type)
@@ -261,8 +262,6 @@ public:
         NSGA2_crowdobj,        
 
         View_Filter,
-        View_ChartHorizontal,
-        View_ChartVertical,
         View_ChartLogHorizontal,
         View_ChartLogVertical,
         View_ChartShowTrend,
