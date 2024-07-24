@@ -67,7 +67,7 @@ void PyStudy::steps(vector<int> &steps) const
     }
 
     // selected computations
-    QList<ComputationSet> computationSetsFilter = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+    QList<ComputationSet> computationSetsFilter = m_study->computationSets();
     QList<Computation *> computationsFilter;
     for (int i = 0; i < computationSetsFilter.count(); i++)
     {
@@ -84,7 +84,7 @@ void PyStudy::steps(vector<int> &steps) const
 void PyStudy::values(std::string variable, vector<double> &values) const
 {
     QString key = QString::fromStdString(variable);
-    QList<ComputationSet> computationSets = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+    QList<ComputationSet> computationSets = m_study->computationSets();
 
     for (int i = 0; i < computationSets.count(); i++)
     {
