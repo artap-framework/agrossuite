@@ -54,7 +54,7 @@ build-linux:
     - pip install numpy
 
     # strip shared objects
-    - mkdir agrossuite/_skbuild/ 
+    - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
     # build wheel
     - pip wheel agrossuite/.
