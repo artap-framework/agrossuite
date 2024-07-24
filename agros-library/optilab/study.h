@@ -250,14 +250,7 @@ public:
         NSGA2_pmut,
         NSGA2_eta_c,
         NSGA2_eta_m,
-        NSGA2_crowdobj,        
-
-        View_Filter,
-        View_ChartLogHorizontal,
-        View_ChartLogVertical,
-        View_ChartShowTrend,
-        View_ChartShowAverageValue,
-        View_ChartShowParetoFront
+        NSGA2_crowdobj,
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
@@ -286,7 +279,7 @@ public:
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
-    QList<ComputationSet> computationSets(const QString &filter = "") const;
+    inline QList<ComputationSet> computationSets() const { return m_computationSets; }
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
     void removeComputation(QSharedPointer<Computation> computation);

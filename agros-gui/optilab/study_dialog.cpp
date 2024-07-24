@@ -270,7 +270,7 @@ void LogOptimizationDialog::createControls()
 
 void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty)
 {
-    int computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
+    int computationSetsCount = m_study->computationSets().count();
     double totalValue = m_study->evaluateSingleGoal(computation);
 
     // update total value
@@ -334,7 +334,7 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     QRectF axesRange = findMinMax(totalObjectiveSeries->points());
     axisObjective->setRange(axesRange.top(), axesRange.bottom());
 
-    m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
+    m_computationSetsCount = m_study->computationSets().count();
     
     currentStepNode->setText(1, QString("%1 / %2").arg(m_step).arg(progressBar->maximum()));
     progressBar->setValue(m_step);

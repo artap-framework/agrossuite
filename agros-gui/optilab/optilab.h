@@ -51,7 +51,7 @@ public slots:
     void doStudySelected(Study *study);
     void doComputationSelected(const QString &problemDir);
     void doSolveCurrentComputation(bool ok);
-    void doChartRefreshed(bool fitToData = false);
+    void doChartRefreshed();
 
 private:
     Study *m_selectedStudy;
@@ -98,6 +98,8 @@ private:
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
     QAction *actChartRescale;
+    QAction *actChartShowTrend;
+    QAction *actChartShowAverageValue;
     QAction *actChartParetoFront;
 
     void createControls();
@@ -112,7 +114,9 @@ private:
 private slots:
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
-    void chartShowParetoFront(bool checked);
+    void chartShowTrend(int state);
+    void chartShowAverageValue(int state);
+    void chartShowParetoFront(int state);
 
     void chartClicked(const QPointF &point);
     void chartHovered(const QPointF &point, bool state);

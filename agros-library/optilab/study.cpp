@@ -374,52 +374,6 @@ QList<QSharedPointer<Computation> > &Study::computations(int index)
         return m_computationSets[index].computations();
 }
 
-QList<ComputationSet> Study::computationSets(const QString &filter) const
-{
-    if (filter.isEmpty())
-    {
-        return m_computationSets;
-    }
-    else
-    {
-        QList<ComputationSet> output;
-
-        for (int i = 0; i < m_computationSets.size(); i++)
-        {
-            output.append(ComputationSet(QList<QSharedPointer<Computation> >(), m_computationSets[i].name()));
-            foreach (QSharedPointer<Computation> computation, m_computationSets[i].computations())
-            {
-                // symbol table
-                exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parameters()->symbolTable();
-
-                // results
-                StringToDoubleMap results = computation->results()->items();
-                foreach (QString key, results.keys())
-                    parametersSymbolTable.add_constant(key.toStdString(), results[key]);
-
-                exprtk::expression<double> expr;
-                expr.register_symbol_table(parametersSymbolTable);
-
-                QString error;
-                if (compileExpression(filter, expr, &error))
-                {
-                    if (fabs(expr.value()) < EPS_ZERO)
-                        continue;
-                }
-                else
-                {
-                    qDebug() << QString("Condition '%1' is not valid. ").arg(filter) << error;
-                }
-
-                // add computation
-                output.last().addComputation(computation);
-            }
-        }
-
-        return output;
-    }
-}
-
 void Study::removeEmptyComputationSets()
 {
     // remove empty computation sets
@@ -530,25 +484,12 @@ void Study::setDefaultValues()
 
     m_settingDefault[General_ClearSolution] = true;
     m_settingDefault[General_SolveProblem] = true;
-
-    m_settingDefault[View_Filter] = QString();
-    m_settingDefault[View_ChartLogHorizontal] = false;
-    m_settingDefault[View_ChartLogVertical] = false;
-    m_settingDefault[View_ChartShowAverageValue] = true;
-    m_settingDefault[View_ChartShowTrend] = false;
-    m_settingDefault[View_ChartShowParetoFront] = false;
 }
 
 void Study::setStringKeys()
 {
     m_settingKey[General_ClearSolution] = "General_ClearSolution";
     m_settingKey[General_SolveProblem] = "General_SolveProblem";
-    m_settingKey[View_Filter] = "View_Filter";
-    m_settingKey[View_ChartLogHorizontal] = "View_ChartLogHorizontal";
-    m_settingKey[View_ChartLogVertical] = "View_ChartLogVertical";
-    m_settingKey[View_ChartShowAverageValue] = "View_ChartShowAverageValue";
-    m_settingKey[View_ChartShowTrend] = "View_ChartShowTrend";
-    m_settingKey[View_ChartShowParetoFront] = "View_ChartShowParetoFront";
 }
 
 QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &key, bool minimum)

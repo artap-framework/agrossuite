@@ -360,7 +360,7 @@ void OptiLabWidget::exportData()
         {
             Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
-            QList<ComputationSet> computationSets = study->computationSets(study->value(Study::View_Filter).toString());
+            QList<ComputationSet> computationSets = study->computationSets();
 
             // headers
             for (int i = 0; i < computationSets.size(); i++)

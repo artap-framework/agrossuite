@@ -162,11 +162,21 @@ QWidget *OptiLab::createControlsChart()
 
     actChartParetoFront = new QAction(tr("Show Pareto front"), this);
     actChartParetoFront->setCheckable(true);
-    connect(actChartParetoFront, SIGNAL(triggered(bool)), this, SLOT(chartShowParetoFront(bool)));
+    QObject::connect(actChartParetoFront, &QAction::triggered, this, &OptiLab::doChartRefreshed);
+
+    actChartShowTrend = new QAction(tr("Show trend line"), this);
+    actChartShowTrend->setCheckable(true);
+    QObject::connect(actChartShowTrend, &QAction::triggered, this, &OptiLab::doChartRefreshed);
+
+    actChartShowAverageValue = new QAction(tr("Show average value"), this);
+    actChartShowAverageValue->setCheckable(true);
+    QObject::connect(actChartShowAverageValue, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
     mnuChart = new QMenu(this);
     mnuChart->addAction(actChartRescale);
-    mnuChart->addSection(tr("Chart properties"));
+    mnuChart->addSeparator();
+    mnuChart->addAction(actChartShowTrend);
+    mnuChart->addAction(actChartShowAverageValue);
     mnuChart->addAction(actChartParetoFront);
 
     auto chart = new QChart();
@@ -310,9 +320,16 @@ QWidget *OptiLab::createControlsResults()
     cmbAxisY = new QComboBox(this);
     connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
 
+    auto chkShowTrendLine = new QCheckBox(tr("Show trend line"));
+    QObject::connect(chkShowTrendLine, &QCheckBox::stateChanged, this, &OptiLab::chartShowTrend);
+    auto chkShowAverageValue = new QCheckBox(tr("Show average value"));
+    QObject::connect(chkShowAverageValue, &QCheckBox::stateChanged, this, &OptiLab::chartShowAverageValue);
+
     auto *formLayout = new QFormLayout();
     formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
     formLayout->addRow(tr("Vertical axis and statistics:"), cmbAxisY);
+    formLayout->addWidget(chkShowTrendLine);
+    formLayout->addWidget(chkShowAverageValue);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
@@ -367,16 +384,26 @@ void OptiLab::chartContextMenu(const QPoint &pos)
 
 void OptiLab::chartRescale(bool checked)
 {
+    doChartRefreshed();
     chartView->fitToData();
 }
 
-void OptiLab::chartShowParetoFront(bool checked)
+void OptiLab::chartShowTrend(int state)
 {
-    m_selectedStudy->setValue(Study::View_ChartShowParetoFront, checked);
-    actChartParetoFront->setChecked(checked);
+    actChartShowTrend->setChecked(state);
+    doChartRefreshed();
+}
 
-    // chartGraphParetoFront->setVisible(checked);
-    // chart->replot(QxCustomPlot::rpQueuedRefresh);
+void OptiLab::chartShowAverageValue(int state)
+{
+    actChartShowAverageValue->setChecked(state);
+    doChartRefreshed();
+}
+
+void OptiLab::chartShowParetoFront(int state)
+{
+    actChartParetoFront->setChecked(state);
+    doChartRefreshed();
 }
 
 void OptiLab::doStudySelected(Study *study)
@@ -395,7 +422,7 @@ void OptiLab::doStudySelected(Study *study)
         double min = selectedComputationProblemDir.isEmpty() ? numeric_limits<double>::max() : 0.0;
 
         // fill tree view
-        QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
+        QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
         for (int i = 0; i < computationSets.size(); i++)
         {
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
@@ -482,7 +509,7 @@ void OptiLab::doStudySelected(Study *study)
     }
 }
 
-void OptiLab::doChartRefreshed(bool fitToData)
+void OptiLab::doChartRefreshed()
 {
     m_computationMap.clear();
 
@@ -494,7 +521,7 @@ void OptiLab::doChartRefreshed(bool fitToData)
     averageValueUpperSeries->clear();
     trendLineSeries->clear();
 
-    QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
+    QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
     if (computationSets.count() == 0)
     {
         // fit and replot chart
@@ -607,31 +634,30 @@ void OptiLab::doChartRefreshed(bool fitToData)
     // bounding box
     double delta = qMin((statsX.max() - statsX.min()) * 0.1, (statsY.max() - statsY.min()) * 0.1);
 
-    averageValueSeries->append(statsX.min() - delta, statsY.mean());
-    averageValueSeries->append(statsX.max() + delta, statsY.mean());
-    averageValueLowerSeries->append(statsX.min() - delta, statsY.mean() - statsY.stdDev());
-    averageValueLowerSeries->append(statsX.max() + delta, statsY.mean() - statsY.stdDev());
-    averageValueUpperSeries->append(statsX.min() - delta, statsY.mean() + statsY.stdDev());
-    averageValueUpperSeries->append(statsX.max() + delta, statsY.mean() + statsY.stdDev());
-
-    // linear regression
-    StatisticsLinReg linReg(linRegDataX, linRegDataY);
-    if (linReg.computeLinReg())
+    if (actChartShowAverageValue->isChecked())
     {
-        // trend arrow
-        QPointF start((statsX.min() - delta), (statsX.min() - delta) * linReg.slope() + linReg.shift());
-        QPointF end((statsX.max() + delta), (statsX.max() + delta) * linReg.slope() + linReg.shift());
-
-        trendLineSeries->append(start.x(), start.y());
-        trendLineSeries->append(end.x(), end.y());
+        averageValueSeries->append(statsX.min() - delta, statsY.mean());
+        averageValueSeries->append(statsX.max() + delta, statsY.mean());
+        averageValueLowerSeries->append(statsX.min() - delta, statsY.mean() - statsY.stdDev());
+        averageValueLowerSeries->append(statsX.max() + delta, statsY.mean() - statsY.stdDev());
+        averageValueUpperSeries->append(statsX.min() - delta, statsY.mean() + statsY.stdDev());
+        averageValueUpperSeries->append(statsX.max() + delta, statsY.mean() + statsY.stdDev());
     }
 
-    // update chart
-    if (fitToData)
-        chartView->fitToData();
+    // linear regression
+    if (actChartShowTrend->isChecked())
+    {
+        StatisticsLinReg linReg(linRegDataX, linRegDataY);
+        if (linReg.computeLinReg())
+        {
+            // trend arrow
+            QPointF start((statsX.min() - delta), (statsX.min() - delta) * linReg.slope() + linReg.shift());
+            QPointF end((statsX.max() + delta), (statsX.max() + delta) * linReg.slope() + linReg.shift());
 
-    // set actions
-    chartShowParetoFront(m_selectedStudy->value(Study::View_ChartShowParetoFront).toBool());
+            trendLineSeries->append(start.x(), start.y());
+            trendLineSeries->append(end.x(), end.y());
+        }
+    }
 }
 
 void OptiLab::chartClicked(const QPointF &point)
@@ -764,7 +790,7 @@ void OptiLab::doResultChanged()
 
     if (m_selectedStudy && showStats)
     {
-        QList<ComputationSet> computationSets = m_selectedStudy->computationSets(m_selectedStudy->value(Study::View_Filter).toString());
+        QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
 
         auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
         Study::ResultType type = currentDataAxisY.first;
@@ -870,7 +896,8 @@ void OptiLab::axisXChanged(int index)
 {
     if (index != -1)
     {
-        doChartRefreshed(true);
+        doChartRefreshed();
+        chartView->fitToData();
     }
 }
 
@@ -879,7 +906,8 @@ void OptiLab::axisYChanged(int index)
     if (index != -1)
     {
         doResultChanged();
-        doChartRefreshed(true);
+        doChartRefreshed();
+        chartView->fitToData();
     }
 }
 
