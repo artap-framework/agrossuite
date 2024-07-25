@@ -227,13 +227,13 @@ test-windows:
     - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
-    - xcopy "..\..\..\install\Others\*.*"  ".\env\Lib\site-packages\agrossuite\" /Y
-    - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\" /Y
-    - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y   
-    - xcopy "..\usr\bin\*.dll" ".\env\Lib\site-packages\agrossuite\" /Y
-    - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
-    - xcopy ".\env\Lib\site-packages\agrossuite\libifcoremd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
-    - xcopy ".\env\Lib\site-packages\agrossuite\libmmd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
+    # - xcopy "..\..\..\install\Others\*.*"  ".\env\Lib\site-packages\agrossuite\" /Y
+    # - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\" /Y
+    # - xcopy "..\usr\bin\agros_library.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y   
+    # - xcopy "..\usr\bin\*.dll" ".\env\Lib\site-packages\agrossuite\" /Y
+    # - xcopy ".\env\Lib\site-packages\agrossuite\solver_plugin_MUMPS.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
+    # - xcopy ".\env\Lib\site-packages\agrossuite\libifcoremd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
+    # - xcopy ".\env\Lib\site-packages\agrossuite\libmmd.dll" ".\env\Lib\site-packages\agrossuite\lib\" /Y
     - cd .\env\Lib\site-packages\agrossuite\tests
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ..
