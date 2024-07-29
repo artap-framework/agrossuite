@@ -30,6 +30,7 @@
 #include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
+#include <optilab/study_openga.h>
 
 class StudySweepDialog : public StudyDialog
 {
@@ -71,6 +72,28 @@ private:
     LineEditDouble *txtEtaM;
     QRadioButton *radCrowdParameters;
     QRadioButton *radCrowdObjective;
+};
+
+class StudyOpenGADialog : public StudyDialog
+{
+public:
+    StudyOpenGADialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudyOpenGA *study() { return dynamic_cast<StudyOpenGA *>(m_study); }
+
+    virtual QLayout *createStudyControls();
+
+    virtual void load();
+    virtual void save();
+
+private:
+    QSpinBox *txtPopSize;
+    QSpinBox *txtNGen;
+    QSpinBox *txtEliteCount;
+    LineEditDouble *txtCrossoverFraction;
+    LineEditDouble *txtMutationRate;
+    QComboBox *cmbAlgorithm;
 };
 
 class StudyNLoptDialog : public StudyDialog

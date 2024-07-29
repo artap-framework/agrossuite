@@ -35,8 +35,6 @@
 class Computation;
 class Study;
 
-
-
 class AGROS_LIBRARY_API Statistics
 {
 public:
@@ -251,6 +249,13 @@ public:
         NSGA2_eta_c,
         NSGA2_eta_m,
         NSGA2_crowdobj,
+
+        OpenGA_algorithm,
+        OpenGA_popsize,
+        OpenGA_ngen,
+        OpenGA_elite_count,
+        OpenGA_mutation_rate,
+        OpenGA_crossover_fraction
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());

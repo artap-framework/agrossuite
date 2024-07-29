@@ -33,6 +33,7 @@ SET(SOURCES
     optilab/study_nsga2.cpp
     optilab/study_bayesopt.cpp
     optilab/study_nlopt.cpp
+    optilab/study_openga.cpp
     optilab/parameter.cpp
         optilab/goal_function.cpp
     particle/particle_tracing.cpp

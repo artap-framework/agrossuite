@@ -437,6 +437,8 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
         return new StudyNLoptDialog(study, parent);
     else if (study->type() == StudyType_Sweep)
         return new StudySweepDialog(study, parent);
+    else if (study->type() == StudyType_OpenGA)
+        return new StudyOpenGADialog(study, parent);
     else
         assert(0);
     

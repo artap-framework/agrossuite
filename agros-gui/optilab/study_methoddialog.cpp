@@ -173,6 +173,94 @@ void StudyNSGA2Dialog::save()
     study()->setValue(Study::NSGA2_crowdobj, radCrowdObjective->isChecked());
 }
 
+
+// *****************************************************************************************************
+
+StudyOpenGADialog::StudyOpenGADialog(Study *study, QWidget *parent)
+    : StudyDialog(study, parent)
+{
+
+}
+
+QLayout *StudyOpenGADialog::createStudyControls()
+{
+    cmbAlgorithm = new QComboBox(this);
+    foreach (QString key, study()->algorithmStringKeys())
+        cmbAlgorithm->addItem(study()->algorithmString(key), key);
+
+    txtPopSize = new QSpinBox(this);
+    txtPopSize->setMinimum(4);
+    txtPopSize->setMaximum(4*1000);
+    txtPopSize->setSingleStep(4);
+
+    txtNGen = new QSpinBox(this);
+    txtNGen->setMinimum(1);
+    txtNGen->setMaximum(1000);
+
+    txtEliteCount = new QSpinBox(this);
+    txtEliteCount->setMinimum(2);
+    txtEliteCount->setMaximum(1000);
+
+    txtCrossoverFraction = new LineEditDouble(0.0);
+    txtCrossoverFraction->setBottom(0);
+    txtCrossoverFraction->setTop(1.0);
+    txtMutationRate = new LineEditDouble(0.0);
+    txtMutationRate->setBottom(0);
+    txtMutationRate->setTop(1.0);
+
+    QGridLayout *layoutInitialization = new QGridLayout();
+    layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);
+    layoutInitialization->addWidget(cmbAlgorithm, 0, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Population size:")), 1, 0);
+    layoutInitialization->addWidget(txtPopSize, 1, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Maximum number of generations:")), 2, 0);
+    layoutInitialization->addWidget(txtNGen, 2, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Elite count:")), 3, 0);
+    layoutInitialization->addWidget(txtEliteCount, 3, 1);
+
+    QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
+    grpInitialization->setLayout(layoutInitialization);
+
+    QGridLayout *layoutConfig = new QGridLayout();
+    layoutConfig->addWidget(new QLabel(tr("Probability of crossover (0.0 - 1.0):")), 0, 0);
+    layoutConfig->addWidget(txtCrossoverFraction, 0, 1);
+    layoutConfig->addWidget(new QLabel(tr("Mutation rate (0.0 - 1.0):")), 1, 0);
+    layoutConfig->addWidget(txtMutationRate, 1, 1);
+
+    QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
+    grpConfig->setLayout(layoutConfig);
+
+    QVBoxLayout *layoutMain = new QVBoxLayout();
+    layoutMain->addWidget(grpInitialization);
+    layoutMain->addWidget(grpConfig);
+
+    return layoutMain;
+}
+
+void StudyOpenGADialog::load()
+{
+    StudyDialog::load();
+
+    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::OpenGA_algorithm).toString()));
+    txtPopSize->setValue(study()->value(Study::OpenGA_popsize).toInt());
+    txtNGen->setValue(study()->value(Study::OpenGA_ngen).toInt());
+    txtEliteCount->setValue(study()->value(Study::OpenGA_elite_count).toInt());
+    txtCrossoverFraction->setValue(study()->value(Study::OpenGA_crossover_fraction).toDouble());
+    txtMutationRate->setValue(study()->value(Study::OpenGA_mutation_rate).toDouble());
+}
+
+void StudyOpenGADialog::save()
+{
+    StudyDialog::save();
+
+    study()->setValue(Study::OpenGA_algorithm, cmbAlgorithm->currentData().toString());
+    study()->setValue(Study::OpenGA_popsize, txtPopSize->value());
+    study()->setValue(Study::OpenGA_ngen, txtNGen->value());
+    study()->setValue(Study::OpenGA_elite_count, txtEliteCount->value());
+    study()->setValue(Study::OpenGA_crossover_fraction, txtCrossoverFraction->value());
+    study()->setValue(Study::OpenGA_mutation_rate, txtMutationRate->value());
+}
+
 // *****************************************************************************************************
 
 StudyNLoptDialog::StudyNLoptDialog(Study *study, QWidget *parent)
