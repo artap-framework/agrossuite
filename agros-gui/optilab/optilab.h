@@ -92,7 +92,7 @@ private:
     QLineSeries *averageValueLowerSeries;
     QLineSeries *averageValueUpperSeries;
     QAreaSeries *averageValueAreaSeries;
-    QLineSeries *paretoFrontSeries;
+    QScatterSeries *paretoFrontSeries;
 
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
@@ -100,7 +100,7 @@ private:
     QAction *actChartRescale;
     QAction *actChartShowTrend;
     QAction *actChartShowAverageValue;
-    QAction *actChartParetoFront;
+    QAction *actChartShowParetoFront;
 
     void createControls();
     QWidget *createControlsGeometryAndStats();

@@ -190,7 +190,6 @@ void OptiLabWidget::refresh()
     QString selectedItem = "";
     if (trvOptilab->currentItem())
         selectedItem = treeItemToFullPath(trvOptilab->currentItem());
-    qInfo() << selectedItem;
 
     // clear tree
     trvOptilab->clear();

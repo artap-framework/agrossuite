@@ -160,9 +160,9 @@ QWidget *OptiLab::createControlsChart()
     actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
-    actChartParetoFront = new QAction(tr("Show Pareto front"), this);
-    actChartParetoFront->setCheckable(true);
-    QObject::connect(actChartParetoFront, &QAction::triggered, this, &OptiLab::doChartRefreshed);
+    actChartShowParetoFront = new QAction(tr("Show Pareto front"), this);
+    actChartShowParetoFront->setCheckable(true);
+    QObject::connect(actChartShowParetoFront, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
     actChartShowTrend = new QAction(tr("Show trend line"), this);
     actChartShowTrend->setCheckable(true);
@@ -177,12 +177,10 @@ QWidget *OptiLab::createControlsChart()
     mnuChart->addSeparator();
     mnuChart->addAction(actChartShowTrend);
     mnuChart->addAction(actChartShowAverageValue);
-    mnuChart->addAction(actChartParetoFront);
+    mnuChart->addAction(actChartShowParetoFront);
 
     auto chart = new QChart();
     chart->legend()->hide();
-    // connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
-    // connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, int, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, int, QMouseEvent*)));
 
     // axis x
     axisX = new QValueAxis;
@@ -259,17 +257,15 @@ QWidget *OptiLab::createControlsChart()
     averageValueAreaSeries->attachAxis(axisY);
 
     // // Pareto front
-    paretoFrontSeries = new QLineSeries();
+    paretoFrontSeries = new QScatterSeries();
     paretoFrontSeries->setUseOpenGL(true);
     chart->addSeries(paretoFrontSeries);
+    paretoFrontSeries->setMarkerSize(10.0);
+    paretoFrontSeries->setColor(QColor(150, 110, 110));
     paretoFrontSeries->attachAxis(axisX);
     paretoFrontSeries->attachAxis(axisY);
-    // chartGraphParetoFront = chart->addGraph();
-    // // chartGraphParetoFront->setName(tr("Pareto front"));
-    // // chartGraphParetoFront->addToLegend();
-    // chartGraphParetoFront->removeFromLegend();
-    // chartGraphParetoFront->setPen(QPen(QBrush(QColor(150, 110, 110, 120)), 8, Qt::SolidLine));
-    // chartGraphParetoFront->setLineStyle(QCPGraph::lsLine);
+    QObject::connect(paretoFrontSeries, &QScatterSeries::clicked, this, &OptiLab::chartClicked);
+    QObject::connect(paretoFrontSeries, &QScatterSeries::hovered, this, &OptiLab::chartHovered);
 
     chartView = new ChartView(chart, false);
     chartView->setChart(chart);
@@ -324,12 +320,15 @@ QWidget *OptiLab::createControlsResults()
     QObject::connect(chkShowTrendLine, &QCheckBox::stateChanged, this, &OptiLab::chartShowTrend);
     auto chkShowAverageValue = new QCheckBox(tr("Show average value"));
     QObject::connect(chkShowAverageValue, &QCheckBox::stateChanged, this, &OptiLab::chartShowAverageValue);
+    auto chkShowParetoFront = new QCheckBox(tr("Show Pareto front"));
+    QObject::connect(chkShowParetoFront, &QCheckBox::stateChanged, this, &OptiLab::chartShowParetoFront);
 
     auto *formLayout = new QFormLayout();
     formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
     formLayout->addRow(tr("Vertical axis and statistics:"), cmbAxisY);
     formLayout->addWidget(chkShowTrendLine);
     formLayout->addWidget(chkShowAverageValue);
+    formLayout->addWidget(chkShowParetoFront);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
@@ -402,7 +401,7 @@ void OptiLab::chartShowAverageValue(int state)
 
 void OptiLab::chartShowParetoFront(int state)
 {
-    actChartParetoFront->setChecked(state);
+    actChartShowParetoFront->setChecked(state);
     doChartRefreshed();
 }
 
@@ -525,6 +524,7 @@ void OptiLab::doChartRefreshed()
     averageValueLowerSeries->clear();
     averageValueUpperSeries->clear();
     trendLineSeries->clear();
+    paretoFrontSeries->clear();
 
     QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
     if (computationSets.count() == 0)
@@ -552,7 +552,7 @@ void OptiLab::doChartRefreshed()
     QVector<double> linRegDataX;
     QVector<double> linRegDataY;
 
-    // Pareto front
+    // data
     QList<QSharedPointer<Computation> > paretoFront = m_selectedStudy->nondominatedSort(computationSets);
     QVector<double> paretoDataX;
     QVector<double> paretoDataY;
@@ -630,7 +630,13 @@ void OptiLab::doChartRefreshed()
     }
 
     // Pareto front
-    // chartGraphParetoFront->setData(paretoDataX, paretoDataY);
+    if (actChartShowParetoFront->isChecked())
+    {
+        for (int i; i < paretoDataX.size(); i++)
+        {
+            paretoFrontSeries->append(paretoDataX[i], paretoDataY[i]);
+        }
+    }
 
     // mean value and standard deviation
     Statistics statsX(linRegDataX);
