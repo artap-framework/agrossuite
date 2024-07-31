@@ -246,13 +246,13 @@ std::vector<double> calculate_mo_objectives(const GA_Type::thisChromosomeType &X
 void so_report_generation(int generation_number, const EA::GenerationType<MySolution, MyMiddleCost> &last_generation, const MySolution& best_genes)
 {
 	localStudy->addComputationSet(QObject::tr("Generation %1").arg(generation_number));
-	std::cout
-		<<"Generation ["<<generation_number<<"], "
-		<<"Best="<<last_generation.best_total_cost<<", "
-		<<"Average="<<last_generation.average_cost<<", "
-		<<"Best genes=("<<best_genes.to_string()<<")"<<", "
-		<<"Exe_time="<<last_generation.exe_time
-		<<std::endl;
+	// std::cout
+	// 	<<"Generation ["<<generation_number<<"], "
+	// 	<<"Best="<<last_generation.best_total_cost<<", "
+	// 	<<"Average="<<last_generation.average_cost<<", "
+	// 	<<"Best genes=("<<best_genes.to_string()<<")"<<", "
+	// 	<<"Exe_time="<<last_generation.exe_time
+	// 	<<std::endl;
 }
 
 void mo_report_generation(int generation_number, const EA::GenerationType<MySolution,MyMiddleCost> &last_generation, const std::vector<unsigned int>& pareto_front)

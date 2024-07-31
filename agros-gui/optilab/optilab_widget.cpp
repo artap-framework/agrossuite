@@ -28,6 +28,18 @@
 
 #include "util/global.h"
 
+QString treeItemToFullPath(QTreeWidgetItem* treeItem)
+{
+    QString fullPath= treeItem->text(0);
+
+    while (treeItem->parent() != NULL)
+    {
+        fullPath= treeItem->parent()->text(0) + "/" + fullPath;
+        treeItem = treeItem->parent();
+    }
+    return fullPath;
+}
+
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     foreach (QString name, studyTypeStringKeys())
@@ -162,8 +174,8 @@ QWidget *OptiLabWidget::createControlsOptilab()
     layoutStudies->addWidget(trvOptilab, 3);
 
     auto *widgetStudies = new QWidget(this);
-    widgetStudies->setMinimumWidth(340);
-    widgetStudies->setMaximumWidth(340);
+    widgetStudies->setMinimumWidth(350);
+    widgetStudies->setMaximumWidth(350);
     widgetStudies->setLayout(layoutStudies);
 
     return widgetStudies;
@@ -175,9 +187,11 @@ void OptiLabWidget::refresh()
     trvOptilab->setUpdatesEnabled(false);
 
     // selection
-    // QString selectedItem = "";
-    // if (trvWidget->currentItem())
-    //     selectedItem = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+    QString selectedItem = "";
+    if (trvOptilab->currentItem())
+        selectedItem = treeItemToFullPath(trvOptilab->currentItem());
+
+    // clear tree
     trvOptilab->clear();
 
     QFont fnt = trvOptilab->font();
@@ -194,7 +208,8 @@ void OptiLabWidget::refresh()
     {
         auto *item = new QTreeWidgetItem(recipesNode);
 
-        item->setText(0, QString("%1 (%2)").arg(recipe->name()).arg(resultRecipeTypeString(recipe->type())));
+        item->setText(0, QString("%1").arg(recipe->name()));
+        item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
         item->setData(0, Qt::UserRole, recipe->name());
         item->setData(1, Qt::UserRole, OptiLabWidget::OptilabRecipe);
     }
@@ -206,8 +221,6 @@ void OptiLabWidget::refresh()
     studiesNode->setFont(0, fnt);
     studiesNode->setExpanded(true);
 
-    Study *selectedStudy = m_optilab->selectedStudy();
-
     for (int k = 0; k < Agros::problem()->studies()->items().count(); k++)
     {
         Study *study = Agros::problem()->studies()->items().at(k);
@@ -215,11 +228,15 @@ void OptiLabWidget::refresh()
         // study
         auto *studyNode = new QTreeWidgetItem(studiesNode);
         studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
+        studyNode->setText(1, study->computationSets().count() > 0 ? tr("Solved") : tr("Not solved"));
         studyNode->setIcon(0, icon("menu_recipe"));
         studyNode->setFont(0, fnt);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
         studyNode->setData(2, Qt::UserRole, k);
         studyNode->setExpanded(true);
+        // select first study if empty
+        if (selectedItem.isEmpty())
+            selectedItem = treeItemToFullPath(studyNode);
 
         auto studyPropertiesNode = new QTreeWidgetItem(studyNode);
         studyPropertiesNode->setText(0, tr("Properties"));
@@ -269,29 +286,28 @@ void OptiLabWidget::refresh()
         }
     }
 
-    // select first
-    if (!selectedStudy && Agros::problem()->studies()->items().count() > 0)
-        selectedStudy = Agros::problem()->studies()->items().at(0);
-
     trvOptilab->resizeColumnToContents(1);
     trvOptilab->setUpdatesEnabled(true);
     trvOptilab->blockSignals(false);
 
-    // change study
-    if (selectedStudy)
+    // change selection
+    if (!selectedItem.isEmpty())
     {
         for (int i = 0; i < trvOptilab->topLevelItemCount(); i++)
         {
             for (int j = 0; j < trvOptilab->topLevelItem(i)->childCount(); j++)
             {
                 QTreeWidgetItem *item = trvOptilab->topLevelItem(i)->child(j);
-                OptiLabWidget::Type type = (OptiLabWidget::Type) item->data(1, Qt::UserRole).toInt();
-                if (type == OptiLabWidget::OptilabStudy)
+                QString itemSelectedTree = treeItemToFullPath(item);
+                if (itemSelectedTree == selectedItem)
                 {
                     item->setExpanded(true);
                     item->setSelected(true);
 
-                    trvOptilab->setCurrentItem(item);
+                    qInfo() << "                 tree selectedItem";
+
+                    doItemChanged(item, NULL);
+                    // trvOptilab->setCurrentItem(item);
                 }
             }
         }
@@ -422,7 +438,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
     actRunStudy->setEnabled(false);
 
     Study *selected = nullptr;
-    if (current)
+    if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
 
@@ -431,7 +447,6 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             // optilab - study
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
-            actRunStudy->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
@@ -457,6 +472,8 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
         }
     }
 
+    if (selected)
+        actRunStudy->setEnabled(true);
     studySelected(selected);
 }
 
@@ -567,9 +584,6 @@ void OptiLabWidget::doItemContextMenu(const QPoint &pos)
 
     auto *current = trvOptilab->itemAt(pos);
     doItemChanged(current, NULL);
-
-    if (current)
-        trvOptilab->setCurrentItem(current);
 
     mnuOptilab->exec(QCursor::pos());
 }

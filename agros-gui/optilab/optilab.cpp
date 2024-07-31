@@ -507,6 +507,11 @@ void OptiLab::doStudySelected(Study *study)
         chartView->fitToData();
         geometryViewer->doZoomBestFit();
     }
+    else
+    {
+        trvResults->clear();
+        geometryViewer->setProblem(nullptr);
+    }
 }
 
 void OptiLab::doChartRefreshed()
