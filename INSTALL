@@ -4,7 +4,6 @@ Requirements installation
 First install the following free packages:
 - dealii (http://dealii.org/)
 - Digia Qt (http://www.qt.io)
-- QCustomChart (http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/)
 - Python (http://www.python.org)
 - dxflib (http://www.ribbonsoft.com)
 - ctemplate (http://code.google.com/p/ctemplate)

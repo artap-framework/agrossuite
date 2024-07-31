@@ -190,6 +190,7 @@ void OptiLabWidget::refresh()
     QString selectedItem = "";
     if (trvOptilab->currentItem())
         selectedItem = treeItemToFullPath(trvOptilab->currentItem());
+    qInfo() << selectedItem;
 
     // clear tree
     trvOptilab->clear();
@@ -293,23 +294,23 @@ void OptiLabWidget::refresh()
     // change selection
     if (!selectedItem.isEmpty())
     {
-        for (int i = 0; i < trvOptilab->topLevelItemCount(); i++)
+        QTreeWidgetItemIterator it(trvOptilab);
+        while (*it)
         {
-            for (int j = 0; j < trvOptilab->topLevelItem(i)->childCount(); j++)
+            QTreeWidgetItem *item = (*it);
+            QString itemSelectedTree = treeItemToFullPath(item);
+            if (itemSelectedTree == selectedItem)
             {
-                QTreeWidgetItem *item = trvOptilab->topLevelItem(i)->child(j);
-                QString itemSelectedTree = treeItemToFullPath(item);
-                if (itemSelectedTree == selectedItem)
-                {
-                    item->setExpanded(true);
-                    item->setSelected(true);
+                item->setExpanded(true);
+                item->setSelected(true);
 
-                    qInfo() << "                 tree selectedItem";
+                selectedItem = itemSelectedTree;
+                trvOptilab->setCurrentItem(item);
+                doItemChanged(item, NULL);
 
-                    doItemChanged(item, NULL);
-                    // trvOptilab->setCurrentItem(item);
-                }
+                break;
             }
+            ++it;
         }
     }
 }
