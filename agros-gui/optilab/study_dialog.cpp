@@ -469,13 +469,9 @@ void StudyDialog::createControls()
     
     QPushButton *btnClose = new QPushButton(tr("Close"));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(close()));
-    
-    QPushButton *btnDuplicate = new QPushButton(tr("Duplicate"));
-    connect(btnDuplicate, SIGNAL(clicked()), this, SLOT(doDuplicate()));
-    
+
     QHBoxLayout *layoutButtonBox = new QHBoxLayout();
     layoutButtonBox->addStretch();
-    layoutButtonBox->addWidget(btnDuplicate);
     layoutButtonBox->addWidget(btnApply);
     layoutButtonBox->addWidget(btnClose);
     
@@ -784,43 +780,6 @@ void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
     m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
-}
-
-void StudyDialog::doDuplicate()
-{
-    // select study dialog
-    StudySelectDialog dialog(this);
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        // add study
-        if (dialog.selectedStudyType() != StudyType_Undefined)
-        {
-            Study *study = Study::factory(dialog.selectedStudyType());
-            
-            // copy parameters
-            foreach (Parameter parameter, m_study->parameters())
-                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
-            
-            // copy goals
-            foreach (GoalFunction goal, m_study->goalFunctions())
-                study->addGoalFunction(GoalFunction(goal.name(), goal.expression(), goal.weight()));
-            
-            // clear and solve
-            study->setValue(Study::General_ClearSolution, m_study->value(Study::General_ClearSolution).toBool());
-            study->setValue(Study::General_SolveProblem, m_study->value(Study::General_SolveProblem).toBool());
-
-            StudyDialog *studyDialog = StudyDialog::factory(study, this);
-            if (studyDialog->showDialog() == QDialog::Accepted)
-            {
-                Agros::problem()->studies()->addStudy(study);
-                accept();
-            }
-            else
-            {
-                delete study;
-            }
-        }
-    }
 }
 
 // **************************************************************************************************************

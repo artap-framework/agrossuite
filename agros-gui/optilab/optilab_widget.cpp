@@ -90,6 +90,13 @@ QWidget *OptiLabWidget::createControlsOptilab()
     actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doItemDelete()));
 
+    actDuplicate = new QAction(tr("Duplicate"), this);
+    connect(actDuplicate, SIGNAL(triggered()), this, SLOT(doItemDuplicate()));
+
+    actExport = new QAction(tr("Export"), this);
+    actExport->setIcon(icon("menu_function"));
+    connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
+
     actRunStudy = new QAction(icon("main_solve"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence("Alt+S"));
     actRunStudy->setEnabled(false);
@@ -108,10 +115,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 
-    auto *actExport = new QAction(tr("Export"), this);
-    actExport->setIcon(icon("menu_function"));
-    connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
-
     auto *mnuRecipe = new QMenu(tr("New recipe"), this);
     mnuRecipe->addAction(actNewRecipeLocalValue);
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
@@ -120,6 +123,9 @@ QWidget *OptiLabWidget::createControlsOptilab()
     mnuOptilab =  new QMenu(tr("Optilab"));
     mnuOptilab->addMenu(mnuStudies);
     mnuOptilab->addMenu(mnuRecipe);
+    mnuOptilab->addSeparator();
+    mnuOptilab->addAction(actDuplicate);
+    mnuOptilab->addAction(actExport);
     mnuOptilab->addSeparator();
     mnuOptilab->addAction(actDelete);
     mnuOptilab->addAction(actProperties);
@@ -151,8 +157,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
 
     toolBarLeft->addWidget(toolButtonStudies);
     toolBarLeft->addWidget(toolButtonRecipes);
-    toolBarLeft->addSeparator();
-    toolBarLeft->addAction(actExport);
 
     QStringList headersOptilab;
     headersOptilab << tr("Key") << tr("Value");
@@ -340,42 +344,41 @@ void OptiLabWidget::solveStudy()
 
 void OptiLabWidget::exportData()
 {
-    QSettings settings;
-    QString dir = settings.value("General/LastDataDir").toString();
-
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("CSV files (*.csv)"), &selectedFilter);
-    if (fileName.isEmpty())
-    {
-        cerr << "Incorrect file name." << endl;
-        return;
-    }
-
-    QFileInfo fileInfo(fileName);
-
-    // open file for write
-    if (fileInfo.suffix().isEmpty())
-        fileName = fileName + ".csv";
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
-        return;
-    }
-
-    settings.setValue("General/LastDataDir", fileInfo.absolutePath());
-
-    QTextStream out(&file);
-
     // study
     if (trvOptilab->currentItem())
     {
         OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
         if (type == OptiLabWidget::OptilabStudy || type == OptiLabWidget::OptilabGoalFunction || type == OptiLabWidget::OptilabParameter)
         {
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+            QSettings settings;
+            QString dir = settings.value("General/LastDataDir").toString();
 
+            QString selectedFilter;
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("CSV files (*.csv)"), &selectedFilter);
+            if (fileName.isEmpty())
+            {
+                cerr << "Incorrect file name." << endl;
+                return;
+            }
+
+            QFileInfo fileInfo(fileName);
+
+            // open file for write
+            if (fileInfo.suffix().isEmpty())
+                fileName = fileName + ".csv";
+
+            QFile file(fileName);
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                cerr << "Could not create " + fileName.toStdString() + " file." << endl;
+                return;
+            }
+
+            settings.setValue("General/LastDataDir", fileInfo.absolutePath());
+
+            QTextStream out(&file);
+
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             QList<ComputationSet> computationSets = study->computationSets();
 
             // headers
@@ -436,6 +439,8 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
     actProperties->setEnabled(false);
     actDelete->setEnabled(false);
     actRunStudy->setEnabled(false);
+    actDuplicate->setEnabled(false);
+    actExport->setEnabled(false);
 
     Study *selected = nullptr;
     if (trvOptilab->currentItem())
@@ -447,6 +452,8 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             // optilab - study
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+            actDuplicate->setEnabled(true);
+            actExport->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
@@ -573,6 +580,54 @@ void OptiLabWidget::doItemDelete()
         }
 
         refresh();
+    }
+}
+
+void OptiLabWidget::doItemDuplicate()
+{
+    if (trvOptilab->currentItem())
+    {
+        OptiLabWidget::Type type = (OptiLabWidget::Type) trvOptilab->currentItem()->data(1, Qt::UserRole).toInt();
+
+        if (type == OptiLabWidget::OptilabStudy)
+        {
+            // study
+            Study *studyOriginal = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+
+            // select study dialog
+            StudySelectDialog dialog(this);
+            if (dialog.exec() == QDialog::Accepted)
+            {
+                // add study
+                if (dialog.selectedStudyType() != StudyType_Undefined)
+                {
+                    Study *study = Study::factory(dialog.selectedStudyType());
+
+                    // copy parameters
+                    foreach (Parameter parameter, studyOriginal->parameters())
+                        study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
+
+                    // copy goals
+                    foreach (GoalFunction goal, studyOriginal->goalFunctions())
+                        study->addGoalFunction(GoalFunction(goal.name(), goal.expression(), goal.weight()));
+
+                    // clear and solve
+                    study->setValue(Study::General_ClearSolution, studyOriginal->value(Study::General_ClearSolution).toBool());
+                    study->setValue(Study::General_SolveProblem, studyOriginal->value(Study::General_SolveProblem).toBool());
+
+                    StudyDialog *studyDialog = StudyDialog::factory(study, this);
+                    if (studyDialog->showDialog() == QDialog::Accepted)
+                    {
+                        Agros::problem()->studies()->addStudy(study);
+                        refresh();
+                    }
+                    else
+                    {
+                        delete study;
+                    }
+                }
+            }
+        }
     }
 }
 

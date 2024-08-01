@@ -42,7 +42,6 @@ public:
 
 public slots:
     void refresh();
-    void exportData();
 
 private:
     enum Type
@@ -70,6 +69,8 @@ private:
 
     QAction *actProperties;
     QAction *actDelete;
+    QAction *actDuplicate;
+    QAction *actExport;
 
     void createControls();
     QWidget *createControlsOptilab();
@@ -82,7 +83,9 @@ private slots:
     void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doItemProperties();
     void doItemDelete();
+    void doItemDuplicate();
     void doItemContextMenu(const QPoint &pos);
+    void exportData();
 
     void doNewRecipeLocalValue();
     void doNewRecipeSurfaceIntegral();

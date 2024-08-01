@@ -167,8 +167,6 @@ private slots:
     void doFunctionalAdd(bool checked);
     void doFunctionalEdit(bool checked);
     void doFunctionalRemove(bool checked);
-
-    void doDuplicate();
 };
 
 class StudyGoalFunctionDialog : public QDialog
