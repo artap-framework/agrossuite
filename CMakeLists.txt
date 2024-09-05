@@ -132,6 +132,7 @@ file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Windows DESTINATION ${PROJECT_BINARY_
 file(COPY ${PROJECT_SOURCE_DIR}/tests.sh DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/agros-python/agrossuite DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
 file(COPY ${PROJECT_SOURCE_DIR}/agros-python/tests DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
+file(COPY ${PROJECT_SOURCE_DIR}/agros-python/tests-tutorials DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
 file(COPY ${PROJECT_SOURCE_DIR}/agros-python/examples DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
 
 # deploy

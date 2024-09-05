@@ -5,6 +5,7 @@ import os.path
 from glob import glob
 
 root = "../../usr/share/agrossuite/resources/examples/"
+excludes = ["Ackleys function.ags", "Booths function.ags", "Rosenbrock function.ags", "Binh and Korn function.ags", "Constr-Ex problem.ags"]
 
 class AgrosTutorials(unittest.TestCase):
     def __init__(self, methodName='runTutorials'):
@@ -40,12 +41,18 @@ def template(fn):
     f.write(out)
     f.close()
 
-    print(f"{fn} generated.")    
+    print(f"{classname} generated.")    
 
 def generator():
+    # remove files
+    for fn in glob("test_*.py"):
+        os.remove(fn)
+    
     print("Generating tutorials tests")
-    for fn in glob(root + "**/*.ags", recursive=True):            
-        template(fn)   
+    for fn in glob(root + "**/*.ags", recursive=True):   
+        base = os.path.basename(fn) 
+        if not base in excludes:
+            template(fn)   
 
 if __name__ == "__main__":
     generator()
