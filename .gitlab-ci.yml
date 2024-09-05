@@ -79,6 +79,26 @@ test-linux:
     when: always
     reports:
       junit: report.xml
+      
+test-tutorials-linux:
+  stage: test
+  needs: ["build-linux"]
+  tags:
+    - agros
+    - linux
+
+  script: 
+    - cd build/agros-python
+    - source env/bin/activate    
+    - cd tests-tutorials
+    # generate test files
+    - python tutorials.py
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
     
 deploy-linux-appimage:
   stage: deploy
