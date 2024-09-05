@@ -30,7 +30,7 @@ class TestBayesOptBooth(AgrosTestCase):
 
         study_bayesopt.solve()
         
-        self.computation = study_bayesopt.find_extreme("functional", "OF", True)
+        self.computation = study_bayesopt.find_extreme("goal", "OF", True)
         
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
@@ -63,7 +63,7 @@ class TestNLoptBooth(AgrosTestCase):
      
         study_nlopt.solve()
         
-        self.computation = study_nlopt.find_extreme("functional", "OF", True)
+        self.computation = study_nlopt.find_extreme("goal", "OF", True)
         
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
@@ -97,7 +97,7 @@ class TestNSGA2Sphere(AgrosTestCase):
 
         study_nsga2.solve()
         
-        self.computation = study_nsga2.find_extreme("functional", "OF", True)
+        self.computation = study_nsga2.find_extreme("goal", "OF", True)
        
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
