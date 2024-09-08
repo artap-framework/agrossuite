@@ -113,40 +113,12 @@ OptiLab::~OptiLab()
 {
 }
 
-QWidget *OptiLab::createControlsGeometryAndStats()
+QWidget *OptiLab::createControlsGeometry()
 {
-    lblResultMin = new QLabel();
-    lblResultMin->setMinimumWidth(90);
-    lblResultMax = new QLabel();
-    lblResultMean = new QLabel();
-    lblResultMedian = new QLabel();
-    lblResultVariance = new QLabel();
-    lblResultStdDev = new QLabel();
-
-    auto *layoutStatistics = new QGridLayout();
-    layoutStatistics->addWidget(new QLabel(tr("Minimum:")), 0, 0);
-    layoutStatistics->addWidget(lblResultMin, 0, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Maximum:")), 1, 0);
-    layoutStatistics->addWidget(lblResultMax, 1, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Mean value:")), 3, 0);
-    layoutStatistics->addWidget(lblResultMean, 3, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Median:")), 4, 0);
-    layoutStatistics->addWidget(lblResultMedian, 4, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Variance:")), 5, 0);
-    layoutStatistics->addWidget(lblResultVariance, 5, 1);
-    layoutStatistics->addWidget(new QLabel(tr("Std. deviation:")), 6, 0);
-    layoutStatistics->addWidget(lblResultStdDev, 6, 1);
-    layoutStatistics->setRowStretch(10, 1);
-
-    groupBoxStatistics = new QGroupBox(tr("Statistics"));
-    groupBoxStatistics->setLayout(layoutStatistics);
-    groupBoxStatistics->setMaximumHeight(groupBoxStatistics->minimumSizeHint().height());
-
     geometryViewer = new SceneViewSimpleGeometry(this);
 
     auto *layoutGeometry = new QVBoxLayout();
     layoutGeometry->setContentsMargins(0, 0, 0, 0);
-    layoutGeometry->addWidget(groupBoxStatistics);
     layoutGeometry->addWidget(geometryViewer);
 
     auto *widget = new QWidget();
@@ -325,7 +297,7 @@ QWidget *OptiLab::createControlsResults()
 
     auto *formLayout = new QFormLayout();
     formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
-    formLayout->addRow(tr("Vertical axis and statistics:"), cmbAxisY);
+    formLayout->addRow(tr("Vertical axis:"), cmbAxisY);
     formLayout->addWidget(chkShowTrendLine);
     formLayout->addWidget(chkShowAverageValue);
     formLayout->addWidget(chkShowParetoFront);
@@ -354,7 +326,7 @@ void OptiLab::createControls()
 
     auto layoutResults = new QVBoxLayout();
     layoutResults->addWidget(createControlsResults(), 2);
-    layoutResults->addWidget(createControlsGeometryAndStats(), 0);
+    layoutResults->addWidget(createControlsGeometry(), 0);
 
     auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
@@ -789,17 +761,7 @@ void OptiLab::doSolveCurrentComputation(bool ok)
 
 void OptiLab::doResultChanged()
 {
-    bool showStats = cmbAxisY->currentIndex() != -1;
-
-    groupBoxStatistics->setTitle(tr("Statistics - %1").arg(cmbAxisY->currentText()));
-    lblResultMin->setText("-");
-    lblResultMax->setText("-");
-    lblResultMean->setText("-");
-    lblResultMedian->setText("-");
-    lblResultVariance->setText("-");
-    lblResultStdDev->setText("-");
-
-    if (m_selectedStudy && showStats)
+    if (m_selectedStudy)
     {
         QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
 
@@ -825,53 +787,6 @@ void OptiLab::doResultChanged()
 
 
                 step.append(step.count());
-            }
-        }
-
-        if (data.size() > 0)
-        {
-            Statistics stats(data);
-            if (stats.stdDev() > 0.0)
-            {
-                boost::math::normal_distribution<double> normalDistribution(stats.mean(), stats.stdDev());
-
-                // data distribution
-                int dataCount = 15;
-                double dataStep = (stats.max() - stats.min()) / (dataCount - 1);
-                QVector<double> dataPDF(dataCount);
-                QVector<double> dataCDF(dataCount);
-                QVector<double> normalCDFCorrelation(dataCount);
-                QVector<double> dataSteps(dataCount);
-
-                if ((stats.max() - stats.min()) > EPS_ZERO)
-                {
-                    for (int i = 0; i < dataCount; i++)
-                        dataSteps[i] = stats.min() + dataStep * i;
-
-                    // construct probability density function (PDF)
-                    foreach (double val, data)
-                    {
-                        int bin = round(((dataCount - 1) * ((val - stats.min()) / (stats.max() - stats.min()))));
-                        dataPDF[bin] += 1;
-                    }
-
-                    // construct cumulative distribution function (CDF)
-                    for (int i = 0; i < dataCount; i++)
-                        for (int j = 0; j <= i; j++)
-                            dataCDF[i] += dataPDF[j];
-
-                    // correlation with normal distribution
-                    for (int i = 0; i < dataCount; i++)
-                        normalCDFCorrelation[i] = boost::math::cdf(normalDistribution, dataSteps[i]);
-                }
-
-                // labels
-                lblResultMin->setText(QString::number(stats.min()));
-                lblResultMax->setText(QString::number(stats.max()));
-                lblResultMean->setText(QString::number(stats.mean()));
-                lblResultMedian->setText(QString::number(stats.median()));
-                lblResultVariance->setText(QString::number(stats.variance()));
-                lblResultStdDev->setText(QString::number(stats.stdDev()));
             }
         }
     }

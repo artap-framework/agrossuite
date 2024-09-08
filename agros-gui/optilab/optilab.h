@@ -61,14 +61,6 @@ private:
     OptiLabWidget *m_optiLabWidget;
     SceneViewSimpleGeometry *geometryViewer;
 
-    QGroupBox *groupBoxStatistics;
-    QLabel *lblResultMin;
-    QLabel *lblResultMax;
-    QLabel *lblResultMean;
-    QLabel *lblResultMedian;
-    QLabel *lblResultVariance;
-    QLabel *lblResultStdDev;
-
     QComboBox *cmbAxisX;
     QComboBox *cmbAxisY;
 
@@ -103,7 +95,7 @@ private:
     QAction *actChartShowParetoFront;
 
     void createControls();
-    QWidget *createControlsGeometryAndStats();
+    QWidget *createControlsGeometry();
     QWidget *createControlsChart();
     QWidget *createControlsResults();
     // QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
