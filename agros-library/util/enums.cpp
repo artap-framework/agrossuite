@@ -330,7 +330,7 @@ void initLists()
     computationResultTypeList.insert(ComputationResultType_Other, "other");
 
     // recipes
-    resultRecipeTypeList.insert(ResultRecipeType_LocalValue, "local_value");
+    resultRecipeTypeList.insert(ResultRecipeType_LocalPointValue, "local_value");
     resultRecipeTypeList.insert(ResultRecipeType_SurfaceIntegral, "surface_integral");
     resultRecipeTypeList.insert(ResultRecipeType_VolumeIntegral, "volume_integral");
 
@@ -836,8 +836,8 @@ QString resultRecipeTypeString(ResultRecipeType type)
 {
     switch (type)
     {
-    case ResultRecipeType_LocalValue:
-        return QObject::tr("Local value");
+    case ResultRecipeType_LocalPointValue:
+        return QObject::tr("Point value");
     case ResultRecipeType_SurfaceIntegral:
         return QObject::tr("Surface integral");
     case ResultRecipeType_VolumeIntegral:

@@ -45,7 +45,7 @@ const QString LABELS = "labels";
 ResultRecipe *ResultRecipe::factory(ResultRecipeType type)
 {
     ResultRecipe *recipe = nullptr;
-    if (type == ResultRecipeType_LocalValue)
+    if (type == ResultRecipeType_LocalPointValue)
         recipe = new LocalValueRecipe();
     else if (type == ResultRecipeType_SurfaceIntegral)
         recipe = new SurfaceIntegralRecipe();

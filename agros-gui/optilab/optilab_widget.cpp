@@ -108,15 +108,15 @@ QWidget *OptiLabWidget::createControlsOptilab()
         mnuStudies->addAction(studyAction);
 
     // recipes
-    actNewRecipeLocalValue = new QAction(tr("Local value recipe..."), this);
-    connect(actNewRecipeLocalValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
+    actNewRecipeLocalPointValue = new QAction(tr("Point value recipe..."), this);
+    connect(actNewRecipeLocalPointValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
     actNewRecipeSurfaceIntegral = new QAction(tr("Surface integral recipe..."), this);
     connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
     actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 
     auto *mnuRecipe = new QMenu(tr("New recipe"), this);
-    mnuRecipe->addAction(actNewRecipeLocalValue);
+    mnuRecipe->addAction(actNewRecipeLocalPointValue);
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
 
@@ -134,7 +134,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     toolButtonRecipes->setText(tr("Recipe"));
     toolButtonRecipes->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolButtonRecipes->setToolTip(tr("New recipe"));
-    toolButtonRecipes->addAction(actNewRecipeLocalValue);
+    toolButtonRecipes->addAction(actNewRecipeLocalPointValue);
     toolButtonRecipes->addAction(actNewRecipeSurfaceIntegral);
     toolButtonRecipes->addAction(actNewRecipeVolumeIntegral);
     toolButtonRecipes->setAutoRaise(true);
@@ -633,7 +633,7 @@ void OptiLabWidget::doItemDuplicate()
 
 void OptiLabWidget::doItemContextMenu(const QPoint &pos)
 {
-    actNewRecipeLocalValue->setEnabled(Agros::problem()->fieldInfos().count() > 0);
+    actNewRecipeLocalPointValue->setEnabled(Agros::problem()->fieldInfos().count() > 0);
     actNewRecipeSurfaceIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
     actNewRecipeVolumeIntegral->setEnabled(Agros::problem()->fieldInfos().count() > 0);
 
@@ -663,7 +663,7 @@ void OptiLabWidget::doNewStudy(const QString &name)
 
 void OptiLabWidget::doNewRecipeLocalValue()
 {
-    doNewRecipe(ResultRecipeType_LocalValue);
+    doNewRecipe(ResultRecipeType_LocalPointValue);
 }
 
 void OptiLabWidget::doNewRecipeSurfaceIntegral()
@@ -684,7 +684,7 @@ void OptiLabWidget::doNewRecipe(ResultRecipeType type)
         recipe->setFieldId(Agros::problem()->fieldInfos().first()->fieldId());
 
         RecipeDialog *dialog = nullptr;
-        if (type == ResultRecipeType_LocalValue)
+        if (type == ResultRecipeType_LocalPointValue)
         {
             dialog = new LocalValueRecipeDialog((LocalValueRecipe *) recipe, this);
         }

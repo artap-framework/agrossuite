@@ -63,7 +63,7 @@ private:
     // ser
     QMenu *mnuOptilab;
     QMap<QString, StringAction *> actNewStudies;
-    QAction *actNewRecipeLocalValue;
+    QAction *actNewRecipeLocalPointValue;
     QAction *actNewRecipeSurfaceIntegral;
     QAction *actNewRecipeVolumeIntegral;
 

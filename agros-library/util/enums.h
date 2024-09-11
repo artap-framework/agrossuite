@@ -298,7 +298,7 @@ enum StudyType
 
 enum ResultRecipeType
 {
-    ResultRecipeType_LocalValue,
+    ResultRecipeType_LocalPointValue,
     ResultRecipeType_SurfaceIntegral,
     ResultRecipeType_VolumeIntegral
 };

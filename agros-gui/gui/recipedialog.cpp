@@ -204,9 +204,17 @@ QWidget *LocalValueRecipeDialog::createRecipeControls()
     txtPointY = new LineEditDouble(recipe()->point().y);
 
     QGridLayout *pointLayout = new QGridLayout();
-    pointLayout->addWidget(new QLabel(tr("X:")), 0, 0);
+    if (Agros::problem()->config()->coordinateType() == CoordinateType_Planar)
+    {
+        pointLayout->addWidget(new QLabel(tr("X:")), 0, 0);
+        pointLayout->addWidget(new QLabel(tr("Y:")), 1, 0);
+    }
+    else if (Agros::problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
+    {
+        pointLayout->addWidget(new QLabel(tr("R:")), 0, 0);
+        pointLayout->addWidget(new QLabel(tr("Z:")), 1, 0);
+    }
     pointLayout->addWidget(txtPointX, 0, 1);
-    pointLayout->addWidget(new QLabel(tr("Y:")), 1, 0);
     pointLayout->addWidget(txtPointY, 1, 1);
 
     QGroupBox *grpPoint = new QGroupBox(tr("Point"));
@@ -228,6 +236,9 @@ void LocalValueRecipeDialog::fieldChanged(int index)
         cmbVariable->setCurrentIndex(0);
     else
         cmbVariable->setCurrentIndex(selected);
+
+    txtTimeStep->setEnabled(fieldInfo->analysisType() == AnalysisType_Transient);
+    txtAdaptivityStep->setEnabled(fieldInfo->adaptivityType() != AdaptivityMethod_None);
 }
 
 void LocalValueRecipeDialog::variableChanged(int index)
@@ -313,6 +324,9 @@ void SurfaceIntegralRecipeDialog::fieldChanged(int index)
         cmbVariable->setCurrentIndex(0);
     else
         cmbVariable->setCurrentIndex(selected);
+
+    txtTimeStep->setEnabled(fieldInfo->analysisType() == AnalysisType_Transient);
+    txtAdaptivityStep->setEnabled(fieldInfo->adaptivityType() != AdaptivityMethod_None);
 }
 
 bool SurfaceIntegralRecipeDialog::save()
@@ -378,6 +392,9 @@ void VolumeIntegralRecipeDialog::fieldChanged(int index)
         cmbVariable->setCurrentIndex(0);
     else
         cmbVariable->setCurrentIndex(selected);
+
+    txtTimeStep->setEnabled(fieldInfo->analysisType() == AnalysisType_Transient);
+    txtAdaptivityStep->setEnabled(fieldInfo->adaptivityType() != AdaptivityMethod_None);
 }
 
 bool VolumeIntegralRecipeDialog::save()
