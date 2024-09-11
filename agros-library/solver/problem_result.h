@@ -72,7 +72,7 @@ public:
                      int timeStep = -1, int adaptivityStep = -1);
     virtual ~LocalValueRecipe() {}
 
-    virtual ResultRecipeType type() const { return ResultRecipeType_LocalValue; }
+    virtual ResultRecipeType type() const { return ResultRecipeType_LocalPointValue; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
