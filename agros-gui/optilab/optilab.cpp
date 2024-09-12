@@ -118,7 +118,7 @@ QWidget *OptiLab::createControlsGeometry()
     geometryViewer = new SceneViewSimpleGeometry(this);
 
     auto *layoutGeometry = new QVBoxLayout();
-    layoutGeometry->setContentsMargins(0, 0, 0, 0);
+    layoutGeometry->setContentsMargins(2, 2, 2, 2);
     layoutGeometry->addWidget(geometryViewer);
 
     auto *widget = new QWidget();
@@ -300,7 +300,7 @@ QWidget *OptiLab::createControlsResults()
     formLayout->addRow(tr("Vertical axis:"), cmbAxisY);
 
     auto *layoutResults = new QVBoxLayout();
-    layoutResults->setContentsMargins(0, 0, 0, 0);
+    layoutResults->setContentsMargins(2, 2, 2, 2);
     layoutResults->addLayout(formLayout);
     layoutResults->addWidget(trvResults, 2);
 
@@ -321,16 +321,17 @@ void OptiLab::createControls()
     layoutButtons->addStretch();
     layoutButtons->addWidget(btnComputationSolve);
 
-    auto layoutResults = new QVBoxLayout();
-    layoutResults->addWidget(m_optiLabWidget, 2);
-    layoutResults->addWidget(createControlsResults(), 2);
-    layoutResults->addWidget(createControlsGeometry(), 1);
-    layoutResults->addLayout(layoutButtons, 0);
+    auto layoutLeft = new QVBoxLayout();
+    layoutLeft->setContentsMargins(0, 0, 0, 0);
+    layoutLeft->addWidget(m_optiLabWidget, 2);
+    layoutLeft->addWidget(createControlsResults(), 2);
+    layoutLeft->addWidget(createControlsGeometry(), 1);
+    layoutLeft->addLayout(layoutButtons, 0);
 
     auto *widLeft = new QWidget();
-    widLeft->setContentsMargins(0, 0, 0, 0);
-    widLeft->setMaximumWidth(380);
-    widLeft->setLayout(layoutResults);
+    widLeft->setMinimumWidth(400);
+    widLeft->setMaximumWidth(400);
+    widLeft->setLayout(layoutLeft);
 
     auto layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);

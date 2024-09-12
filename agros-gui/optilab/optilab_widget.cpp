@@ -178,8 +178,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     layoutStudies->addWidget(trvOptilab, 3);
 
     auto *widgetStudies = new QWidget(this);
-    widgetStudies->setMinimumWidth(350);
-    widgetStudies->setMaximumWidth(350);
     widgetStudies->setLayout(layoutStudies);
 
     return widgetStudies;
