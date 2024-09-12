@@ -15,7 +15,8 @@
         <file alias="main_results.png">images/icons/main_results.png</file>                           
         <file alias="main_optilab.png">images/icons/main_optilab.png</file>
         <file alias="main_solve.png">images/icons/main_solve.png</file>               
-        <file alias="main_solvenew.png">images/icons/main_solvenew.png</file>               
+        <file alias="main_solvenew.png">images/icons/main_solvenew.png</file>     
+        <file alias="main_solveopt.png">images/icons/main_solveopt.png</file>      
         <file alias="results_point.png">images/icons/results_point.png</file>
         <file alias="results_surface.png">images/icons/results_surface.png</file>
         <file alias="results_volume.png">images/icons/results_volume.png</file>
@@ -29,6 +30,8 @@
         <file alias="geometry.png">images/icons/geometry.png</file>
         <file alias="problem.png">images/icons/problem.png</file>
         <file alias="optilab.png">images/icons/optilab.png</file>
+        <file alias="optilab_min.png">images/icons/optilab_min.png</file>
+        <file alias="optilab_max.png">images/icons/optilab_max.png</file>
         <file alias="recent.png">images/icons/recent.png</file>
         <file alias="problem_properties.png">images/icons/problem_properties.png</file>
         <file alias="field_properties.png">images/icons/field_properties.png</file>

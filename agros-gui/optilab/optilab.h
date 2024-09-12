@@ -50,7 +50,7 @@ public slots:
 
     void doStudySelected(Study *study);
     void doComputationSelected(const QString &problemDir);
-    void doSolveCurrentComputation(bool ok);
+    void doSolveCurrentComputation();
     void doChartRefreshed();
 
 private:
@@ -65,10 +65,12 @@ private:
     QComboBox *cmbAxisY;
 
     // computation
-    QAction *actComputationSolve;
+    QPushButton *btnComputationSolve;
 
     // results
     QTreeWidget *trvResults;
+
+    QToolBar *toolBarRight;
 
     QAction *actResultsFindMinimum;
     QAction *actResultsFindMaximum;

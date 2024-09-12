@@ -132,15 +132,15 @@ QWidget *OptiLab::createControlsChart()
     actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
-    actChartShowParetoFront = new QAction(tr("Show Pareto front"), this);
+    actChartShowParetoFront = new QAction(icon("problem"), tr("Show Pareto front"), this);
     actChartShowParetoFront->setCheckable(true);
     QObject::connect(actChartShowParetoFront, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
-    actChartShowTrend = new QAction(tr("Show trend line"), this);
+    actChartShowTrend = new QAction(icon("problem"), tr("Show trend line"), this);
     actChartShowTrend->setCheckable(true);
     QObject::connect(actChartShowTrend, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
-    actChartShowAverageValue = new QAction(tr("Show average value"), this);
+    actChartShowAverageValue = new QAction(icon("problem"), tr("Show average value"), this);
     actChartShowAverageValue->setCheckable(true);
     QObject::connect(actChartShowAverageValue, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
@@ -240,10 +240,38 @@ QWidget *OptiLab::createControlsChart()
     QObject::connect(paretoFrontSeries, &QScatterSeries::hovered, this, &OptiLab::chartHovered);
 
     chartView = new ChartView(chart, false);
+    chartView->setContentsMargins(0, 0, 0, 0);
     chartView->setChart(chart);
     // QObject::connect(chartView, &QChartView::contextMenuEvent, this, &OptiLab::contextMenuEvent);
 
-    return chartView;
+    actResultsFindMinimum = new QAction(icon("optilab_min"), tr("Find minimum"), this);
+    actResultsFindMinimum->setIconVisibleInMenu(true);
+    connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
+    actResultsFindMaximum = new QAction(icon("optilab_max"), tr("Find maximum"), this);
+    actResultsFindMaximum->setIconVisibleInMenu(true);
+    connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
+
+    // right toolbar
+    toolBarRight = new QToolBar();
+    toolBarRight->setProperty("modulebar", true);
+    toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBarRight->addAction(actResultsFindMinimum);
+    toolBarRight->addAction(actResultsFindMaximum);
+    toolBarRight->addSeparator();
+    toolBarRight->addAction(actChartShowAverageValue);
+    toolBarRight->addAction(actChartShowTrend);
+    toolBarRight->addAction(actChartShowParetoFront);
+
+    auto layoutRight = new QVBoxLayout();
+    layoutRight->setContentsMargins(0, 0, 0, 0);
+    layoutRight->addWidget(toolBarRight);
+    layoutRight->addWidget(chartView);
+
+    auto *widRight = new QWidget();
+    widRight->setContentsMargins(0, 0, 0, 0);
+    widRight->setLayout(layoutRight);
+
+    return widRight;
 }
 
 QWidget *OptiLab::createControlsResults()
@@ -262,51 +290,19 @@ QWidget *OptiLab::createControlsResults()
     // trvResults->resizeColumnToContents(0);
     // trvResults->resizeColumnToContents(1);
 
-    actComputationSolve = new QAction(icon("main_solve"), tr("Solve"), this);
-    connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doSolveCurrentComputation(bool)));
-
-    actResultsFindMinimum = new QAction(icon("geometry_rectangle"), tr("Find minimum"), this);
-    actResultsFindMinimum->setIconVisibleInMenu(true);
-    connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
-    actResultsFindMaximum = new QAction(icon("geometry_circle"), tr("Find maximum"), this);
-    actResultsFindMaximum->setIconVisibleInMenu(true);
-    connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
-
-    // left toolbar
-    auto toolBarComputation = new QToolBar();
-    toolBarComputation->setOrientation(Qt::Horizontal);
-    toolBarComputation->setProperty("modulebar", true);
-    toolBarComputation->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    toolBarComputation->addAction(actComputationSolve);
-    toolBarComputation->addSeparator();
-    toolBarComputation->addAction(actResultsFindMinimum);
-    toolBarComputation->addAction(actResultsFindMaximum);
-
     cmbAxisX = new QComboBox(this);
     connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
     cmbAxisY = new QComboBox(this);
     connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
 
-    auto chkShowTrendLine = new QCheckBox(tr("Show trend line"));
-    QObject::connect(chkShowTrendLine, &QCheckBox::stateChanged, this, &OptiLab::chartShowTrend);
-    auto chkShowAverageValue = new QCheckBox(tr("Show average value"));
-    QObject::connect(chkShowAverageValue, &QCheckBox::stateChanged, this, &OptiLab::chartShowAverageValue);
-    auto chkShowParetoFront = new QCheckBox(tr("Show Pareto front"));
-    QObject::connect(chkShowParetoFront, &QCheckBox::stateChanged, this, &OptiLab::chartShowParetoFront);
-
     auto *formLayout = new QFormLayout();
     formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
     formLayout->addRow(tr("Vertical axis:"), cmbAxisY);
-    formLayout->addWidget(chkShowTrendLine);
-    formLayout->addWidget(chkShowAverageValue);
-    formLayout->addWidget(chkShowParetoFront);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(0, 0, 0, 0);
     layoutResults->addLayout(formLayout);
     layoutResults->addWidget(trvResults, 2);
-    layoutResults->addWidget(toolBarComputation);
 
     auto *widResults = new QWidget();
     widResults->setContentsMargins(0, 0, 0, 0);
@@ -317,27 +313,29 @@ QWidget *OptiLab::createControlsResults()
 
 void OptiLab::createControls()
 {
-    auto *layoutCharts = new QVBoxLayout();
-    layoutCharts->addWidget(createControlsChart(), 2);
+    btnComputationSolve = new QPushButton(tr("Solve problem and show solution"));
+    connect(btnComputationSolve, SIGNAL(clicked()), this, SLOT(doSolveCurrentComputation()));
 
-    auto *widCharts = new QWidget();
-    widCharts->setContentsMargins(0, 0, 0, 0);
-    widCharts->setLayout(layoutCharts);
+    auto *layoutButtons = new QHBoxLayout();
+    layoutButtons->setContentsMargins(10, 2, 10, 6);
+    layoutButtons->addStretch();
+    layoutButtons->addWidget(btnComputationSolve);
 
     auto layoutResults = new QVBoxLayout();
+    layoutResults->addWidget(m_optiLabWidget, 2);
     layoutResults->addWidget(createControlsResults(), 2);
-    layoutResults->addWidget(createControlsGeometry(), 0);
+    layoutResults->addWidget(createControlsGeometry(), 1);
+    layoutResults->addLayout(layoutButtons, 0);
 
-    auto *widResults = new QWidget();
-    widResults->setContentsMargins(0, 0, 0, 0);
-    widResults->setMaximumWidth(370);
-    widResults->setLayout(layoutResults);
+    auto *widLeft = new QWidget();
+    widLeft->setContentsMargins(0, 0, 0, 0);
+    widLeft->setMaximumWidth(380);
+    widLeft->setLayout(layoutResults);
 
     auto layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(m_optiLabWidget);
-    layoutMain->addWidget(widResults);
-    layoutMain->addWidget(widCharts);
+    layoutMain->addWidget(widLeft);
+    layoutMain->addWidget(createControlsChart());
     layoutMain->setStretch(2, 1);
 
     setLayout(layoutMain);
@@ -460,7 +458,7 @@ void OptiLab::doStudySelected(Study *study)
     }
 
     // actions
-    actComputationSolve->setEnabled(false);
+    btnComputationSolve->setEnabled(false);
     actResultsFindMinimum->setEnabled(false);
     actResultsFindMaximum->setEnabled(false);
 
@@ -743,13 +741,13 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         doChartRefreshed();
 
         // actions
-        actComputationSolve->setEnabled(true);
+        btnComputationSolve->setEnabled(true);
         actResultsFindMinimum->setEnabled(true);
         actResultsFindMaximum->setEnabled(true);
     }
 }
 
-void OptiLab::doSolveCurrentComputation(bool ok)
+void OptiLab::doSolveCurrentComputation()
 {
     if (m_selectedComputation)
     {

@@ -97,7 +97,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     actExport->setIcon(icon("menu_function"));
     connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
 
-    actRunStudy = new QAction(icon("main_solve"), tr("Run study"), this);
+    actRunStudy = new QAction(icon("main_solveopt"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence("Alt+S"));
     actRunStudy->setEnabled(false);
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
