@@ -32,6 +32,9 @@
         <file alias="optilab.png">images/icons/optilab.png</file>
         <file alias="optilab_min.png">images/icons/optilab_min.png</file>
         <file alias="optilab_max.png">images/icons/optilab_max.png</file>
+        <file alias="optilab_avg.png">images/icons/optilab_avg.png</file>
+        <file alias="optilab_pareto.png">images/icons/optilab_pareto.png</file>
+        <file alias="optilab_trend.png">images/icons/optilab_trend.png</file>
         <file alias="recent.png">images/icons/recent.png</file>
         <file alias="problem_properties.png">images/icons/problem_properties.png</file>
         <file alias="field_properties.png">images/icons/field_properties.png</file>

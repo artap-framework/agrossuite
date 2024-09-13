@@ -132,15 +132,15 @@ QWidget *OptiLab::createControlsChart()
     actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
-    actChartShowParetoFront = new QAction(icon("problem"), tr("Show Pareto front"), this);
+    actChartShowParetoFront = new QAction(icon("optilab_pareto"), tr("Show Pareto front"), this);
     actChartShowParetoFront->setCheckable(true);
     QObject::connect(actChartShowParetoFront, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
-    actChartShowTrend = new QAction(icon("problem"), tr("Show trend line"), this);
+    actChartShowTrend = new QAction(icon("optilab_trend"), tr("Show trend line"), this);
     actChartShowTrend->setCheckable(true);
     QObject::connect(actChartShowTrend, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
-    actChartShowAverageValue = new QAction(icon("problem"), tr("Show average value"), this);
+    actChartShowAverageValue = new QAction(icon("optilab_avg"), tr("Show average value"), this);
     actChartShowAverageValue->setCheckable(true);
     QObject::connect(actChartShowAverageValue, &QAction::triggered, this, &OptiLab::doChartRefreshed);
 
