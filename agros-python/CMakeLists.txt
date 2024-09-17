@@ -20,6 +20,13 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/bayesopt/include)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nlopt2/src/api)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga2)
 
+# python wrapper
+file(COPY ${CMAKE_HOME_DIRECTORY}/tests.sh DESTINATION ${PROJECT_BINARY_DIR}/..)
+file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/agrossuite DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
+file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/tests DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
+file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/tests-tutorials DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
+file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/examples DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
+
 SET(SOURCES extension.cpp
     pythonlab/pyfield.cpp
     pythonlab/pygeometry.cpp

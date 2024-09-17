@@ -14,7 +14,7 @@ class TestBayesOptBooth(AgrosTestCase):
         study_bayesopt = problem.add_study("bayesopt")
         study_bayesopt.add_parameter("px", -10, 10)
         study_bayesopt.add_parameter("py", -10, 10)
-        study_bayesopt.add_functional("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
+        study_bayesopt.add_goal_function("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
         
         study_bayesopt.clear_solution = True
         study_bayesopt.solve_problem = False
@@ -49,7 +49,7 @@ class TestNLoptBooth(AgrosTestCase):
         study_nlopt = problem.add_study("nlopt")
         study_nlopt.add_parameter("px", -10, 10)
         study_nlopt.add_parameter("py", -10, 10)
-        study_nlopt.add_functional("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
+        study_nlopt.add_goal_function("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
         
         study_nlopt.clear_solution = True
         study_nlopt.solve_problem = False
@@ -82,7 +82,7 @@ class TestNSGA2Sphere(AgrosTestCase):
         study_nsga2 = problem.add_study("nsga2")
         study_nsga2.add_parameter("px", -10, 10)
         study_nsga2.add_parameter("py", -10, 10)
-        study_nsga2.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
+        study_nsga2.add_goal_function("OF", "(px-1.0)**2+(py+2.0)**2", 100)
 
         study_nsga2.clear_solution = True
         study_nsga2.solve_problem = False

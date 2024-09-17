@@ -43,8 +43,10 @@ public:
 
     void addParameter(std::string name, double lowerBound, double upperBound);
     void addGoalFunction(std::string name, std::string expression, int weight = 100);
+    void getParameters(std::vector<std::string> &name, std::vector<double> &lowerBound, std::vector<double> &upperBound) const;
+    void getGoalFunctions(std::vector<std::string> &name, std::vector<std::string> &expression, std::vector<int> &weight) const;
 
-    void solve();
+    void solve() const;
 
     virtual Study *study() = 0;
     virtual Study *study() const = 0;

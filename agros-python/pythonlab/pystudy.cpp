@@ -38,9 +38,31 @@ void PyStudy::addGoalFunction(string name, string expression, int weight)
     m_study->addGoalFunction(GoalFunction(QString::fromStdString(name), QString::fromStdString(expression), weight));
 }
 
-void PyStudy::solve()
+void PyStudy::solve() const
 {
     m_study->solve();
+}
+
+void PyStudy::getParameters(std::vector<std::string> &name, std::vector<double> &lowerBound, std::vector<double> &upperBound) const
+{
+    QList<Parameter> parameters = m_study->parameters();
+    for (int i = 0; i < parameters.count(); i++)
+    {
+        name.push_back(parameters[i].name().toStdString());
+        lowerBound.push_back(parameters[i].lowerBound());
+        upperBound.push_back(parameters[i].upperBound());
+    }
+}
+
+void PyStudy::getGoalFunctions(std::vector<std::string> &name, std::vector<std::string> &expression, std::vector<int> &weight) const
+{
+    QList<GoalFunction> goalFunctions = m_study->goalFunctions();
+    for (int i = 0; i < goalFunctions.count(); i++)
+    {
+        name.push_back(goalFunctions[i].name().toStdString());
+        expression.push_back(goalFunctions[i].expression().toStdString());
+        weight.push_back(goalFunctions[i].weight());
+    }
 }
 
 std::string PyStudy::findExtreme(std::string type, std::string key, bool minimum)

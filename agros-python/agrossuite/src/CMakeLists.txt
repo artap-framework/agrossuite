@@ -51,7 +51,7 @@ python_extension_module(_agros)
 install(TARGETS _agros LIBRARY DESTINATION src) 
 install(FILES __init__.py DESTINATION src)
 install(FILES agros.py DESTINATION src)
-install(FILES vtk_tools.py DESTINATION src)
+install(FILES tools.py DESTINATION src)
 install(DIRECTORY ${CMAKE_HOME_DIRECTORY}/../tests DESTINATION src PATTERN "__pycache__" EXCLUDE PATTERN ".pytest_cache" EXCLUDE)
 
 if(WIN32)	

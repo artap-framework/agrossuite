@@ -450,6 +450,8 @@ void Scene::fieldsChange()
 
 void Scene::exportVTKGeometry(const QString &fileName)
 {
+    invalidate();
+
     QList<Point> vtkNodes;
     foreach (SceneNode *node, nodes->items())
         vtkNodes.append(Point(node->point().x, node->point().y));

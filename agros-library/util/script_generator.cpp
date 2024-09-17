@@ -605,7 +605,7 @@ QString ScriptGenerator::createPythonFromModel()
 
             // functionals
             foreach (GoalFunction goal, study->goalFunctions())
-                str += QString("study_%1.add_goal(\"%2\", \"%3\", %4)\n").
+                str += QString("study_%1.add_goal_function(\"%2\", \"%3\", %4)\n").
                         arg(studyTypeToStringKey(study->type())).
                         arg(goal.name()).
                         arg(goal.expression()).

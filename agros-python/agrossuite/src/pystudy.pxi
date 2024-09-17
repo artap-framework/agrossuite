@@ -15,6 +15,8 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
 
         void addParameter(string name, double lowerBound, double upperBound) except +
         void addGoalFunction(string name, string expression, int weight) except +
+        void getParameters(vector[string] &name, vector[double] &lowerBound, vector[double] &upperBound) except +
+        void getGoalFunctions(vector[string] &name, vector[string] &expression, vector[int] &weight) except +
 
         void solve() except +
 
@@ -63,8 +65,32 @@ cdef class __Study__:
     def add_parameter(self, name, lower_bound, upper_bound):
         self.thisptr.addParameter(name.encode(), lower_bound, upper_bound)
 
-    def add_functional(self, name, expression, weight = 100):
+    def add_goal_function(self, name, expression, weight = 100):
         self.thisptr.addGoalFunction(name.encode(), expression.encode(), weight)
+
+    def parameters(self):	
+        cdef vector[string] name
+        cdef vector[double] lowerBound
+        cdef vector[double] upperBound
+        self.thisptr.getParameters(name, lowerBound, upperBound)
+        
+        out = {}
+        for i in range(name.size()):
+            out[name[i].decode()] = [lowerBound[i], upperBound[i]]
+
+        return out
+        
+    def goal_functions(self):	
+        cdef vector[string] name
+        cdef vector[string] expression
+        cdef vector[int] bound
+        self.thisptr.getGoalFunctions(name, expression, bound)
+        
+        out = {}
+        for i in range(name.size()):
+            out[name[i].decode()] = [expression[i].decode(), bound[i]]
+
+        return out        
 
     def type(self):
         return self.thisptr.type();
@@ -85,26 +111,6 @@ cdef class __Study__:
             return self.thisptr.getBoolParameter(b'General_SolveProblem')
         def __set__(self, val):
             self.thisptr.setParameter(string(b'General_SolveProblem'), <bool> val)
-
-    property doe:
-        def __get__(self):
-            return self.thisptr.getBoolParameter(b'General_DoE')
-        def __set__(self, val):
-            self.thisptr.setParameter(string(b'General_DoE'), <bool> val)
-
-    property doe_deviation:
-        def __get__(self):
-            return self.thisptr.getIntParameter(b'General_DoE_Deviation')
-        def __set__(self, val):
-            positive_value(val, 'doe_deviation')
-            self.thisptr.setParameter(string(b'General_DoE_Deviation'), <double> val)
-
-    property doe_sweep_samples:
-        def __get__(self):
-            return self.thisptr.getDoubleParameter(b'General_DoE_SweepSamples')
-        def __set__(self, val):
-            positive_value(val, 'doe_sweep_samples')
-            self.thisptr.setParameter(string(b'General_DoE_SweepSamples'), <int> val)
 
     # solve study
     def solve(self):

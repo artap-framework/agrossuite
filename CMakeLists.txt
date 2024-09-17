@@ -128,13 +128,6 @@ file(COPY ${PROJECT_SOURCE_DIR}/resources_source DESTINATION ${PROJECT_BINARY_DI
 file(COPY ${PROJECT_SOURCE_DIR}/resources DESTINATION ${PROJECT_BINARY_DIR}/usr/share/agrossuite)
 file(COPY ${PROJECT_SOURCE_DIR}/CMake.vars.Windows DESTINATION ${PROJECT_BINARY_DIR})
 
-# python wrapper
-file(COPY ${PROJECT_SOURCE_DIR}/tests.sh DESTINATION ${PROJECT_BINARY_DIR})
-file(COPY ${PROJECT_SOURCE_DIR}/agros-python/agrossuite DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
-file(COPY ${PROJECT_SOURCE_DIR}/agros-python/tests DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
-file(COPY ${PROJECT_SOURCE_DIR}/agros-python/tests-tutorials DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
-file(COPY ${PROJECT_SOURCE_DIR}/agros-python/examples DESTINATION ${PROJECT_BINARY_DIR}/agros-python)
-
 # deploy
 file(COPY ${PROJECT_SOURCE_DIR}/deploy.sh DESTINATION ${PROJECT_BINARY_DIR})
 
@@ -270,7 +263,7 @@ set(info resources_source/modules/acoustic.json
          agros-python/agrossuite/src/pyproblem.pxi
          agros-python/agrossuite/src/pysolution.pxi
          agros-python/agrossuite/src/pystudy.pxi
-         agros-python/agrossuite/src/vtk_tools.py
+         agros-python/agrossuite/src/tools.py
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})
