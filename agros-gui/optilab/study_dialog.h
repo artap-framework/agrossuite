@@ -127,25 +127,8 @@ public:
 protected:
     Study *m_study;
 
-    QTabWidget *tabStudy;
-
     void createControls();
     virtual QLayout *createStudyControls() { return new QHBoxLayout(); }
-    QWidget *createParametersAndFunctionals();
-    QWidget *createParameters();
-    QWidget *createFunctionals();
-
-    QTreeWidget *trvParameterWidget;
-    QPushButton *btnParameterAdd;
-    QPushButton *btnParameterEdit;
-    QPushButton *btnParameterRemove;
-    void readParameters();
-
-    QTreeWidget *trvFunctionalWidget;
-    QPushButton *btnFunctionalAdd;
-    QPushButton *btnFunctionalEdit;
-    QPushButton *btnFunctionalRemove;
-    void readFunctionals();
 
     QCheckBox *chkClearSolution;
     QCheckBox *chkSolveProblem;
@@ -155,18 +138,6 @@ protected:
 
 private slots:
     void doAccept();
-
-    void doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doParameterItemDoubleClicked(QTreeWidgetItem *item, int role);
-    void doParameterAdd(bool checked);
-    void doParameterEdit(bool checked);
-    void doParameterRemove(bool checked);
-
-    void doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role);
-    void doFunctionalAdd(bool checked);
-    void doFunctionalEdit(bool checked);
-    void doFunctionalRemove(bool checked);
 };
 
 class StudyGoalFunctionDialog : public QDialog

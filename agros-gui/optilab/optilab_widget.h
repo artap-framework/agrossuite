@@ -66,6 +66,8 @@ private:
     QAction *actNewRecipeLocalPointValue;
     QAction *actNewRecipeSurfaceIntegral;
     QAction *actNewRecipeVolumeIntegral;
+    QAction *actNewParameter;
+    QAction *actNewGoalFunction;
 
     QAction *actProperties;
     QAction *actDelete;
@@ -92,6 +94,8 @@ private slots:
     void doNewRecipeVolumeIntegral();
     void doNewRecipe(ResultRecipeType type);
     void doNewStudy(const QString &key);
+    void doNewParameter();
+    void doNewGoalFunction();
 
     void solveStudy();
 };

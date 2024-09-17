@@ -113,20 +113,6 @@ OptiLab::~OptiLab()
 {
 }
 
-QWidget *OptiLab::createControlsGeometry()
-{
-    geometryViewer = new SceneViewSimpleGeometry(this);
-
-    auto *layoutGeometry = new QVBoxLayout();
-    layoutGeometry->setContentsMargins(2, 2, 2, 2);
-    layoutGeometry->addWidget(geometryViewer);
-
-    auto *widget = new QWidget();
-    widget->setLayout(layoutGeometry);
-
-    return widget;
-}
-
 QWidget *OptiLab::createControlsChart()
 {
     actChartRescale = new QAction(tr("Rescale chart"), this);
@@ -274,13 +260,30 @@ QWidget *OptiLab::createControlsChart()
     return widRight;
 }
 
+QWidget *OptiLab::createControlsChartControl()
+{
+    cmbAxisX = new QComboBox(this);
+    connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
+    cmbAxisY = new QComboBox(this);
+    connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
+
+    auto *layoutChart = new QFormLayout();
+    layoutChart->addRow(tr("Horizontal axis:"), cmbAxisX);
+    layoutChart->addRow(tr("Vertical axis:"), cmbAxisY);
+
+    auto *groupBoxChart = new QGroupBox(tr("Chart"));
+    groupBoxChart->setLayout(layoutChart);
+
+    return groupBoxChart;
+}
+
 QWidget *OptiLab::createControlsResults()
 {
     // treeview
     trvResults = new QTreeWidget(this);
     trvResults->setExpandsOnDoubleClick(false);
     // trvResults->setHeaderHidden(false);
-    trvResults->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
+    trvResults->setHeaderLabels(QStringList() << tr("Selected variant") << tr("Value"));
     trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvResults->setContextMenuPolicy(Qt::CustomContextMenu);
     trvResults->setMouseTracking(true);
@@ -290,25 +293,22 @@ QWidget *OptiLab::createControlsResults()
     // trvResults->resizeColumnToContents(0);
     // trvResults->resizeColumnToContents(1);
 
-    cmbAxisX = new QComboBox(this);
-    connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
-    cmbAxisY = new QComboBox(this);
-    connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
-
-    auto *formLayout = new QFormLayout();
-    formLayout->addRow(tr("Horizontal axis:"), cmbAxisX);
-    formLayout->addRow(tr("Vertical axis:"), cmbAxisY);
+    geometryViewer = new SceneViewSimpleGeometry(this);
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(2, 2, 2, 2);
-    layoutResults->addLayout(formLayout);
-    layoutResults->addWidget(trvResults, 2);
+    layoutResults->addWidget(trvResults, 4);
+    layoutResults->addWidget(geometryViewer, 1);
 
-    auto *widResults = new QWidget();
-    widResults->setContentsMargins(0, 0, 0, 0);
-    widResults->setLayout(layoutResults);
+    auto *groupBoxVariant = new QGroupBox(tr("Selected variant"));
+    groupBoxVariant->setLayout(layoutResults);
 
-    return widResults;
+    return groupBoxVariant;
+}
+
+QWidget *OptiLab::createControlsGeometry()
+{
+
 }
 
 void OptiLab::createControls()
@@ -323,9 +323,9 @@ void OptiLab::createControls()
 
     auto layoutLeft = new QVBoxLayout();
     layoutLeft->setContentsMargins(0, 0, 0, 0);
-    layoutLeft->addWidget(m_optiLabWidget, 2);
-    layoutLeft->addWidget(createControlsResults(), 2);
-    layoutLeft->addWidget(createControlsGeometry(), 1);
+    layoutLeft->addWidget(m_optiLabWidget, 4);
+    layoutLeft->addWidget(createControlsChartControl(), 0);
+    layoutLeft->addWidget(createControlsResults(), 3);
     layoutLeft->addLayout(layoutButtons, 0);
 
     auto *widLeft = new QWidget();
@@ -333,7 +333,7 @@ void OptiLab::createControls()
     widLeft->setMaximumWidth(400);
     widLeft->setLayout(layoutLeft);
 
-    auto layoutMain = new QHBoxLayout();
+    auto *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(widLeft);
     layoutMain->addWidget(createControlsChart());
@@ -689,7 +689,7 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         auto *parametersNode = new QTreeWidgetItem(trvResults);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
+        parametersNode->setIcon(0, icon("menu_parameter"));
         parametersNode->setExpanded(true);
 
         QMap<QString, ProblemParameter> parameters = m_selectedComputation->config()->parameters()->items();
@@ -706,14 +706,14 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         auto *functionalsNode = new QTreeWidgetItem(trvResults);
         functionalsNode->setText(0, tr("Goal Functions"));
         functionalsNode->setFont(0, fnt);
-        functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+        functionalsNode->setIcon(0, icon("menu_function"));
         functionalsNode->setExpanded(true);
 
         // recipes
         auto *recipesNode = new QTreeWidgetItem(trvResults);
         recipesNode->setText(0, tr("Recipes"));
         recipesNode->setFont(0, fnt);
-        recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
+        recipesNode->setIcon(0, icon("menu_recipe"));
         recipesNode->setExpanded(true);
 
         StringToDoubleMap results = m_selectedComputation->results()->items();

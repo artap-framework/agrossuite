@@ -120,9 +120,16 @@ QWidget *OptiLabWidget::createControlsOptilab()
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
 
+    actNewParameter = new QAction(icon("menu_parameter"), tr("New parameter"), this);
+    connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
+    actNewGoalFunction = new QAction(icon("menu_function"), tr("New goal function"), this);
+    connect(actNewGoalFunction, SIGNAL(triggered()), this, SLOT(doNewGoalFunction()));
+
     mnuOptilab =  new QMenu(tr("Optilab"));
     mnuOptilab->addMenu(mnuStudies);
     mnuOptilab->addMenu(mnuRecipe);
+    mnuOptilab->addAction(actNewParameter);
+    mnuOptilab->addAction(actNewGoalFunction);
     mnuOptilab->addSeparator();
     mnuOptilab->addAction(actDuplicate);
     mnuOptilab->addAction(actExport);
@@ -157,6 +164,9 @@ QWidget *OptiLabWidget::createControlsOptilab()
 
     toolBarLeft->addWidget(toolButtonStudies);
     toolBarLeft->addWidget(toolButtonRecipes);
+    toolBarLeft->addSeparator();
+    toolBarLeft->addAction(actNewParameter);
+    toolBarLeft->addAction(actNewGoalFunction);
 
     QStringList headersOptilab;
     headersOptilab << tr("Key") << tr("Value");
@@ -202,7 +212,7 @@ void OptiLabWidget::refresh()
     // recipes
     auto *recipesNode = new QTreeWidgetItem(trvOptilab);
     recipesNode->setText(0, tr("Recipes"));
-    recipesNode->setIcon(0, icon("menu_study"));
+    recipesNode->setIcon(0, icon("menu_recipe"));
     recipesNode->setFont(0, fnt);
     recipesNode->setExpanded(true);
 
@@ -212,6 +222,14 @@ void OptiLabWidget::refresh()
 
         item->setText(0, QString("%1").arg(recipe->name()));
         item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
+        if (recipe->type() == ResultRecipeType_LocalPointValue)
+            item->setIcon(0, icon("results_point"));
+        else if (recipe->type() == ResultRecipeType_SurfaceIntegral)
+            item->setIcon(0, icon("results_surface"));
+        else if (recipe->type() == ResultRecipeType_VolumeIntegral)
+            item->setIcon(0, icon("results_volume"));
+        else
+            assert(0);
         item->setData(0, Qt::UserRole, recipe->name());
         item->setData(1, Qt::UserRole, OptiLabWidget::OptilabRecipe);
     }
@@ -231,7 +249,7 @@ void OptiLabWidget::refresh()
         auto *studyNode = new QTreeWidgetItem(studiesNode);
         studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
         studyNode->setText(1, study->computationSets().count() > 0 ? tr("Solved") : tr("Not solved"));
-        studyNode->setIcon(0, icon("menu_recipe"));
+        studyNode->setIcon(0, icon("menu_study"));
         studyNode->setFont(0, fnt);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
         studyNode->setData(2, Qt::UserRole, k);
@@ -436,6 +454,8 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
 {
     actProperties->setEnabled(false);
     actDelete->setEnabled(false);
+    actNewParameter->setEnabled(false);
+    actNewGoalFunction->setEnabled(false);
     actRunStudy->setEnabled(false);
     actDuplicate->setEnabled(false);
     actExport->setEnabled(false);
@@ -450,6 +470,9 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             // optilab - study
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+            actNewParameter->setEnabled(true);
+            actNewGoalFunction->setEnabled(true);
+
             actDuplicate->setEnabled(true);
             actExport->setEnabled(true);
         }
@@ -457,11 +480,17 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
         {
             // optilab - parameter
             actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+            actNewParameter->setEnabled(true);
+            actNewGoalFunction->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabGoalFunction)
         {
             // optilab - functional
             actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+            actNewParameter->setEnabled(true);
+            actNewGoalFunction->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabRecipe)
         {
@@ -490,7 +519,7 @@ void OptiLabWidget::doItemProperties()
         if (type == OptiLabWidget::OptilabStudy)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
@@ -564,6 +593,24 @@ void OptiLabWidget::doItemDelete()
             {
                 Agros::problem()->studies()->removeStudy(study);
             }
+        }
+        else if (type == OptiLabWidget::OptilabParameter)
+        {
+            // study
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            QString parameter = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
+
+            study->removeParameter(parameter);
+            refresh();
+        }
+        else if (type == OptiLabWidget::OptilabGoalFunction)
+        {
+            // study
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            QString goal = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
+
+            study->removeGoalFunction(goal);
+            refresh();
         }
         else if (type == OptiLabWidget::OptilabRecipe)
         {
@@ -639,6 +686,47 @@ void OptiLabWidget::doItemContextMenu(const QPoint &pos)
     doItemChanged(current, NULL);
 
     mnuOptilab->exec(QCursor::pos());
+}
+
+void OptiLabWidget::doNewParameter()
+{
+    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+    if (study)
+    {
+        // select parameter dialog
+        ParameterSelectDialog dialog(study, this);
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            // add parameter
+            QString name = dialog.selectedParameterName();
+            if (!name.isEmpty())
+            {
+                Parameter parameter(name);
+                StudyParameterDialog dialog(study, &parameter);
+                if (dialog.exec() == QDialog::Accepted)
+                {
+                    study->addParameter(parameter);
+                    refresh();
+                }
+            }
+        }
+    }
+}
+
+void OptiLabWidget::doNewGoalFunction()
+{
+    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+    if (study)
+    {
+        GoalFunction goal;
+
+        StudyGoalFunctionDialog dialog(study, &goal);
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            study->addGoalFunction(goal);
+            refresh();
+        }
+    }
 }
 
 void OptiLabWidget::doNewStudy(const QString &name)

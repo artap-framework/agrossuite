@@ -97,10 +97,10 @@ private:
     QAction *actChartShowParetoFront;
 
     void createControls();
-    QWidget *createControlsGeometry();
     QWidget *createControlsChart();
+    QWidget *createControlsChartControl();
     QWidget *createControlsResults();
-    // QPair<double, double> findClosestData(QCPGraph *graph, const Point &pos);
+    QWidget *createControlsGeometry();
 
     void resultsFindExtrem(bool minimum);
     int findPointIndex(const QPointF &point);

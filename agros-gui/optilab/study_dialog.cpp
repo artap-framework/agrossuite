@@ -463,14 +463,14 @@ int StudyDialog::showDialog()
 void StudyDialog::createControls()
 {
     // dialog buttons
-    QPushButton *btnApply = new QPushButton(tr("OK"));
+    auto *btnApply = new QPushButton(tr("OK"));
     connect(btnApply, SIGNAL(clicked()), this, SLOT(doAccept()));
     btnApply->setDefault(true);
     
-    QPushButton *btnClose = new QPushButton(tr("Close"));
+    auto *btnClose = new QPushButton(tr("Close"));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(close()));
 
-    QHBoxLayout *layoutButtonBox = new QHBoxLayout();
+    auto *layoutButtonBox = new QHBoxLayout();
     layoutButtonBox->addStretch();
     layoutButtonBox->addWidget(btnApply);
     layoutButtonBox->addWidget(btnClose);
@@ -478,290 +478,30 @@ void StudyDialog::createControls()
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
 
-    QGridLayout *layoutGeneral = new QGridLayout();
+    auto *layoutGeneral = new QGridLayout();
     layoutGeneral->addWidget(chkClearSolution, 0, 0);
     layoutGeneral->addWidget(chkSolveProblem, 1, 0);
     layoutGeneral->setRowStretch(10, 1);
 
-    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
+    auto *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
 
-    QHBoxLayout *layoutOrdinary = new QHBoxLayout();
+    auto *layoutOrdinary = new QHBoxLayout();
     layoutOrdinary->addWidget(grpGeneral);
 
-    QVBoxLayout *layoutStudy = new QVBoxLayout();
+    auto *layoutStudy = new QVBoxLayout();
     layoutStudy->addLayout(layoutOrdinary);
     layoutStudy->addLayout(createStudyControls());
     layoutStudy->addStretch();
     
-    QWidget *widgetStudy = new QWidget(this);
+    auto *widgetStudy = new QWidget();
     widgetStudy->setLayout(layoutStudy);
-    
-    tabStudy = new QTabWidget(this);
-    tabStudy->addTab(widgetStudy, tr("Study"));
-    tabStudy->addTab(createParametersAndFunctionals(), tr("Parameters and functionals"));
-    
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(tabStudy);
+
+    auto *layout = new QVBoxLayout();
+    layout->addWidget(widgetStudy);
     layout->addLayout(layoutButtonBox);
-    
+
     setLayout(layout);
-    
-    readParameters();
-    readFunctionals();
-}
-
-QWidget *StudyDialog::createParametersAndFunctionals()
-{
-    auto *layoutParameters = new QVBoxLayout();
-    layoutParameters->addWidget(createParameters());
-
-    auto *grpParameters = new QGroupBox(tr("Parameters"));
-    grpParameters->setLayout(layoutParameters);
-
-    auto *layoutFunctionals = new QVBoxLayout();
-    layoutFunctionals->addWidget(createFunctionals());
-
-    auto *grpFunctionals = new QGroupBox(tr("Goal Functions"));
-    grpFunctionals->setLayout(layoutFunctionals);
-
-    auto *layoutPF = new QVBoxLayout();
-    layoutPF->addWidget(grpParameters);
-    layoutPF->addWidget(grpFunctionals);
-    
-    auto *widget = new QWidget(this);
-    widget->setLayout(layoutPF);
-    
-    return widget;
-}
-
-QWidget *StudyDialog::createParameters()
-{
-    trvParameterWidget = new QTreeWidget(this);
-    trvParameterWidget->setExpandsOnDoubleClick(false);
-    trvParameterWidget->setHeaderHidden(false);
-    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
-    trvParameterWidget->setColumnCount(3);
-    trvParameterWidget->setIndentation(2);
-    trvParameterWidget->setColumnWidth(0, 200);
-    trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
-    trvParameterWidget->headerItem()->setTextAlignment(2, Qt::AlignRight);
-    
-    // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
-    connect(trvParameterWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doParameterItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvParameterWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doParameterItemDoubleClicked(QTreeWidgetItem *, int)));
-    
-    btnParameterAdd = new QPushButton(tr("Add"), this);
-    connect(btnParameterAdd, SIGNAL(clicked(bool)), this, SLOT(doParameterAdd(bool)));
-    btnParameterEdit = new QPushButton(tr("Edit"), this);
-    connect(btnParameterEdit, SIGNAL(clicked(bool)), this, SLOT(doParameterEdit(bool)));
-    btnParameterRemove = new QPushButton(tr("Remove"), this);
-    connect(btnParameterRemove, SIGNAL(clicked(bool)), this, SLOT(doParameterRemove(bool)));
-    
-    QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    buttonsLayout->addStretch();
-    buttonsLayout->addWidget(btnParameterAdd);
-    buttonsLayout->addWidget(btnParameterEdit);
-    buttonsLayout->addWidget(btnParameterRemove);
-    
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(trvParameterWidget);
-    layout->addLayout(buttonsLayout);
-    
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layout);
-    
-    return widget;
-}
-
-void StudyDialog::readParameters()
-{
-    trvParameterWidget->clear();
-    
-    foreach (Parameter parameter, m_study->parameters())
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvParameterWidget);
-        
-        item->setText(0, QString("%1").arg(parameter.name()));
-        item->setData(0, Qt::UserRole, parameter.name());
-        item->setText(1, QString("%1").arg(parameter.lowerBound()));
-        item->setText(2, QString("%1").arg(parameter.upperBound()));
-        item->setTextAlignment(1, Qt::AlignRight);
-        item->setTextAlignment(2, Qt::AlignRight);
-    }
-    
-    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros::problem()->config()->parameters()->items().count());
-    
-    doParameterItemChanged(nullptr, nullptr);
-}
-
-void StudyDialog::doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    btnParameterEdit->setEnabled(trvParameterWidget->currentItem());
-    btnParameterRemove->setEnabled(trvParameterWidget->currentItem());
-    
-    if (trvParameterWidget->currentItem())
-    {
-        
-    }
-}
-
-void StudyDialog::doParameterItemDoubleClicked(QTreeWidgetItem *item, int role)
-{
-    if (trvParameterWidget->currentItem())
-    {
-        doParameterEdit(true);
-    }
-}
-
-void StudyDialog::doParameterAdd(bool checked)
-{
-    // select parameter dialog
-    ParameterSelectDialog dialog(m_study, this);
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        // add parameter
-        QString name = dialog.selectedParameterName();
-        if (!name.isEmpty())
-        {
-            Parameter parameter(name);
-            StudyParameterDialog dialog(m_study, &parameter);
-            if (dialog.exec() == QDialog::Accepted)
-            {
-                m_study->addParameter(parameter);
-                readParameters();
-            }
-        }
-    }
-}
-
-void StudyDialog::doParameterEdit(bool checked)
-{
-    if (trvParameterWidget->currentItem())
-    {
-        StudyParameterDialog dialog(m_study, &m_study->parameter(trvParameterWidget->currentItem()->data(0, Qt::UserRole).toString()));
-        if (dialog.exec() == QDialog::Accepted)
-        {
-            readParameters();
-        }
-    }
-}
-
-void StudyDialog::doParameterRemove(bool checked)
-{
-    if (trvParameterWidget->currentItem())
-    {
-        m_study->removeParameter(trvParameterWidget->currentItem()->data(0, Qt::UserRole).toString());
-        
-        readParameters();
-    }
-}
-
-QWidget *StudyDialog::createFunctionals()
-{
-    trvFunctionalWidget = new QTreeWidget(this);
-    trvFunctionalWidget->setExpandsOnDoubleClick(false);
-    trvFunctionalWidget->setHeaderHidden(false);
-    trvFunctionalWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Weight") << tr("Expression"));
-    trvFunctionalWidget->setColumnCount(3);
-    trvFunctionalWidget->setIndentation(2);
-    
-    // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
-    connect(trvFunctionalWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doFunctionalItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvFunctionalWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doFunctionalItemDoubleClicked(QTreeWidgetItem *, int)));
-    
-    btnFunctionalAdd = new QPushButton(tr("Add"), this);
-    connect(btnFunctionalAdd, SIGNAL(clicked(bool)), this, SLOT(doFunctionalAdd(bool)));
-    btnFunctionalEdit = new QPushButton(tr("Edit"), this);
-    connect(btnFunctionalEdit, SIGNAL(clicked(bool)), this, SLOT(doFunctionalEdit(bool)));
-    btnFunctionalRemove = new QPushButton(tr("Remove"), this);
-    connect(btnFunctionalRemove, SIGNAL(clicked(bool)), this, SLOT(doFunctionalRemove(bool)));
-    
-    QHBoxLayout *buttonsLayout = new QHBoxLayout();
-    buttonsLayout->addStretch();
-    buttonsLayout->addWidget(btnFunctionalAdd);
-    buttonsLayout->addWidget(btnFunctionalEdit);
-    buttonsLayout->addWidget(btnFunctionalRemove);
-    
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(trvFunctionalWidget);
-    layout->addLayout(buttonsLayout);
-    
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layout);
-    
-
-    return widget;
-}
-
-void StudyDialog::readFunctionals()
-{
-    trvFunctionalWidget->clear();
-    
-    foreach (GoalFunction goal, m_study->goalFunctions())
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvFunctionalWidget);
-        
-        item->setText(0, QString("%1").arg(goal.name()));
-        item->setData(0, Qt::UserRole, goal.name());
-        item->setText(1, QString("%1 \%").arg(goal.weight()));
-        item->setText(2, QString("%1").arg((goal.expression().count() < 45) ? goal.expression() : goal.expression().left(45) + "..."));
-    }
-    
-    doFunctionalItemChanged(nullptr, nullptr);
-}
-
-void StudyDialog::doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    btnFunctionalEdit->setEnabled(trvFunctionalWidget->currentItem());
-    btnFunctionalRemove->setEnabled(trvFunctionalWidget->currentItem());
-    
-    if (trvFunctionalWidget->currentItem())
-    {
-        
-    }
-}
-
-void StudyDialog::doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role)
-{
-    if (trvFunctionalWidget->currentItem())
-    {
-        doFunctionalEdit(true);
-    }
-}
-
-void StudyDialog::doFunctionalAdd(bool checked)
-{
-    GoalFunction goal;
-    
-    StudyGoalFunctionDialog dialog(m_study, &goal);
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        m_study->addGoalFunction(goal);
-        readFunctionals();
-    }
-}
-
-void StudyDialog::doFunctionalEdit(bool checked)
-{
-    if (trvFunctionalWidget->currentItem())
-    {
-        StudyGoalFunctionDialog dialog(m_study, &m_study->goal(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
-        if (dialog.exec() == QDialog::Accepted)
-        {
-            readFunctionals();
-        }
-    }
-}
-
-void StudyDialog::doFunctionalRemove(bool checked)
-{
-    if (trvFunctionalWidget->currentItem())
-    {
-        m_study->removeGoalFunction(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString());
-        
-        readFunctionals();
-    }
 }
 
 void StudyDialog::doAccept()
