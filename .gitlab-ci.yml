@@ -257,7 +257,7 @@ test-tutorials-windows:
   needs: ["build-windows"]
   tags:
     - agros
-    - windows
+    - win11
 
   script: 
     - cd build/agros-python
