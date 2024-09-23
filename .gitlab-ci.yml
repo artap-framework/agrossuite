@@ -261,7 +261,7 @@ test-tutorials-windows:
 
   script: 
     - cd build/agros-python
-    - source env/bin/activate    
+    - .\env\Scripts\activate
     - cd tests-tutorials
     # generate test files
     - python tutorials.py
