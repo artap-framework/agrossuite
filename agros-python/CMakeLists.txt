@@ -30,14 +30,12 @@ file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/examples DESTINATION ${PROJECT_BI
 SET(SOURCES extension.cpp
     pythonlab/pyfield.cpp
     pythonlab/pygeometry.cpp
-    pythonlab/pyparticletracing.cpp
-    pythonlab/pyproblem.cpp
+        pythonlab/pyproblem.cpp
     pythonlab/pystudy.cpp
     pythonlab/pyagros.cpp)
 SET(HEADERS pythonlab/pyfield.h
     pythonlab/pygeometry.h
-    pythonlab/pyparticletracing.h
-    pythonlab/pyproblem.h
+        pythonlab/pyproblem.h
     pythonlab/pystudy.h
     pythonlab/pyagros.h)
 

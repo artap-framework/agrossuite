@@ -230,7 +230,9 @@ cdef class __Problem__:
             return __StudyNSGA2__()
         elif (type == "sweep"):
             return __StudySweep__()
-
+        elif (type == "model"):
+            return __StudyModel__()
+            
         raise TypeError("Study type is not supported.")
 
     def study(self, index):
@@ -252,7 +254,9 @@ cdef class __Problem__:
             return __StudyNSGA2__(index)
         elif (type == "sweep"):
             return __StudySweep__(index)
-
+        elif (type == "model"):
+            return __StudyModel__(index)
+            
         raise TypeError("Study type is not supported.")
 
     def load(self, fn):

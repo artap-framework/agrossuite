@@ -54,6 +54,13 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
 
         string getInitMethod()
         void setInitMethod(string &initMethod) except +
+        
+    cdef cppclass PyStudyModel(PyStudy):
+        PyStudyModel(int index)
+
+        # string getInitMethod()
+        # void setInitMethod(string &initMethod) except +
+        
 
 cdef class __Study__:
     cdef PyStudy *thisptr
@@ -264,3 +271,26 @@ cdef class __StudySweep__(__Study__):
         self.thisptr.setParameter(string(b'Sweep_num_samples'), <int> settings['num_samples'])
 
         (<PyStudySweep*> self.thisptr).setInitMethod(<string> settings['init_method'].encode())
+        
+cdef class __StudyModel__(__Study__):
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyModel(index)
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        # return {'num_samples' : self.thisptr.getIntParameter(b'Sweep_num_samples'),
+        #         'init_method' : (<StudyModel*> self.thisptr).getInitMethod().decode()}
+        return {}
+
+    def __set_settings__(self, settings):
+        # positive_value(settings['num_samples'], 'num_samples')
+        # self.thisptr.setParameter(string(b'Sweep_num_samples'), <int> settings['num_samples'])
+
+        # (<StudyModel*> self.thisptr).setInitMethod(<string> settings['init_method'].encode())
+        pass
+        
+        
+        
+        

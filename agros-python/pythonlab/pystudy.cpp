@@ -266,7 +266,6 @@ PyStudySweep::PyStudySweep(int index) : PyStudy()
         if (index < Agros::problem()->studies()->items().count())
             m_study = Agros::problem()->studies()->items().at(index);
     }
-
 }
 
 void PyStudySweep::setInitMethod(const std::string &initMethod)
@@ -282,3 +281,35 @@ void PyStudySweep::setInitMethod(const std::string &initMethod)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
     }
 }
+
+
+// Model **************************************************************
+
+PyStudyModel::PyStudyModel(int index) : PyStudy()
+{
+    // add study
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_Model);
+        Agros::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros::problem()->studies()->items().count())
+            m_study = Agros::problem()->studies()->items().at(index);
+    }
+}
+//
+// void PyStudyModel::setInitMethod(const std::string &initMethod)
+// {
+//     if (study()->initMethodStringKeys().contains(QString::fromStdString(initMethod)))
+//         m_study->setValue(Study::Sweep_init_method, QString::fromStdString(initMethod));
+//     else
+//     {
+//         QStringList list;
+//         foreach (QString key, study()->initMethodStringKeys())
+//             list.append(key);
+//
+//         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+//     }
+// }

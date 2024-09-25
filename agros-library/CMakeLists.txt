@@ -34,8 +34,9 @@ SET(SOURCES
     optilab/study_bayesopt.cpp
     optilab/study_nlopt.cpp
     optilab/study_openga.cpp
+    optilab/study_model.cpp
     optilab/parameter.cpp
-        optilab/goal_function.cpp
+    optilab/goal_function.cpp
     particle/particle_tracing.cpp
     particle/particle_forces.cpp
     scene.cpp

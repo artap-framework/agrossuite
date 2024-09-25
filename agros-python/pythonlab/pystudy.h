@@ -30,6 +30,7 @@
 #include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_sweep.h"
+#include "optilab/study_model.h"
 
 #include "nlopt.hpp"
 
@@ -145,6 +146,18 @@ public:
     void setInitMethod(const std::string &initMethod);
 };
 
+class AGROS_LIBRARY_API PyStudyModel : public PyStudy
+{
+public:
+    PyStudyModel(int index = -1);
+    virtual ~PyStudyModel() {}
 
+    virtual StudyModel *study() { return static_cast<StudyModel *>(m_study); }
+    virtual StudyModel *study() const { return static_cast<StudyModel *>(m_study); }
+
+    // Model
+    // inline std::string getInitMethod() const { return m_study->value(Study::Sweep_init_method).toString().toStdString(); }
+    // void setInitMethod(const std::string &initMethod);
+};
 #endif // PYTHONLABSTUDY_H
 

@@ -114,7 +114,6 @@ include "pyfield.pxi"
 include "pyproblem.pxi"
 include "pycomputation.pxi"
 include "pysolution.pxi"
-include "pyparticletracing.pxi"
 include "pystudy.pxi"
 
 cdef extern from "../../agros-python/pythonlab/pyagros.h":

@@ -31,6 +31,7 @@
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
 #include <optilab/study_openga.h>
+#include <optilab/study_model.h>
 
 class StudySweepDialog : public StudyDialog
 {
@@ -142,5 +143,22 @@ private:
     QComboBox *cmbHPScoreFunction;
 };
 
+class StudyModelDialog : public StudyDialog
+{
+public:
+    StudyModelDialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudyModel *study() { return dynamic_cast<StudyModel *>(m_study); }
+
+    virtual QLayout *createStudyControls();
+
+    virtual void load();
+    virtual void save();
+
+private:
+    // QSpinBox *txtNumSamples;
+    // QComboBox *cmbInitMethod;
+};
 
 #endif // STUDY_METHODDIALOG_H
