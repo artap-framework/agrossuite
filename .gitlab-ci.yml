@@ -56,6 +56,8 @@ build-linux:
     # strip shared objects
     - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
+    # remove old wheels
+    - rm -rf *.whl	
     # build wheel
     - pip wheel agrossuite/.
     # install package
