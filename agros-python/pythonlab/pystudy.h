@@ -81,6 +81,7 @@ public:
 
     void steps(vector<int> &steps) const;
     void values(std::string variable, vector<double> &values) const;
+    void results(vector<int> &steps, vector<std::string> &names, vector<std::string> &types, vector<double> &values) const;
 
 protected:
     Study *m_study;

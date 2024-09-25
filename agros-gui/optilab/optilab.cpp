@@ -697,12 +697,12 @@ void OptiLab::doComputationSelected(const QString &problemDir)
             parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
         }
 
-        // functionals
-        auto *functionalsNode = new QTreeWidgetItem(trvResults);
-        functionalsNode->setText(0, tr("Goal Functions"));
-        functionalsNode->setFont(0, fnt);
-        functionalsNode->setIcon(0, icon("menu_function"));
-        functionalsNode->setExpanded(true);
+        // goal functions
+        auto *goalNode = new QTreeWidgetItem(trvResults);
+        goalNode->setText(0, tr("Goal Functions"));
+        goalNode->setFont(0, fnt);
+        goalNode->setIcon(0, icon("menu_function"));
+        goalNode->setExpanded(true);
 
         // recipes
         auto *recipesNode = new QTreeWidgetItem(trvResults);
@@ -717,7 +717,7 @@ void OptiLab::doComputationSelected(const QString &problemDir)
             QTreeWidgetItem *item = nullptr;
             if (m_selectedComputation->results()->type(key) == ComputationResultType_Functional)
             {
-                item = new QTreeWidgetItem(functionalsNode);
+                item = new QTreeWidgetItem(goalNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Goal);
             }
             else if (m_selectedComputation->results()->type(key) == ComputationResultType_Recipe)

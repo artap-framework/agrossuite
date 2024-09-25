@@ -52,8 +52,6 @@ void StudyModel::solve()
 	try
 	{
 		this->evaluateStep(computation);
-		double value = this->evaluateSingleGoal(computation);
-		qInfo() << "evaluateSingleGoal" << value;
 
 		if (this->value(Study::General_ClearSolution).toBool())
 			computation->clearSolution();

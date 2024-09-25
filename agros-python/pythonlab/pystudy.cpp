@@ -129,6 +129,48 @@ void PyStudy::values(std::string variable, vector<double> &values) const
     }
 }
 
+void PyStudy::results(vector<int> &steps, vector<std::string> &names, vector<std::string> &types, vector<double> &values) const
+{
+    QList<ComputationSet> computationSets = m_study->computationSets();
+
+    for (int i = 0; i < computationSets.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = computationSets[i].computations();
+
+        for (int j = 0; j < computations.count(); j++)
+        {
+            QSharedPointer<Computation> computation = computations[j];
+            int current_step = steps.size();
+
+            // parameters
+            QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
+            foreach (Parameter parameter, m_study->parameters())
+            {
+                steps.push_back(current_step);
+                names.push_back(parameter.name().toStdString());
+                types.push_back("parameter");
+                values.push_back(parameters[parameter.name()].value());
+            }
+
+            // results
+            StringToDoubleMap results = computation->results()->items();
+            foreach (QString key, results.keys())
+            {
+                steps.push_back(current_step);
+                names.push_back(key.toStdString());
+                values.push_back(results[key]);
+
+                if (computation->results()->type(key) == ComputationResultType_Functional)
+                    types.push_back("goal");
+                else if (computation->results()->type(key) == ComputationResultType_Recipe)
+                    types.push_back("recipe");
+                else
+                    assert(0);
+            }
+        }
+    }
+}
+
 // BayesOpt **************************************************************
 
 PyStudyBayesOpt::PyStudyBayesOpt(int index) : PyStudy()
