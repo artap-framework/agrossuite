@@ -306,11 +306,6 @@ QWidget *OptiLab::createControlsResults()
     return groupBoxVariant;
 }
 
-QWidget *OptiLab::createControlsGeometry()
-{
-   return 0;
-}
-
 void OptiLab::createControls()
 {
     btnComputationSolve = new QPushButton(tr("Solve problem and show solution"));

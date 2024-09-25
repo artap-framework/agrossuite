@@ -100,7 +100,6 @@ private:
     QWidget *createControlsChart();
     QWidget *createControlsChartControl();
     QWidget *createControlsResults();
-    QWidget *createControlsGeometry();
 
     void resultsFindExtrem(bool minimum);
     int findPointIndex(const QPointF &point);
