@@ -689,7 +689,7 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         auto *parametersNode = new QTreeWidgetItem(trvResults);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setIcon(0, icon("menu_parameter"));
+        parametersNode->setIcon(0, icon("menu_parameter"))  ;
         parametersNode->setExpanded(true);
 
         QMap<QString, ProblemParameter> parameters = m_selectedComputation->config()->parameters()->items();
