@@ -308,7 +308,7 @@ QWidget *OptiLab::createControlsResults()
 
 QWidget *OptiLab::createControlsGeometry()
 {
-
+   return 0;
 }
 
 void OptiLab::createControls()
