@@ -77,13 +77,6 @@ cdef class __Computation__:
 
         return self._solutions[field_id]
 
-    def particle_tracing(self):
-        """Create and return new object of ParticleTracing class."""
-        tracing = __ParticleTracing__()
-        tracing._tracing.setComputation(self._computation)
-
-        return tracing
-
     def elapsed_time(self):
         """Return elapsed time in seconds."""
         return self._computation.timeElapsed()

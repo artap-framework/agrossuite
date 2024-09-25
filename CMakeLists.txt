@@ -259,7 +259,6 @@ set(info resources_source/modules/acoustic.json
          agros-python/agrossuite/src/pycomputation.pxi
          agros-python/agrossuite/src/pyfield.pxi
          agros-python/agrossuite/src/pygeometry.pxi
-         agros-python/agrossuite/src/pyparticletracing.pxi
          agros-python/agrossuite/src/pyproblem.pxi
          agros-python/agrossuite/src/pysolution.pxi
          agros-python/agrossuite/src/pystudy.pxi
