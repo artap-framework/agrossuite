@@ -14,7 +14,7 @@ import platform
 # else:
 #     root = root_linux
 
-root = "/../../build/usr/share/agrossuite/resources/examples/"
+root = "../../build/usr/share/agrossuite/resources/examples/"
 
 excludes = ["Ackleys function.ags", "Booths function.ags", "Rosenbrock function.ags", "Binh and Korn function.ags", "Constr-Ex problem.ags"]
 
