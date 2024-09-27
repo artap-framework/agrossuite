@@ -35,6 +35,9 @@ build-linux:
     - mkdir -p build/usr/lib 
     - cp -f dealii/build/lib/libdeal_II.so.9.5.2 build/usr/lib/libdeal_II.so.9.5.2     
     - cd build
+    # ******************* TODO: fix after fixing cmake for Python
+    - rm -rf agros-python
+    # *******************
     - cmake ..     
     - make -j10    
     # generator
