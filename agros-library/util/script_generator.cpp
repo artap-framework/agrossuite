@@ -34,23 +34,87 @@
 #include "scenelabel.h"
 
 ScriptGenerator::ScriptGenerator() :
-    m_addComputation(true), m_addSolution(true), m_parametersAsVariables(true)
+    m_addComputation(true), m_addStudies(true), m_parametersAsVariables(true), m_createModel(false)
 {
 }
 
-// create script from model
 QString ScriptGenerator::createPythonFromModel()
 {
     QString str;
 
     // import modules
     str += "from agrossuite import agros\n\n";
+    str += createPython();
+
+    return str;
+}
+
+QString ScriptGenerator::createPythonFromModelForServer()
+{
+    m_parametersAsVariables = false;
+    m_addComputation = false;
+    m_addStudies = true;
+    m_createModel = true;
+
+    QString str;
+
+    // import modules
+    str += "from agrossuite import agros\n\n";
+
+    // add scalar variables
+    str += "# scalar variables\n";
+    str += "def scalar_variables():\n";
+    str += "    ids = {}\n";
+    str += "    names = {}\n";
+    str += "    components = {}\n";
+    foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
+    {
+        str += QString("    ids[\"%1\"] = []\n").arg(fieldInfo->fieldId());
+        str += QString("    names[\"%1\"] = []\n").arg(fieldInfo->fieldId());
+        str += QString("    components[\"%1\"] = []\n").arg(fieldInfo->fieldId());
+        foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables(Agros::problem()->config()->coordinateType()))
+        {
+            str += QString("    ids[\"%1\"].append(\"%2\")\n").arg(fieldInfo->fieldId()).arg(variable.id());
+            str += QString("    names[\"%1\"].append(\"%2\")\n").arg(fieldInfo->fieldId()).arg(variable.name());
+            str += QString("    components[\"%1\"].append(\"%2\")\n").arg(fieldInfo->fieldId()).arg(variable.isScalar() ? "scalar" : "vector");
+        }
+    }
+    str += "\n";
+    str += "    return [ids, names, components]\n";
+    str += "\n";
+
+
+    //     cmbFieldInfo->addItem(fieldInfo->name(), fieldInfo->fieldId());
+    //
+    //
+    // cmbFieldVariable->addItem(variable.name(),
+    //                           variable.id());
+
+
+    // add def create_problem()
+    str += "def create_problem():\n";
+
+    QString script = createPython();
+    script += "return [problem, study_model]\n";
+
+    script.insert(0, "    ");
+    script.replace('\n', "\n    ");
+
+    str += script;
+
+    return str;
+}
+
+// create script from model
+QString ScriptGenerator::createPython()
+{
+    QString str;
 
     // model
     str += "# problem\n";
     str += QString("problem = agros.problem(clear = True)\n");
     str += QString("problem.coordinate_type = \"%1\"\n").arg(coordinateTypeToStringKey(Agros::problem()->config()->coordinateType()));
-    str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros::problem()->config()->meshType()));
+    // str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros::problem()->config()->meshType()));
 
     // parameters
     str += "\n";
@@ -109,9 +173,9 @@ QString ScriptGenerator::createPythonFromModel()
         str += QString("%1.analysis_type = \"%2\"\n").
                 arg(fieldInfo->fieldId()).
                 arg(analysisTypeToStringKey(fieldInfo->analysisType()));
-        str += QString("%1.matrix_solver = \"%2\"\n").
-                arg(fieldInfo->fieldId()).
-                arg(matrixSolverTypeToStringKey(fieldInfo->matrixSolver()));
+        // str += QString("%1.matrix_solver = \"%2\"\n").
+        //         arg(fieldInfo->fieldId()).
+        //         arg(matrixSolverTypeToStringKey(fieldInfo->matrixSolver()));
 
         if (fieldInfo->matrixSolver() == SOLVER_DEALII)
         {
@@ -586,93 +650,99 @@ QString ScriptGenerator::createPythonFromModel()
         str += "\n";
     }
 
-    if (Agros::problem()->studies()->items().count() > 0)
+    if (m_addStudies)
     {
-        str += "# studies\n";
-        foreach (Study *study, Agros::problem()->studies()->items())
+        if (Agros::problem()->studies()->items().count() > 0)
         {
-            str += QString("study_%1 = problem.add_study(\"%1\")\n").arg(studyTypeToStringKey(study->type()));
-
-            // parameters
-            foreach (Parameter parameter, study->parameters())
+            str += "# studies\n";
+            foreach (Study *study, Agros::problem()->studies()->items())
             {
-                str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
+                str += QString("study_%1 = problem.add_study(\"%1\")\n").arg(studyTypeToStringKey(study->type()));
+
+                // settings
+                str += QString("study_%1.clear_solution = %2\n").
                         arg(studyTypeToStringKey(study->type())).
-                        arg(parameter.name()).
-                        arg(parameter.lowerBound()).
-                        arg(parameter.upperBound());
-            }
-
-            // functionals
-            foreach (GoalFunction goal, study->goalFunctions())
-                str += QString("study_%1.add_goal_function(\"%2\", \"%3\", %4)\n").
+                        arg(study->value(Study::General_ClearSolution).toBool() ? "True" : "False");
+                str += QString("study_%1.solve_problem = %2\n").
                         arg(studyTypeToStringKey(study->type())).
-                        arg(goal.name()).
-                        arg(goal.expression()).
-                        arg(goal.weight());
+                        arg(study->value(Study::General_SolveProblem).toBool() ? "True" : "False");
+                str += QString("study_%1.name = \"%2\"\n").
+                        arg(studyTypeToStringKey(study->type())).
+                        arg(study->value(Study::General_Name).toString());
+                QString description = study->value(Study::General_Description).toString();
+                description.replace("\n", "\\n");
+                str += QString("study_%1.description = \"%2\"\n").
+                        arg(studyTypeToStringKey(study->type())).
+                        arg(description);
 
-            // settings
-            str += QString("study_%1.clear_solution = %2\n").
-                    arg(studyTypeToStringKey(study->type())).
-                    arg(study->value(Study::General_ClearSolution).toBool() ? "True" : "False");
-            str += QString("study_%1.solve_problem = %2\n").
-                    arg(studyTypeToStringKey(study->type())).
-                    arg(study->value(Study::General_SolveProblem).toBool() ? "True" : "False");
-
-            foreach (Study::Type type, study->keys().keys())
-            {
-                if (study->keys()[type].toLower().startsWith(studyTypeToStringKey(study->type()).toLower()))
+                // parameters
+                foreach (Parameter parameter, study->parameters())
                 {
-                    // only keys for selected study
-                    QString key = study->keys()[type].mid(studyTypeToStringKey(study->type()).count() + 1, -1);
-
-                    QString value;
-                    if (study->value(type).type() == QVariant::String)
-                        value = QString("\"%1\"").arg(study->value(type).toString());
-                    else if (study->value(type).type() == QVariant::Bool)
-                        value = (study->value(type).toBool()) ? "True" : "False";
-                    else
-                        value = study->value(type).toString();
-
-                    str += QString("study_%1.settings[\"%2\"] = %3\n").
+                    str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
                             arg(studyTypeToStringKey(study->type())).
-                            arg(key).
-                            arg(value);
+                            arg(parameter.name()).
+                            arg(parameter.lowerBound()).
+                            arg(parameter.upperBound());
                 }
-            }
 
-            if (m_addComputation)
-            {
-                str += "# computation\n";
-                str += QString("study_%1.solve()\n").
-                        arg(studyTypeToStringKey(study->type()));
-            }
+                // functionals
+                foreach (GoalFunction goal, study->goalFunctions())
+                    str += QString("study_%1.add_goal_function(\"%2\", \"%3\", %4)\n").
+                            arg(studyTypeToStringKey(study->type())).
+                            arg(goal.name()).
+                            arg(goal.expression()).
+                            arg(goal.weight());
 
-            str += "\n";
+                foreach (Study::Type type, study->keys().keys())
+                {
+                    if (study->keys()[type].toLower().startsWith(studyTypeToStringKey(study->type()).toLower()))
+                    {
+                        // only keys for selected study
+                        QString key = study->keys()[type].mid(studyTypeToStringKey(study->type()).count() + 1, -1);
+
+                        QString value;
+                        if (study->value(type).type() == QVariant::String)
+                            value = QString("\"%1\"").arg(study->value(type).toString());
+                        else if (study->value(type).type() == QVariant::Bool)
+                            value = (study->value(type).toBool()) ? "True" : "False";
+                        else
+                            value = study->value(type).toString();
+
+                        str += QString("study_%1.settings[\"%2\"] = %3\n").
+                                arg(studyTypeToStringKey(study->type())).
+                                arg(key).
+                                arg(value);
+                    }
+                }
+
+                if (m_addComputation)
+                {
+                    str += "\n";
+                    str += "# computation\n";
+                    str += QString("study_%1.solve()\n").
+                            arg(studyTypeToStringKey(study->type()));
+                }
+
+                str += "\n";
+            }
         }
     }
 
-    if (Agros::problem()->studies()->items().count() == 0)
+    str += "\n";
+    if (m_addComputation && (!m_addStudies))
     {
         str += "\n";
-        if (m_addComputation)
-        {
-            str += "\n";
-            str += "# computation\n";
-            str += "computation = problem.computation()\n";
-            str += "computation.solve()\n";
-        }
+        str += "# computation\n";
+        str += "computation = problem.computation()\n";
+        str += "computation.solve()\n";
 
         str += "\n";
-        if (m_addSolution)
+        str += "# solution\n";
+        foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
         {
-            str += "# solution\n";
-            foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
-            {
-                str += QString("solution_%1 = computation.solution(\"%2\")\n").
-                        arg(fieldInfo->fieldId()).
-                        arg(fieldInfo->fieldId());
-            }
+            str += QString("solution_%1 = computation.solution(\"%2\")\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(fieldInfo->fieldId());
         }
     }
 

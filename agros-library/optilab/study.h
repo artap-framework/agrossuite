@@ -222,6 +222,8 @@ public:
     {
         General_ClearSolution,
         General_SolveProblem,
+        General_Name,
+        General_Description,
 
         NLopt_xtol_rel,
         NLopt_xtol_abs,

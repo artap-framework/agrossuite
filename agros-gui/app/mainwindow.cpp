@@ -635,7 +635,8 @@ void MainWindow::doDocumentSaveGeometry()
 
 void MainWindow::doCreatePythonFromModel()
 {
-    auto scriptDialog = new ScriptGeneratorDialog();
+    auto *scriptDialog = new ScriptGeneratorDialog();
+    scriptDialog->doGenerate();
     scriptDialog->show();
 }
 

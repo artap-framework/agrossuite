@@ -171,6 +171,34 @@ void PyStudy::results(vector<int> &steps, vector<std::string> &names, vector<std
     }
 }
 
+void PyStudy::getComputationProblemDir(int index, std::string &problemDir) const
+{
+    int localIndex = 0;
+    problemDir = "";
+    QList<ComputationSet> computationSets = m_study->computationSets();
+
+    if (computationSets.size() == 0)
+        throw out_of_range(QObject::tr("Computations are empty.").toStdString());
+
+    for (int i = 0; i < computationSets.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = computationSets[i].computations();
+
+        for (int j = 0; j < computations.count(); j++)
+        {
+            if (localIndex == index)
+            {
+                problemDir = computations[j]->problemDir().toStdString();
+                return;
+            }
+
+            localIndex++;
+        }
+    }
+
+    throw out_of_range(QObject::tr("Invalid index. Valid range is from 0 to %1").arg(localIndex-1).toStdString());
+}
+
 // BayesOpt **************************************************************
 
 PyStudyBayesOpt::PyStudyBayesOpt(int index) : PyStudy()

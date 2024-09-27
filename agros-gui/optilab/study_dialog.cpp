@@ -476,25 +476,34 @@ void StudyDialog::createControls()
     layoutButtonBox->addStretch();
     layoutButtonBox->addWidget(btnApply);
     layoutButtonBox->addWidget(btnClose);
-    
+
+    txtName = new QLineEdit();
+    txtDescription = new QPlainTextEdit();
+    txtDescription->setMinimumWidth(300);
+    txtDescription->setMinimumHeight(200);
+
+    auto *layoutNames = new QGridLayout();
+    layoutNames->addWidget(new QLabel(tr("Name:")), 0, 0);
+    layoutNames->addWidget(txtName, 0, 1);
+    layoutNames->addWidget(new QLabel(tr("Description:")), 1, 0);
+    layoutNames->addWidget(txtDescription, 1, 1);
+    layoutNames->setColumnStretch(1, 1);
+
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
 
     auto *layoutGeneral = new QGridLayout();
     layoutGeneral->addWidget(chkClearSolution, 0, 0);
     layoutGeneral->addWidget(chkSolveProblem, 1, 0);
-    layoutGeneral->setRowStretch(10, 1);
 
     auto *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
 
-    auto *layoutOrdinary = new QHBoxLayout();
-    layoutOrdinary->addWidget(grpGeneral);
-
     auto *layoutStudy = new QVBoxLayout();
-    layoutStudy->addLayout(layoutOrdinary);
+    layoutStudy->addLayout(layoutNames);
+    layoutStudy->addWidget(grpGeneral);
     layoutStudy->addLayout(createStudyControls());
-    layoutStudy->addStretch();
+    // layoutStudy->addStretch();
     
     auto *widgetStudy = new QWidget();
     widgetStudy->setLayout(layoutStudy);
@@ -516,12 +525,18 @@ void StudyDialog::load()
 {
     chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
     chkSolveProblem->setChecked(m_study->value(Study::General_SolveProblem).toBool());
+
+    txtName->setText(m_study->value(Study::General_Name).toString());
+    txtDescription->setPlainText(m_study->value(Study::General_Description).toString());
 }
 
 void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
     m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
+
+    m_study->setValue(Study::General_Name, txtName->text());
+    m_study->setValue(Study::General_Description, txtDescription->toPlainText());
 }
 
 // **************************************************************************************************************

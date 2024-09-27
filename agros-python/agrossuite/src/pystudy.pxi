@@ -10,6 +10,7 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
         bool getBoolParameter(string &parameter) except +
         int getIntParameter(string &parameter) except +
         double getDoubleParameter(string &parameter) except +
+        string getStringParameter(string &parameter) except +
 
         string type()
 
@@ -22,9 +23,12 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
 
         # postprocessor
         string findExtreme(string type, string key, bool minimum) except +
+
         void steps(vector[int] &steps)
         void values(string variable, vector[double] &values)
         void results(vector[int] &steps, vector[string] &names, vector[string] &types, vector[double] &values)
+
+        void getComputationProblemDir(int index, string &problemDir) except +
 
     cdef cppclass PyStudyBayesOpt(PyStudy):
         PyStudyBayesOpt(int index)
@@ -108,6 +112,22 @@ cdef class __Study__:
         def __get__(self):
             return self.settings.get_parameters()
 
+    property name:
+        def __get__(self):
+            val_bytes = self.thisptr.getStringParameter(b'General_Name')
+            return val_bytes.decode()
+        def __set__(self, val):
+            val_bytes = val.encode()
+            self.thisptr.setParameter(string(b'General_Name'), <string> val_bytes)
+
+    property description:
+        def __get__(self):
+            val_bytes = self.thisptr.getStringParameter(b'General_Description')
+            return val_bytes.decode()
+        def __set__(self, val):
+            val_bytes = val.encode()
+            self.thisptr.setParameter(string(b'General_Description'), <string> val_bytes)
+
     property clear_solution:
         def __get__(self):
             return self.thisptr.getBoolParameter(b'General_ClearSolution')
@@ -162,6 +182,14 @@ cdef class __Study__:
             out.append([steps[i], names[i].decode(), types[i].decode(), values[i]])
 
         return out
+
+    def computation(self, index):
+        cdef string problemDir
+        self.thisptr.getComputationProblemDir(index, problemDir)
+
+        if (problemDir.decode() != ""):
+            return __Computation__(computation = problemDir.decode())
+
 
 cdef class __StudyBayesOpt__(__Study__):
     def __cinit__(self, index = -1):

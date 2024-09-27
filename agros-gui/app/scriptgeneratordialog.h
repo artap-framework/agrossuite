@@ -43,11 +43,13 @@ public:
     ScriptGeneratorDialog(QWidget *parent = 0);
     ~ScriptGeneratorDialog();
 
-    void showDialog();
+public slots:
+    void doGenerate();
+    void doGenerateWithStudies();
+    void doGenerateModelForServer();
 
 private slots:
     void doSaveAs();
-    void doGenerate();
     void doClose();
 
 protected:
@@ -59,8 +61,6 @@ private:
     QWidget *widCreate;
     QCheckBox *chkCopy;
 
-    QCheckBox *chkScriptAddComputation;
-    QCheckBox *chkScriptAddSolution;
     QCheckBox *chkParametersAsVariables;
 
     ScriptGenerator m_scriptGenerator;

@@ -130,6 +130,8 @@ protected:
     void createControls();
     virtual QLayout *createStudyControls() { return new QHBoxLayout(); }
 
+    QLineEdit *txtName;
+    QPlainTextEdit *txtDescription;
     QCheckBox *chkClearSolution;
     QCheckBox *chkSolveProblem;
 

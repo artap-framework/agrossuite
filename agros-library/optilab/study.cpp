@@ -490,12 +490,18 @@ void Study::setDefaultValues()
 
     m_settingDefault[General_ClearSolution] = true;
     m_settingDefault[General_SolveProblem] = true;
+
+    m_settingDefault[General_Name] = "";
+    m_settingDefault[General_Description] = "";
 }
 
 void Study::setStringKeys()
 {
     m_settingKey[General_ClearSolution] = "General_ClearSolution";
     m_settingKey[General_SolveProblem] = "General_SolveProblem";
+
+    m_settingKey[General_Name] = "General_Name";
+    m_settingKey[General_Description] = "General_Description";
 }
 
 QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &key, bool minimum)

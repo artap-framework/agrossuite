@@ -460,25 +460,7 @@ QLayout *StudyModelDialog::createStudyControls()
     chkClearSolution->setEnabled(false);
     chkSolveProblem->setEnabled(false);
 
-    // txtNumSamples = new QSpinBox(this);
-    // txtNumSamples->setMinimum(1);
-    // txtNumSamples->setMaximum(10000);
-    //
-    // cmbInitMethod = new QComboBox(this);
-    // foreach (QString key, study()->initMethodStringKeys())
-    //     cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), key);
-    //
-    // QGridLayout *layoutInitialization = new QGridLayout();
-    // layoutInitialization->addWidget(new QLabel(tr("Number of samples:")), 0, 0);
-    // layoutInitialization->addWidget(txtNumSamples, 0, 1);
-    // layoutInitialization->addWidget(new QLabel(tr("Initial strategy:")), 1, 0);
-    // layoutInitialization->addWidget(cmbInitMethod, 1, 1);
-    //
-    // QGroupBox *grpInitialization = new QGroupBox(tr("Sweep analysis"), this);
-    // grpInitialization->setLayout(layoutInitialization);
-
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    // layoutMain->addWidget(grpInitialization);
 
     return layoutMain;
 }
@@ -489,15 +471,9 @@ void StudyModelDialog::load()
 
     chkClearSolution->setChecked(false);
     chkSolveProblem->setChecked(true);
-
-    // txtNumSamples->setValue(study()->value(Study::Sweep_num_samples).toInt());
-    // cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::Sweep_init_method).toString()));
 }
 
 void StudyModelDialog::save()
 {
     StudyDialog::save();
-
-    // study()->setValue(Study::Sweep_num_samples, txtNumSamples->value());
-    // study()->setValue(Study::Sweep_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toString());
 }

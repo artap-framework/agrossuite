@@ -45,15 +45,18 @@ public:
     ScriptGenerator();
 
     inline void setParametersAsVariables(bool v) { m_parametersAsVariables = v; }
-    inline void setAddSolution(bool v) { m_addSolution = v; }
     inline void setAddComputation(bool v) { m_addComputation = v; }
+    inline void setAddStudies(bool v) { m_addStudies = v; }
 
+    QString createPythonFromModelForServer();
     QString createPythonFromModel();
+    QString createPython();
 
 private:
-    bool m_addComputation;
-    bool m_addSolution;
     bool m_parametersAsVariables;
+    bool m_addComputation;
+    bool m_addStudies;
+    bool m_createModel;
 };
 
 #endif // SCRIPTGENERATOR_H

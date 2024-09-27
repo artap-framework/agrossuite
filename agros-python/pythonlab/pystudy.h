@@ -77,11 +77,19 @@ public:
         return study()->value(study()->stringKeyToType(QString::fromStdString(parameter))).toDouble();
     }
 
+    inline std::string getStringParameter(const std::string &parameter)
+    {
+        assert(study()->stringKeys().contains(QString::fromStdString(parameter)));
+        return study()->value(study()->stringKeyToType(QString::fromStdString(parameter))).toString().toStdString();
+    }
+
     std::string findExtreme(std::string type, std::string key, bool minimum);    
 
     void steps(vector<int> &steps) const;
     void values(std::string variable, vector<double> &values) const;
     void results(vector<int> &steps, vector<std::string> &names, vector<std::string> &types, vector<double> &values) const;
+
+    void getComputationProblemDir(int index, std::string &problemDir) const;
 
 protected:
     Study *m_study;

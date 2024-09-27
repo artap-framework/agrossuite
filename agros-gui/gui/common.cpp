@@ -70,9 +70,6 @@ int columnMinimumWidth()
 
 void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
 {
-    // if (!Agros::problem()->isSolved())
-    //     return;
-
     // store variable
     QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
 
