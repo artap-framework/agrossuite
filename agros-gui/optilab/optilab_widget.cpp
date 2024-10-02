@@ -269,7 +269,7 @@ void OptiLabWidget::refresh()
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setIcon(0, icon("menu_parameter"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        // parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
         parametersNode->setData(2, Qt::UserRole, k);
         parametersNode->setExpanded(true);
 
@@ -285,18 +285,18 @@ void OptiLabWidget::refresh()
         }
 
         // functionals
-        auto *functionalsNode = new QTreeWidgetItem(studyNode);
-        functionalsNode->setText(0, tr("Goal Functions"));
-        functionalsNode->setIcon(0, icon("menu_function"));
-        functionalsNode->setFont(0, fnt);
-        functionalsNode->setData(0, Qt::UserRole, study->variant());
-        functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
-        functionalsNode->setData(2, Qt::UserRole, k);
-        functionalsNode->setExpanded(true);
+        auto *goalsNode = new QTreeWidgetItem(studyNode);
+        goalsNode->setText(0, tr("Goal Functions"));
+        goalsNode->setIcon(0, icon("menu_function"));
+        goalsNode->setFont(0, fnt);
+        goalsNode->setData(0, Qt::UserRole, study->variant());
+        // functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        goalsNode->setData(2, Qt::UserRole, k);
+        goalsNode->setExpanded(true);
 
         foreach (GoalFunction goal, study->goalFunctions())
         {
-            auto *item = new QTreeWidgetItem(functionalsNode);
+            auto *item = new QTreeWidgetItem(goalsNode);
 
             item->setText(0, QString("%1").arg(goal.name()));
             item->setText(1, QString("%2 %").arg(goal.weight()));
