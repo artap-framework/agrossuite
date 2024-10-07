@@ -74,13 +74,15 @@ void StudyModel::setDefaultValues()
 {
     Study::setDefaultValues();
 
-	// m_settingDefault[OpenGA_popsize] = 10;
+	m_settingDefault[Model_Name] = "";
+	m_settingDefault[Model_Description] = "";
 }
 
 void StudyModel::setStringKeys()
 {
     Study::setStringKeys();
 
-    // m_settingKey[OpenGA_algorithm] = "OpenGA_algorithm";
+    m_settingKey[Model_Name] = "Model_Name";
+	m_settingKey[Model_Description] = "Model_Description";
 }
 
