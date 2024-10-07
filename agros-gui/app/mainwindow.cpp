@@ -435,7 +435,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
     {
         QString dir = settings.value("General/LastProblemDir", "data").toString();
 
-        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
+        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("agros files (*.ags *.a2d);;agros data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
     }
     else
     {

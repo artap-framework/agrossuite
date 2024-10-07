@@ -25,6 +25,10 @@
 #include <boost/archive/text_oarchive.hpp>
 
 #include "problem.h"
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets/qmessagebox.h>
+
 #include "problem_config.h"
 #include "problem_result.h"
 #include "plugin_interface.h"
@@ -2381,17 +2385,19 @@ void Problem::readProblemFromFile(const QString& fileName)
         // deprecated
         else if (fileInfo.suffix() == "a2d")
         {
-            Agros::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
+            QMessageBox::warning(QApplication::activeWindow(), tr("A2D data files"), tr("The import of a2d file is not supported in the current version. It will be added in the near future."));
 
-            // copy file to cache
-            QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
-            QFile::copy(fileName, QString("%1/problem.a2d").arg(cacheProblemDir()));
-
-            // open file
-            importProblemFromA2D(QString("%1/problem.a2d").arg(cacheProblemDir()));
-
-            // set filename
-            m_fileName = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+            // Agros::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
+            //
+            // // copy file to cache
+            // QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
+            // QFile::copy(fileName, QString("%1/problem.a2d").arg(cacheProblemDir()));
+            //
+            // // open file
+            // importProblemFromA2D(QString("%1/problem.a2d").arg(cacheProblemDir()));
+            //
+            // // set filename
+            // m_fileName = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
         }
     }
     catch (AgrosModuleException& e)
