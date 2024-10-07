@@ -2385,9 +2385,7 @@ void Problem::readProblemFromFile(const QString& fileName)
         // deprecated
         else if (fileInfo.suffix() == "a2d")
         {
-            QMessageBox::warning(QApplication::activeWindow(), tr("A2D data files"), tr("The import of a2d file is not supported in the current version. It will be added in the near future."));
-
-            // Agros::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
+            Agros::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
             //
             // // copy file to cache
             // QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
