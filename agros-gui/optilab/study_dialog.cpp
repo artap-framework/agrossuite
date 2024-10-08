@@ -19,6 +19,7 @@
 
 #include "study_dialog.h"
 #include "util/global.h"
+#include "util/constants.h"
 #include "gui/lineeditdouble.h"
 #include "gui/chart.h"
 #include "solver/problem.h"
@@ -198,6 +199,14 @@ void LogOptimizationDialog::createControls()
     totalChart = new QChart();
     totalChart->legend()->hide();
     totalChart->setTitle(tr("Solution"));
+
+    // brush
+    QBrush brushBackround(QColor(255 * COLORCROSS[0], 255 * COLORCROSS[1], 255 * COLORCROSS[2], 255 * COLORCROSS[3]));
+    QBrush brushArea(QColor(255 * COLORBACKGROUND[0], 255 * COLORBACKGROUND[1], 255 * COLORBACKGROUND[2], 255));
+
+    totalChart->setBackgroundBrush(brushBackround);
+    totalChart->setPlotAreaBackgroundBrush(brushArea);
+    totalChart->setPlotAreaBackgroundVisible(true);
 
     // axis x
     axisX = new QValueAxis;

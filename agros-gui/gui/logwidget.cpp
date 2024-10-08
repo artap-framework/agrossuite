@@ -20,6 +20,7 @@
 #include "logwidget.h"
 
 #include "util/util.h"
+#include "util/constants.h"
 #include "gui/chart.h"
 #include "solver/solutionstore.h"
 
@@ -353,6 +354,9 @@ void LogDialog::createControls()
     QFont fontChart(font());
     fontChart.setPointSize(fontSize);
 
+    QBrush brushBackround(QColor(255 * COLORCROSS[0], 255 * COLORCROSS[1], 255 * COLORCROSS[2], 255 * COLORCROSS[3]));
+    QBrush brushArea(QColor(255 * COLORBACKGROUND[0], 255 * COLORBACKGROUND[1], 255 * COLORBACKGROUND[2], 255));
+
     QHBoxLayout *layoutHorizontal = new QHBoxLayout();
 
     // transient
@@ -361,6 +365,11 @@ void LogDialog::createControls()
         timeChart = new QChart();
         timeChart->legend()->hide();
         timeChart->setTitle(tr("Transient problem"));
+
+        // brush
+        timeChart->setBackgroundBrush(brushBackround);
+        timeChart->setPlotAreaBackgroundBrush(brushArea);
+        timeChart->setPlotAreaBackgroundVisible(true);
 
         // axis x
         axisX = new QValueAxis;
@@ -427,6 +436,11 @@ void LogDialog::createControls()
         nonlinearChart->legend()->hide();
         nonlinearChart->setTitle(tr("Nonlinear solver"));
 
+        // brush
+        nonlinearChart->setBackgroundBrush(brushBackround);
+        nonlinearChart->setPlotAreaBackgroundBrush(brushArea);
+        nonlinearChart->setPlotAreaBackgroundVisible(true);
+
         // axis x
         axisX = new QValueAxis;
         axisX->setLabelFormat("%g");
@@ -475,6 +489,11 @@ void LogDialog::createControls()
         adaptivityChart = new QChart();
         adaptivityChart->legend()->hide();
         adaptivityChart->setTitle(tr("Adaptivity"));
+
+        // brush
+        adaptivityChart->setBackgroundBrush(brushBackround);
+        adaptivityChart->setPlotAreaBackgroundBrush(brushArea);
+        adaptivityChart->setPlotAreaBackgroundVisible(true);
 
         // axis x
         axisX = new QValueAxis;

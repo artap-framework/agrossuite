@@ -127,20 +127,6 @@ void SceneViewCommon::createActions()
 
 void SceneViewCommon::initializeGL()
 {
-#if QT_VERSION > 0x050100
-    /*
-    QOpenGLDebugLogger *logger = new QOpenGLDebugLogger(this);
-
-    connect(logger, SIGNAL(messageLogged(QOpenGLDebugMessage)), this, SLOT(messageLogged(QOpenGLDebugMessage)), Qt::DirectConnection);
-
-    if (logger->initialize())
-    {
-        logger->startLogging(QOpenGLDebugLogger::SynchronousLogging);
-        logger->enableMessages();
-    }
-    */
-#endif
-
     glShadeModel(GL_SMOOTH);
     glDisable(GL_MULTISAMPLE);
     glEnable(GL_NORMALIZE);
