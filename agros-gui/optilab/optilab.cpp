@@ -244,6 +244,7 @@ QWidget *OptiLab::createControlsChart()
     // right toolbar
     toolBarRight = new QToolBar();
     toolBarRight->setProperty("modulebar", true);
+    toolBarRight->setProperty("os", operatingSystem());
     toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBarRight->addAction(actResultsFindMinimum);
     toolBarRight->addAction(actResultsFindMaximum);

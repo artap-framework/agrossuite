@@ -166,6 +166,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     // left toolbar
     toolBarLeft = new QToolBar();
     toolBarLeft->setProperty("topbar", true);
+    toolBarLeft->setProperty("os", operatingSystem());
     toolBarLeft->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     toolBarLeft->addWidget(toolButtonStudies);

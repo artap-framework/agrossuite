@@ -34,17 +34,6 @@ void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldI
 void fillComboBoxContourVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
 void fillComboBoxVectorVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
 
-inline QString htmlFontFamily() { return QApplication::font().family(); }
-#ifdef Q_WS_WIN
-    inline int htmlFontSize() { return QApplication::font().pointSize() + 4; }
-#endif
-#ifdef Q_WS_X11
-    inline int htmlFontSize() { return QApplication::font().pointSize() + 1; }
-#endif
-#ifdef Q_WS_MAC
-    inline int htmlFontSize() { return QApplication::font().pointSize() + 1; }
-#endif
-
 int columnMinimumWidth();
 
 #endif // GUI_COMMON_H
