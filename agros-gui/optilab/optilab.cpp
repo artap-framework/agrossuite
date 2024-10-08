@@ -271,10 +271,10 @@ QWidget *OptiLab::createControlsChartControl()
     layoutChart->addRow(tr("Horizontal axis:"), cmbAxisX);
     layoutChart->addRow(tr("Vertical axis:"), cmbAxisY);
 
-    auto *groupBoxChart = new QGroupBox(tr("Chart"));
-    groupBoxChart->setLayout(layoutChart);
+    auto *widgetChart = new QWidget();
+    widgetChart->setLayout(layoutChart);
 
-    return groupBoxChart;
+    return widgetChart;
 }
 
 QWidget *OptiLab::createControlsResults()
@@ -283,7 +283,7 @@ QWidget *OptiLab::createControlsResults()
     trvResults = new QTreeWidget(this);
     trvResults->setExpandsOnDoubleClick(false);
     // trvResults->setHeaderHidden(false);
-    trvResults->setHeaderLabels(QStringList() << tr("Selected variant") << tr("Value"));
+    trvResults->setHeaderLabels(QStringList() << tr("Selected solution") << tr("Value"));
     trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvResults->setContextMenuPolicy(Qt::CustomContextMenu);
     trvResults->setMouseTracking(true);
@@ -300,15 +300,15 @@ QWidget *OptiLab::createControlsResults()
     layoutResults->addWidget(trvResults, 4);
     layoutResults->addWidget(geometryViewer, 1);
 
-    auto *groupBoxVariant = new QGroupBox(tr("Selected variant"));
-    groupBoxVariant->setLayout(layoutResults);
+    auto *widgetSolution = new QWidget();
+    widgetSolution->setLayout(layoutResults);
 
-    return groupBoxVariant;
+    return widgetSolution;
 }
 
 void OptiLab::createControls()
 {
-    btnComputationSolve = new QPushButton(tr("Solve problem and show solution"));
+    btnComputationSolve = new QPushButton(tr("Show selected solution"));
     connect(btnComputationSolve, SIGNAL(clicked()), this, SLOT(doSolveCurrentComputation()));
 
     auto *layoutButtons = new QHBoxLayout();
