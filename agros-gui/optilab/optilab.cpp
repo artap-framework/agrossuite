@@ -158,6 +158,7 @@ QWidget *OptiLab::createControlsChart()
     valueSelectedSeries->setUseOpenGL(true);
     chart->addSeries(valueSelectedSeries);
     valueSelectedSeries->setPointsVisible(true);
+    valueSelectedSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     valueSelectedSeries->setMarkerSize(17.0);
     valueSelectedSeries->setColor(QColor(219, 13, 58));
     valueSelectedSeries->attachAxis(axisX);
@@ -167,6 +168,7 @@ QWidget *OptiLab::createControlsChart()
     valueHoverSeries->setUseOpenGL(true);
     chart->addSeries(valueHoverSeries);
     valueHoverSeries->setPointsVisible(true);
+    valueHoverSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     valueHoverSeries->setMarkerSize(15.0);
     valueHoverSeries->setColor(QColor(94, 3, 23));
     valueHoverSeries->attachAxis(axisX);
@@ -176,6 +178,7 @@ QWidget *OptiLab::createControlsChart()
     valueSeries->setUseOpenGL(true);
     chart->addSeries(valueSeries);
     valueSeries->setPointsVisible(true);
+    valueSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     valueSeries->setMarkerSize(10.0);
     valueSeries->setColor(QColor(80, 120, 160));
     valueSeries->attachAxis(axisX);
@@ -219,6 +222,7 @@ QWidget *OptiLab::createControlsChart()
     paretoFrontSeries->setUseOpenGL(true);
     chart->addSeries(paretoFrontSeries);
     paretoFrontSeries->setMarkerSize(10.0);
+    paretoFrontSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     paretoFrontSeries->setColor(QColor(150, 110, 110));
     paretoFrontSeries->attachAxis(axisX);
     paretoFrontSeries->attachAxis(axisY);
