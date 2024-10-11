@@ -139,6 +139,8 @@ void ProblemParameters::load(QJsonObject &object)
 
         if (object[PARAMETERS].isString())
         {
+            qInfo() << "ProblemParameters::load - old interface (DEPRECATED)";
+
             // TODO: remove - old interface
             QString str = object[PARAMETERS].toString();
             QStringList strKeysAndValues = str.split(":");

@@ -286,14 +286,6 @@ void ExamplesWidget::problemInfo(const QString &fileName)
 
             return;
         }
-        else if (fileInfo.suffix() == "a2d")
-        {
-            QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
-            problem->readProblemFromJson(fileName);
-            infoWidget->showProblemInfo(problem.data());
-
-            return;
-        }
     }
 }
 

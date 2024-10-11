@@ -118,8 +118,8 @@ include "pystudy.pxi"
 
 cdef extern from "../../agros-python/pythonlab/pyagros.h":
     # open and save
-    void openFile(string &file, bool saveWithSolution) except +
-    void saveFile(string &file, bool saveWithSolution) except +
+    void openFile(string &file) except +
+    void saveFile(string &file) except +
     string getScriptFromModel()
 
     # temp and cache
@@ -149,11 +149,11 @@ cdef extern from "../../agros-python/pythonlab/pyagros.h":
         bool getStdOutLog()
         void setStdOutLog(bool enabled)
 
-def open_file(file, open_with_solution = False):
-    openFile(file.encode(), open_with_solution)
+def open_file(file):
+    openFile(file.encode())
 
-def save_file(file, save_with_solution = False):
-    saveFile(file.encode(), save_with_solution)
+def save_file(file):
+    saveFile(file.encode())
 
 def get_script_from_model():
     return getScriptFromModel().decode()

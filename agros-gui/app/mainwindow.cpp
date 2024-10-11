@@ -450,12 +450,6 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         QFileInfo fileInfo(fileNameDocument);
         if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
-            if (fileInfo.suffix() == "a2d")
-            {
-                QMessageBox::warning(this, tr("A2D data files"), tr("The import of a2d file is not supported in the current version. It will be added in the near future."));
-                return;
-            }
-
             Agros::problem()->readProblemFromFile(fileNameDocument);
 
             setRecentFiles();

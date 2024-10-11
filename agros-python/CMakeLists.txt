@@ -25,6 +25,7 @@ file(COPY ${CMAKE_HOME_DIRECTORY}/tests.sh DESTINATION ${PROJECT_BINARY_DIR}/..)
 file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/agrossuite DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
 file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/tests DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
 file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/tests-tutorials DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
+file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/tests-import-a2d DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
 file(COPY ${CMAKE_HOME_DIRECTORY}/agros-python/examples DESTINATION ${PROJECT_BINARY_DIR}/../agros-python)
 
 SET(SOURCES extension.cpp

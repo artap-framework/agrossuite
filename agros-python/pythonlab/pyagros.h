@@ -35,8 +35,8 @@ class AGROS_LIBRARY_API Solution;
 
 // ************************************************************************************
 
-void AGROS_LIBRARY_API openFile(const std::string &file, bool openWithSolution);
-void AGROS_LIBRARY_API saveFile(const std::string &file, bool saveWithSolution);
+void AGROS_LIBRARY_API openFile(const std::string &file);
+void AGROS_LIBRARY_API saveFile(const std::string &file);
 std::string AGROS_LIBRARY_API getScriptFromModel();
 
 inline std::string AGROS_LIBRARY_API tempDir() { return tempProblemDir().toStdString(); }

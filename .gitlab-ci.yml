@@ -104,6 +104,27 @@ test-tutorials-linux:
     when: always
     reports:
       junit: report.xml
+      
+test-import-a2d-linux:
+  stage: test
+  needs: ["build-linux"]
+  tags:
+    - agros
+    - linux
+
+  script: 
+    - cd build/agros-python
+    - source env/bin/activate    
+    - cd tests-import-a2d
+    # generate test files
+    - python tutorials_a2d.py
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+          
     
 deploy-linux-appimage:
   stage: deploy
