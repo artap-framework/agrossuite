@@ -293,6 +293,22 @@ test-windows-tutorials:
     - python tutorials.py
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ../..
+    
+test-windows-import-a2d:
+  stage: test
+  needs: ["build-windows"]
+  tags:
+    - agros
+    - win11
+
+  script: 
+    - cd build/agros-python
+    - .\env\Scripts\activate
+    - cd tests-import-a2d
+    # generate test files
+    - python tutorials_a2d.py
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..    
 
 deploy-windows:
     stage: deploy
