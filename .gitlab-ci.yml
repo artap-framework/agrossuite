@@ -54,7 +54,7 @@ build-linux:
     - pip install cython
     - pip install scikit-build
     - pip install pytest    
-
+    - pip install numpy
     # strip shared objects
     - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
@@ -267,6 +267,7 @@ test-windows:
     - pip install cython
     - pip install scikit-build
     - pip install pytest
+    - pip install numpy
     - cd agrossuite
     - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
