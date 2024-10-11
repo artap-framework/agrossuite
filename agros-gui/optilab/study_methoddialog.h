@@ -157,8 +157,8 @@ protected:
     virtual void save();
 
 private:
-    // QSpinBox *txtNumSamples;
-    // QComboBox *cmbInitMethod;
+    QLineEdit *txtName;
+    QPlainTextEdit *txtDescription;
 };
 
 #endif // STUDY_METHODDIALOG_H

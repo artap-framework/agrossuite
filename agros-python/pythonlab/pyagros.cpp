@@ -39,14 +39,16 @@ tbb::mutex runPythonHeaderMutex;
 
 // ************************************************************************************
 
-void AGROS_LIBRARY_API openFile(const std::string &file, bool openWithSolution)
+void AGROS_LIBRARY_API openFile(const std::string &file)
 {
+    if (!QFile::exists(QString::fromStdString(file)))
+    {
+        throw runtime_error(QString("File '%1' does not exist.").arg(QString::fromStdString(file)).toStdString());
+    }
+
     try
     {
-        Agros::problem()->readProblemFromArchive(QString::fromStdString(file));
-
-        // if (openWithSolution)
-        //    Agros::computation()->readSolutionFromFile(QString::fromStdString(file));
+        Agros::problem()->readProblemFromFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {
@@ -54,14 +56,11 @@ void AGROS_LIBRARY_API openFile(const std::string &file, bool openWithSolution)
     }
 }
 
- void AGROS_LIBRARY_API saveFile(const std::string &file, bool saveWithSolution)
+ void AGROS_LIBRARY_API saveFile(const std::string &file)
 {
     try
     {
-        Agros::problem()->writeProblemToArchive(QString::fromStdString(file), !saveWithSolution);
-
-        // if (saveWithSolution || silentMode())
-        //    Agros::computation()->writeSolutionToFile(QString::fromStdString(file));
+        Agros::problem()->writeProblemToArchive(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {

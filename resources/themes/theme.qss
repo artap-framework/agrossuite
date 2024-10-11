@@ -11,44 +11,67 @@ QToolBar[leftbar="true"] > QToolButton {
   color: #bdc6be; 
   font: bold; 
   font-size: 8pt;
-  width: 60px;
-  border-style: solid;  
+  border-style: solid;
   border-width: 2px;
-  border-color: #404142 #404142 #404142 #404142; 
+  border-color: #404142 #404142 #404142 #404142;
 }
 
-QToolBar[leftbar="true"] > QToolButton:disabled { 
-  /* background-color: rgba(255, 0, 0, 15%); */  
+QToolBar[leftbar="true"][os="linux"] > QToolButton {
+  width: 60px;
+  font-size: 8pt;
+}
+
+QToolBar[leftbar="true"][os="windows"] > QToolButton {
+  width: 65px;
+  font-size: 8pt;
+}
+
+QToolBar[leftbar="true"] > QToolButton:disabled {
+  /* background-color: rgba(255, 0, 0, 15%); */
   color: #616160;
 }
 
-QToolBar[leftbar="true"] > QToolButton:hover { 
-  background: #5e5f60; 
+QToolBar[leftbar="true"] > QToolButton:hover {
+  background: #5e5f60;
 }
 
-QToolBar[leftbar="true"] > QToolButton:checked {   
+QToolBar[leftbar="true"] > QToolButton:checked {
   background: #212222;
-  border-style: solid;  
+  border-style: solid;
   border-width: 2px;
   border-color: #404142 #404142 #404142 #c2c4c5;
 }
 
 /* PREPROCESSOR TOPBAR */
 
-QToolBar[topbar="true"] { 
+QToolBar[topbar="true"] {
   qproperty-iconSize: 52px;
-  border: 1px;  
+  border: 1px;
 }
 
-QToolBar[topbar="true"] > QToolButton { 
+QToolBar[topbar="true"] > QToolButton {
+}
+
+QToolBar[topbar="true"][os="linux"] > QToolButton {
+  width: 53px;
   font-size: 8pt;
-  width: 52px;  
+}
+QToolBar[topbar="true"][os="windows"] > QToolButton {
+  width: 58px;
+  font-size: 8pt;
 }
 
 /* MODULEBAR */
 
 QToolBar[modulebar="true"] > QToolButton {
   qproperty-iconSize: 24px;
+}
+
+QToolBar[modulebar="true"][os="linux"] > QToolButton {
+  font-size: 10pt;
+}
+
+QToolBar[modulebar="true"][os="windows"] > QToolButton {
   font-size: 10pt;
 }
 

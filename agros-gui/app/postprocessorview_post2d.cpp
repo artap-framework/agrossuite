@@ -68,6 +68,7 @@ void PostprocessorScenePost2DWidget::createControls()
     // main toolbar
     toolBar = new QToolBar();
     toolBar->setProperty("modulebar", true);
+    toolBar->setProperty("os", operatingSystem());
     toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeLocalPointValue);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeSurfaceIntegral);

@@ -266,6 +266,7 @@ void PreprocessorWidget::createControls()
     // right toolbar
     toolBarRight = new QToolBar();
     toolBarRight->setProperty("modulebar", true);
+    toolBarRight->setProperty("os", operatingSystem());
     toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBarRight->addWidget(addButton);
     toolBarRight->addSeparator();
@@ -323,6 +324,7 @@ void PreprocessorWidget::createControls()
     // left toolbar
     toolBarLeft = new QToolBar();
     toolBarLeft->setProperty("topbar", true);
+    toolBarLeft->setProperty("os", operatingSystem());
     toolBarLeft->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     toolBarLeft->addWidget(toolButtonFields);

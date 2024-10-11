@@ -84,4 +84,14 @@ private:
     QMap<QString, PluginSolverInterface *> m_solvers;
 };
 
+#ifdef Q_WS_WIN
+inline QString operatingSystem() { return "windows"; }
+#endif
+#ifdef Q_WS_X11
+inline QString operatingSystem() { return "linux"; }
+#endif
+#ifdef Q_WS_MAC
+inline QString operatingSystem() { return "macosx"; }
+#endif
+
 #endif /* GLOBAL_H */

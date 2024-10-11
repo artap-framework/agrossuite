@@ -460,7 +460,23 @@ QLayout *StudyModelDialog::createStudyControls()
     chkClearSolution->setEnabled(false);
     chkSolveProblem->setEnabled(false);
 
+    txtName = new QLineEdit();
+    txtDescription = new QPlainTextEdit();
+    txtDescription->setMinimumWidth(300);
+    txtDescription->setMinimumHeight(200);
+
+    auto *layoutNames = new QGridLayout();
+    layoutNames->addWidget(new QLabel(tr("Name:")), 0, 0);
+    layoutNames->addWidget(txtName, 0, 1);
+    layoutNames->addWidget(new QLabel(tr("Description:")), 1, 0);
+    layoutNames->addWidget(txtDescription, 1, 1);
+    layoutNames->setColumnStretch(1, 1);
+
+    auto *groupNames = new QGroupBox(tr("Model"), this);
+    groupNames->setLayout(layoutNames);
+
     QVBoxLayout *layoutMain = new QVBoxLayout();
+    layoutMain->addWidget(groupNames);
 
     return layoutMain;
 }
@@ -471,9 +487,15 @@ void StudyModelDialog::load()
 
     chkClearSolution->setChecked(false);
     chkSolveProblem->setChecked(true);
+
+    txtName->setText(m_study->value(Study::Model_Name).toString());
+    txtDescription->setPlainText(m_study->value(Study::Model_Description).toString());
 }
 
 void StudyModelDialog::save()
 {
     StudyDialog::save();
+
+    m_study->setValue(Study::Model_Name, txtName->text());
+    m_study->setValue(Study::Model_Description, txtDescription->toPlainText());
 }

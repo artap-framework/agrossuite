@@ -668,8 +668,8 @@ QString ScriptGenerator::createPython()
                         arg(study->value(Study::General_SolveProblem).toBool() ? "True" : "False");
                 str += QString("study_%1.name = \"%2\"\n").
                         arg(studyTypeToStringKey(study->type())).
-                        arg(study->value(Study::General_Name).toString());
-                QString description = study->value(Study::General_Description).toString();
+                        arg(study->value(Study::Model_Name).toString());
+                QString description = study->value(Study::Model_Description).toString();
                 description.replace("\n", "\\n");
                 str += QString("study_%1.description = \"%2\"\n").
                         arg(studyTypeToStringKey(study->type())).

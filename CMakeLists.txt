@@ -47,6 +47,7 @@ ENDIF()
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Network REQUIRED)
 find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
+find_package(Qt6 COMPONENTS Xml REQUIRED)
 
 # date
 string(TIMESTAMP RESULT %y%m%d)

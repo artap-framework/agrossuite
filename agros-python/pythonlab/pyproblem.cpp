@@ -207,7 +207,7 @@ void PyProblem::load(const std::string &fn)
 {
     QString fileName = QString::fromStdString(fn);
     if (QFile::exists(fileName))
-        Agros::problem()->readProblemFromArchive(fileName);
+        Agros::problem()->readProblemFromFile(fileName);
     else
         throw logic_error(QObject::tr("File '%1' does not exists.").arg(fileName).toStdString());
 }

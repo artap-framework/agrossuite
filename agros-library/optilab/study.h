@@ -222,8 +222,6 @@ public:
     {
         General_ClearSolution,
         General_SolveProblem,
-        General_Name,
-        General_Description,
 
         NLopt_xtol_rel,
         NLopt_xtol_abs,
@@ -257,7 +255,10 @@ public:
         OpenGA_ngen,
         OpenGA_elite_count,
         OpenGA_mutation_rate,
-        OpenGA_crossover_fraction
+        OpenGA_crossover_fraction,
+
+        Model_Name,
+        Model_Description,
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());

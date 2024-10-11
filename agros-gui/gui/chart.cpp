@@ -20,6 +20,7 @@
 #include "chart.h"
 
 #include "util/util.h"
+#include "util/constants.h"
 #include "util/global.h"
 
 #include <QMouseEvent>
@@ -199,6 +200,13 @@ ChartView::ChartView(QChart *chart, bool showCrosshair, QWidget *parent) : QChar
     }
 
     m_chart->setAcceptHoverEvents(true);
+
+    // brush
+    QBrush brushBackround(QColor(255 * COLORCROSS[0], 255 * COLORCROSS[1], 255 * COLORCROSS[2], 255 * COLORCROSS[3]));
+    m_chart->setBackgroundBrush(brushBackround);
+    QBrush brushArea(QColor(255 * COLORBACKGROUND[0], 255 * COLORBACKGROUND[1], 255 * COLORBACKGROUND[2], 255));
+    m_chart->setPlotAreaBackgroundBrush(brushArea);
+    m_chart->setPlotAreaBackgroundVisible(true);
 
     // set chart
     setChart(m_chart);

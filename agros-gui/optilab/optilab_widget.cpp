@@ -108,11 +108,14 @@ QWidget *OptiLabWidget::createControlsOptilab()
         mnuStudies->addAction(studyAction);
 
     // recipes
-    actNewRecipeLocalPointValue = new QAction(tr("Point value recipe..."), this);
+    actNewRecipeLocalPointValue = new QAction(icon("results_point"), tr("Point value recipe..."), this);
+    actNewRecipeLocalPointValue->setIconVisibleInMenu(true);
     connect(actNewRecipeLocalPointValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
-    actNewRecipeSurfaceIntegral = new QAction(tr("Surface integral recipe..."), this);
+    actNewRecipeSurfaceIntegral = new QAction(icon("results_surface"), tr("Surface integral recipe..."), this);
+    actNewRecipeSurfaceIntegral->setIconVisibleInMenu(true);
     connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
-    actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
+    actNewRecipeVolumeIntegral = new QAction(icon("results_volume"), tr("Volume integral recipe..."), this);
+    actNewRecipeVolumeIntegral->setIconVisibleInMenu(true);
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 
     auto *mnuRecipe = new QMenu(tr("New recipe"), this);
@@ -120,16 +123,19 @@ QWidget *OptiLabWidget::createControlsOptilab()
     mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
     mnuRecipe->addAction(actNewRecipeVolumeIntegral);
 
-    actNewParameter = new QAction(icon("menu_parameter"), tr("New parameter"), this);
+    actNewParameter = new QAction(icon("menu_parameter"), tr("Parameter"), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
-    actNewGoalFunction = new QAction(icon("menu_function"), tr("New goal function"), this);
+    actNewGoalFunction = new QAction(icon("menu_function"), tr("Goal"), this);
     connect(actNewGoalFunction, SIGNAL(triggered()), this, SLOT(doNewGoalFunction()));
+
+    auto *mnuParametersAndGoal = new QMenu(tr("New parameter or goal function"), this);
+    mnuParametersAndGoal->addAction(actNewParameter);
+    mnuParametersAndGoal->addAction(actNewGoalFunction);
 
     mnuOptilab =  new QMenu(tr("Optilab"));
     mnuOptilab->addMenu(mnuStudies);
     mnuOptilab->addMenu(mnuRecipe);
-    mnuOptilab->addAction(actNewParameter);
-    mnuOptilab->addAction(actNewGoalFunction);
+    mnuOptilab->addMenu(mnuParametersAndGoal);
     mnuOptilab->addSeparator();
     mnuOptilab->addAction(actDuplicate);
     mnuOptilab->addAction(actExport);
@@ -160,6 +166,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     // left toolbar
     toolBarLeft = new QToolBar();
     toolBarLeft->setProperty("topbar", true);
+    toolBarLeft->setProperty("os", operatingSystem());
     toolBarLeft->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     toolBarLeft->addWidget(toolButtonStudies);
@@ -237,7 +244,7 @@ void OptiLabWidget::refresh()
     // optilab
     auto *studiesNode = new QTreeWidgetItem(trvOptilab);
     studiesNode->setText(0, tr("Studies"));
-    studiesNode->setIcon(0, icon("optilab"));
+    studiesNode->setIcon(0, icon("menu_study"));
     studiesNode->setFont(0, fnt);
     studiesNode->setExpanded(true);
 
@@ -249,7 +256,7 @@ void OptiLabWidget::refresh()
         auto *studyNode = new QTreeWidgetItem(studiesNode);
         studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
         studyNode->setText(1, study->computationSets().count() > 0 ? tr("Solved") : tr("Not solved"));
-        studyNode->setIcon(0, icon("menu_study"));
+        studyNode->setIcon(0, icon("optilab_algorithm"));
         studyNode->setFont(0, fnt);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
         studyNode->setData(2, Qt::UserRole, k);
@@ -269,7 +276,7 @@ void OptiLabWidget::refresh()
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setIcon(0, icon("menu_parameter"));
         parametersNode->setFont(0, fnt);
-        parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        // parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
         parametersNode->setData(2, Qt::UserRole, k);
         parametersNode->setExpanded(true);
 
@@ -285,18 +292,18 @@ void OptiLabWidget::refresh()
         }
 
         // functionals
-        auto *functionalsNode = new QTreeWidgetItem(studyNode);
-        functionalsNode->setText(0, tr("Goal Functions"));
-        functionalsNode->setIcon(0, icon("menu_function"));
-        functionalsNode->setFont(0, fnt);
-        functionalsNode->setData(0, Qt::UserRole, study->variant());
-        functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
-        functionalsNode->setData(2, Qt::UserRole, k);
-        functionalsNode->setExpanded(true);
+        auto *goalsNode = new QTreeWidgetItem(studyNode);
+        goalsNode->setText(0, tr("Goal Functions"));
+        goalsNode->setIcon(0, icon("menu_function"));
+        goalsNode->setFont(0, fnt);
+        goalsNode->setData(0, Qt::UserRole, study->variant());
+        // functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        goalsNode->setData(2, Qt::UserRole, k);
+        goalsNode->setExpanded(true);
 
         foreach (GoalFunction goal, study->goalFunctions())
         {
-            auto *item = new QTreeWidgetItem(functionalsNode);
+            auto *item = new QTreeWidgetItem(goalsNode);
 
             item->setText(0, QString("%1").arg(goal.name()));
             item->setText(1, QString("%2 %").arg(goal.weight()));

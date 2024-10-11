@@ -53,9 +53,8 @@ build-linux:
     - source env/bin/activate
     - pip install cython
     - pip install scikit-build
-    - pip install pytest
+    - pip install pytest    
     - pip install numpy
-
     # strip shared objects
     - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
@@ -85,7 +84,7 @@ test-linux:
     reports:
       junit: report.xml
       
-test-tutorials-linux:
+test-linux-tutorials:
   stage: test
   needs: ["build-linux"]
   tags:
@@ -104,6 +103,27 @@ test-tutorials-linux:
     when: always
     reports:
       junit: report.xml
+      
+test-linux-import-a2d:
+  stage: test
+  needs: ["build-linux"]
+  tags:
+    - agros
+    - linux
+
+  script: 
+    - cd build/agros-python
+    - source env/bin/activate    
+    - cd tests-import-a2d
+    # generate test files
+    - python tutorials_a2d.py
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+          
     
 deploy-linux-appimage:
   stage: deploy
@@ -257,7 +277,7 @@ test-windows:
     - cd ..
     - cd ..
 
-test-tutorials-windows:
+test-windows-tutorials:
   stage: test
   needs: ["build-windows"]
   tags:
@@ -272,6 +292,22 @@ test-tutorials-windows:
     - python tutorials.py
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ../..
+    
+test-windows-import-a2d:
+  stage: test
+  needs: ["build-windows"]
+  tags:
+    - agros
+    - win11
+
+  script: 
+    - cd build/agros-python
+    - .\env\Scripts\activate
+    - cd tests-import-a2d
+    # generate test files
+    - python tutorials_a2d.py
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - cd ../..    
 
 deploy-windows:
     stage: deploy

@@ -19,6 +19,7 @@
 
 #include "study_dialog.h"
 #include "util/global.h"
+#include "util/constants.h"
 #include "gui/lineeditdouble.h"
 #include "gui/chart.h"
 #include "solver/problem.h"
@@ -198,6 +199,14 @@ void LogOptimizationDialog::createControls()
     totalChart = new QChart();
     totalChart->legend()->hide();
     totalChart->setTitle(tr("Solution"));
+
+    // brush
+    QBrush brushBackround(QColor(255 * COLORCROSS[0], 255 * COLORCROSS[1], 255 * COLORCROSS[2], 255 * COLORCROSS[3]));
+    QBrush brushArea(QColor(255 * COLORBACKGROUND[0], 255 * COLORBACKGROUND[1], 255 * COLORBACKGROUND[2], 255));
+
+    totalChart->setBackgroundBrush(brushBackround);
+    totalChart->setPlotAreaBackgroundBrush(brushArea);
+    totalChart->setPlotAreaBackgroundVisible(true);
 
     // axis x
     axisX = new QValueAxis;
@@ -477,18 +486,6 @@ void StudyDialog::createControls()
     layoutButtonBox->addWidget(btnApply);
     layoutButtonBox->addWidget(btnClose);
 
-    txtName = new QLineEdit();
-    txtDescription = new QPlainTextEdit();
-    txtDescription->setMinimumWidth(300);
-    txtDescription->setMinimumHeight(200);
-
-    auto *layoutNames = new QGridLayout();
-    layoutNames->addWidget(new QLabel(tr("Name:")), 0, 0);
-    layoutNames->addWidget(txtName, 0, 1);
-    layoutNames->addWidget(new QLabel(tr("Description:")), 1, 0);
-    layoutNames->addWidget(txtDescription, 1, 1);
-    layoutNames->setColumnStretch(1, 1);
-
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
 
@@ -500,7 +497,6 @@ void StudyDialog::createControls()
     grpGeneral->setLayout(layoutGeneral);
 
     auto *layoutStudy = new QVBoxLayout();
-    layoutStudy->addLayout(layoutNames);
     layoutStudy->addWidget(grpGeneral);
     layoutStudy->addLayout(createStudyControls());
     // layoutStudy->addStretch();
@@ -525,18 +521,12 @@ void StudyDialog::load()
 {
     chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
     chkSolveProblem->setChecked(m_study->value(Study::General_SolveProblem).toBool());
-
-    txtName->setText(m_study->value(Study::General_Name).toString());
-    txtDescription->setPlainText(m_study->value(Study::General_Description).toString());
 }
 
 void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
     m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
-
-    m_study->setValue(Study::General_Name, txtName->text());
-    m_study->setValue(Study::General_Description, txtDescription->toPlainText());
 }
 
 // **************************************************************************************************************

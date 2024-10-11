@@ -156,6 +156,7 @@ void PostprocessorWidget::createControls()
     // right toolbar
     toolBarRight = new QToolBar();
     toolBarRight->setProperty("modulebar", true);
+    toolBarRight->setProperty("os", operatingSystem());
     toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolBarRight->addAction(actOperateOnMesh);
     toolBarRight->addAction(actOperateOnPost2D);

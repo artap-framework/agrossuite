@@ -334,6 +334,7 @@ void MainWindow::createMain()
     QToolBar *tlbLeftBar = new QToolBar();
     tlbLeftBar->setOrientation(Qt::Vertical);
     tlbLeftBar->setProperty("leftbar", true);
+    tlbLeftBar->setProperty("os", operatingSystem());
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     tlbLeftBar->addAction(exampleWidget->actExamples);
@@ -435,7 +436,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
     {
         QString dir = settings.value("General/LastProblemDir", "data").toString();
 
-        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
+        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("agros files (*.ags *.a2d);;agros data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
     }
     else
     {
