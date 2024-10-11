@@ -85,7 +85,7 @@ test-linux:
     reports:
       junit: report.xml
       
-test-tutorials-linux:
+test-linux-tutorials:
   stage: test
   needs: ["build-linux"]
   tags:
@@ -105,7 +105,7 @@ test-tutorials-linux:
     reports:
       junit: report.xml
       
-test-import-a2d-linux:
+test-linux-import-a2d:
   stage: test
   needs: ["build-linux"]
   tags:
@@ -278,7 +278,7 @@ test-windows:
     - cd ..
     - cd ..
 
-test-tutorials-windows:
+test-windows-tutorials:
   stage: test
   needs: ["build-windows"]
   tags:
