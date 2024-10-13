@@ -37,16 +37,15 @@ class MUMPSSolverInterface : public QObject, public PluginSolverInterface
 
 public:
     MUMPSSolverInterface() {}
-    virtual ~MUMPSSolverInterface() {}
+    virtual ~MUMPSSolverInterface() override {}
 
-    virtual QString name() const { return QString("MUMPS"); }
+    virtual QString name() const override { return QString("MUMPS"); }
 
     virtual void solve(dealii::SparseMatrix<double> &system,
                        dealii::Vector<double> &rhs,
-                       dealii::Vector<double> &sln)
+                       dealii::Vector<double> &sln) override
     {
-        int status = 0;
-        int rank = 0;
+        size_t rank = 0;
 
         // initialize a MUMPS instance. Use MPI_COMM_WORLD
         DMUMPS_STRUC_C id;
@@ -56,37 +55,34 @@ public:
         id.comm_fortran = USE_COMM_WORLD;
         dmumps_c(&id);
 
-        if (rank == 0)
+        // number of unknowns
+        id.n = rhs.size();
+
+        // number of nonzero elements in matrix
+        id.nz = system.n_nonzero_elements();
+
+        // matrix
+        id.a = new double[id.nz];
+        id.irn = new int[id.nz];
+        id.jcn = new int[id.nz];
+
+        int index = 0;
+        for (int row = 0; row < system.m(); ++row)
         {
-            // number of unknowns
-            id.n = rhs.size();
-
-            // number of nonzero elements in matrix
-            id.nz = system.n_nonzero_elements();
-
-            // matrix
-            id.a = new double[id.nz];
-            id.irn = new int[id.nz];
-            id.jcn = new int[id.nz];
-
-            int index = 0;
-            for (int row = 0; row < system.m(); ++row)
-            {
-                for (typename dealii::SparseMatrix<double>::const_iterator ptr = system.begin (row); ptr != system.end (row); ++ptr)
-                    if (std::abs(ptr->value()) > 0.0)
-                    {
-                        id.a[index] = ptr->value ();
-                        id.irn[index] = row + 1;
-                        id.jcn[index] = ptr->column() + 1;
-                        ++index;
-                    }
-            }
-
-            // prepare RHS
-            id.rhs = new double[rhs.size()];
-            for (int i = 0; i < rhs.size(); ++i)
-                id.rhs[i] = rhs(i);
+            for (typename dealii::SparseMatrix<double>::const_iterator ptr = system.begin (row); ptr != system.end (row); ++ptr)
+                if (std::abs(ptr->value()) > 0.0)
+                {
+                    id.a[index] = ptr->value ();
+                    id.irn[index] = row + 1;
+                    id.jcn[index] = ptr->column() + 1;
+                    ++index;
+                }
         }
+
+        // prepare RHS
+        id.rhs = new double[rhs.size()];
+        for (int i = 0; i < rhs.size(); ++i)
+            id.rhs[i] = rhs(i);
 
         // no outputs
         id.icntl[0] = -1;
@@ -111,7 +107,7 @@ public:
             if (rank == 0)
             {
                 sln = dealii::Vector<double>(rhs.size());
-                for (int row = 0; row < rhs.size(); ++row)
+                for (size_t row = 0; row < rhs.size(); ++row)
                 {
                     sln[row] = id.rhs[row];
                 }
@@ -122,49 +118,41 @@ public:
         case -1:
         {
             std::cerr << "Error occured on processor " << id.infog[2] << std::endl;
-            status = -1;
         }
             break;
         case -2:
         {
             std::cerr << "Number of nonzeros (NNZ) is out of range." << std::endl;
-            status = -1;
         }
             break;
         case -3:
         {
             std::cerr << "MUMPS called with an invalid option for JOB." << std::endl;
-            status = -1;
         }
             break;
         case -5:
         {
             std::cerr << "Problem of REAL or COMPLEX workspace allocation of size " << id.infog[2] << " during analysis." << std::endl;
-            status = -1;
         }
             break;
         case -6:
         {
             std::cerr << "Matrix is singular in structure." << std::endl;
-            status = -1;
         }
             break;
         case -7:
         {
             std::cerr << "Problem of INTEGER workspace allocation of size " << id.infog[2] << " during analysis."<< std::endl;
-            status = -1;
         }
             break;
         case -10:
         {
             std::cerr << "Numerically singular matrix." << std::endl;
-            status = -1;
         }
             break;
         default:
         {
             std::cerr << "Non-detailed exception in MUMPS: INFOG(1) = " << id.infog[1] << std::endl;
-            status = -1;
         }
             break;
         }

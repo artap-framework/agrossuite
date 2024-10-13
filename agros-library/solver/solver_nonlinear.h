@@ -32,7 +32,7 @@ public:
         : SolverDeal::AssembleBase(computation, solverDeal, triangulation)
     {}
 
-    virtual void solve();
+    virtual void solve() override;
     void solveProblemNonLinear();
 
 protected:

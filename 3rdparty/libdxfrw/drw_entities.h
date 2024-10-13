@@ -559,7 +559,7 @@ public:
     }
 	// TODO rule of 5
 
-    virtual void applyExtrusion();
+    virtual void applyExtrusion() override;
     void addVertex (DRW_Vertex2D v) {
 		std::shared_ptr<DRW_Vertex2D> vert = std::make_shared<DRW_Vertex2D>(v);
         vertlist.push_back(vert);

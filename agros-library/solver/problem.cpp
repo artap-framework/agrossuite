@@ -420,7 +420,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle>& values, bool deform)
     // min and max value
     double min = numeric_limits<double>::max();
     double max = -numeric_limits<double>::max();
-    double minDeform = numeric_limits<double>::max();
+    // double minDeform = numeric_limits<double>::max();
     double maxDeform = -numeric_limits<double>::max();
 
     for (std::vector<dealii::DataOutBase::Patch<2>>::const_iterator patch = patches.begin(); patch != patches.end(); ++
@@ -437,7 +437,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle>& values, bool deform)
             {
                 double value = sqrt(patch->data(1, i) * patch->data(1, i) + patch->data(2, i) * patch->data(2, i));
 
-                minDeform = std::min(min, value);
+                // minDeform = std::min(min, value);
                 maxDeform = std::max(max, value);
             }
         }
@@ -829,8 +829,6 @@ void ProblemBase::removeField(FieldInfo* field)
 
 void ProblemBase::synchronizeCouplings()
 {
-    bool changed = false;
-
     // add missing
     foreach(FieldInfo* targetField, m_fieldInfos)
     {
@@ -851,7 +849,6 @@ void ProblemBase::synchronizeCouplings()
                                                                        targetField->fieldId(),
                                                                        targetField->plugin()->couplingJson(
                                                                            sourceField->fieldId())->name);
-                    changed = true;
                 }
             }
         }
@@ -871,8 +868,6 @@ void ProblemBase::synchronizeCouplings()
             QPair<QString, QString> key = QPair<QString, QString>(couplingInfo->sourceFieldId(),
                                                                   couplingInfo->targetFieldId());
             m_couplingInfos.remove(key);
-
-            changed = true;
         }
     }
 }

@@ -21,8 +21,7 @@
 #define PROBLEM_PARAMETER_H
 
 #include "util/util.h"
-#include "value.h"
-#include "solutiontypes.h"
+
 
 class FieldInfo;
 class CouplingInfo;

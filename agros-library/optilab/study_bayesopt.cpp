@@ -269,7 +269,7 @@ void StudyBayesOpt::solve()
 
     // steps
     addComputationSet(tr("Steps"));
-    for (int i = 0; i < bayesOptProblem.getParameters()->n_iterations; i++)
+    for (size_t i = 0; i < bayesOptProblem.getParameters()->n_iterations; i++)
     {
         if (isAborted())
             break;

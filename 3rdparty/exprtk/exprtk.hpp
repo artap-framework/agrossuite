@@ -5841,7 +5841,7 @@ namespace exprtk
 
          protected:
 
-            value_ptr value_at(const std::size_t& index) const
+            value_ptr value_at(const std::size_t& index) const override
             {
                if (index < size_)
                   return const_cast<const_value_ptr>(vec_ + index);
@@ -17362,7 +17362,7 @@ namespace exprtk
          using exprtk::ifunction<T>::operator();
 
          explicit freefunc02(ff02_functor ff) : exprtk::ifunction<T>(2), f(ff) {}
-         inline T operator() (const T& v0, const T& v1)
+         inline T operator() (const T& v0, const T& v1) override
          { return f(v0, v1); }
          ff02_functor f;
       };
