@@ -317,7 +317,7 @@ public:
      * Returns a short ID for the usage.
      * \param valueId - The value used in the id.
      */
-    virtual std::string shortID(const std::string &valueId = "val") const override;
+    virtual std::string shortID(const std::string &valueId = "val") const;
 
     /**
      * Returns a long ID for the usage.
