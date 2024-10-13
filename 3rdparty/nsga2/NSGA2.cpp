@@ -285,13 +285,21 @@ void NSGA2::save_backup() const {
         return;
     }
 
-
     char tempfilename[L_tmpnam];
+
+#ifdef Q_WS_WIN
+    char* res = tmpnam(tempfilename);
+    if (!res) {
+        perror("Could not create temporary file!");
+        return;
+    }
+#else
     int ok = mkstemp(tempfilename);
     if (ok == -1) {
         perror("Could not create temporary file!");
         return;
     }
+#endif
     cout << tempfilename << endl;
 
     ofstream ofs(tempfilename, ios::binary);
