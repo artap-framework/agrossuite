@@ -225,12 +225,12 @@ build-windows:
     # - mkdir -p build
     - cd build
     - cmake -S .. -B . | Out-Null 
-    - cmake --build . --config Release --parallel 12  -j 12 | Out-Null
+    - cmake --build . --config Release --parallel 12  -j 12 
     # Generation and build of plugins
     - .\usr\bin\agros_generator.exe | Out-Null 
     - cd plugins
     - cmake .
-    - cmake --build . --config Release  --parallel 12 -j 12 | Out-Null 
+    - cmake --build . --config Release  --parallel 12 -j 12 
     - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
     - xcopy "..\..\install\Others\*.dll" "..\build\usr\bin\" /Y
