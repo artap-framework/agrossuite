@@ -287,13 +287,14 @@ void NSGA2::save_backup() const {
 
     char tempfilename[L_tmpnam];
 
-#ifdef Q_WS_WIN
+#ifdef _MSC_VER
     char* res = tmpnam(tempfilename);
     if (!res) {
         perror("Could not create temporary file!");
         return;
     }
-#else
+#endif
+#ifdef __linux__
     int ok = mkstemp(tempfilename);
     if (ok == -1) {
         perror("Could not create temporary file!");
