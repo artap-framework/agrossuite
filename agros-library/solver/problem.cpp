@@ -979,7 +979,7 @@ void ProblemBase::readInitialMeshFromFile(const QString& problemDir)
 
         Agros::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
     }
-    catch (boost::archive::archive_exception e)
+    catch (boost::archive::archive_exception const& e)
     {
         qInfo() << e.what();
         throw AgrosException(tr("Reading initial mesh from disk failed: %1").arg(e.what()));

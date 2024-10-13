@@ -582,7 +582,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
-                    if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size())
+                    if (cell->active_fe_index() + 1 < (int) primal->doFHandler.get_fe_collection().size())
                     {
                         // increase order
                         if (cell->active_fe_index() < DEALII_MAX_ORDER - 1)
@@ -646,7 +646,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
                     if (cell->refine_flag_set() && (smoothnessIndicators(cell->active_cell_index()) > threshold_smoothness)
-                            && (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size()))
+                            && (cell->active_fe_index() + 1 < (int) primal->doFHandler.get_fe_collection().size()))
                     {
                         if (cell->active_fe_index() < DEALII_MAX_ORDER)
                         {
@@ -689,7 +689,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                             (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                             ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                     {
-                        if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe_collection().size())
+                        if (cell->active_fe_index() + 1 < (int) primal->doFHandler.get_fe_collection().size())
                         {
                             // increase order
                             if (cell->active_fe_index() < DEALII_MAX_ORDER)
@@ -922,7 +922,7 @@ void SolverDeal::solveTransient()
         }
 
         // remove first solution and step length
-        if (solutions.size() > m_computation->config()->value(ProblemConfig::TimeOrder).toInt() - 1)
+        if (solutions.size() > m_computation->config()->value(ProblemConfig::TimeOrder).toUInt() - 1)
         {
             solutions.erase(solutions.begin());
             stepLengths.removeFirst();

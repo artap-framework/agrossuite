@@ -317,7 +317,7 @@ void MeshGenerator::writeTodealii()
         // todo: probably active is not neccessary
         if(cell->is_active())
         {
-            for(int neigh_i = 0; neigh_i < dealii::GeometryInfo<2>::faces_per_cell; neigh_i++)
+            for(size_t neigh_i = 0; neigh_i < dealii::GeometryInfo<2>::faces_per_cell; neigh_i++)
             {
                 if(cell->face(neigh_i)->boundary_id() == dealii::numbers::internal_face_boundary_id)
                 {

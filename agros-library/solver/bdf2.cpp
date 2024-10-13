@@ -121,7 +121,7 @@ void BDF2Table::test(bool varyLength)
             QList<double>  valsA;
             valsA.push_back(f(0));
             double actTime = 0;
-            int realOrder;
+            int realOrder = -1;
             for(int s = 0; s < numSteps; s++)
             {
                 double actualStepLen = constantStepLen;
