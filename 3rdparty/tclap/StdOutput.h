@@ -57,7 +57,7 @@ class StdOutput : public CmdLineOutput
 		 * to produce alternative behavior.
 		 * \param c - The CmdLine object the output is generated for. 
 		 */
-		virtual void version(CmdLineInterface& c);
+		virtual void version(CmdLineInterface& c) override;
 
 		/**
 		 * Prints (to stderr) an error message, short usage 

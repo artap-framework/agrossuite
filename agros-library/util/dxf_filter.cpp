@@ -128,7 +128,7 @@ void DxfInterfaceDXFRW::addCircle(const DRW_Circle &c)
 
 void DxfInterfaceDXFRW::addPolyline(const DRW_Polyline& data)
 {
-    for (int i = 0; i < data.vertlist.size() - 1; i++)
+    for (size_t i = 0; i < data.vertlist.size() - 1; i++)
     {
         const std::shared_ptr<DRW_Vertex> vertStart = data.vertlist.at(i);
         const std::shared_ptr<DRW_Vertex> vertEnd = data.vertlist.at(i+1);
@@ -142,7 +142,7 @@ void DxfInterfaceDXFRW::addPolyline(const DRW_Polyline& data)
 
 void DxfInterfaceDXFRW::addLWPolyline(const DRW_LWPolyline& data)
 {
-    for (int i = 0; i < data.vertlist.size() - 1; i++)
+    for (size_t i = 0; i < data.vertlist.size() - 1; i++)
     {
         const std::shared_ptr<DRW_Vertex2D> vertStart = data.vertlist.at(i);
         const std::shared_ptr<DRW_Vertex2D> vertEnd = data.vertlist.at(i+1);

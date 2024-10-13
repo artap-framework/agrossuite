@@ -103,7 +103,7 @@ class MultiSwitchArg : public SwitchArg
 		 * \param args - Mutable list of strings. Passed
 		 * in from main().
 		 */
-		virtual bool processArg(int* i, std::vector<std::string>& args); 
+		virtual bool processArg(int* i, std::vector<std::string>& args) override;
 
 		/**
 		 * Returns int, the number of times the switch has been set.

@@ -64,10 +64,6 @@ OptiLabWidget::~OptiLabWidget()
     foreach (QAction *action, actNewStudies.values())
         delete action;
     actNewStudies.clear();
-
-    QSettings settings;
-    settings.setValue("OptiLab/OptilabTreeColumnWidth0", trvOptilab->columnWidth(0));
-    settings.setValue("OptiLab/OptilabTreeColumnWidth1", trvOptilab->columnWidth(1));
 }
 
 void OptiLabWidget::createControls()
@@ -179,8 +175,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     headersOptilab << tr("Key") << tr("Value");
     trvOptilab = new QTreeWidget(this);
     trvOptilab->setColumnCount(2);
-    trvOptilab->setColumnWidth(0, settings.value("OptiLab/OptilabTreeColumnWidth0", 90).toInt());
-    trvOptilab->setColumnWidth(1, settings.value("OptiLab/OptilabTreeColumnWidth1", 130).toInt());
     trvOptilab->setHeaderHidden(false);
     trvOptilab->setHeaderLabels(headersOptilab);
     trvOptilab->setContextMenuPolicy(Qt::CustomContextMenu);

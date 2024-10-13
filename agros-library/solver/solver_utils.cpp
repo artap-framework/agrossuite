@@ -140,19 +140,19 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     // compute number of non-zero entries per column of A
     std::fill(cscColPtr, cscColPtr + mtx.n(), 0);
 
-    for (int n = 0; n < mtx.n_nonzero_elements(); n++)
+    for (size_t n = 0; n < mtx.n_nonzero_elements(); n++)
         cscColPtr[csrColInd[n]]++;
 
     // cumsum the nz per column to get ptr[]
-    for(int col = 0, cumsum = 0; col < mtx.m(); col++)
+    for(size_t col = 0, cumsum = 0; col < mtx.m(); col++)
     {
-        int temp = cscColPtr[col];
+        size_t temp = cscColPtr[col];
         cscColPtr[col] = cumsum;
         cumsum += temp;
     }
     cscColPtr[mtx.n()] = mtx.n_nonzero_elements();
 
-    for (int row = 0; row < mtx.n(); row++)
+    for (size_t row = 0; row < mtx.n(); row++)
     {
         for (int jj = csrRowPtr[row]; jj < csrRowPtr[row+1]; jj++)
         {
@@ -166,7 +166,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
         }
     }
 
-    for (int col = 0, last = 0; col <= mtx.n(); col++)
+    for (size_t col = 0, last = 0; col <= mtx.n(); col++)
     {
         int temp = cscColPtr[col];
         cscColPtr[col] = last;
@@ -204,8 +204,8 @@ void writeMatioMatrix(std::vector<dealii::Vector<double> > vecs, const QString &
     mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT4);
 
     double *data = new double[dims[0]*dims[1]];
-    for (int i = 0; i < dims[0]; ++i)
-        for (int j = 0; j < dims[1]; ++j)
+    for (size_t i = 0; i < dims[0]; ++i)
+        for (size_t j = 0; j < dims[1]; ++j)
             data[j*dims[0] + i] = vecs[j][i];
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, MAT_F_DONT_COPY_DATA);
@@ -228,9 +228,9 @@ void writeMatioMatrix(std::vector<dealii::Vector<int> > vecs, const QString &nam
 
     mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT4);
 
-    int *data = new int[dims[0]*dims[1]];
-    for (int i = 0; i < dims[0]; ++i)
-        for (int j = 0; j < dims[1]; ++j)
+    size_t *data = new size_t[dims[0]*dims[1]];
+    for (size_t i = 0; i < dims[0]; ++i)
+        for (size_t j = 0; j < dims[1]; ++j)
             data[j*dims[0] + i] = vecs[j][i];
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_INT32, MAT_T_INT32, 2, dims, data, MAT_F_DONT_COPY_DATA);
@@ -350,16 +350,16 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
 
         // first position of feCollection, quadratureFormulas and quadratureFormulasFace belongs to NONE space
         // this will be used for implementation of different meshes
-        std::vector<const dealii::FiniteElement<2> *> fes;
-        std::vector<unsigned int> multiplicities;
+        std::vector<const dealii::FiniteElement<2> *> fesSpaces;
+        std::vector<unsigned int> multiplicitiesSpaces;
         foreach (int key, spaces.keys())
         {
             dealii::FiniteElement<2> *fe = new dealii::FE_Nothing<2>();
-            fes.push_back(fe);
+            fesSpaces.push_back(fe);
             m_fesCache[fieldInfo->fieldId()].push_back(fe);
-            multiplicities.push_back(1);
+            multiplicitiesSpaces.push_back(1);
         }
-        feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
+        feCollection->push_back(dealii::FESystem<2>(fesSpaces, multiplicitiesSpaces));
 
         // fe collections
         for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)

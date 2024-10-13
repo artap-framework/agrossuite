@@ -143,7 +143,7 @@ CubicSpline::CubicSpline(std::vector<double> points, std::vector<double> values,
     first_der_right(first_der_right), extrapolate_der_left(extrapolate_der_left),
     extrapolate_der_right(extrapolate_der_right), is_const(false)
 {
-    for (int i = 1; i < points.size(); i++)
+    for (size_t i = 1; i < points.size(); i++)
         if (points[i] <= points[i - 1])
             throw AgrosException("Points must be in ascending order when constructing a spline.");
 }

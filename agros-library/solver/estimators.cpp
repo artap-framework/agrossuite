@@ -33,11 +33,11 @@
 ErrorEstimator::ErrorEstimator(int maxDegree)
     : m_N(5), m_maxDegree(maxDegree)
 {    
-    int dim = 2;
+    const int dim = 2;
 
     // We need to resize the matrix of fourier coefficients according to the number of modes N.
     dealii::TableIndices<2> size;
-    for (unsigned int d = 0; d < dim; d++)
+    for (int d = 0; d < dim; d++)
         size[d] = m_N;
     fourier_coefficients.reinit(size);
 }
@@ -110,9 +110,9 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::DoFHandler<2> &d
 std::pair<bool, unsigned int> ErrorEstimator::predicate(const dealii::TableIndices<2> &ind)
 {
     int dim = 2;
-    unsigned int v = 0;
+    int v = 0;
 
-    for (unsigned int i = 0; i < dim; i++)
+    for (int i = 0; i < dim; i++)
         v += ind[i]*ind[i];
 
     if (v > 0 && v < m_maxDegree*m_maxDegree)
@@ -255,7 +255,7 @@ double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::DoFHandler<2
                                                       const dealii::Vector<double> &sln1,
                                                       const dealii::Vector<double> &sln2)
 {
-    int numberOfSolutions = doFHandler.get_fe_collection().n_components();
+    unsigned int numberOfSolutions = doFHandler.get_fe_collection().n_components();
 
     double normCurrentL2 = 0.0;
     double normCurrentH1Semi = 0.0;
