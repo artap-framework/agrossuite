@@ -67,7 +67,7 @@ public:
         id.jcn = new int[id.nz];
 
         int index = 0;
-        for (int row = 0; row < system.m(); ++row)
+        for (size_t row = 0; row < system.m(); ++row)
         {
             for (typename dealii::SparseMatrix<double>::const_iterator ptr = system.begin (row); ptr != system.end (row); ++ptr)
                 if (std::abs(ptr->value()) > 0.0)
@@ -81,7 +81,7 @@ public:
 
         // prepare RHS
         id.rhs = new double[rhs.size()];
-        for (int i = 0; i < rhs.size(); ++i)
+        for (size_t i = 0; i < rhs.size(); ++i)
             id.rhs[i] = rhs(i);
 
         // no outputs
