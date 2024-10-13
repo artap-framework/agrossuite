@@ -1,3 +1,4 @@
+
 1) Preparing for compilation
 
 1.1) Download and install cmake for Windows: https://cmake.org/download/
