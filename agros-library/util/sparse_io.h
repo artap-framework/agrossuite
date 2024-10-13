@@ -28,8 +28,6 @@
 
 #include <chrono>
 
-#include "tclap/CmdLine.h"
-
 class SparseMatrixRW
 {
 public:
@@ -522,12 +520,12 @@ public:
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < n(); row++)
+        for (unsigned int row = 0; row < n(); row++)
         {
             std::size_t col_start = system_matrix_pattern->rowstart[row];
             std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
 
-            for (int i = col_start; i < col_end; i++)
+            for (unsigned int i = col_start; i < col_end; i++)
             {
                 cooRowInd[index] = row + 0;
                 cooColInd[index] = system_matrix_pattern->colnums[i] + 0;
@@ -654,143 +652,143 @@ protected:
     }
 };
 
-class LinearSystemArgs : public LinearSystem
-{
-public:
-    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(name),
-        cmd(name, ' '),
-
-        matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
-        matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
-        rhsArg(TCLAP::ValueArg<std::string>("r", "rhs", "RHS", true, "", "string")),
-        solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
-        referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
-        initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
-
-        solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-        preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-
-        multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false)),
-        multigridAggregatorTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
-        multigridSmootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
-        multigridCoarserTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
-
-        absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-        relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-        maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 2000, "int")),
-        numSweepsArg(TCLAP::ValueArg<int>("w", "num_sweeps", "Number of sweeps", false, -1, "int")),
-
-        verboseArg(TCLAP::ValueArg<int>("v", "verbose", "Verbose mode", false, 0, "int")),
-
-        argc(argc),
-        argv(argv)
-    {
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(referenceSolutionArg);
-        cmd.add(initialArg);
-
-        cmd.add(solverArg);
-        cmd.add(preconditionerArg);
-
-        cmd.add(multigridArg);
-        cmd.add(multigridAggregatorTypeArg);
-        cmd.add(multigridSmootherTypeArg);
-        cmd.add(multigridCoarserTypeArg);
-
-        cmd.add(absTolArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-        cmd.add(numSweepsArg);
-
-        cmd.add(verboseArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        infoParameterSolver = solverArg.getValue();
-        infoParameterPreconditioner = preconditionerArg.getValue();
-
-        infoParameterMultigrid = multigridArg.getValue();
-        infoParameterMultigridAggregator = multigridAggregatorTypeArg.getValue();
-        infoParameterMultigridSmoother = multigridSmootherTypeArg.getValue();
-        infoParameterMultigridCoarser = multigridCoarserTypeArg.getValue();
-
-        infoParameterAbsTol = absTolArg.getValue();
-        infoParameterRelTol = relTolArg.getValue();
-        infoParameterMaxIter = maxIterArg.getValue();
-        infoParameterNumSweeps = numSweepsArg.getValue();
-    }
-
-    inline bool hasSolution() { return !solutionArg.getValue().empty(); }
-    inline std::string solutionFileName() { return solutionArg.getValue(); }
-    inline bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
-
-    inline int verbose() { return verboseArg.getValue(); }
-
-    virtual void readLinearSystem()
-    {
-        for (int i = 0; i < argc; i++)
-        {
-            if (i > 0)
-                infoArgs += " ";
-
-            infoArgs += argv[i];
-        }
-
-        infoFileName = matrixArg.getValue().substr(0, matrixArg.getValue().length() - 7);
-
-        readLinearSystemInternal(matrixPatternArg.getValue(),
-                                 matrixArg.getValue(),
-                                 rhsArg.getValue(),
-                                 initialArg.getValue(),
-                                 referenceSolutionArg.getValue());
-    }
-
-    void writeSolution()
-    {
-        // system_rhs (solution)
-        if (hasSolution())
-            writeSolutionInternal(solutionFileName());
-    }
-
-    // matrices and vectors
-    TCLAP::ValueArg<std::string> matrixArg;
-    TCLAP::ValueArg<std::string> matrixPatternArg;
-    TCLAP::ValueArg<std::string> rhsArg;
-    TCLAP::ValueArg<std::string> solutionArg;
-    TCLAP::ValueArg<std::string> referenceSolutionArg;
-    TCLAP::ValueArg<std::string> initialArg;
-    // verbose mode (0 .. disabled, 1 .. simple verbose, 2 .. details, 3 .. file output)
-    TCLAP::ValueArg<int> verboseArg;
-
-protected:
-    // command line info
-    TCLAP::CmdLine cmd;
-
-    // iterative solver
-    TCLAP::ValueArg<std::string> solverArg;
-    TCLAP::ValueArg<std::string> preconditionerArg;
-    // iterative solver control
-    TCLAP::ValueArg<double> absTolArg;
-    TCLAP::ValueArg<double> relTolArg;
-    TCLAP::ValueArg<int> maxIterArg;
-    // multigrid
-    TCLAP::SwitchArg multigridArg;
-    TCLAP::ValueArg<std::string> multigridAggregatorTypeArg;
-    TCLAP::ValueArg<std::string> multigridSmootherTypeArg;
-    TCLAP::ValueArg<std::string> multigridCoarserTypeArg;
-    TCLAP::ValueArg<int> numSweepsArg;
-
-private:
-    int argc;
-    const char * const *argv;
-};
-
-double elapsedSeconds(std::chrono::time_point<std::chrono::steady_clock> start,
-                      std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now())
-{
-    return (end - start).count() * std::chrono::steady_clock::period::num / static_cast<double>(std::chrono::steady_clock::period::den);
-}
+// class LinearSystemArgs : public LinearSystem
+// {
+// public:
+//     LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(name),
+//         cmd(name, ' '),
+//
+//         matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
+//         matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
+//         rhsArg(TCLAP::ValueArg<std::string>("r", "rhs", "RHS", true, "", "string")),
+//         solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
+//         referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
+//         initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
+//
+//         solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+//         preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+//
+//         multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false)),
+//         multigridAggregatorTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+//         multigridSmootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+//         multigridCoarserTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
+//
+//         absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+//         relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+//         maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 2000, "int")),
+//         numSweepsArg(TCLAP::ValueArg<int>("w", "num_sweeps", "Number of sweeps", false, -1, "int")),
+//
+//         verboseArg(TCLAP::ValueArg<int>("v", "verbose", "Verbose mode", false, 0, "int")),
+//
+//         argc(argc),
+//         argv(argv)
+//     {
+//         cmd.add(matrixArg);
+//         cmd.add(matrixPatternArg);
+//         cmd.add(rhsArg);
+//         cmd.add(solutionArg);
+//         cmd.add(referenceSolutionArg);
+//         cmd.add(initialArg);
+//
+//         cmd.add(solverArg);
+//         cmd.add(preconditionerArg);
+//
+//         cmd.add(multigridArg);
+//         cmd.add(multigridAggregatorTypeArg);
+//         cmd.add(multigridSmootherTypeArg);
+//         cmd.add(multigridCoarserTypeArg);
+//
+//         cmd.add(absTolArg);
+//         cmd.add(relTolArg);
+//         cmd.add(maxIterArg);
+//         cmd.add(numSweepsArg);
+//
+//         cmd.add(verboseArg);
+//
+//         // parse the argv array.
+//         cmd.parse(argc, argv);
+//
+//         infoParameterSolver = solverArg.getValue();
+//         infoParameterPreconditioner = preconditionerArg.getValue();
+//
+//         infoParameterMultigrid = multigridArg.getValue();
+//         infoParameterMultigridAggregator = multigridAggregatorTypeArg.getValue();
+//         infoParameterMultigridSmoother = multigridSmootherTypeArg.getValue();
+//         infoParameterMultigridCoarser = multigridCoarserTypeArg.getValue();
+//
+//         infoParameterAbsTol = absTolArg.getValue();
+//         infoParameterRelTol = relTolArg.getValue();
+//         infoParameterMaxIter = maxIterArg.getValue();
+//         infoParameterNumSweeps = numSweepsArg.getValue();
+//     }
+//
+//     inline bool hasSolution() { return !solutionArg.getValue().empty(); }
+//     inline std::string solutionFileName() { return solutionArg.getValue(); }
+//     inline bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+//
+//     inline int verbose() { return verboseArg.getValue(); }
+//
+//     virtual void readLinearSystem()
+//     {
+//         for (int i = 0; i < argc; i++)
+//         {
+//             if (i > 0)
+//                 infoArgs += " ";
+//
+//             infoArgs += argv[i];
+//         }
+//
+//         infoFileName = matrixArg.getValue().substr(0, matrixArg.getValue().length() - 7);
+//
+//         readLinearSystemInternal(matrixPatternArg.getValue(),
+//                                  matrixArg.getValue(),
+//                                  rhsArg.getValue(),
+//                                  initialArg.getValue(),
+//                                  referenceSolutionArg.getValue());
+//     }
+//
+//     void writeSolution()
+//     {
+//         // system_rhs (solution)
+//         if (hasSolution())
+//             writeSolutionInternal(solutionFileName());
+//     }
+//
+//     // matrices and vectors
+//     TCLAP::ValueArg<std::string> matrixArg;
+//     TCLAP::ValueArg<std::string> matrixPatternArg;
+//     TCLAP::ValueArg<std::string> rhsArg;
+//     TCLAP::ValueArg<std::string> solutionArg;
+//     TCLAP::ValueArg<std::string> referenceSolutionArg;
+//     TCLAP::ValueArg<std::string> initialArg;
+//     // verbose mode (0 .. disabled, 1 .. simple verbose, 2 .. details, 3 .. file output)
+//     TCLAP::ValueArg<int> verboseArg;
+//
+// protected:
+//     // command line info
+//     TCLAP::CmdLine cmd;
+//
+//     // iterative solver
+//     TCLAP::ValueArg<std::string> solverArg;
+//     TCLAP::ValueArg<std::string> preconditionerArg;
+//     // iterative solver control
+//     TCLAP::ValueArg<double> absTolArg;
+//     TCLAP::ValueArg<double> relTolArg;
+//     TCLAP::ValueArg<int> maxIterArg;
+//     // multigrid
+//     TCLAP::SwitchArg multigridArg;
+//     TCLAP::ValueArg<std::string> multigridAggregatorTypeArg;
+//     TCLAP::ValueArg<std::string> multigridSmootherTypeArg;
+//     TCLAP::ValueArg<std::string> multigridCoarserTypeArg;
+//     TCLAP::ValueArg<int> numSweepsArg;
+//
+// private:
+//     int argc;
+//     const char * const *argv;
+// };
+//
+// double elapsedSeconds(std::chrono::time_point<std::chrono::steady_clock> start,
+//                       std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now())
+// {
+//     return (end - start).count() * std::chrono::steady_clock::period::num / static_cast<double>(std::chrono::steady_clock::period::den);
+// }

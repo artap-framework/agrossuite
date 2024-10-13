@@ -27,12 +27,6 @@
 #include "gui/other.h"
 #include "app/mainwindow.h"
 
-#include "../3rdparty/tclap/CmdLine.h"
-
-#include "boost/archive/archive_exception.hpp"
-#include <deal.II/base/exceptions.h>
-#include <deal.II/base/multithread_info.h>
-
 class AgrosApplication : public QApplication
 {
 public:
@@ -61,86 +55,77 @@ public:
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        // dealii::MultithreadInfo::set_thread_limit(1);
+    // dealii::MultithreadInfo::set_thread_limit(1);
 
-        // command line info
-        TCLAP::CmdLine cmd("agros", ' ', versionString().toStdString());
+    QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
+    QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    // QApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 
-        TCLAP::ValueArg<std::string> problemArg("p", "problem", "Open problem", false, "", "string");
-
-        cmd.add(problemArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-
-        QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
-        QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-        // QApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
-
-        // DPI
+    // DPI
 #ifdef Q_OS_MAC
-        //
+    //
 #endif
 
 #ifdef Q_OS_LINUX
-        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 
-        const bool hasWaylandDisplay = qEnvironmentVariableIsSet("WAYLAND_DISPLAY");
-        const bool isWaylandSessionType = qgetenv("XDG_SESSION_TYPE") == "wayland";
-        const QByteArray currentDesktop = qgetenv("XDG_CURRENT_DESKTOP").toLower();
-        const QByteArray sessionDesktop = qgetenv("XDG_SESSION_DESKTOP").toLower();
-        const bool isGnome = currentDesktop.contains("gnome") || sessionDesktop.contains("gnome");
-        const bool isWayland = hasWaylandDisplay || isWaylandSessionType;
-        if (isGnome && isWayland)
-        {
-            qInfo() << "Warning: Ignoring WAYLAND_DISPLAY on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.";
-            qputenv("QT_QPA_PLATFORM", "xcb");
-        }
+    const bool hasWaylandDisplay = qEnvironmentVariableIsSet("WAYLAND_DISPLAY");
+    const bool isWaylandSessionType = qgetenv("XDG_SESSION_TYPE") == "wayland";
+    const QByteArray currentDesktop = qgetenv("XDG_CURRENT_DESKTOP").toLower();
+    const QByteArray sessionDesktop = qgetenv("XDG_SESSION_DESKTOP").toLower();
+    const bool isGnome = currentDesktop.contains("gnome") || sessionDesktop.contains("gnome");
+    const bool isWayland = hasWaylandDisplay || isWaylandSessionType;
+    if (isGnome && isWayland)
+    {
+        // qInfo() << "Warning: Ignoring WAYLAND_DISPLAY on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.";
+        // qputenv("QT_QPA_PLATFORM", "xcb");
+    }
 #endif
 
 #ifdef Q_OS_WIN
-        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Floor);
 #endif
 
-        CleanExit cleanExit;
-        AgrosApplication a(argc, argv);
+    CleanExit cleanExit;
+    AgrosApplication app(argc, argv);
 
-        // language
-        setLocale(Agros::configComputer()->value(Config::Config_Locale).toString());
-        // a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    // language
+    setLocale(Agros::configComputer()->value(Config::Config_Locale).toString());
+    // a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
-        MainWindow w(argc, argv);
+    MainWindow w(argc, argv);
 
-        if (!problemArg.getValue().empty())
+    // command line parser
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Agros is an open-source user-friendly finite-element software for teaching, research and engineering.");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption problemOption(QStringList() << "p" << "problem", "The problem file to open.", "problem");
+    parser.addOption(problemOption);
+
+    // Process the actual command line arguments given by the user
+    parser.process(app);
+
+    if (parser.isSet(problemOption))
+    {
+        QString problem = parser.value(problemOption);
+
+        if (QFile::exists(problem))
         {
-            if (QFile::exists(QString::fromStdString(problemArg.getValue())))
+            QFileInfo info(problem);
+            if (info.suffix() == "ags")
             {
-                QFileInfo info(QString::fromStdString(problemArg.getValue()));
-                if (info.suffix() == "ags")
-                {
-                    w.setStartupProblemFilename(QString::fromStdString(problemArg.getValue()));
-                }
-                else
-                {
-                    std::cout << QObject::tr("Unknown suffix.").toStdString() << std::endl;
-                }
+                w.setStartupProblemFilename(problem);
+            }
+            else
+            {
+                std::cout << QObject::tr("Unknown suffix.").toStdString() << std::endl;
             }
         }
-
-        w.show();
-
-        return a.exec();
     }
-    catch (TCLAP::ArgException &e)
-    {
-        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        return 1;
-    }
-    catch (exception e)
-    {
 
-    }
+    w.show();
+
+    return app.exec();
 }

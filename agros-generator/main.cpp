@@ -18,40 +18,32 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "util/util.h"
-#include "util/global.h"
 #include "generator.h"
-
-#include "../3rdparty/tclap/CmdLine.h"
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        // command line info
-        TCLAP::CmdLine cmd("Agros solver", ' ', versionString().toStdString());
+    Agros2DGenerator app(argc, argv);
 
-        TCLAP::ValueArg<std::string> moduleArg("m", "module", "Generate module", false, "", "string");
+    // command line parser
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Agros generator");
+    parser.addHelpOption();
+    parser.addVersionOption();
 
-        cmd.add(moduleArg);
+    QCommandLineOption moduleOption(QStringList() << "m" << "module", "Generate module.", "module");
+    parser.addOption(moduleOption);
 
-        // parse the argv array.
-        cmd.parse(argc, argv);
+    // Process the actual command line arguments given by the user
+    parser.process(app);
 
-        // init singleton
-        // Agros::createSingleton(QSharedPointer<Log>());
 
-        Agros2DGenerator a(argc, argv);
+    // init lists
+    initLists();
 
-        // init lists
-        initLists();
+    QTimer::singleShot(0, &app, SLOT(run()));
 
-        QTimer::singleShot(0, &a, SLOT(run()));
-        a.setModuleName(QString::fromStdString(moduleArg.getValue()));
-        return a.exec();
-    }
-    catch (TCLAP::ArgException &e)
-    {
-        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        return 1;
-    }
+    if (parser.isSet(moduleOption))
+        app.setModuleName(parser.value(moduleOption));
+
+    return app.exec();
 }
