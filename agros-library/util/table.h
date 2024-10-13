@@ -106,7 +106,7 @@ public:
     ButcherTable(ButcherTableType butcher_table);
     ~ButcherTable();
     virtual void free();
-    virtual void alloc(unsigned int size);
+    virtual void alloc(unsigned int size) override;
     double get_B(unsigned int i);
     double get_B2(unsigned int i);
     double get_C(unsigned int i);

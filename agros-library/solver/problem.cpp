@@ -196,13 +196,11 @@ void PostDeal::processRangeVector()
     if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(
         PostprocessorSetting::ShowVectorView).toBool()))
     {
-        bool contains = false;
         foreach(Module::LocalVariable variable,
                 m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
         {
             if (variable.id() == m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString())
             {
-                contains = true;
                 break;
             }
         }
@@ -1253,7 +1251,7 @@ void ProblemBase::importProblemFromA2D(const QString& fileName)
 
                 // add boundary to the edge marker
                 QDomNodeList materialEdgesElements = boundaryElement.elementsByTagName("boundary_edges").at(0).childNodes();
-                for (unsigned int k = 0; k < materialEdgesElements.size(); k++)
+                for (int k = 0; k < materialEdgesElements.size(); k++)
                 {
                     int face = materialEdgesElements.at(k).toElement().attribute("id").toInt();
 
@@ -1291,7 +1289,7 @@ void ProblemBase::importProblemFromA2D(const QString& fileName)
 
                 // add label to the label marker
                 QDomNodeList materialLabelsElements = materialElement.elementsByTagName("material_labels").at(0).childNodes();
-                for (unsigned int k = 0; k < materialLabelsElements.size(); k++)
+                for (int k = 0; k < materialLabelsElements.size(); k++)
                 {
                     int label = materialLabelsElements.at(k).toElement().attribute("id").toInt();
 
@@ -2114,10 +2112,10 @@ void Computation::propagateBoundaryMarkers()
     dealii::Triangulation<2>::cell_iterator cell_initial = m_initialMesh.begin();
     dealii::Triangulation<2>::cell_iterator cell_calculation = m_calculationMesh.begin();
 
-    for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)
+    for (unsigned int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)
     // loop over all cells, not just active ones
     {
-        for (int f = 0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+        for (unsigned int f = 0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
         {
             if (cell_unrefined->face(f)->user_index() != 0)
             {

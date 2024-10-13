@@ -37,8 +37,8 @@ SET(SOURCES
     optilab/study_model.cpp
     optilab/parameter.cpp
     optilab/goal_function.cpp
-    particle/particle_tracing.cpp
-    particle/particle_forces.cpp
+    # particle/particle_tracing.cpp
+    # particle/particle_forces.cpp
     scene.cpp
     scenebasic.cpp
     sceneedge.cpp

@@ -101,21 +101,21 @@ namespace bayesopt  {
   protected:
     /** Sample a single point in the input space. Used for epsilon
 	greedy exploration. */
-    vectord samplePoint();
+    vectord samplePoint() override;
 
     /** 
      * \brief Call the inner optimization method to find the optimal
      * point acording to the criteria.  
      * @param xOpt optimal point
      */
-    void findOptimal(vectord &xOpt);
+    void findOptimal(vectord &xOpt) override;
 
     /** Remap the point x to the original space (e.g.:
 	unnormalization) */
-    vectord remapPoint(const vectord& x);
+    vectord remapPoint(const vectord& x) override;
 
     /** Selects the initial set of points to build the surrogate model. */
-    void generateInitialPoints(matrixd& xPoints);
+    void generateInitialPoints(matrixd& xPoints) override;
 
   private:
     boost::scoped_ptr<utils::BoundingBox<vectord> > mBB;      ///< Bounding Box (input space limits)
@@ -181,25 +181,25 @@ namespace bayesopt  {
     DiscreteModel(const vectori &categories, Parameters params);
     
     /** Default destructor  */
-    virtual ~DiscreteModel();
+    virtual ~DiscreteModel() override;
     
   protected:
     /** Sample a single point in the input space. Used for epsilon
 	greedy exploration. */
-    vectord samplePoint();
+    vectord samplePoint() override;
 
     /** 
      * \brief Call the inner optimization method to find the optimal
      * point acording to the criteria.  
      * @param xOpt optimal point
      */
-    void findOptimal(vectord &xOpt);
+    void findOptimal(vectord &xOpt) override;
 
     /** Remap the point x to the original space  */
-    vectord remapPoint(const vectord& x);
+    vectord remapPoint(const vectord& x) override;
 
     /** Selects the initial set of points to build the surrogate model. */
-    void generateInitialPoints(matrixd& xPoints);
+    void generateInitialPoints(matrixd& xPoints) override;
 
   private:
     vecOfvec mInputSet;               ///< List of input points

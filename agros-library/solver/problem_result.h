@@ -70,12 +70,12 @@ class AGROS_LIBRARY_API LocalValueRecipe : public ResultRecipe
 public:
     LocalValueRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    virtual ~LocalValueRecipe() {}
+    virtual ~LocalValueRecipe() override {}
 
-    virtual ResultRecipeType type() const { return ResultRecipeType_LocalPointValue; }
+    virtual ResultRecipeType type() const override { return ResultRecipeType_LocalPointValue; }
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+    virtual void load(QJsonObject &object) override;
+    virtual void save(QJsonObject &object) override;
 
     inline Point point() const { return m_point; }
     inline void setPoint(Point point) { m_point = point; }
@@ -84,7 +84,7 @@ public:
     inline PhysicFieldVariableComp variableComponent() const  { return m_variableComponent; }
     inline void setVariableComponent(PhysicFieldVariableComp component) { m_variableComponent = component; }
 
-    virtual double evaluate(Computation *computation);
+    virtual double evaluate(Computation *computation) override;
 
 protected:
     Point m_point;
@@ -96,19 +96,19 @@ class AGROS_LIBRARY_API SurfaceIntegralRecipe : public ResultRecipe
 public:
     SurfaceIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    virtual ~SurfaceIntegralRecipe() {}
+    virtual ~SurfaceIntegralRecipe() override {}
     inline void clear() { m_edges.clear(); }
 
-    virtual ResultRecipeType type() const { return ResultRecipeType_SurfaceIntegral; }
+    virtual ResultRecipeType type() const override { return ResultRecipeType_SurfaceIntegral; }
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+    virtual void load(QJsonObject &object) override;
+    virtual void save(QJsonObject &object) override;
 
     inline QList<int> edges() const { return m_edges; }
     inline QList<int> &edges() { return m_edges; }
     inline void addEdge(int edge) { m_edges.append(edge); }
 
-    virtual double evaluate(Computation *computation);
+    virtual double evaluate(Computation *computation) override;
 
 protected:
     QList<int> m_edges;
@@ -119,19 +119,19 @@ class AGROS_LIBRARY_API VolumeIntegralRecipe : public ResultRecipe
 public:
     VolumeIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    virtual ~VolumeIntegralRecipe() {}
+    virtual ~VolumeIntegralRecipe() override {}
     inline void clear() { m_labels.clear(); }
 
-    virtual ResultRecipeType type() const { return ResultRecipeType_VolumeIntegral; }
+    virtual ResultRecipeType type() const override { return ResultRecipeType_VolumeIntegral; }
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+    virtual void load(QJsonObject &object) override;
+    virtual void save(QJsonObject &object) override;
 
     inline QList<int> labels() const { return m_labels; }
     inline QList<int> &labels() { return m_labels; }
     inline void addLabel(int label) { m_labels.append(label); }
 
-    virtual double evaluate(Computation *computation);
+    virtual double evaluate(Computation *computation) override;
 
 protected:
     QList<int> m_labels;

@@ -39,7 +39,7 @@ public:
 
     MeshGeneratorTriangleFast(ProblemBase *problem);
 
-    virtual bool mesh();
+    virtual bool mesh() override;
     void clear();
     inline QMap<SceneLabel*, QList<Triangle> > polygonTriangles() const { return m_polygonTriangles; }
 
@@ -56,7 +56,7 @@ class AGROS_LIBRARY_API LoopsInfo : public QObject
 {
 public:
     LoopsInfo(Scene *scene);
-    virtual ~LoopsInfo() {}
+    virtual ~LoopsInfo() override {}
 
     enum Intersection
     {

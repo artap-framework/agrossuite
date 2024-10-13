@@ -320,7 +320,7 @@ public:
 
 protected:
 //    void parseCode(int code, dxfReader *reader);
-    bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0);
+    bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0) override;
 
 public:
 //Note:    int DRW_TableEntry::flags; contains code 70 of block
@@ -403,7 +403,7 @@ public:
 
 protected:
     void parseCode(int code, dxfReader *reader);
-    bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0);
+    bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0) override;
 
 public:
     DRW_Coord lowerLeft;     /*!< Lower left corner, code 10 & 20 */

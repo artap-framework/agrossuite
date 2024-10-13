@@ -240,7 +240,7 @@ class AGROS_LIBRARY_API Problem : public ProblemBase
 {
 public:
     Problem();
-    ~Problem();
+    ~Problem() override;
 
     QSharedPointer<Computation> createComputation(bool newComputation);
     void setCurrentComputation(QSharedPointer<Computation> computation);
@@ -251,19 +251,19 @@ public:
     void readProblemFromFile(const QString &archiveFileName);
 
     // field
-    virtual void removeField(FieldInfo *field);
+    virtual void removeField(FieldInfo *field) override;
 
     // filenames
-    virtual QString problemFileName() const;
+    virtual QString problemFileName() const override;
     inline QString archiveFileName() const { return m_fileName; }
 
     // recipes
     inline ResultRecipes *recipes() const { return m_recipes; }
 
     // studies
-    inline Studies *studies() { return m_studies; }
+    inline Studies *studies() const { return m_studies; }
 
-    virtual void clearFieldsAndConfig();
+    virtual void clearFieldsAndConfig() override;
 
 private:
     QString m_fileName;
@@ -278,20 +278,20 @@ protected:
     // studies
     Studies *m_studies;
 
-    virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
-    virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson) override;
+    virtual void writeProblemToJsonInternal(QJsonObject &rootJson) override;
 };
 
 class AGROS_LIBRARY_API Computation : public ProblemBase
 {
 public:
     Computation(const QString &problemDir = "");
-    virtual ~Computation();
+    virtual ~Computation() override;
 
     inline PostprocessorSetting *setting() const { return m_setting; }
 
-    inline ProblemSolver *problemSolver() { return m_problemSolver; }
-    inline SolutionStore *solutionStore() { return m_solutionStore; }
+    inline ProblemSolver *problemSolver() const { return m_problemSolver; }
+    inline SolutionStore *solutionStore() const { return m_solutionStore; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }

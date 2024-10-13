@@ -58,18 +58,18 @@ class AGROS_LIBRARY_API LogStdOut : public Log
 public:
     LogStdOut();
 
-    virtual void printHeading(const QString &message);
-    virtual void printMessage(const QString &module, const QString &message);
-    virtual void printError(const QString &module, const QString &message);
-    virtual void printWarning(const QString &module, const QString &message);
-    virtual void printDebug(const QString &module, const QString &message);
+    virtual void printHeading(const QString &message) override;
+    virtual void printMessage(const QString &module, const QString &message) override;
+    virtual void printError(const QString &module, const QString &message) override;
+    virtual void printWarning(const QString &module, const QString &message) override;
+    virtual void printDebug(const QString &module, const QString &message) override;
 
-    virtual inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {}
-    virtual inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {}
-    virtual inline void updateTransientChartInfo(double actualTime) {}
+    virtual inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) override {}
+    virtual inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) override {}
+    virtual inline void updateTransientChartInfo(double actualTime) override {}
 
-    virtual inline void appendImage(const QString &fileName) {}
-    virtual inline void appendHtml(const QString &html) {}
+    virtual inline void appendImage(const QString &fileName) override {}
+    virtual inline void appendHtml(const QString &html) override {}
 
 private:
       // std::shared_ptr<spdlog::logger>  m_console;

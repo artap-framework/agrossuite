@@ -65,14 +65,14 @@ struct MySolution
 
 	MySolution(const MySolution& other)
 	{
-		for (int i = 0; i < other.x.size(); i++)
+		for (size_t i = 0; i < other.x.size(); i++)
 			x.push_back(other.x[i]);
 	}
 
 	std::string to_string() const
 	{
 		std::string str = "[";
-		for (int i = 0; i < x.size(); i++)
+		for (size_t i = 0; i < x.size(); i++)
 			str += std::to_string(x[i]) + ((i == x.size()-1) ? "" : ", ");
 		str += "]";
 
@@ -86,14 +86,14 @@ struct MyMiddleCost
 {
 	MyMiddleCost()
 	{
-		auto n = localStudy->goalFunctions().size();
-		for (int i = 0; i < n; i++)
+		const size_t n = localStudy->goalFunctions().size();
+		for (size_t i = 0; i < n; i++)
 			cost_f.push_back(0.0);
 	}
 
 	MyMiddleCost(const MyMiddleCost& other)
 	{
-		for (int i = 0; i < other.cost_f.size(); i++)
+		for (size_t i = 0; i < other.cost_f.size(); i++)
 			cost_f.push_back(other.cost_f[i]);
 	}
 
@@ -172,7 +172,7 @@ MySolution mutate(const MySolution& X_base, const std::function<double(void)> &r
 		X_new = X_base;
 
 		out_of_range = false;
-		for (int i = 0; i < X_new.x.size(); i++)
+		for (size_t i = 0; i < X_new.x.size(); i++)
 		{
 			X_new.x[i] += mu * (rnd01() - rnd01());
 
@@ -204,7 +204,7 @@ MySolution crossover(const MySolution& X1, const MySolution& X2, const std::func
 	do
 	{
 		out_of_range = false;
-		for (int i = 0; i < X_new.x.size(); i++)
+		for (size_t i = 0; i < X_new.x.size(); i++)
 		{
 			const double r = rnd01();
 			X_new.x[i] = r * X1.x[i] + (1.0 - r) * X2.x[i];
@@ -232,7 +232,7 @@ MySolution crossover(const MySolution& X1, const MySolution& X2, const std::func
 double calculate_so_total_fitness(const GA_Type::thisChromosomeType &X)
 {
 	double out = 0.0;
-	for (int i = 0; i < X.middle_costs.cost_f.size(); i++)
+	for (size_t i = 0; i < X.middle_costs.cost_f.size(); i++)
 		out += X.middle_costs.cost_f[i];
 	// qInfo() << "Total fitness: " << out;
 	return out;

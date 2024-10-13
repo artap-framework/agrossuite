@@ -30,14 +30,14 @@ class StudyNSGA2 : public Study
 public:
     StudyNSGA2();
 
-    virtual inline StudyType type() { return StudyType_NSGA2; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_NSGA2; }
+    virtual void solve() override;
 
-    virtual int estimatedNumberOfSteps() const;
+    virtual int estimatedNumberOfSteps() const override;
 
 protected:
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
 private:
     friend class StudyNSGA2Dialog;

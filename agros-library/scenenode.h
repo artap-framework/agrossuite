@@ -65,7 +65,7 @@ public:
 
     SceneNode* findClosest(const Point& point) const;
 
-    virtual bool remove(SceneNode *item);
+    virtual bool remove(SceneNode *item) override;
 
     /// returns bounding box, assumes container not empty
     RectPoint boundingBox() const;

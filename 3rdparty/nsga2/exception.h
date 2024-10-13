@@ -10,9 +10,9 @@ namespace nsga2 {
         explicit nsga2exception(const std::string& msg) :
             std::exception(),
             message(msg) {};
-        virtual ~nsga2exception() throw () {};
+        virtual ~nsga2exception() throw () override {};
 
-        const char* what() const throw() {
+        const char* what() const throw() override {
             return message.c_str();
         };
         

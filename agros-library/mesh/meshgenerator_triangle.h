@@ -32,7 +32,7 @@ class MeshGeneratorTriangleExternal : public MeshGenerator
 public:
    MeshGeneratorTriangleExternal(ProblemBase *problem);
 
-   virtual bool mesh();
+   virtual bool mesh() override;
 
 private:
    bool writeToTriangle();
@@ -44,7 +44,7 @@ class AGROS_LIBRARY_API MeshGeneratorTriangle : public MeshGenerator
 public:
     MeshGeneratorTriangle(ProblemBase *problem);
 
-    virtual bool mesh();
+    virtual bool mesh() override;
 
 private:
     bool writeToTriangle();

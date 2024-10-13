@@ -84,9 +84,9 @@ public:
     inline double variance() const { return m_variance; }
     inline double stdDev() const { return m_stdDev; }
 
-    inline int const size() { return m_values.size(); }
-    inline QVector<double> const values() { return m_values; }
-    inline QVector<double> const sortedValues() { return m_sortedValues; }
+    inline int size() const { return m_values.size(); }
+    inline QVector<double> values() const { return m_values; }
+    inline QVector<double> sortedValues() const { return m_sortedValues; }
 
 private:
     QVector<double> m_values;
@@ -128,7 +128,7 @@ private:
 
         // Covariance
         m_covariance = 0.0;
-        for (int i = 0; i < m_statsX.size(); i++)
+        for (qsizetype i = 0; i < m_statsX.size(); i++)
             m_covariance += (m_statsX.values()[i] - m_statsX.mean()) * (m_statsY.values()[i] - m_statsY.mean());
 
         m_covariance /= m_statsX.size();
@@ -262,7 +262,7 @@ public:
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
-    virtual ~Study();
+    virtual ~Study() override;
 
     virtual StudyType type() = 0;
 

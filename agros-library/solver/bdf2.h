@@ -56,7 +56,7 @@ class AGROS_LIBRARY_API BDF2ATable : public BDF2Table
 public:
     BDF2ATable() : BDF2Table() { setOrderAndPreviousSteps(1, QList<double>()); }
 protected:
-    virtual void recalculate();
+    virtual void recalculate() override;
 };
 
 #endif // BDF2_H

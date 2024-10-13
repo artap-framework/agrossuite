@@ -102,7 +102,7 @@ void DataTable::checkTable()
         throw AgrosException(QObject::tr("Size doesn't match (%1 < %2).").arg(m_points.size()).arg(m_values.size()));
     }
 
-    for (int i = 1; i < m_points.size(); i++)
+    for (size_t i = 1; i < m_points.size(); i++)
     {
         if (m_points[i] < m_points[i-1])
         {
@@ -300,7 +300,7 @@ QString DataTable::toStringX() const
 {
     QString str;
 
-    for (int i = 0; i < m_points.size(); i++)
+    for (size_t i = 0; i < m_points.size(); i++)
     {
         str += QString::number(m_points[i]);
         if (i < m_points.size() - 1)
@@ -314,7 +314,7 @@ QString DataTable::toStringY() const
 {
     QString str;
 
-    for (int i = 0; i < m_values.size(); i++)
+    for (size_t i = 0; i < m_values.size(); i++)
     {
         str += QString::number(m_values[i]);
         if (i < m_values.size() - 1)

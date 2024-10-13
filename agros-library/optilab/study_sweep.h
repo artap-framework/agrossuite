@@ -33,8 +33,8 @@ class SweepProblem : public bayesopt::ContinuousModel
 public:
     SweepProblem(StudySweep *study, bayesopt::Parameters par);
 
-    double evaluateSample(const vectord& x);
-    bool checkReachability(const vectord &query) { return true; }
+    double evaluateSample(const vectord& x) override;
+    bool checkReachability(const vectord &query) override { return true; }
 
 private:
     StudySweep *m_study;
@@ -46,10 +46,10 @@ class AGROS_LIBRARY_API StudySweep : public Study
 public:
     StudySweep();
 
-    virtual inline StudyType type() { return StudyType_Sweep; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_Sweep; }
+    virtual void solve() override;
 
-    virtual int estimatedNumberOfSteps() const;
+    virtual int estimatedNumberOfSteps() const override;
 
     QString initMethodString(int method) const;
     inline QStringList initMethodStringKeys() const { QStringList list = initMethodList.values(); std::sort(list.begin(), list.end()); return list; }
@@ -59,8 +59,8 @@ public:
 protected:
     QMap<int, QString> initMethodList;
 
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
     friend class StudySweepDialog;
 };

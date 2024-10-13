@@ -31,10 +31,10 @@ class AGROS_LIBRARY_API StudyNLopt : public Study
 public:
     StudyNLopt();
 
-    virtual inline StudyType type() { return StudyType_NLopt; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_NLopt; }
+    virtual void solve() override;
 
-    virtual int estimatedNumberOfSteps() const;
+    virtual int estimatedNumberOfSteps() const override;
 
     QString algorithmString(int algorithm) const;
     inline QStringList algorithmStringKeys() const { QStringList list = algorithmList.values(); std::sort(list.begin(), list.end()); return list; }
@@ -44,8 +44,8 @@ public:
 protected:
     QMap<int, QString> algorithmList;
 
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
 private:
     friend class StudyNLoptDialog;

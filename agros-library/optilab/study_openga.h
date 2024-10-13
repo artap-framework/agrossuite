@@ -29,17 +29,17 @@ class AGROS_LIBRARY_API StudyOpenGA : public Study
 public:
     StudyOpenGA();
 
-    virtual inline StudyType type() { return StudyType_OpenGA; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_OpenGA; }
+    virtual void solve() override;
 
-    virtual int estimatedNumberOfSteps() const;
+    virtual int estimatedNumberOfSteps() const override;
 
     static QString algorithmString(const QString &algorithm);
     static QStringList algorithmStringKeys();
 
 protected:
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
 private:
     friend class StudyOpenGADialog;

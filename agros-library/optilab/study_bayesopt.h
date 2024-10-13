@@ -33,8 +33,8 @@ class BayesOptProblem : public bayesopt::ContinuousModel
 public:
     BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par);
 
-    double evaluateSample(const vectord &x);
-    bool checkReachability(const vectord &x);
+    double evaluateSample(const vectord &x) override;
+    bool checkReachability(const vectord &x) override;
 
 private:
     StudyBayesOpt *m_study;
@@ -46,10 +46,10 @@ class AGROS_LIBRARY_API StudyBayesOpt : public Study
 public:
     StudyBayesOpt();
 
-    virtual inline StudyType type() { return StudyType_BayesOpt; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_BayesOpt; }
+    virtual void solve() override;
 
-    virtual int estimatedNumberOfSteps() const;
+    virtual int estimatedNumberOfSteps() const override;
 
     QString scoreTypeString(score_type learningType) const;
     inline QStringList scoreTypeStringKeys() const { QStringList list = scoreTypeList.values(); std::sort(list.begin(), list.end()); return list; }
@@ -77,8 +77,8 @@ protected:
     QMap<int, QString> initMethodList;
     QStringList surrogateList;
 
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
     friend class StudyBayesOptDialog;
 };

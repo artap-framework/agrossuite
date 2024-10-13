@@ -267,11 +267,11 @@ public:
         eType = DRW::CIRCLE;
     }
 
-    virtual void applyExtrusion();
+    virtual void applyExtrusion() override;
 
 protected:
     void parseCode(int code, dxfReader *reader);
-    virtual bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0);
+    virtual bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0) override;
 
 public:
     double radious;                 /*!< radius, code 40 */
@@ -290,7 +290,7 @@ public:
         isccw = 1;
     }
 
-    virtual void applyExtrusion();
+    virtual void applyExtrusion() override;
 
     //! center point in OCS
     const DRW_Coord & center() { return basePoint; }
@@ -1141,7 +1141,7 @@ public:
     void setDef2Point(const DRW_Coord p) {setPt4(p);}
 
 protected:
-    virtual bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0);
+    virtual bool parseDwg(DRW::Version version, dwgBuffer *buf, duint32 bs=0) override;
 };
 
 //! Class to handle  linear or rotated dimension entity

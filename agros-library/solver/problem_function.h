@@ -55,18 +55,18 @@ class AGROS_LIBRARY_API ProblemFunctionAnalytic : public ProblemFunction
 {
 public:
     ProblemFunctionAnalytic(const QString &name = "", const QString &expr = "");
-    virtual ~ProblemFunctionAnalytic() {}
+    virtual ~ProblemFunctionAnalytic() override {}
 
-    virtual ProblemFunctionType type() const { return ProblemFunctionType_Analytic; }
+    virtual ProblemFunctionType type() const override { return ProblemFunctionType_Analytic; }
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+    virtual void load(QJsonObject &object) override;
+    virtual void save(QJsonObject &object) override;
 
     inline QString expression() const { return m_expression; }
     void setExpression(const QString &expr);
 
-    virtual double value(double val);
-    virtual double derivative(double val);
+    virtual double value(double val) override;
+    virtual double derivative(double val) override;
 
 protected:
     QString m_expression;

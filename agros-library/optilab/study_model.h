@@ -29,12 +29,12 @@ class AGROS_LIBRARY_API StudyModel : public Study
 public:
     StudyModel();
 
-    virtual inline StudyType type() { return StudyType_Model; }
-    virtual void solve();
+    virtual inline StudyType type() override { return StudyType_Model; }
+    virtual void solve() override;
 
 protected:
-    virtual void setDefaultValues();
-    virtual void setStringKeys();
+    virtual void setDefaultValues() override;
+    virtual void setStringKeys() override;
 
 private:
     friend class StudyModelDialog;
