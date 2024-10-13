@@ -27,7 +27,7 @@ build-linux:
     - mkdir -p build 
     - cd build 
     - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
-    - cmake --build . --config Release --parallel 10 -j 10 | Out-Null 
+    - cmake --build . --config Release --parallel 10 -j 10
     - cd ../../
     #  agros
     - mkdir -p build
