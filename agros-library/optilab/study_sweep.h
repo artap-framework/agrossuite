@@ -28,18 +28,46 @@
 
 class AGROS_LIBRARY_API StudySweep;
 
-class SweepProblem : public bayesopt::ContinuousModel
+class SweepProblem
 {
 public:
-    SweepProblem(StudySweep *study, bayesopt::Parameters par);
+    SweepProblem(StudySweep *study);
 
-    double evaluateSample(const vectord& x) override;
-    bool checkReachability(const vectord &query) override { return true; }
+    double evaluate(const vectord& x);
 
-private:
+protected:
     StudySweep *m_study;
     int m_steps;
 };
+
+class SweepProblemUniform : public SweepProblem
+{
+public:
+    SweepProblemUniform(StudySweep *study);
+
+    void evaluateUniform();
+};
+
+class SweepProblemRandom : public SweepProblem
+{
+public:
+    SweepProblemRandom(StudySweep *study);
+
+    void evaluateRandom();
+};
+
+class SweepProblemBayesOpt : public SweepProblem, public bayesopt::ContinuousModel
+{
+public:
+    SweepProblemBayesOpt(StudySweep *study, bayesopt::Parameters par);
+
+    double evaluateSample(const vectord& x) override { return evaluate(x); };
+    bool checkReachability(const vectord &query) override { return true; }
+
+private:
+
+};
+
 
 class AGROS_LIBRARY_API StudySweep : public Study
 {
