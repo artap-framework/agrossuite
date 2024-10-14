@@ -133,6 +133,18 @@ void PreprocessorWidget::createActions()
     actNewLabel->setIconVisibleInMenu(true);
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
 
+    actExportGeometryToClipboard = new QAction(tr("Copy geometry to clipboard"), this);
+    connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(doExportGeometryToClipboard()));
+
+    actExportGeometryToPng = new QAction(tr("Export geometry to PNG..."), this);
+    connect(actExportGeometryToPng, SIGNAL(triggered()), this, SLOT(doExportGeometryToPng()));
+
+    actExportGeometryToSvg = new QAction(tr("Export geometry to SVG..."), this);
+    connect(actExportGeometryToSvg, SIGNAL(triggered()), this, SLOT(doExportGeometryToSvg()));
+
+    actExportGeometryToVTK = new QAction(tr("Copy geometry to VTK..."), this);
+    connect(actExportGeometryToVTK, SIGNAL(triggered()), this, SLOT(doExportGeometryToVTK()));
+
     // add to menu
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewRectangle);
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewCircle);
@@ -232,13 +244,7 @@ void PreprocessorWidget::createControls()
     actRedo->setIconText(tr("&Redo"));
     actRedo->setShortcuts(QKeySequence::Redo);
 
-    // zoom
-    auto *mnuZoom = new QMenu(this);
-    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomBestFit);
-    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomIn);
-    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomOut);
-    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomRegion);
-
+    // add geometry
     auto *addButton = new QToolButton();
     addButton->setText(tr("Add geometry"));
     addButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -251,6 +257,31 @@ void PreprocessorWidget::createControls()
     addButton->setAutoRaise(true);
     addButton->setIcon(icon("geometry_add"));
     addButton->setPopupMode(QToolButton::InstantPopup);
+
+    // zoom
+    auto *mnuZoom = new QMenu(this);
+    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomBestFit);
+    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomIn);
+    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomOut);
+    mnuZoom->addAction(m_sceneViewProblem->actSceneZoomRegion);
+
+    // export
+    auto *mnuExport = new QMenu(this);
+    mnuExport->addAction(actExportGeometryToClipboard);
+    mnuExport->addSeparator();
+    mnuExport->addAction(actExportGeometryToPng);
+    mnuExport->addAction(actExportGeometryToSvg);
+    mnuExport->addSeparator();
+    mnuExport->addAction(actExportGeometryToVTK);
+
+    auto *exportButton = new QToolButton();
+    exportButton->setText(tr("Export"));
+    exportButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    exportButton->setIconSize(QSize(24, 24));
+    exportButton->setMenu(mnuExport);
+    exportButton->setAutoRaise(true);
+    exportButton->setIcon(icon("geometry_zoom"));
+    exportButton->setPopupMode(QToolButton::InstantPopup);
 
     auto *zoomButton = new QToolButton();
     zoomButton->setText(tr("Zoom"));
@@ -278,6 +309,8 @@ void PreprocessorWidget::createControls()
     toolBarRight->addAction(m_sceneViewProblem->actSceneViewSelectRegion);
     toolBarRight->addAction(m_sceneViewProblem->actSceneObjectClearSelected);
     toolBarRight->addWidget(zoomButton);
+    toolBarRight->addSeparator();
+    toolBarRight->addWidget(exportButton);
 
     auto *toolButtonFields = new QToolButton();
     toolButtonFields->setText(tr("Field"));
@@ -1342,5 +1375,87 @@ void PreprocessorWidget::doNewMaterial(const QString &field)
     else
     {
         delete material;
+    }
+}
+
+void PreprocessorWidget::doExportGeometryToClipboard()
+{
+    // copy image to clipboard
+    QPixmap pixmap = m_sceneViewProblem->renderScenePixmap();
+    QApplication::clipboard()->setImage(pixmap.toImage());
+}
+
+void PreprocessorWidget::doExportGeometryToSvg()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastImageDir").toString();
+
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("SVG files (*.svg)"));
+
+    if (!fn.isEmpty())
+    {
+        if (!fn.endsWith(".svg"))
+            fn.append(".svg");
+
+        m_sceneViewProblem->saveGeometryToSvg(fn);
+
+        if (!fn.isEmpty())
+        {
+            QFileInfo fileInfo(fn);
+            if (fileInfo.absoluteDir() != tempProblemDir())
+            {
+                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
+            }
+        }
+    }
+}
+
+void PreprocessorWidget::doExportGeometryToPng()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastImageDir").toString();
+
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+
+    if (!fn.isEmpty())
+    {
+        if (!fn.endsWith(".png"))
+            fn.append(".png");
+
+        m_sceneViewProblem->saveImageToFile(fn);
+
+        if (!fn.isEmpty())
+        {
+            QFileInfo fileInfo(fn);
+            if (fileInfo.absoluteDir() != tempProblemDir())
+            {
+                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
+            }
+        }
+    }
+}
+
+void PreprocessorWidget::doExportGeometryToVTK()
+{
+    // file dialog
+    QSettings settings;
+    QString dir = settings.value("General/LastVTKDir").toString();
+
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export VTK file"), dir, tr("VTK files (*.vtk)"));
+    if (fn.isEmpty())
+        return;
+
+    if (!fn.endsWith(".vtk"))
+        fn.append(".vtk");
+
+    Agros::problem()->scene()->exportVTKGeometry(fn);
+
+    if (!fn.isEmpty())
+    {
+        QFileInfo fileInfo(fn);
+        if (fileInfo.absoluteDir() != tempProblemDir())
+        {
+            settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
+        }
     }
 }

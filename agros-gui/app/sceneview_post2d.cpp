@@ -101,9 +101,6 @@ void SceneViewPost2D::createActionsPost2D()
 
     actExportVTKScalar = new QAction(tr("Export VTK scalar..."), this);
     connect(actExportVTKScalar, SIGNAL(triggered()), this, SLOT(exportVTKScalarView()));
-
-    actExportVTKContours = new QAction(tr("Export VTK contours..."), this);
-    connect(actExportVTKContours, SIGNAL(triggered()), this, SLOT(exportVTKContourView()));
 }
 
 void SceneViewPost2D::keyPressEvent(QKeyEvent *event)
@@ -975,7 +972,6 @@ void SceneViewPost2D::setControls()
         actSelectByMarker->setEnabled(m_postprocessorWidget->currentComputation()->isSolved() && (actPostprocessorModeSurfaceIntegral->isChecked() || actPostprocessorModeVolumeIntegral->isChecked()));
         actSelectPoint->setEnabled(m_postprocessorWidget->currentComputation()->isSolved() && actPostprocessorModeLocalPointValue->isChecked());
         actExportVTKScalar->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
-        actExportVTKContours->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
     }
 }
 
@@ -995,17 +991,6 @@ void SceneViewPost2D::exportVTKScalarView(const QString &fileName)
     exportVTK(fileName,
               m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString(),
               (PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
-}
-
-void SceneViewPost2D::exportVTKContourView(const QString &fileName)
-{
-    Module::LocalVariable variable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                                                               m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContourVariable).toString());
-    PhysicFieldVariableComp comp = variable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
-
-    exportVTK(fileName,
-              m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ContourVariable).toString(),
-              comp);
 }
 
 void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable, PhysicFieldVariableComp physicFieldVariableComp)

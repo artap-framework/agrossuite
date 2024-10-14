@@ -114,6 +114,11 @@ private:
     QAction *actNewFunctionAnalytic;
     // QAction *actNewFunctionInterpolation;
 
+    QAction *actExportGeometryToClipboard;
+    QAction *actExportGeometryToSvg;
+    QAction *actExportGeometryToPng;
+    QAction *actExportGeometryToVTK;
+
     QToolButton *toolButtonMaterials;
     QToolButton *toolButtonBoundaries;
 
@@ -145,6 +150,11 @@ private slots:
 
     void doNewBoundary(const QString &field);
     void doNewMaterial(const QString &field);
+
+    void doExportGeometryToClipboard();
+    void doExportGeometryToSvg();
+    void doExportGeometryToPng();
+    void doExportGeometryToVTK();
 };
 
 #endif // PREPROCESSORVIEW_H

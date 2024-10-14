@@ -70,9 +70,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // log stdout
     logStdOut = new LogStdOut();
 
-    // scene
-    // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
-
     // preprocessor
     problemWidget = new PreprocessorWidget(this);
     // postprocessor
@@ -177,18 +174,6 @@ void MainWindow::createActions()
     actDocumentExportDXF = new QAction(tr("Export DXF..."), this);
     connect(actDocumentExportDXF, SIGNAL(triggered()), this, SLOT(doDocumentExportDXF()));
 
-    actDocumentExportMeshFile = new QAction(tr("Export mesh file..."), this);
-    connect(actDocumentExportMeshFile, SIGNAL(triggered()), this, SLOT(doDocumentExportMeshFile()));
-
-    actExportVTKGeometry = new QAction(tr("Export VTK geometry..."), this);
-    connect(actExportVTKGeometry, SIGNAL(triggered()), this, SLOT(doExportVTKGeometry()));
-
-    actDocumentSaveImage = new QAction(tr("Export image..."), this);
-    connect(actDocumentSaveImage, SIGNAL(triggered()), this, SLOT(doDocumentSaveImage()));
-
-    actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
-    connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
-
     actCreateFromModel = new QAction(tr("&Create script from model"), this);
     actCreateFromModel->setShortcut(QKeySequence("Ctrl+M"));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
@@ -197,10 +182,6 @@ void MainWindow::createActions()
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
-
-    actCopy = new QAction(tr("Copy image to clipboard"), this);
-    // actCopy->setShortcuts(QKeySequence::Copy);
-    connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
     actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
@@ -256,16 +237,6 @@ void MainWindow::createMenus()
     QMenu *mnuFileImportExport = new QMenu(tr("Import/Export"), this);
     mnuFileImportExport->addAction(actDocumentImportDXF);
     mnuFileImportExport->addAction(actDocumentExportDXF);
-    mnuFileImportExport->addSeparator();
-    mnuFileImportExport->addAction(actDocumentExportMeshFile);
-    mnuFileImportExport->addAction(actDocumentSaveImage);
-    mnuFileImportExport->addAction(actDocumentSaveGeometry);
-    mnuFileImportExport->addSeparator();
-    mnuFileImportExport->addAction(actExportVTKGeometry);
-    // mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKMesh);
-    // mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKOrder);
-    mnuFileImportExport->addAction(postprocessorWidget->sceneViewPost2D()->actExportVTKScalar);
-    mnuFileImportExport->addAction(postprocessorWidget->sceneViewPost2D()->actExportVTKContours);
 
     mnuFile = menuBar()->addMenu(tr("&File"));
     mnuFile->addAction(actDocumentNew);
@@ -289,8 +260,6 @@ void MainWindow::createMenus()
     mnuEdit = menuBar()->addMenu(tr("E&dit"));
     mnuEdit->addAction(problemWidget->actUndo);
     mnuEdit->addAction(problemWidget->actRedo);
-    mnuEdit->addSeparator();
-    mnuEdit->addAction(actCopy);
 
     mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
@@ -563,56 +532,6 @@ void MainWindow::doDocumentExportDXF()
     }
 }
 
-void MainWindow::doDocumentSaveImage()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastImageDir").toString();
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export image to file"), dir, tr("PNG files (*.png)"));
-    if (!fileName.isEmpty())
-    {
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.suffix().toLower() != "png") fileName += ".png";
-
-        if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
-            problemWidget->sceneViewProblem()->saveImageToFile(fileName);
-        // else if (sceneViewMesh->actSceneModeMesh->isChecked())
-        //    sceneViewMesh->saveImageToFile(fileName);
-        // else if (sceneViewPost2D->actSceneModePost2D->isChecked())
-        //     sceneViewPost2D->saveImageToFile(fileName);
-        // else if (sceneViewPost3D->actSceneModePost3D->isChecked())
-        //    sceneViewPost3D->saveImageToFile(fileName);
-        // else if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
-        //    sceneViewParticleTracing->saveImageToFile(fileName);
-
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-    }
-}
-
-void MainWindow::doDocumentSaveGeometry()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastImageDir").toString();
-
-
-    QString selected;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export geometry to file"), dir,
-                                                    tr("SVG files (*.svg)"),
-                                                    &selected);
-
-    if (!fileName.isEmpty())
-    {
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.suffix().toLower() != "svg") fileName += ".svg";
-
-        problemWidget->sceneViewProblem()->saveGeometryToSvg(fileName);
-
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-    }
-}
-
 void MainWindow::doCreatePythonFromModel()
 {
     auto *scriptDialog = new ScriptGeneratorDialog();
@@ -686,39 +605,6 @@ void MainWindow::doMaterialBrowser()
 void MainWindow::doShowLog()
 {
     logView->setVisible(true);
-}
-
-void MainWindow::doCut()
-{
-
-}
-
-void MainWindow::doCopy()
-{
-    // copy image to clipboard
-    QPixmap pixmap;
-    if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
-    {
-        pixmap = problemWidget->sceneViewProblem()->renderScenePixmap();
-    }
-    else if (postprocessorWidget->actSceneModeResults->isChecked())
-    {
-        if (postprocessorWidget->mode() == PostprocessorWidgetMode_Mesh)
-            pixmap = postprocessorWidget->sceneViewMesh()->renderScenePixmap();
-        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post2D)
-            pixmap = postprocessorWidget->sceneViewPost2D()->renderScenePixmap();
-        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Post3D)
-            pixmap = postprocessorWidget->sceneViewPost3D()->renderScenePixmap();
-        else if (postprocessorWidget->mode() == PostprocessorWidgetMode_Chart)
-            pixmap = postprocessorWidget->sceneViewChart()->chartView()->grab();
-    }
-
-    QApplication::clipboard()->setImage(pixmap.toImage());
-}
-
-void MainWindow::doPaste()
-{
-
 }
 
 void MainWindow::clear()
@@ -821,71 +707,6 @@ void MainWindow::doAbout()
 {
     AboutDialog about(this);
     about.exec();
-}
-
-void MainWindow::doDocumentExportMeshFile()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastMeshDir").toString();
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export mesh file"), dir, tr("Mesh files (*.msh)"));
-    QFileInfo fileInfo(fileName);
-
-    if (!fileName.isEmpty())
-    {
-        if (fileInfo.suffix() != "msh") fileName += ".msh";
-
-        // remove existing file
-        if (QFile::exists(fileName + ".msh"))
-            QFile::remove(fileName + ".msh");
-
-        // create mesh
-        bool isMeshed = Agros::problem()->isMeshed();
-        if (Agros::problem()->mesh())
-        {
-            std::ofstream ofsMesh(fileName.toStdString());
-            boost::archive::text_oarchive sbMesh(ofsMesh);
-            Agros::problem()->initialMesh().save(sbMesh, 0);
-
-            // if (!isMeshed)
-            // Agros::problem()->initialMesh().clear();
-
-            // copy file
-            QFile::copy(cacheProblemDir() + "/initial.msh", fileName);
-            if (fileInfo.absoluteDir() != cacheProblemDir())
-                settings.setValue("General/LastMeshDir", fileInfo.absolutePath());
-        }
-        else
-        {
-            Agros::log()->printMessage(tr("Problem"), tr("The problem is not meshed"));
-        }
-    }
-}
-
-void MainWindow::doExportVTKGeometry()
-{
-    // file dialog
-    QSettings settings;
-    QString dir = settings.value("General/LastVTKDir").toString();
-
-    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export VTK file"), dir, tr("VTK files (*.vtk)"));
-    if (fn.isEmpty())
-        return;
-
-    if (!fn.endsWith(".vtk"))
-        fn.append(".vtk");
-
-    Agros::problem()->scene()->exportVTKGeometry(fn);
-
-    if (!fn.isEmpty())
-    {
-        QFileInfo fileInfo(fn);
-        if (fileInfo.absoluteDir() != tempProblemDir())
-        {
-            QSettings settings;
-            settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
-        }
-    }
 }
 
 void MainWindow::showEvent(QShowEvent *event)

@@ -61,30 +61,22 @@ private slots:
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
     void doDocumentSaveAs();
-    void doDeleteSolutions();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
-    void doDocumentExportMeshFile();
-    void doExportVTKGeometry();
-    void doDocumentSaveImage();
-    void doDocumentSaveGeometry();    
     void doCreatePythonFromModel();
 
     void doSolveCurrentComputation();
     void doSolveNewComputation();
     void doSolveComputation(Computation *computation);
     void doSolveFinished();
+    void doDeleteSolutions();
 
     void doOptions();
     void doMaterialBrowser();
     void doShowLog();
 
     void doFullScreen();
-
-    void doCut();
-    void doCopy();
-    void doPaste();
 
     void doCheckVersion();
     void doAbout();
@@ -115,10 +107,6 @@ private:
     QAction *actDocumentClose;
     QAction *actDocumentImportDXF;
     QAction *actDocumentExportDXF;
-    QAction *actDocumentExportMeshFile;
-    QAction *actDocumentSaveImage;
-    QAction *actDocumentSaveGeometry;
-    QAction *actExportVTKGeometry;
     QAction *actCreateFromModel;
 
     QAction *actExit;

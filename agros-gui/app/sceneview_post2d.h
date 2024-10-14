@@ -41,7 +41,6 @@ public slots:
     void selectPoint();
     void doPostprocessorModeGroup(QAction *action);
     void exportVTKScalarView(const QString &fileName = QString());
-    void exportVTKContourView(const QString &fileName = QString());
 
 public:
     SceneViewPost2D(PostprocessorWidget *postprocessorWidget);
@@ -56,9 +55,7 @@ public:
     QAction *actPostprocessorModeSurfaceIntegral;
     QAction *actPostprocessorModeVolumeIntegral;
 
-    QAction *actExportJSONScalar;
     QAction *actExportVTKScalar;
-    QAction *actExportVTKContours;
 
     void setControls();
 
