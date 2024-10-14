@@ -287,16 +287,16 @@ QWidget *OptiLab::createControlsResults()
     // treeview
     trvResults = new QTreeWidget(this);
     trvResults->setExpandsOnDoubleClick(false);
-    // trvResults->setHeaderHidden(false);
-    trvResults->setHeaderLabels(QStringList() << tr("Selected solution") << tr("Value"));
+    trvResults->setHeaderHidden(true);
     trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvResults->setContextMenuPolicy(Qt::CustomContextMenu);
     trvResults->setMouseTracking(true);
     trvResults->setUniformRowHeights(true);
     trvResults->setColumnCount(2);
+    trvResults->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trvResults->header()->resizeSection(0, 220);
+    trvResults->header()->setStretchLastSection(true);
     trvResults->setIndentation(trvResults->indentation() - 2);
-    // trvResults->resizeColumnToContents(0);
-    // trvResults->resizeColumnToContents(1);
 
     geometryViewer = new SceneViewSimpleGeometry(this);
 

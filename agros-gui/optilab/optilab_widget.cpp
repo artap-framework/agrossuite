@@ -172,16 +172,19 @@ QWidget *OptiLabWidget::createControlsOptilab()
     toolBarLeft->addAction(actNewGoalFunction);
 
     QStringList headersOptilab;
-    headersOptilab << tr("Key") << tr("Value");
     trvOptilab = new QTreeWidget(this);
-    trvOptilab->setColumnCount(2);
-    trvOptilab->setHeaderHidden(false);
-    trvOptilab->setHeaderLabels(headersOptilab);
+    // trvOptilab->setMinimumWidth(400);
+    trvOptilab->setExpandsOnDoubleClick(false);
+    trvOptilab->setHeaderHidden(true);
     trvOptilab->setContextMenuPolicy(Qt::CustomContextMenu);
     trvOptilab->setMouseTracking(true);
-    // trvOptilab->setUniformRowHeights(true);
-    trvOptilab->setExpandsOnDoubleClick(false);
+    trvOptilab->setUniformRowHeights(true);
+    trvOptilab->setColumnCount(2);
+    trvOptilab->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trvOptilab->header()->resizeSection(0, 220);
+    trvOptilab->header()->setStretchLastSection(true);
     trvOptilab->setIndentation(trvOptilab->indentation() - 2);
+
 
     auto *layoutStudies = new QVBoxLayout();
     layoutStudies->setContentsMargins(2, 2, 2, 2);

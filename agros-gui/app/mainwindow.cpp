@@ -162,8 +162,6 @@ void MainWindow::createActions()
 
     actDeleteSolutions = new QAction(tr("Delete solutions"), this);
     connect(actDeleteSolutions, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
-    actDeleteSolutionsAndResults = new QAction(tr("Delete solutions and results"), this);
-    connect(actDeleteSolutionsAndResults, SIGNAL(triggered()), this, SLOT(doDeleteSolutionsAndResults()));
 
     actDocumentSaveAs = new QAction(tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
@@ -210,10 +208,6 @@ void MainWindow::createActions()
     actAbout = new QAction(tr("About &agros"), this);
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
-
-    actAboutQt = new QAction(tr("About &Qt"), this);
-    actAboutQt->setMenuRole(QAction::AboutQtRole);
-    connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     actOptions = new QAction(tr("&Options"), this);
     actOptions->setMenuRole(QAction::PreferencesRole);
@@ -282,7 +276,6 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
     mnuFile->addAction(actDeleteSolutions);
-    mnuFile->addAction(actDeleteSolutionsAndResults);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
     // mnuFile->addMenu(mnuServer);
@@ -312,7 +305,6 @@ void MainWindow::createMenus()
     mnuHelp->addAction(actCheckVersion);
     mnuHelp->addSeparator();
     mnuHelp->addAction(actAbout);   // will be added to "Agros" MacOSX menu
-    mnuHelp->addAction(actAboutQt); // will be added to "Agros" MacOSX menu
 }
 
 void MainWindow::createMain()
@@ -495,19 +487,6 @@ void MainWindow::doDocumentSave()
 }
 
 void MainWindow::doDeleteSolutions()
-{
-    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
-
-    // clear solutions
-    foreach (QSharedPointer<Computation> computation, Agros::singleton()->computations())
-        computation->clearSolution();
-
-    optiLab->optiLabWidget()->refresh();
-    problemWidget->sceneViewProblem()->refresh();
-    setControls();
-}
-
-void MainWindow::doDeleteSolutionsAndResults()
 {
     problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
 

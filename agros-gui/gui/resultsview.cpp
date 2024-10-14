@@ -44,16 +44,17 @@ ResultsView::ResultsView(SceneViewPost2D *post2D) : QWidget(post2D),
 
     QSettings settings;
     trvWidget = new QTreeWidget(this);
-    trvWidget->setHeaderHidden(false);
-    trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Var.") << tr("Value"));
-    // trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
     trvWidget->setColumnCount(3);
-    trvWidget->setColumnWidth(0, settings.value("ResultsView/TreeColumnWidth0", 200).toInt());
-    trvWidget->setColumnWidth(1, settings.value("ResultsView/TreeColumnWidth1", 150).toInt());
-    trvWidget->setColumnWidth(2, settings.value("ResultsView/TreeColumnWidth2", 70).toInt());
+    trvWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trvWidget->header()->resizeSection(0, 230);
+    trvWidget->header()->resizeSection(1, 150);
+    trvWidget->header()->resizeSection(2, 70);
+    trvWidget->header()->setStretchLastSection(true);
+
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
@@ -68,10 +69,7 @@ ResultsView::ResultsView(SceneViewPost2D *post2D) : QWidget(post2D),
 
 ResultsView::~ResultsView()
 {
-    QSettings settings;
-    settings.setValue("ResultsView/TreeColumnWidth0", trvWidget->columnWidth(0));
-    settings.setValue("ResultsView/TreeColumnWidth1", trvWidget->columnWidth(1));
-    settings.setValue("ResultsView/TreeColumnWidth2", trvWidget->columnWidth(2));
+
 }
 
 Computation *ResultsView::currentComputation()

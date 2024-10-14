@@ -60,9 +60,8 @@ private slots:
     void doDocumentOpen(const QString &fileName = "");
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
-    void doDocumentSaveAs();    
+    void doDocumentSaveAs();
     void doDeleteSolutions();
-    void doDeleteSolutionsAndResults();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
@@ -136,13 +135,11 @@ private:
     QAction *actSolve;
     QAction *actSolveNewComputation;
     QAction *actDeleteSolutions;
-    QAction *actDeleteSolutionsAndResults;
 
     QAction *actHelp;
     QAction *actHelpShortCut;
     QAction *actCheckVersion;
     QAction *actAbout;
-    QAction *actAboutQt;
 
     QMenu *mnuMesh;
     QToolButton *btnMesh;

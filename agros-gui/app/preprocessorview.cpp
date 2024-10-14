@@ -75,8 +75,6 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
 PreprocessorWidget::~PreprocessorWidget()
 {
     QSettings settings;
-    settings.setValue("PreprocessorWidget/TreeColumnWidth0", trvWidget->columnWidth(0));
-    settings.setValue("PreprocessorWidget/TreeColumnWidth1", trvWidget->columnWidth(1));
     settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
     settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
 
@@ -336,15 +334,15 @@ void PreprocessorWidget::createControls()
     toolBarLeft->addWidget(toolButtonFunctions);
 
     trvWidget = new QTreeWidget(this);
-    trvWidget->setMinimumWidth(400);
     trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(true);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
     trvWidget->setColumnCount(2);
-    trvWidget->setColumnWidth(0, 220);
-    trvWidget->setColumnWidth(1, 175);
+    trvWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    trvWidget->header()->resizeSection(0, 220);
+    trvWidget->header()->setStretchLastSection(true);
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     QFont fnt = trvWidget->font();
