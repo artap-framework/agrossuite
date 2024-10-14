@@ -273,7 +273,8 @@ void OptiLabWidget::refresh()
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setIcon(0, icon("menu_parameter"));
         parametersNode->setFont(0, fnt);
-        // parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        parametersNode->setData(0, Qt::UserRole, "");
+        parametersNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabParameter);
         parametersNode->setData(2, Qt::UserRole, k);
         parametersNode->setExpanded(true);
 
@@ -293,8 +294,9 @@ void OptiLabWidget::refresh()
         goalsNode->setText(0, tr("Goal Functions"));
         goalsNode->setIcon(0, icon("menu_function"));
         goalsNode->setFont(0, fnt);
-        goalsNode->setData(0, Qt::UserRole, study->variant());
-        // functionalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
+        // goalsNode->setData(0, Qt::UserRole, study->variant());
+        goalsNode->setData(0, Qt::UserRole, "");
+        goalsNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabGoalFunction);
         goalsNode->setData(2, Qt::UserRole, k);
         goalsNode->setExpanded(true);
 
@@ -532,26 +534,32 @@ void OptiLabWidget::doItemProperties()
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
             QString parameter = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
-
-            StudyParameterDialog dialog(study, &study->parameter(parameter));
-            if (dialog.exec() == QDialog::Accepted)
+            if (!parameter.isEmpty())
             {
-                refresh();
+                // study
+                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+
+                StudyParameterDialog dialog(study, &study->parameter(parameter));
+                if (dialog.exec() == QDialog::Accepted)
+                {
+                    refresh();
+                }
             }
         }
         else if (type == OptiLabWidget::OptilabGoalFunction)
         {
-            // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
             QString goal = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
-
-            StudyGoalFunctionDialog dialog(study, &study->goal(goal));
-            if (dialog.exec() == QDialog::Accepted)
+            if (!goal.isEmpty())
             {
-                refresh();
+                // study
+                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+
+                StudyGoalFunctionDialog dialog(study, &study->goal(goal));
+                if (dialog.exec() == QDialog::Accepted)
+                {
+                    refresh();
+                }
             }
         }
         else if (type == OptiLabWidget::OptilabRecipe)
