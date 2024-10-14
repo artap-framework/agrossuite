@@ -89,12 +89,6 @@ void PostprocessorSceneChartWidget::createControls()
     // viewer
     geometryViewer = new SceneViewChartSimpleGeometry(sceneChart->m_postprocessorWidget); // friend class
     geometryViewer->setMinimumHeight(100);
-    
-    btnSaveImage = new QPushButton();
-    btnSaveImage->setDefault(false);
-    btnSaveImage->setEnabled(false);
-    btnSaveImage->setText(tr("Save image"));
-    connect(btnSaveImage, SIGNAL(clicked()), sceneChart, SLOT(doSaveImage()));
 
     btnExportData = new QPushButton();
     btnExportData->setDefault(false);
@@ -201,7 +195,6 @@ void PostprocessorSceneChartWidget::createControls()
     QHBoxLayout *layoutButton = new QHBoxLayout();
     layoutButton->setContentsMargins(0, 0, 0, 0);
     layoutButton->addStretch();
-    layoutButton->addWidget(btnSaveImage);
     layoutButton->addWidget(btnExportData);
 
     QVBoxLayout *layoutChart = new QVBoxLayout();
@@ -355,7 +348,6 @@ void PostprocessorSceneChartWidget::load()
     else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
 
-    btnSaveImage->setEnabled(sceneChart->chartView()->chart()->series().size() > 0); // ; graph()->data()->size()
     btnExportData->setEnabled(sceneChart->chartView()->chart()->series().size() > 0);
 }
 

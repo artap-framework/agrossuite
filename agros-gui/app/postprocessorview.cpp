@@ -464,6 +464,9 @@ void PostprocessorWidget::exportPostprocessorToPng()
         case PostprocessorWidgetMode_Post3D:
             m_sceneViewPost3D->saveImageToFile(fn);
             break;
+        case PostprocessorWidgetMode_Chart:
+            m_sceneViewChart->grab().save(fn);
+            break;
         default:
             break;
         }

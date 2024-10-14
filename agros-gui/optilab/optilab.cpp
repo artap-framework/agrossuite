@@ -241,6 +241,19 @@ QWidget *OptiLab::createControlsChart()
     actResultsFindMaximum->setIconVisibleInMenu(true);
     connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
 
+    // export
+    auto *mnuExport = new QMenu(this);
+    mnuExport->addAction(m_optiLabWidget->actExportToCsv);
+
+    auto *exportButton = new QToolButton();
+    exportButton->setText(tr("Export"));
+    exportButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    exportButton->setIconSize(QSize(24, 24));
+    exportButton->setMenu(mnuExport);
+    exportButton->setAutoRaise(true);
+    exportButton->setIcon(icon("geometry_zoom"));
+    exportButton->setPopupMode(QToolButton::InstantPopup);
+
     // right toolbar
     toolBarRight = new QToolBar();
     toolBarRight->setProperty("modulebar", true);
@@ -252,6 +265,8 @@ QWidget *OptiLab::createControlsChart()
     toolBarRight->addAction(actChartShowAverageValue);
     toolBarRight->addAction(actChartShowTrend);
     toolBarRight->addAction(actChartShowParetoFront);
+    toolBarRight->addSeparator();
+    toolBarRight->addWidget(exportButton);
 
     auto layoutRight = new QVBoxLayout();
     layoutRight->setContentsMargins(0, 0, 0, 0);

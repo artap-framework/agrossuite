@@ -89,9 +89,10 @@ QWidget *OptiLabWidget::createControlsOptilab()
     actDuplicate = new QAction(tr("Duplicate"), this);
     connect(actDuplicate, SIGNAL(triggered()), this, SLOT(doItemDuplicate()));
 
-    actExport = new QAction(tr("Export"), this);
-    actExport->setIcon(icon("menu_function"));
-    connect(actExport, SIGNAL(triggered(bool)), this, SLOT(exportData()));
+    actExportToCsv = new QAction(tr("Export data to CSV..."), this);
+    actExportToCsv->setIcon(icon("geometry_zoom"));
+    actExportToCsv->setEnabled(false);
+    connect(actExportToCsv, SIGNAL(triggered(bool)), this, SLOT(exportData()));
 
     actRunStudy = new QAction(icon("main_solveopt"), tr("Run study"), this);
     actRunStudy->setShortcut(QKeySequence("Alt+S"));
@@ -134,7 +135,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     mnuOptilab->addMenu(mnuParametersAndGoal);
     mnuOptilab->addSeparator();
     mnuOptilab->addAction(actDuplicate);
-    mnuOptilab->addAction(actExport);
     mnuOptilab->addSeparator();
     mnuOptilab->addAction(actDelete);
     mnuOptilab->addAction(actProperties);
@@ -184,7 +184,6 @@ QWidget *OptiLabWidget::createControlsOptilab()
     trvOptilab->header()->resizeSection(0, 220);
     trvOptilab->header()->setStretchLastSection(true);
     trvOptilab->setIndentation(trvOptilab->indentation() - 2);
-
 
     auto *layoutStudies = new QVBoxLayout();
     layoutStudies->setContentsMargins(2, 2, 2, 2);
@@ -375,8 +374,7 @@ void OptiLabWidget::exportData()
             QSettings settings;
             QString dir = settings.value("General/LastDataDir").toString();
 
-            QString selectedFilter;
-            QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("CSV files (*.csv)"), &selectedFilter);
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Export data"), dir, tr("CSV files (*.csv)"));
             if (fileName.isEmpty())
             {
                 cerr << "Incorrect file name." << endl;
@@ -464,7 +462,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
     actNewGoalFunction->setEnabled(false);
     actRunStudy->setEnabled(false);
     actDuplicate->setEnabled(false);
-    actExport->setEnabled(false);
+    actExportToCsv->setEnabled(false);
 
     Study *selected = nullptr;
     if (trvOptilab->currentItem())
@@ -478,9 +476,8 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actDelete->setEnabled(true);
             actNewParameter->setEnabled(true);
             actNewGoalFunction->setEnabled(true);
-
             actDuplicate->setEnabled(true);
-            actExport->setEnabled(true);
+            actExportToCsv->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabParameter)
         {
@@ -489,6 +486,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actDelete->setEnabled(true);
             actNewParameter->setEnabled(true);
             actNewGoalFunction->setEnabled(true);
+            actExportToCsv->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabGoalFunction)
         {
@@ -497,6 +495,7 @@ void OptiLabWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
             actDelete->setEnabled(true);
             actNewParameter->setEnabled(true);
             actNewGoalFunction->setEnabled(true);
+            actExportToCsv->setEnabled(true);
         }
         else if (type == OptiLabWidget::OptilabRecipe)
         {

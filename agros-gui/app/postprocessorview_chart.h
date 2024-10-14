@@ -66,7 +66,6 @@ private:
 
     // buttons
     QPushButton *btnOK;
-    QPushButton *btnSaveImage;
     QPushButton *btnExportData;
 
     // geometry

@@ -50,7 +50,6 @@ signals:
 
 public slots:
     void refresh();
-    void doSaveImage();
     void doExportData();
 
 private:

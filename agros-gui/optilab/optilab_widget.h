@@ -39,6 +39,7 @@ public:
     ~OptiLabWidget();
 
     QAction *actRunStudy;
+    QAction *actExportToCsv;
 
 public slots:
     void refresh();
@@ -72,7 +73,6 @@ private:
     QAction *actProperties;
     QAction *actDelete;
     QAction *actDuplicate;
-    QAction *actExport;
 
     void createControls();
     QWidget *createControlsOptilab();

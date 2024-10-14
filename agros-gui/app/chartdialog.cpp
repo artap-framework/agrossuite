@@ -290,35 +290,6 @@ void SceneViewChart::plotTime()
     m_chartView->axisY()->setRange(minY, maxY);
 }
 
-void SceneViewChart::doSaveImage()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastDataDir").toString();
-
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("PNG files (*.png)"), &selectedFilter);
-    if (fileName.isEmpty())
-    {
-        cerr << "Incorrect file name." << endl;
-        return;
-    }
-
-    QFileInfo fileInfo(fileName);
-
-    // open file for write
-    if (fileInfo.suffix().isEmpty())
-        fileName = fileName + ".png";
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
-        return;
-    }
-
-    m_chartView->grab().save(fileName);
-}
-
 void SceneViewChart::doExportData()
 {
     QSettings settings;
