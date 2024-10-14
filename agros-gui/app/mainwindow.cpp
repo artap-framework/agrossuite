@@ -60,15 +60,12 @@
 #include <boost/archive/text_oarchive.hpp>
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent),
-    logDialog(nullptr), logStdOut(nullptr)
+    logDialog(nullptr)
 {
     setWindowIcon(icon("agros"));
 
     m_startupProblemFilename = "";
     m_startupExecute = false;
-
-    // log stdout
-    logStdOut = new LogStdOut();
 
     // preprocessor
     problemWidget = new PreprocessorWidget(this);
@@ -139,8 +136,6 @@ MainWindow::~MainWindow()
     removeDirectory(tempProblemDir());
 
     delete m_connectLog;
-    if (logStdOut != nullptr)
-        delete logStdOut;
 }
 
 void MainWindow::createActions()

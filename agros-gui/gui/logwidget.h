@@ -62,7 +62,6 @@ private:
 
     ConnectLog *m_connectLog;
 
-
     void createActions();
 
 private slots:
@@ -186,6 +185,7 @@ public:
     LogGui();
 
     void setConnectLog(ConnectLog *connectLog) { m_connectLog = connectLog; }
+
     void printHeading(const QString &message);
     void printMessage(const QString &module, const QString &message);
     void printError(const QString &module, const QString &message);

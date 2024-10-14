@@ -70,10 +70,6 @@ public:
 
     virtual inline void appendImage(const QString &fileName) override {}
     virtual inline void appendHtml(const QString &html) override {}
-
-private:
-      // std::shared_ptr<spdlog::logger>  m_console;
-      void (*m_handler) (const QString &module, const QString &message);
 };
 
 #endif // TOOLTIPVIEW_H

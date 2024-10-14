@@ -148,7 +148,6 @@ private:
     LogViewDialog *logView;
     ConnectLog *m_connectLog;
 
-    LogStdOut *logStdOut;
     LogDialog *logDialog;
 
     QString m_startupProblemFilename;
