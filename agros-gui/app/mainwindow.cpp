@@ -757,7 +757,6 @@ void MainWindow::setControls()
     setEnabled(true);
 
     actDeleteSolutions->setEnabled(!Agros::computations().isEmpty());
-    actDeleteSolutionsAndResults->setEnabled(!Agros::computations().isEmpty());
 
     // set controls
     actSolve->setEnabled(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
