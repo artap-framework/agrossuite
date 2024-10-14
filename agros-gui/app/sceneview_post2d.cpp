@@ -99,7 +99,7 @@ void SceneViewPost2D::createActionsPost2D()
     actPostprocessorModeGroup->addAction(actPostprocessorModeVolumeIntegral);
     connect(actPostprocessorModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(doPostprocessorModeGroup(QAction*)));
 
-    actExportVTKScalar = new QAction(tr("Export VTK scalar..."), this);
+    actExportVTKScalar = new QAction(tr("Export scalar data to VTK..."), this);
     connect(actExportVTKScalar, SIGNAL(triggered()), this, SLOT(exportVTKScalarView()));
 }
 

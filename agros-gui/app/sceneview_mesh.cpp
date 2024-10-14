@@ -47,7 +47,7 @@ const int QUADRATURE_ORDER_INCREASE = 2;
 SceneViewMesh::SceneViewMesh(PostprocessorWidget *postprocessorWidget)
     : SceneViewCommon2D(postprocessorWidget), SceneViewPostInterface(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
 {
-    createActionsMesh();
+
 }
 
 SceneViewMesh::~SceneViewMesh()
@@ -81,15 +81,6 @@ ProblemBase *SceneViewMesh::problem() const
     return static_cast<ProblemBase *>(m_postprocessorWidget->currentComputation().data());
 }
 
-void SceneViewMesh::createActionsMesh()
-{
-    actExportVTKOrder = new QAction(tr("Export VTK order..."), this);
-    connect(actExportVTKOrder, SIGNAL(triggered()), this, SLOT(exportVTKOrderView()));
-
-    actExportVTKMesh = new QAction(tr("Export VTK mesh..."), this);
-    connect(actExportVTKMesh, SIGNAL(triggered()), this, SLOT(exportVTKMesh()));
-}
-
 void SceneViewMesh::refresh()
 {
     clearGLLists();
@@ -109,11 +100,7 @@ void SceneViewMesh::clearGLLists()
 
 void SceneViewMesh::setControls()
 {
-    if (!m_postprocessorWidget->currentComputation().isNull())
-    {
-        actExportVTKMesh->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
-        actExportVTKOrder->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
-    }
+
 }
 
 void SceneViewMesh::clear()
@@ -122,64 +109,6 @@ void SceneViewMesh::clear()
 
     refresh();
     doZoomBestFit();
-}
-
-void SceneViewMesh::exportVTKMesh(const QString &fileName)
-{
-    exportVTK(fileName, true);
-}
-
-void SceneViewMesh::exportVTKOrderView(const QString &fileName)
-{
-    exportVTK(fileName, false);
-}
-
-
-void SceneViewMesh::exportVTK(const QString &fileName, bool exportMeshOnly)
-{
-    if (m_postprocessorWidget->currentComputation()->isSolved())
-    {
-        QString fn = fileName;
-
-        if (fn.isEmpty())
-        {
-            // file dialog
-            QSettings settings;
-            QString dir = settings.value("General/LastVTKDir").toString();
-
-            fn = QFileDialog::getSaveFileName(this, tr("Export VTK file"), dir, tr("VTK files (*.vtk)"));
-            if (fn.isEmpty())
-                return;
-
-            if (!fn.endsWith(".vtk"))
-                fn.append(".vtk");
-
-            // remove existing file
-            if (QFile::exists(fn))
-                QFile::remove(fn);
-        }
-
-        assert(0); // IMPLEMENT dealii
-        /*
-        Views::Orderizer orderView;
-        if (exportMeshOnly)
-            orderView.save_mesh_vtk(postDeal()->activeMultiSolutionArray().spaces().at(0),
-                                    fn.toLatin1().data());
-        else
-            orderView.save_orders_vtk(postDeal()->activeMultiSolutionArray().spaces().at(0),
-                                      fn.toLatin1().data());
-        */
-
-        if (!fn.isEmpty())
-        {
-            QFileInfo fileInfo(fn);
-            if (fileInfo.absoluteDir() != tempProblemDir())
-            {
-                QSettings settings;
-                settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
-            }
-        }
-    }
 }
 
 void SceneViewMesh::paintGL()

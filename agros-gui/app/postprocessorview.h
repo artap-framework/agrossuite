@@ -81,15 +81,17 @@ public slots:
     void apply();
     void processed();
     void clearedComputation();
-    void createVideo();
     void doPostModeSet(QAction *action);
+
+    void createVideo();
+    void exportPostprocessorToClipboard();
+    void exportPostprocessorToPng();
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
     QSharedPointer<Computation> m_currentComputation;
 
     QPushButton *btnApply;
-    QPushButton *btnCreateVideo;
 
     QToolBar *toolBarRight;
 
@@ -115,6 +117,11 @@ private:
 
     QToolButton *zoomButton;
     QMenu *mnuZoom;
+
+    // export
+    QAction *actExportVideo;
+    QAction *actExportPostprocessorToClipboard;
+    QAction *actExportPostprocessorToPng;
 
     void createControls();
 

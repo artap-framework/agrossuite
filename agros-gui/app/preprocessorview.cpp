@@ -134,16 +134,16 @@ void PreprocessorWidget::createActions()
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
 
     actExportGeometryToClipboard = new QAction(tr("Copy geometry to clipboard"), this);
-    connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(doExportGeometryToClipboard()));
+    connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(exportGeometryToClipboard()));
 
     actExportGeometryToPng = new QAction(tr("Export geometry to PNG..."), this);
-    connect(actExportGeometryToPng, SIGNAL(triggered()), this, SLOT(doExportGeometryToPng()));
+    connect(actExportGeometryToPng, SIGNAL(triggered()), this, SLOT(exportGeometryToPng()));
 
     actExportGeometryToSvg = new QAction(tr("Export geometry to SVG..."), this);
-    connect(actExportGeometryToSvg, SIGNAL(triggered()), this, SLOT(doExportGeometryToSvg()));
+    connect(actExportGeometryToSvg, SIGNAL(triggered()), this, SLOT(exportGeometryToSvg()));
 
-    actExportGeometryToVTK = new QAction(tr("Copy geometry to VTK..."), this);
-    connect(actExportGeometryToVTK, SIGNAL(triggered()), this, SLOT(doExportGeometryToVTK()));
+    actExportGeometryToVTK = new QAction(tr("Export geometry to VTK..."), this);
+    connect(actExportGeometryToVTK, SIGNAL(triggered()), this, SLOT(exportGeometryToVTK()));
 
     // add to menu
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewRectangle);
@@ -271,7 +271,6 @@ void PreprocessorWidget::createControls()
     mnuExport->addSeparator();
     mnuExport->addAction(actExportGeometryToPng);
     mnuExport->addAction(actExportGeometryToSvg);
-    mnuExport->addSeparator();
     mnuExport->addAction(actExportGeometryToVTK);
 
     auto *exportButton = new QToolButton();
@@ -1378,14 +1377,14 @@ void PreprocessorWidget::doNewMaterial(const QString &field)
     }
 }
 
-void PreprocessorWidget::doExportGeometryToClipboard()
+void PreprocessorWidget::exportGeometryToClipboard()
 {
     // copy image to clipboard
     QPixmap pixmap = m_sceneViewProblem->renderScenePixmap();
     QApplication::clipboard()->setImage(pixmap.toImage());
 }
 
-void PreprocessorWidget::doExportGeometryToSvg()
+void PreprocessorWidget::exportGeometryToSvg()
 {
     QSettings settings;
     QString dir = settings.value("General/LastImageDir").toString();
@@ -1410,7 +1409,7 @@ void PreprocessorWidget::doExportGeometryToSvg()
     }
 }
 
-void PreprocessorWidget::doExportGeometryToPng()
+void PreprocessorWidget::exportGeometryToPng()
 {
     QSettings settings;
     QString dir = settings.value("General/LastImageDir").toString();
@@ -1435,7 +1434,7 @@ void PreprocessorWidget::doExportGeometryToPng()
     }
 }
 
-void PreprocessorWidget::doExportGeometryToVTK()
+void PreprocessorWidget::exportGeometryToVTK()
 {
     // file dialog
     QSettings settings;

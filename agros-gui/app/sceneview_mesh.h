@@ -37,17 +37,11 @@ public:
     SceneViewMesh(PostprocessorWidget *postprocessorWidget);
     ~SceneViewMesh();
 
-    QAction *actExportVTKOrder;
-    QAction *actExportVTKMesh;
-
     void setControls();
 
 public slots:    
     virtual void clear();
     virtual void refresh();
-    void exportVTK(const QString &fileName = QString(), bool exportMeshOnly = false);
-    void exportVTKMesh(const QString &fileName = QString());
-    void exportVTKOrderView(const QString &fileName = QString());
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -74,8 +68,6 @@ private:
     QVector<QVector3D> m_arrayOrderMeshColor;
 
     dealii::Vector<float>  m_estimated_error_per_cell;
-
-    void createActionsMesh();
 
 private slots:
     virtual void clearGLLists();

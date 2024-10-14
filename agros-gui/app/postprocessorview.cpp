@@ -109,12 +109,23 @@ void PostprocessorWidget::createControls()
     btnApply = new QPushButton(tr("Apply"));
     connect(btnApply, SIGNAL(clicked()), SLOT(apply()));
 
-    btnCreateVideo = new QPushButton(tr("Create video"));
-    connect(btnCreateVideo, SIGNAL(clicked()), SLOT(createVideo()));
+
+    QAction *actExportGeometryToClipboard;
+    QAction *actExportGeometryToSvg;
+    QAction *actExportGeometryToPng;
+    QAction *actExportGeometryToVTK;
+
+    actExportPostprocessorToClipboard = new QAction(tr("Copy view to clipboard"), this);
+    connect(actExportPostprocessorToClipboard, SIGNAL(triggered()), this, SLOT(exportPostprocessorToClipboard()));
+
+    actExportPostprocessorToPng = new QAction(tr("Export view to PNG..."), this);
+    connect(actExportPostprocessorToPng, SIGNAL(triggered()), this, SLOT(exportPostprocessorToPng()));
+
+    actExportVideo = new QAction(tr("Create video..."), this);
+    connect(actExportVideo, SIGNAL(triggered()), this, SLOT(createVideo()));
 
     auto *layoutButtons = new QHBoxLayout();
     layoutButtons->setContentsMargins(10, 2, 10, 6);
-    layoutButtons->addWidget(btnCreateVideo);
     layoutButtons->addStretch();
     layoutButtons->addWidget(btnApply);
 
@@ -141,6 +152,25 @@ void PostprocessorWidget::createControls()
     viewWidget->setContentsMargins(2, 2, 2, 3);
     viewWidget->setLayout(tabViewLayout);
 
+    // export
+    auto *mnuExport = new QMenu(this);
+    mnuExport->addAction(actExportPostprocessorToClipboard);
+    mnuExport->addSeparator();
+    mnuExport->addAction(actExportPostprocessorToPng);
+    mnuExport->addSeparator();
+    mnuExport->addAction(m_sceneViewPost2D->actExportVTKScalar);
+    mnuExport->addSeparator();
+    mnuExport->addAction(actExportVideo);
+
+    auto *exportButton = new QToolButton();
+    exportButton->setText(tr("Export"));
+    exportButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    exportButton->setIconSize(QSize(24, 24));
+    exportButton->setMenu(mnuExport);
+    exportButton->setAutoRaise(true);
+    exportButton->setIcon(icon("geometry_zoom"));
+    exportButton->setPopupMode(QToolButton::InstantPopup);
+
     // zoom
     mnuZoom = new QMenu(this);
 
@@ -163,11 +193,9 @@ void PostprocessorWidget::createControls()
     toolBarRight->addAction(actOperateOnPost3D);
     toolBarRight->addAction(actOperateOnChart);
     toolBarRight->addSeparator();
-    // toolBarRight->addAction(m_sceneViewMeshProblem->actSceneObjectProperties);
-    // toolBarRight->addAction(m_sceneViewProblem->actSceneObjectDeleteSelected);
-    // toolBarRight->addSeparator();
-    // toolBarRight->addAction(m_sceneViewProblem->actSceneViewSelectRegion);
     toolBarRight->addWidget(zoomButton);
+    toolBarRight->addSeparator();
+    toolBarRight->addWidget(exportButton);
 
     auto layoutRight = new QVBoxLayout();
     layoutRight->setContentsMargins(0, 0, 0, 0);
@@ -383,6 +411,71 @@ void PostprocessorWidget::createVideo()
     {
         videoDialog->showDialog();
         delete videoDialog;
+    }
+}
+
+
+void PostprocessorWidget::exportPostprocessorToClipboard()
+{
+    // copy image to clipboard
+    QPixmap pixmap;
+
+    switch (mode())
+    {
+    case PostprocessorWidgetMode_Mesh:
+        pixmap = m_sceneViewMesh->renderScenePixmap();
+        break;
+    case PostprocessorWidgetMode_Post2D:
+        pixmap = m_sceneViewPost2D->renderScenePixmap();
+        break;
+    case PostprocessorWidgetMode_Post3D:
+        pixmap = m_sceneViewPost3D->renderScenePixmap();
+        break;
+    case PostprocessorWidgetMode_Chart:
+        pixmap = m_sceneViewChart->grab();
+        break;
+    default:
+        break;
+    }
+
+    QApplication::clipboard()->setImage(pixmap.toImage());
+}
+
+void PostprocessorWidget::exportPostprocessorToPng()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastImageDir").toString();
+
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+
+    if (!fn.isEmpty())
+    {
+        if (!fn.endsWith(".png"))
+            fn.append(".png");
+
+        switch (mode())
+        {
+        case PostprocessorWidgetMode_Mesh:
+            m_sceneViewMesh->saveImageToFile(fn);
+            break;
+        case PostprocessorWidgetMode_Post2D:
+            m_sceneViewPost2D->saveImageToFile(fn);
+            break;
+        case PostprocessorWidgetMode_Post3D:
+            m_sceneViewPost3D->saveImageToFile(fn);
+            break;
+        default:
+            break;
+        }
+
+        if (!fn.isEmpty())
+        {
+            QFileInfo fileInfo(fn);
+            if (fileInfo.absoluteDir() != tempProblemDir())
+            {
+                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
+            }
+        }
     }
 }
 

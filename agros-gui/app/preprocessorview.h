@@ -151,10 +151,10 @@ private slots:
     void doNewBoundary(const QString &field);
     void doNewMaterial(const QString &field);
 
-    void doExportGeometryToClipboard();
-    void doExportGeometryToSvg();
-    void doExportGeometryToPng();
-    void doExportGeometryToVTK();
+    void exportGeometryToClipboard();
+    void exportGeometryToSvg();
+    void exportGeometryToPng();
+    void exportGeometryToVTK();
 };
 
 #endif // PREPROCESSORVIEW_H
