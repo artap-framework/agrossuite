@@ -1441,7 +1441,7 @@ bool SceneRectangleDialog::save()
 SceneCircleDialog::SceneCircleDialog(SceneNode *nodeL,  SceneNode *nodeR, SceneNode *nodeB, SceneNode *nodeT, QWidget *parent, bool isNew)
 : SceneBasicDialog(parent, isNew), m_nodeL(nodeL), m_nodeR(nodeR), m_nodeB(nodeB), m_nodeT(nodeT)
 {
-    setWindowTitle(tr("Rectangle"));
+    setWindowTitle(tr("Circle"));
     setMinimumWidth(350);
 
     createControls();
