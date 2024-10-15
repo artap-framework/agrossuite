@@ -96,6 +96,10 @@ private:
     QAction *actChartShowAverageValue;
     QAction *actChartShowParetoFront;
 
+    QAction *actSceneZoomIn;
+    QAction *actSceneZoomOut;
+    QAction *actSceneZoomBestFit;
+
     void createControls();
     QWidget *createControlsChart();
     QWidget *createControlsChartControl();
@@ -121,6 +125,10 @@ private slots:
 
     void axisXChanged(int index);
     void axisYChanged(int index);
+
+    void doZoomIn();
+    void doZoomOut();
+    void doZoomBestFit();
 };
 
 #endif // OPTILAB_H

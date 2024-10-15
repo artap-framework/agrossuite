@@ -241,6 +241,34 @@ QWidget *OptiLab::createControlsChart()
     actResultsFindMaximum->setIconVisibleInMenu(true);
     connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
 
+    // scene - zoom
+    actSceneZoomIn = new QAction(tr("Zoom in"), this);
+    actSceneZoomIn->setShortcut(QKeySequence::ZoomIn);
+    connect(actSceneZoomIn, SIGNAL(triggered()), this, SLOT(doZoomIn()));
+
+    actSceneZoomOut = new QAction(tr("Zoom out"), this);
+    actSceneZoomOut->setShortcut(QKeySequence::ZoomOut);
+    connect(actSceneZoomOut, SIGNAL(triggered()), this, SLOT(doZoomOut()));
+
+    actSceneZoomBestFit = new QAction(tr("Zoom best fit"), this);
+    actSceneZoomBestFit->setShortcut(tr("Ctrl+0"));
+    connect(actSceneZoomBestFit, SIGNAL(triggered()), this, SLOT(doZoomBestFit()));
+
+    // zoom
+    auto *mnuZoom = new QMenu(this);
+    mnuZoom->addAction(actSceneZoomBestFit);
+    mnuZoom->addAction(actSceneZoomIn);
+    mnuZoom->addAction(actSceneZoomOut);
+
+    auto *zoomButton = new QToolButton();
+    zoomButton->setText(tr("Zoom"));
+    zoomButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    zoomButton->setIconSize(QSize(24, 24));
+    zoomButton->setMenu(mnuZoom);
+    zoomButton->setAutoRaise(true);
+    zoomButton->setIcon(icon("geometry_zoom"));
+    zoomButton->setPopupMode(QToolButton::InstantPopup);
+
     // export
     auto *mnuExport = new QMenu(this);
     mnuExport->addAction(m_optiLabWidget->actExportToCsv);
@@ -265,6 +293,8 @@ QWidget *OptiLab::createControlsChart()
     toolBarRight->addAction(actChartShowAverageValue);
     toolBarRight->addAction(actChartShowTrend);
     toolBarRight->addAction(actChartShowParetoFront);
+    toolBarRight->addSeparator();
+    toolBarRight->addWidget(zoomButton);
     toolBarRight->addSeparator();
     toolBarRight->addWidget(exportButton);
 
@@ -849,6 +879,21 @@ void OptiLab::axisYChanged(int index)
         doChartRefreshed();
         chartView->fitToData();
     }
+}
+
+void OptiLab::doZoomIn()
+{
+    chartView->chart()->zoomIn();
+}
+
+void OptiLab::doZoomOut()
+{
+    chartView->chart()->zoomOut();
+}
+
+void OptiLab::doZoomBestFit()
+{
+    chartView->fitToData();
 }
 
 int OptiLab::findPointIndex(const QPointF &point)

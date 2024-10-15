@@ -338,9 +338,9 @@ void ChartView::wheelEvent(QWheelEvent *event)
 {
     qreal factor;
     if (event->angleDelta().y() > 0)
-        factor = 2.0;
+        factor = 1.3;
     else
-        factor = 0.5;
+        factor = 1/1.3;
 
     QRectF r = QRectF(chart()->plotArea().left(),chart()->plotArea().top(),
                       chart()->plotArea().width()/factor,chart()->plotArea().height()/factor);
