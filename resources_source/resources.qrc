@@ -37,6 +37,7 @@
         <file alias="optilab_trend.png">images/icons/optilab_trend.png</file>
         <file alias="optilab_algorithm.png">images/icons/optilab_algorithm.png</file>
         <file alias="recent.png">images/icons/recent.png</file>
+        <file alias="export.png">images/icons/export.png</file>
         <file alias="problem_properties.png">images/icons/problem_properties.png</file>
         <file alias="field_properties.png">images/icons/field_properties.png</file>
         <file alias="geometry_add.png">images/icons/geometry_add.png</file>

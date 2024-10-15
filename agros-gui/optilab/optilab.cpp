@@ -251,7 +251,7 @@ QWidget *OptiLab::createControlsChart()
     exportButton->setIconSize(QSize(24, 24));
     exportButton->setMenu(mnuExport);
     exportButton->setAutoRaise(true);
-    exportButton->setIcon(icon("geometry_zoom"));
+    exportButton->setIcon(icon("export"));
     exportButton->setPopupMode(QToolButton::InstantPopup);
 
     // right toolbar
