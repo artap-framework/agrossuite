@@ -1381,7 +1381,9 @@ void PreprocessorWidget::exportGeometryToClipboard()
 {
     // copy image to clipboard
     QPixmap pixmap = m_sceneViewProblem->renderScenePixmap();
-    QApplication::clipboard()->setImage(pixmap.toImage());
+    QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
+
+    QApplication::clipboard()->setImage(image);
 }
 
 void PreprocessorWidget::exportGeometryToSvg()
