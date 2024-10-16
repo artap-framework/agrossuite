@@ -61,7 +61,7 @@ build-linux:
     # remove old wheels
     - rm -rf *.whl	
     # build wheel
-    - pip wheel agrossuite/.
+    # - pip wheel agrossuite/.
     # install package
     - pip install agrossuite/. 
     - cd ..
