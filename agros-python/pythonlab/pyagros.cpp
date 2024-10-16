@@ -60,7 +60,7 @@ void AGROS_LIBRARY_API openFile(const std::string &file)
 {
     try
     {
-        Agros::problem()->writeProblemToArchive(QString::fromStdString(file));
+        Agros::problem()->writeProblemToFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {
