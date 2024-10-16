@@ -28,6 +28,7 @@
 
 #include <QtWidgets/QApplication>
 #include <QtXml/QDomDocument>
+#include <util/script_generator.h>
 
 #include "problem_config.h"
 #include "problem_result.h"
@@ -1753,6 +1754,19 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject& rootJson)
     rootJson[COUPLINGS] = couplingsJson;
 }
 
+void ProblemBase::generateHash()
+{
+    ScriptGenerator m_scriptGenerator;
+    m_hash = qHash(m_scriptGenerator.createPython());
+    // qInfo() << "generateHash: " << m_hash;
+}
+
+bool ProblemBase::hasChanged() const
+{
+    ScriptGenerator m_scriptGenerator;
+    return (m_hash != qHash(m_scriptGenerator.createPython()));
+}
+
 // computation
 
 Computation::Computation(const QString& problemDir) : ProblemBase(),
@@ -2322,6 +2336,9 @@ void Problem::clearFieldsAndConfig()
     QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
 
     m_fileName = "";
+
+    // set checksum
+    generateHash();
 }
 
 void Problem::readProblemFromArchive(const QString& fileName)
@@ -2407,7 +2424,7 @@ void Problem::readProblemFromArchive(const QString& fileName)
     m_scene->invalidate();
 }
 
-void Problem::writeProblemToArchive(const QString& fileName, bool onlyProblemFile)
+void Problem::writeProblemToFile(const QString& fileName, bool onlyProblemFile)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -2429,6 +2446,9 @@ void Problem::writeProblemToArchive(const QString& fileName, bool onlyProblemFil
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());
     }
+
+    // set checksum
+    generateHash();
 }
 
 void Problem::readProblemFromFile(const QString& fileName)
@@ -2471,4 +2491,7 @@ void Problem::readProblemFromFile(const QString& fileName)
         clearFieldsAndConfig();
         Agros::log()->printError(tr("Problem"), e.toString());
     }
+
+    // set checksum
+    generateHash();
 }

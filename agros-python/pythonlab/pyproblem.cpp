@@ -215,7 +215,7 @@ void PyProblem::load(const std::string &fn)
 void PyProblem::save(const std::string &fn)
 {
     QString fileName = QString::fromStdString(fn);
-    Agros::problem()->writeProblemToArchive(fileName, false);
+    Agros::problem()->writeProblemToFile(fileName, false);
 }
 
 std::string PyProblem::typeOfStudyAtIndex(int index)

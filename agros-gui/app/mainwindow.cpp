@@ -376,6 +376,13 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::doDocumentNew()
 {
+    // check if problem has changed
+    if (Agros::problem()->hasChanged())
+    {
+        if (checkModifiedQuestion())
+            doDocumentSave();
+    }
+
     // clear preprocessor
     Agros::problem()->clearFieldsAndConfig();
 
@@ -385,6 +392,13 @@ void MainWindow::doDocumentNew()
 
 void MainWindow::doDocumentOpen(const QString &fileName)
 {
+    // check if problem has changed
+    if (Agros::problem()->hasChanged())
+    {
+        if (checkModifiedQuestion())
+            doDocumentSave();
+    }
+
     QSettings settings;
     QString fileNameDocument;
 
@@ -437,7 +451,7 @@ void MainWindow::doDocumentSave()
         try
         {
             // write to archive
-            Agros::problem()->writeProblemToArchive(Agros::problem()->archiveFileName(), false);
+            Agros::problem()->writeProblemToFile(Agros::problem()->archiveFileName(), false);
         }
         catch (AgrosException &e)
         {
@@ -475,7 +489,7 @@ void MainWindow::doDocumentSaveAs()
 
         try
         {
-            Agros::problem()->writeProblemToArchive(fileName, false);
+            Agros::problem()->writeProblemToFile(fileName, false);
             setRecentFiles();
         }
         catch (AgrosException &e)
@@ -487,6 +501,13 @@ void MainWindow::doDocumentSaveAs()
 
 void MainWindow::doDocumentClose()
 {
+    // check if problem has changed
+    if (Agros::problem()->hasChanged())
+    {
+        if (checkModifiedQuestion())
+            doDocumentSave();
+    }
+
     // clear problem
     Agros::problem()->clearFieldsAndConfig();
 
@@ -532,6 +553,18 @@ void MainWindow::doCreatePythonFromModel()
     auto *scriptDialog = new ScriptGeneratorDialog();
     scriptDialog->doGenerate();
     scriptDialog->show();
+}
+
+bool MainWindow::checkModifiedQuestion()
+{
+    QMessageBox msgBox;
+    msgBox.setText(tr("The model has been modified."));
+    msgBox.setInformativeText(tr("Do you want to save your changes?"));
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    const int ret = msgBox.exec();
+
+    return (ret == QMessageBox::Save);
 }
 
 void MainWindow::doSolveCurrentComputation()

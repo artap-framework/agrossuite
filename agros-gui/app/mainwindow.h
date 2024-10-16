@@ -65,6 +65,7 @@ private slots:
     void doDocumentImportDXF();
     void doDocumentExportDXF();
     void doCreatePythonFromModel();
+    bool checkModifiedQuestion();
 
     void doSolveCurrentComputation();
     void doSolveNewComputation();

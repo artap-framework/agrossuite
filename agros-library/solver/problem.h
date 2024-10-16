@@ -200,6 +200,10 @@ public:
     virtual void clearFields();
     virtual void clearFieldsAndConfig();
 
+    // controlling the change of the problem
+    void generateHash();
+    bool hasChanged() const;
+
 protected:
     Scene *m_scene;
 
@@ -218,6 +222,9 @@ protected:
     dealii::Triangulation<2> m_initialMesh;
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     bool m_isMeshing;
+
+    // checksum
+    size_t m_hash;
 
     // read initial meshes
     void readInitialMeshFromFile(const QString &problemDir);
@@ -246,8 +253,7 @@ public:
     void setCurrentComputation(QSharedPointer<Computation> computation);
     inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
-    void readProblemFromArchive(const QString &archiveFileName);
-    void writeProblemToArchive(const QString &archiveFileName, bool onlyProblemFile = true);
+    void writeProblemToFile(const QString &archiveFileName, bool onlyProblemFile = true);
     void readProblemFromFile(const QString &archiveFileName);
 
     // field
@@ -278,6 +284,7 @@ protected:
     // studies
     Studies *m_studies;
 
+    void readProblemFromArchive(const QString &archiveFileName);
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson) override;
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson) override;
 };
