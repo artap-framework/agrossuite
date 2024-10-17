@@ -543,7 +543,8 @@ ProblemBase::ProblemBase() :
     m_isMeshing(false),
     m_config(new ProblemConfig(this)),
     m_scene(new Scene(this)),
-    m_isNonlinear(false)
+    m_isNonlinear(false),
+    m_hash(0)
 {
     m_timeStepLengths.append(0.0);
 }
@@ -1764,8 +1765,10 @@ void ProblemBase::generateHash()
 
 bool ProblemBase::hasChanged() const
 {
-    ScriptGenerator m_scriptGenerator;
-    return (m_hash != qHash(m_scriptGenerator.createPython()));
+    // ScriptGenerator m_scriptGenerator;
+    // int hash = qHash(m_scriptGenerator.createPython());
+    // return (m_hash != hash);
+    return false;
 }
 
 // computation
