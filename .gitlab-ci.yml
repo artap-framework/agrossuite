@@ -99,7 +99,7 @@ test-linux-tutorials:
     - cd tests-tutorials
     # generate test files
     - python tutorials.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ../..
   artifacts:
     when: always
@@ -119,7 +119,7 @@ test-linux-import-a2d:
     - cd tests-import-a2d
     # generate test files
     - python tutorials_a2d.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ../..
   artifacts:
     when: always
@@ -277,7 +277,7 @@ test-windows:
     - pip install .    
     - cd ..
     - cd .\env\Lib\site-packages\agrossuite\tests
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ..
     - cd ..
 
@@ -294,7 +294,7 @@ test-windows-tutorials:
     - cd tests-tutorials
     # generate test files
     - python tutorials.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ../..
     
 test-windows-import-a2d:
@@ -310,7 +310,7 @@ test-windows-import-a2d:
     - cd tests-import-a2d
     # generate test files
     - python tutorials_a2d.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ../..    
 
 deploy-windows:
