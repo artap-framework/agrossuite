@@ -1756,8 +1756,9 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject& rootJson)
 
 void ProblemBase::generateHash()
 {
-    ScriptGenerator m_scriptGenerator;
-    m_hash = qHash(m_scriptGenerator.createPython());
+    // ScriptGenerator m_scriptGenerator;
+    // m_hash = qHash(m_scriptGenerator.createPython());
+    m_hash = 0;
     // qInfo() << "generateHash: " << m_hash;
 }
 
