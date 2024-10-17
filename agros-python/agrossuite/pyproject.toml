@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "scikit-build>=0.13",
+    "setuptools>=75",
+    "scikit-build>=0.18",
     "cmake>=3.18",
     "ninja",
     "cython",

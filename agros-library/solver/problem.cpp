@@ -1757,18 +1757,16 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject& rootJson)
 
 void ProblemBase::generateHash()
 {
-    // ScriptGenerator m_scriptGenerator;
-    // m_hash = qHash(m_scriptGenerator.createPython());
-    m_hash = 0;
+    ScriptGenerator scriptGenerator;
+    m_hash = qHash(scriptGenerator.createPython());
     // qInfo() << "generateHash: " << m_hash;
 }
 
 bool ProblemBase::hasChanged() const
 {
-    // ScriptGenerator m_scriptGenerator;
-    // int hash = qHash(m_scriptGenerator.createPython());
-    // return (m_hash != hash);
-    return false;
+    ScriptGenerator scriptGenerator;
+    int hash = qHash(scriptGenerator.createPython());
+    return (m_hash != hash);
 }
 
 // computation

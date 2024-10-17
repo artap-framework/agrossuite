@@ -14,7 +14,8 @@ dt = datetime.datetime.now()
 
 setup(
     name="agrossuite",
-    version="{}.{}".format(dt.strftime('%Y.%m.%d'), dt.hour*60*60+dt.minute*60+dt.second),
+    # version="{}.{}".format(dt.strftime('%Y.%m.%d'), dt.hour*60*60+dt.minute*60+dt.second),
+    version="{}".format(dt.strftime('%Y.%m.%d')),
     author=u"Agros Suite",
     author_email="karban@fel.zcu.cz",
     description="Multiplatform application for the solution of physical problems based on the deal.II library",
