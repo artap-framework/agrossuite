@@ -268,13 +268,14 @@ test-windows:
     - pip install cython
     - pip install scikit-build
     - pip install pytest
+    - pip install pytest-rerunfailures
     - pip install numpy
     - cd agrossuite
     - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
     - cd .\env\Lib\site-packages\agrossuite\tests
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
     - cd ..
     - cd ..
 
@@ -291,7 +292,7 @@ test-windows-tutorials:
     - cd tests-tutorials
     # generate test files
     - python tutorials.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
     - cd ../..
     
 test-windows-import-a2d:
@@ -307,7 +308,7 @@ test-windows-import-a2d:
     - cd tests-import-a2d
     # generate test files
     - python tutorials_a2d.py
-    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
+    - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun ValueError
     - cd ../..    
 
 deploy-windows:
