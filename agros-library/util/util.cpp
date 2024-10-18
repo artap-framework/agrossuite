@@ -363,16 +363,20 @@ QString stringListToString(const QStringList &list)
 
 QString readFileContent(const QString &fileName)
 {
-    QString content;
+    QString content = "";
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QTextStream stream(&file);
         content = stream.readAll();
         file.close();
-        return content;
     }
-    return nullptr;
+    else
+    {
+        qWarning() << "Cannot open file " << fileName;
+    }
+
+    return content;
 }
 
 void writeStringContent(const QString &fileName, QString content, bool force)

@@ -185,6 +185,10 @@ void MainWindow::createActions()
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
 
+    actShortcuts = new QAction(tr("Shortcuts"), this);
+    actShortcuts->setMenuRole(QAction::AboutRole);
+    connect(actShortcuts, SIGNAL(triggered()), this, SLOT(doShortcuts()));
+
     actOptions = new QAction(tr("&Options"), this);
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
@@ -268,6 +272,7 @@ void MainWindow::createMenus()
     mnuHelp = menuBar()->addMenu(tr("&Help"));
     mnuHelp->addAction(actCheckVersion);
     mnuHelp->addSeparator();
+    mnuHelp->addAction(actShortcuts);
     mnuHelp->addAction(actAbout);   // will be added to "Agros" MacOSX menu
 }
 
@@ -642,18 +647,8 @@ void MainWindow::clear()
 
 void MainWindow::doApplyStyle()
 {
-    QFile f(QString("%1/resources/themes/theme.qss").arg(Agros::dataDir()));
-
-    if (!f.exists())
-    {
-        qInfo() << "Unable to set stylesheet, file not found";
-    }
-    else
-    {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        qApp->setStyleSheet(ts.readAll());
-    }
+    const QString theme = readFileContent(QString("%1/resources/themes/theme.qss").arg(Agros::dataDir()));
+    qApp->setStyleSheet(theme);
 }
 
 void MainWindow::setEnabledControls(bool state)
@@ -735,6 +730,12 @@ void MainWindow::doAbout()
 {
     AboutDialog about(this);
     about.exec();
+}
+
+void MainWindow::doShortcuts()
+{
+    ShortcutDialog shortcut(this);
+    shortcut.exec();
 }
 
 void MainWindow::showEvent(QShowEvent *event)

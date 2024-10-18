@@ -81,6 +81,7 @@ private slots:
 
     void doCheckVersion();
     void doAbout();
+    void doShortcuts();
     void doApplyStyle();
     void setEnabledControls(bool state);
     void setControls();
@@ -129,6 +130,7 @@ private:
     QAction *actHelpShortCut;
     QAction *actCheckVersion;
     QAction *actAbout;
+    QAction *actShortcuts;
 
     QMenu *mnuMesh;
     QToolButton *btnMesh;

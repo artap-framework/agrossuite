@@ -284,7 +284,7 @@ protected:
     // studies
     Studies *m_studies;
 
-    void readProblemFromArchive(const QString &archiveFileName);
+    void readProblemFromAgs(const QString &archiveFileName);
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson) override;
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson) override;
 };

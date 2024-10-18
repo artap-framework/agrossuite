@@ -23,6 +23,18 @@
 #include "util/util.h"
 #include "gui/other.h"
 
+class ShortcutDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    ShortcutDialog(QWidget *parent = 0);
+
+private:
+    void createControls();
+};
+
+
 class AboutDialog : public QDialog
 {
     Q_OBJECT
@@ -41,8 +53,8 @@ private:
     QWidget *createLicense();
     QWidget *createSysinfo();
 
-private slots:
-    void checkVersion();
+    private slots:
+        void checkVersion();
 };
 
 #endif // GUI_ABOUT_H

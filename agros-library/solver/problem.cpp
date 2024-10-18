@@ -544,7 +544,7 @@ ProblemBase::ProblemBase() :
     m_config(new ProblemConfig(this)),
     m_scene(new Scene(this)),
     m_isNonlinear(false),
-    m_hash(0)
+    m_hash(-1)
 {
     m_timeStepLengths.append(0.0);
 }
@@ -1766,6 +1766,10 @@ bool ProblemBase::hasChanged() const
 {
     ScriptGenerator scriptGenerator;
     int hash = qHash(scriptGenerator.createPython());
+
+    qInfo() << "hasChanged: " << m_hash << hash;
+
+
     return (m_hash != hash);
 }
 
@@ -2343,7 +2347,7 @@ void Problem::clearFieldsAndConfig()
     generateHash();
 }
 
-void Problem::readProblemFromArchive(const QString& fileName)
+void Problem::readProblemFromAgs(const QString& fileName)
 {
     clearFieldsAndConfig();
 
@@ -2396,15 +2400,6 @@ void Problem::readProblemFromArchive(const QString& fileName)
         }
     }
     // qDebug() << "read solutions" << time.elapsed();
-
-    // convert a2d
-    // QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());
-    // if (QFile::exists(problemA2D))
-    // {
-    //     qInfo() << "readProblemFromArchive: Converting A2D to AGS";
-    //     importProblemFromA2D(problemA2D);
-    //     writeProblemToJson();
-    // }
 
     // read problem
     readProblemFromJson();
@@ -2462,7 +2457,7 @@ void Problem::readProblemFromFile(const QString& fileName)
         // load problem
         if (fileInfo.suffix() == "ags")
         {
-            readProblemFromArchive(fileName);
+            readProblemFromAgs(fileName);
         }
         // deprecated
         else if (fileInfo.suffix() == "a2d")
