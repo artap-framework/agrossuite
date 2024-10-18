@@ -40,7 +40,7 @@ ScriptGenerator::ScriptGenerator() :
 
 QString ScriptGenerator::createPythonFromModel()
 {
-    QString str;
+    QString str = "";
 
     // import modules
     str += "from agrossuite import agros\n\n";
@@ -56,7 +56,7 @@ QString ScriptGenerator::createPythonFromModelForServer()
     m_addStudies = true;
     m_createModel = true;
 
-    QString str;
+    QString str = "";
 
     // import modules
     str += "from agrossuite import agros\n\n";
@@ -108,7 +108,7 @@ QString ScriptGenerator::createPythonFromModelForServer()
 // create script from model
 QString ScriptGenerator::createPython()
 {
-    QString str;
+    QString str = "";
 
     // model
     str += "# problem\n";

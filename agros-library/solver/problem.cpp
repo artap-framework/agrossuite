@@ -544,7 +544,7 @@ ProblemBase::ProblemBase() :
     m_config(new ProblemConfig(this)),
     m_scene(new Scene(this)),
     m_isNonlinear(false),
-    m_hash(-1)
+    m_hash(0)
 {
     m_timeStepLengths.append(0.0);
 }
@@ -1759,16 +1759,16 @@ void ProblemBase::generateHash()
 {
     ScriptGenerator scriptGenerator;
     m_hash = qHash(scriptGenerator.createPython());
+
     // qInfo() << "generateHash: " << m_hash;
 }
 
 bool ProblemBase::hasChanged() const
 {
     ScriptGenerator scriptGenerator;
-    int hash = qHash(scriptGenerator.createPython());
+    const size_t hash = qHash(scriptGenerator.createPython());
 
-    qInfo() << "hasChanged: " << m_hash << hash;
-
+    // qInfo() << "hasChanged: " << m_hash << hash;
 
     return (m_hash != hash);
 }
