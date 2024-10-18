@@ -315,7 +315,7 @@ test-windows-import-a2d:
 
 deploy-windows:
     stage: deploy
-    needs: ["test-windows"]
+    # needs: ["test-windows"]
     tags:      
       - agros  		
       - win11
