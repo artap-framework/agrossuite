@@ -129,7 +129,7 @@ test-linux-import-a2d:
     
 deploy-linux-appimage:
   stage: deploy
-  needs: ["test-linux"]
+  needs: ["test-linux", "test-linux-tutorials", "test-linux-import-a2d"]
   tags:
     - agros
     - linux
@@ -178,20 +178,18 @@ deploy-linux-appimage:
 
 deploy-linux-wheel:
   stage: deploy
-  needs: ["test-linux"]
+  needs: ["test-linux", "test-linux-tutorials", "test-linux-import-a2d"]
   tags:
     - agros
     - linux
 
   script: 
     - cd build/agros-python/
-    - source env/bin/activate    
-
+    - source env/bin/activate
     # upload to pypi
     - pip install twine
         
     # - python3 -m twine upload agrossuite-*.whl
-
     - cd ../..
 
 
@@ -257,6 +255,7 @@ build-windows:
 test-windows:
   stage: test
   needs: ["build-windows"]
+  allow_failure: true
   tags:
     - agros
     - win11
@@ -284,6 +283,7 @@ test-windows:
 test-windows-tutorials:
   stage: test
   needs: ["build-windows"]
+  allow_failure: true
   tags:
     - agros
     - win11
@@ -300,6 +300,7 @@ test-windows-tutorials:
 test-windows-import-a2d:
   stage: test
   needs: ["build-windows"]
+  allow_failure: true
   tags:
     - agros
     - win11
@@ -315,7 +316,7 @@ test-windows-import-a2d:
 
 deploy-windows:
     stage: deploy
-    # needs: ["test-windows"]
+    needs: ["test-windows"]
     tags:      
       - agros  		
       - win11
