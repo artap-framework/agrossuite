@@ -384,8 +384,8 @@ void MainWindow::doDocumentNew()
     // check if problem has changed
     if (Agros::problem()->hasChanged())
     {
-        if (checkModifiedQuestion())
-            doDocumentSave();
+        if (!checkModifiedQuestion())
+            return;
     }
 
     // clear preprocessor
@@ -400,8 +400,8 @@ void MainWindow::doDocumentOpen(const QString &fileName)
     // check if problem has changed
     if (Agros::problem()->hasChanged())
     {
-        if (checkModifiedQuestion())
-            doDocumentSave();
+        if (!checkModifiedQuestion())
+            return;
     }
 
     QSettings settings;
@@ -509,8 +509,8 @@ void MainWindow::doDocumentClose()
     // check if problem has changed
     if (Agros::problem()->hasChanged())
     {
-        if (checkModifiedQuestion())
-            doDocumentSave();
+        if (!checkModifiedQuestion())
+            return;
     }
 
     // clear problem
@@ -560,16 +560,34 @@ void MainWindow::doCreatePythonFromModel()
     scriptDialog->show();
 }
 
-bool MainWindow::checkModifiedQuestion()
+int MainWindow::checkModifiedQuestion()
 {
     QMessageBox msgBox;
+    msgBox.setStyleSheet("QLabel{min-width: 300px;}");
     msgBox.setText(tr("The model has been modified."));
-    msgBox.setInformativeText(tr("Do you want to save your changes?"));
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+    if (Agros::problem()->archiveFileName() == "")
+        msgBox.setInformativeText(tr("Do you want to save your changes?"));
+    else
+        msgBox.setInformativeText(tr("Do you want to save your changes to file '%1'?").arg(QFileInfo(Agros::problem()->archiveFileName()).baseName()));
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Save);
-    const int ret = msgBox.exec();
 
-    return (ret == QMessageBox::Save);
+    const int result = msgBox.exec();
+    switch (result) {
+    case QMessageBox::Save:
+        doDocumentSave();
+        return true;
+        break;
+    case QMessageBox::Discard:
+        return true;
+        break;
+    case QMessageBox::Cancel:
+        return false;
+        break;
+    default:
+        // should never be reached
+        break;
+    }
 }
 
 void MainWindow::doSolveCurrentComputation()

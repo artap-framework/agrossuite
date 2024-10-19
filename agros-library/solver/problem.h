@@ -202,6 +202,7 @@ public:
 
     // controlling the change of the problem
     void generateHash();
+    size_t generateHashInt() const;
     bool hasChanged() const;
 
 protected:

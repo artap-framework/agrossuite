@@ -1757,16 +1757,29 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject& rootJson)
 
 void ProblemBase::generateHash()
 {
-    ScriptGenerator scriptGenerator;
-    m_hash = qHash(scriptGenerator.createPython());
-
+    m_hash = generateHashInt();
     // qInfo() << "generateHash: " << m_hash;
+}
+
+size_t ProblemBase::generateHashInt() const
+{
+    ScriptGenerator scriptGenerator;
+
+    QString hash = "";
+    hash += QString("# Nodes: %1").arg(QString::number(m_scene->nodes->length()));
+    hash += QString("# Faces: %1").arg(QString::number(m_scene->faces->length()));
+    hash += QString("# Labels: %1").arg(QString::number(m_scene->labels->length()));
+    hash += QString("# Materials: %1").arg(QString::number(m_scene->materials->length()));
+    hash += QString("# Boundaries: %1").arg(QString::number(m_scene->boundaries->length()));
+
+    hash += scriptGenerator.createPython();
+
+    return qHash(hash);
 }
 
 bool ProblemBase::hasChanged() const
 {
-    ScriptGenerator scriptGenerator;
-    const size_t hash = qHash(scriptGenerator.createPython());
+    const size_t hash = generateHashInt();
 
     // qInfo() << "hasChanged: " << m_hash << hash;
 
