@@ -84,6 +84,7 @@ QWidget *OptiLabWidget::createControlsOptilab()
     connect(actProperties, SIGNAL(triggered()), this, SLOT(doItemProperties()));
 
     actDelete = new QAction(tr("&Delete"), this);
+    actDelete->setShortcut(QKeySequence::Delete);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doItemDelete()));
 
     actDuplicate = new QAction(tr("Duplicate"), this);
@@ -524,7 +525,7 @@ void OptiLabWidget::doItemProperties()
         if (type == OptiLabWidget::OptilabStudy)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {
@@ -537,7 +538,7 @@ void OptiLabWidget::doItemProperties()
             if (!parameter.isEmpty())
             {
                 // study
-                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
                 StudyParameterDialog dialog(study, &study->parameter(parameter));
                 if (dialog.exec() == QDialog::Accepted)
@@ -552,7 +553,7 @@ void OptiLabWidget::doItemProperties()
             if (!goal.isEmpty())
             {
                 // study
-                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+                Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
                 StudyGoalFunctionDialog dialog(study, &study->goal(goal));
                 if (dialog.exec() == QDialog::Accepted)
@@ -608,7 +609,7 @@ void OptiLabWidget::doItemDelete()
         else if (type == OptiLabWidget::OptilabParameter)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             QString parameter = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
 
             study->removeParameter(parameter);
@@ -617,7 +618,7 @@ void OptiLabWidget::doItemDelete()
         else if (type == OptiLabWidget::OptilabGoalFunction)
         {
             // study
-            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
             QString goal = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
 
             study->removeGoalFunction(goal);
@@ -701,7 +702,7 @@ void OptiLabWidget::doItemContextMenu(const QPoint &pos)
 
 void OptiLabWidget::doNewParameter()
 {
-    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
     if (study)
     {
         // select parameter dialog
@@ -726,7 +727,7 @@ void OptiLabWidget::doNewParameter()
 
 void OptiLabWidget::doNewGoalFunction()
 {
-    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(0, Qt::UserRole).toInt());
+    Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
     if (study)
     {
         GoalFunction goal;
