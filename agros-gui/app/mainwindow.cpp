@@ -60,7 +60,7 @@
 #include <boost/archive/text_oarchive.hpp>
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent),
-    logDialog(nullptr)
+    logSolverDialog(nullptr)
 {
     setWindowIcon(icon("agros"));
 
@@ -79,10 +79,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     exampleWidget = new ExamplesWidget(this);
     connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
 
-    // view info
+    // create log view dialog
     m_connectLog = new ConnectLog();
-    logView = new LogViewDialog(this, m_connectLog);
-    logView->setVisible(false);
+    createLogViewDialog(m_connectLog);
     (dynamic_cast<LogGui * > (Agros::log()))->setConnectLog(m_connectLog);
 
     // OptiLab
@@ -134,6 +133,9 @@ MainWindow::~MainWindow()
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
+
+    // delete log view dialog
+    deleteLogViewDialog();
 
     delete m_connectLog;
 }
@@ -606,8 +608,8 @@ void MainWindow::doSolveNewComputation()
 
 void MainWindow::doSolveComputation(Computation *computation)
 {
-    logDialog = new LogDialog(computation, tr("Solver"), m_connectLog);
-    logDialog->show();
+    logSolverDialog = new LogSolverDialog(computation, tr("Solver"), m_connectLog);
+    logSolverDialog->show();
 
     // solve thread
     auto *solveThread = new SolveThread(computation);
@@ -620,7 +622,7 @@ void MainWindow::doSolveFinished()
     if (Agros::problem()->currentComputation()->isSolved())
     {
         // close log dialog
-        logDialog->closeLog();
+        logSolverDialog->closeLog();
 
         // refresh postprocessor
         postprocessorWidget->solveFinished();
@@ -655,7 +657,7 @@ void MainWindow::doMaterialBrowser()
 
 void MainWindow::doShowLog()
 {
-    logView->setVisible(true);
+    showLogViewDialog();
 }
 
 void MainWindow::clear()

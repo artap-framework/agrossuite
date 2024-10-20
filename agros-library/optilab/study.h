@@ -286,7 +286,7 @@ public:
     double evaluateSingleGoal(QSharedPointer<Computation> computation) const;
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
 
-    QList<QSharedPointer<Computation> > &computations(int index = -1);
+    int computationsCount() const;
     inline QList<ComputationSet> computationSets() const { return m_computationSets; }
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
@@ -301,6 +301,7 @@ public:
 
     bool isSolving() const { return m_isSolving; }
     bool isAborted() const { return m_abort; }
+    bool hasError() const { return m_hasError; }
 
     // postprocessor
     QSharedPointer<Computation> findExtreme(ResultType type, const QString &key, bool minimum);
@@ -326,6 +327,7 @@ protected:
 
     bool m_isSolving;
     bool m_abort;
+    bool m_hasError;
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 

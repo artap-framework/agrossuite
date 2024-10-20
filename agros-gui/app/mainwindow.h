@@ -148,10 +148,9 @@ private:
     PreprocessorWidget *problemWidget;
     PostprocessorWidget *postprocessorWidget;
 
-    LogViewDialog *logView;
     ConnectLog *m_connectLog;
 
-    LogDialog *logDialog;
+    LogSolverDialog *logSolverDialog;
 
     QString m_startupProblemFilename;
     bool m_startupExecute;

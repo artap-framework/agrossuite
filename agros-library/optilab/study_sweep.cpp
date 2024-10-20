@@ -63,10 +63,9 @@ double SweepProblem::evaluate(const vectord& x)
 
         return value;
     }
-    catch (AgrosSolverException &e)
+    catch (AgrosOptilabEvaluationException &e)
     {
-        qDebug() << e.toString();
-
+        computation.clear();
         return numeric_limits<double>::max();
     }
 }

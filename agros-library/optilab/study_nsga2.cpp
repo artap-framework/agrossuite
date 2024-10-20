@@ -71,12 +71,10 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
 
         localSteps++;
     }
-    catch (AgrosSolverException &e)
+    catch (AgrosOptilabEvaluationException &e)
     {
-        qDebug() << e.toString();
-
+        computation.clear();
         // opt.set_force_stop(2);
-        return;
     }
 }
 

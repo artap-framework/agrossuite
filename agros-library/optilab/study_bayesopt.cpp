@@ -93,16 +93,9 @@ double BayesOptProblem::evaluateSample(const vectord &x)
 
         return value;
     }
-    catch (AgrosSolverException &e)
+    catch (AgrosOptilabEvaluationException &e)
     {
-        qDebug() << e.toString();
-
-        for (int i = 0; i < m_study->parameters().count(); i++)
-        {
-            Parameter parameter = m_study->parameters()[i];
-            qInfo() << parameter.name() << " = " << x[i];
-        }
-
+        computation.clear();
         return 0; // numeric_limits<double>::max();
     }
 }

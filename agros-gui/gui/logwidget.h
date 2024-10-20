@@ -27,8 +27,14 @@
 
 class LogWidget;
 class ConnectLog;
+class LogViewDialog;
 
 #define signals public
+
+void createLogViewDialog(ConnectLog *connectLog);
+void deleteLogViewDialog();
+void showLogViewDialog();
+LogViewDialog *logViewDialog();
 
 class LogWidget : public QWidget
 {
@@ -98,12 +104,12 @@ private:
     ConnectLog *m_connectLog;
 };
 
-class LogDialog : public QDialog
+class LogSolverDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
-    ~LogDialog();
+    LogSolverDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
+    ~LogSolverDialog();
 
 public slots:
     void closeLog();

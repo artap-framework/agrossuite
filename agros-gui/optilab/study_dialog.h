@@ -39,12 +39,12 @@ class Computation;
 class Study;
 
 
-class LogOptimizationDialog : public QDialog
+class StudySolverDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogOptimizationDialog(Study *study);
-    ~LogOptimizationDialog();
+    StudySolverDialog(Study *study);
+    ~StudySolverDialog();
 
 public slots:
     void closeLog();

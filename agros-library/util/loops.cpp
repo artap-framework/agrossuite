@@ -44,7 +44,7 @@ MeshGeneratorTriangleFast::MeshGeneratorTriangleFast(ProblemBase *problem)
 
 bool MeshGeneratorTriangleFast::mesh()
 {
-    Agros::log()->printMessage(tr("Fast Mesh Generator"), tr("Triangle"));
+    // Agros::log()->printMessage(tr("Fast Mesh Generator"), tr("Triangle"));
 
     clear();
 
@@ -81,12 +81,12 @@ bool MeshGeneratorTriangleFast::writeToTriangle()
     // basic check
     if (m_problem->scene()->nodes->length() < 3)
     {
-        Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
+        // Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
         return false;
     }
     if (m_problem->scene()->faces->length() < 3)
     {
-        Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
+        // Agros::log()->printWarning(tr("Fast Mesh Generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
         return false;
     }
 
@@ -343,7 +343,6 @@ bool MeshGeneratorTriangleFast::readTriangleMeshFormat()
             if (marker == 0)
             {
                 Agros::log()->printError(tr("Mesh Generator"), tr("Some areas in loops do not have a marker"));
-
             }
         }
         else

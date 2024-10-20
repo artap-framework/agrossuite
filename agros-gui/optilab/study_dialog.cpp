@@ -40,7 +40,7 @@ double logVal(double val)
     return (val > 0) ? log10(fabs(val)) : -log10(fabs(val));
 }
 
-LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
+StudySolverDialog::StudySolverDialog(Study *study) : QDialog(QApplication::activeWindow()),
     m_study(study), progressBar(nullptr), m_computationSetsCount(1), m_step(1), m_totalValue(std::numeric_limits<double>::max())
 {
     setModal(true);
@@ -51,10 +51,10 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     createControls();
     
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
-    m_study->updateParametersAndFunctionals = std::bind(&LogOptimizationDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
+    m_study->updateParametersAndFunctionals = std::bind(&StudySolverDialog::updateParametersAndFunctionals, this, std::placeholders::_1, std::placeholders::_2);
     
-    int w = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
-    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
+    int w = 1.0/1.8 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 1.0/1.8 * QGuiApplication::primaryScreen()->availableGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -63,17 +63,17 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
          QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
-LogOptimizationDialog::~LogOptimizationDialog()
+StudySolverDialog::~StudySolverDialog()
 {
 }
 
-void LogOptimizationDialog::closeEvent(QCloseEvent *e)
+void StudySolverDialog::closeEvent(QCloseEvent *e)
 {
     if (m_study->isSolving())
         e->ignore();
 }
 
-void LogOptimizationDialog::reject()
+void StudySolverDialog::reject()
 {
     if (m_study->isSolving())
         m_study->abortSolving();
@@ -81,7 +81,7 @@ void LogOptimizationDialog::reject()
         close();
 }
 
-void LogOptimizationDialog::closeLog()
+void StudySolverDialog::closeLog()
 {
     if (m_study->isSolving())
     {
@@ -93,7 +93,7 @@ void LogOptimizationDialog::closeLog()
     }
 }
 
-void LogOptimizationDialog::createControls()
+void StudySolverDialog::createControls()
 {
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -277,7 +277,7 @@ void LogOptimizationDialog::createControls()
     setLayout(layout);
 }
 
-void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty)
+void StudySolverDialog::updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty)
 {
     int computationSetsCount = m_study->computationSets().count();
     double totalValue = m_study->evaluateSingleGoal(computation);
@@ -352,7 +352,7 @@ void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Comput
     m_step++;
 }
 
-void LogOptimizationDialog::aborted()
+void StudySolverDialog::aborted()
 {
     m_study->abortSolving();
 

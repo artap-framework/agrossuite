@@ -41,13 +41,6 @@ void StudyModel::solve()
 	// computation
 	QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
-	// set parameters
-	// for (int i = 0; i < this->parameters().count(); i++)
-	// {
-	// 	Parameter parameter = this->parameters()[i];
-	// 	// computation->config()->parameters()->set(parameter.name(), x[i]);
-	// }
-
 	// evaluate step
 	try
 	{
@@ -61,6 +54,7 @@ void StudyModel::solve()
 	}
 	catch (AgrosSolverException &e)
 	{
+		computation.clear();
 		qDebug() << e.toString();
 	}
 

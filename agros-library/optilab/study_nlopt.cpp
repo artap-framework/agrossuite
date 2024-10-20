@@ -80,10 +80,9 @@ public:
 
             return value;
         }
-        catch (AgrosSolverException &e)
+        catch (AgrosOptilabEvaluationException &e)
         {
-            qDebug() << e.toString();
-
+            computation.clear();
             // opt.set_force_stop(2);
             return numeric_limits<double>::max();
         }

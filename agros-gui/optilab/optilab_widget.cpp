@@ -252,7 +252,7 @@ void OptiLabWidget::refresh()
         // study
         auto *studyNode = new QTreeWidgetItem(studiesNode);
         studyNode->setText(0, QString("%1").arg(studyTypeString(study->type())));
-        studyNode->setText(1, study->computationSets().count() > 0 ? tr("Solved") : tr("Not solved"));
+        studyNode->setText(1, study->computationSets().count() > 0 ? tr("Solved (%1 solutions)").arg(study->computationsCount()) : tr("Not solved"));
         studyNode->setIcon(0, icon("optilab_algorithm"));
         studyNode->setFont(0, fnt);
         studyNode->setData(1, Qt::UserRole, OptiLabWidget::OptilabStudy);
@@ -350,7 +350,7 @@ void OptiLabWidget::solveStudy()
         {
             Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
 
-            auto *log = new LogOptimizationDialog(study);
+            auto *log = new StudySolverDialog(study);
             log->show();
 
             // solve
@@ -359,7 +359,13 @@ void OptiLabWidget::solveStudy()
             // close dialog
             log->closeLog();
 
+            // refresh UI
             refresh();
+
+            // error
+            if (study->hasError())
+                showLogViewDialog();
+
         }
     }
 }

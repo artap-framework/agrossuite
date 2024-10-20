@@ -120,7 +120,7 @@ Study *Study::factory(StudyType type)
 }
 
 Study::Study(QList<ComputationSet> computations)
-    : m_computationSets(computations), m_abort(false), m_isSolving(false)
+    : m_computationSets(computations), m_abort(false), m_isSolving(false), m_hasError(false)
 {
     // empty callback
     updateParametersAndFunctionals = [](QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty) {};
@@ -269,12 +269,26 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
 
             // TODO: better error handling
             if (!computation->isSolved())
-                throw AgrosSolverException(tr("Problem was not solved."));
+                throw AgrosOptilabEvaluationException(tr("Problem was not solved."));
         }
         catch (AgrosException &e)
         {
-            Agros::log()->printError(tr("Problem"), e.toString());
-            throw AgrosSolverException(tr("Problem was not solved."));
+            m_hasError = true;
+
+            QString str = e.toString() + " ";
+            str += "Solved parameters [";
+            for (int i = 0; i < m_parameters.count(); i++)
+            {
+                Parameter parameter = m_parameters[i];
+                str += QString("%1: %2").arg(parameter.name()).arg(computation->config()->parameters()->number(parameter.name()));
+
+                if (i < m_parameters.count() - 1)
+                    str += ", ";
+            }
+            str += "]";
+
+            Agros::log()->printError(tr("Study"), str);
+            throw AgrosOptilabEvaluationException(str);
         }
     }
 
@@ -316,6 +330,16 @@ QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation) 
     }
 
     return values;
+}
+
+int Study::computationsCount() const
+{
+    // count of computations
+    int count = 0;
+    foreach (ComputationSet computationSet, m_computationSets)
+        count += computationSet.computations().count();
+
+    return count;
 }
 
 void Study::addComputation(QSharedPointer<Computation> computation, bool newComputationSet)
@@ -370,14 +394,6 @@ GoalFunction &Study::goal(const QString &name)
     }
 
     assert(0);
-}
-
-QList<QSharedPointer<Computation> > &Study::computations(int index)
-{
-    if (index == -1)
-        return m_computationSets.last().computations();
-    else
-        return m_computationSets[index].computations();
 }
 
 void Study::removeEmptyComputationSets()

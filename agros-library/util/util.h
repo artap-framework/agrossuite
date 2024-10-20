@@ -202,4 +202,12 @@ public:
     }
 };
 
+class AgrosOptilabEvaluationException : public AgrosException
+{
+public:
+    AgrosOptilabEvaluationException(const QString &what) : AgrosException(what)
+    {
+    }
+};
+
 #endif // UTIL_H

@@ -24,6 +24,30 @@
 #include "gui/chart.h"
 #include "solver/solutionstore.h"
 
+class LogViewDialog;
+static LogViewDialog *m_logViewDialog;
+
+void createLogViewDialog(ConnectLog *connectLog)
+{
+    m_logViewDialog = new LogViewDialog(0, connectLog);
+    m_logViewDialog->setVisible(false);
+}
+
+void deleteLogViewDialog()
+{
+    delete m_logViewDialog;
+}
+
+void showLogViewDialog()
+{
+    m_logViewDialog->setVisible(true);
+}
+
+LogViewDialog *logViewDialog()
+{
+    return m_logViewDialog;
+}
+
 LogGui::LogGui()
 {
      qRegisterMetaType<QVector<double> >("QVector<double>");
@@ -235,8 +259,8 @@ LogViewDialog::LogViewDialog(QWidget *parent, ConnectLog *connectLog) : QDialog(
     setWindowTitle("Log View");
     setWindowFlags(Qt::Window);
 
-    int w = 1.0/3.0 * QGuiApplication::primaryScreen()->availableGeometry().width();
-    int h = 1.0/2.0 * QGuiApplication::primaryScreen()->availableGeometry().height();
+    int w = 1.0/1.8 * QGuiApplication::primaryScreen()->availableGeometry().width();
+    int h = 1.0/1.8 * QGuiApplication::primaryScreen()->availableGeometry().height();
 
     setMinimumSize(w, h);
 
@@ -262,7 +286,7 @@ void LogViewDialog::closeEvent(QCloseEvent *e)
 
 // **********************************************************************************************************************************************
 
-LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
+LogSolverDialog::LogSolverDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
     nonlinearChart(nullptr), nonlinearErrorSeries(nullptr), nonlinearProgress(nullptr),
     adaptivityChart(nullptr), adaptivityErrorSeries(nullptr), adaptivityDOFsSeries(nullptr), adaptivityProgress(nullptr),
@@ -286,18 +310,18 @@ LogDialog::LogDialog(Computation *computation, const QString &title, ConnectLog 
          QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
-void LogDialog::abortSolving()
+void LogSolverDialog::abortSolving()
 {
     m_computation->abortSolving();
 }
 
-void LogDialog::closeEvent(QCloseEvent *e)
+void LogSolverDialog::closeEvent(QCloseEvent *e)
 {
     if (m_computation->isMeshing() || m_computation->isSolving())
         e->ignore();
 }
 
-void LogDialog::reject()
+void LogSolverDialog::reject()
 {
     if (m_computation->isMeshing() || m_computation->isSolving())
         m_computation->abortSolving();
@@ -305,11 +329,11 @@ void LogDialog::reject()
         close();
 }
 
-LogDialog::~LogDialog()
+LogSolverDialog::~LogSolverDialog()
 {    
 }
 
-void LogDialog::createControls()
+void LogSolverDialog::createControls()
 {
     connect(m_connectLog, SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
     connect(m_connectLog, SIGNAL(updateNonlinearChart(SolverAgros::Phase, const QVector<double>, const QVector<double>)),
@@ -569,7 +593,7 @@ void LogDialog::createControls()
     setLayout(layout);
 }
 
-void LogDialog::printError(const QString &module, const QString &message)
+void LogSolverDialog::printError(const QString &module, const QString &message)
 {
     btnAbort->setEnabled(false);
     btnClose->setEnabled(true);
@@ -577,7 +601,7 @@ void LogDialog::printError(const QString &module, const QString &message)
     logWidget->setVisible(true);
 }
 
-void LogDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions)
+void LogSolverDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions)
 {
     if (!nonlinearErrorSeries)
         return;
@@ -611,7 +635,7 @@ void LogDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector
     }
 }
 
-void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+void LogSolverDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
     if (!adaptivityErrorSeries)
         return;
@@ -676,7 +700,7 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
     adaptivityProgress->setValue(valueSteps);
 }
 
-void LogDialog::updateTransientChartInfo(double actualTime)
+void LogSolverDialog::updateTransientChartInfo(double actualTime)
 {
     if (!timeTimeStepSeries)
         return;
@@ -721,7 +745,7 @@ void LogDialog::updateTransientChartInfo(double actualTime)
     timeProgress->setValue((10000.0 * actualTime / m_computation->config()->value(ProblemConfig::TimeTotal).toDouble()));
 }
 
-void LogDialog::closeLog()
+void LogSolverDialog::closeLog()
 {
     if (m_computation->isSolving())
     {
