@@ -506,19 +506,20 @@ void MainWindow::doDocumentSaveAs()
     }
 }
 
-void MainWindow::doDocumentClose()
+bool MainWindow::doDocumentClose()
 {
     // check if problem has changed
     if (Agros::problem()->hasChanged())
     {
         if (!checkModifiedQuestion())
-            return;
+            return false;
     }
 
     // clear problem
     Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
+    return true;
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -769,5 +770,17 @@ void MainWindow::showEvent(QShowEvent *event)
 
         if (m_startupExecute)
             doSolveCurrentComputation();
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (doDocumentClose())
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
     }
 }

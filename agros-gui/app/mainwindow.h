@@ -61,7 +61,7 @@ private slots:
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
     void doDocumentSaveAs();
-    void doDocumentClose();
+    bool doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
     void doCreatePythonFromModel();
@@ -91,7 +91,8 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-    void showEvent(QShowEvent *event);    
+    void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     QMenu *mnuRecentFiles;
