@@ -112,22 +112,6 @@ cdef class __Study__:
         def __get__(self):
             return self.settings.get_parameters()
 
-    property name:
-        def __get__(self):
-            val_bytes = self.thisptr.getStringParameter(b'General_Name')
-            return val_bytes.decode()
-        def __set__(self, val):
-            val_bytes = val.encode()
-            self.thisptr.setParameter(string(b'General_Name'), <string> val_bytes)
-
-    property description:
-        def __get__(self):
-            val_bytes = self.thisptr.getStringParameter(b'General_Description')
-            return val_bytes.decode()
-        def __set__(self, val):
-            val_bytes = val.encode()
-            self.thisptr.setParameter(string(b'General_Description'), <string> val_bytes)
-
     property clear_solution:
         def __get__(self):
             return self.thisptr.getBoolParameter(b'General_ClearSolution')
@@ -322,17 +306,10 @@ cdef class __StudyModel__(__Study__):
                                        self.__set_settings__)
 
     def __get_settings__(self):
-        # return {'num_samples' : self.thisptr.getIntParameter(b'Sweep_num_samples'),
-        #         'init_method' : (<StudyModel*> self.thisptr).getInitMethod().decode()}
+        return {'name' : self.thisptr.getStringParameter(b'General_Name').decode(),
+                'description' : self.thisptr.getStringParameter(b'General_Description').decode()}
         return {}
 
     def __set_settings__(self, settings):
-        # positive_value(settings['num_samples'], 'num_samples')
-        # self.thisptr.setParameter(string(b'Sweep_num_samples'), <int> settings['num_samples'])
-
-        # (<StudyModel*> self.thisptr).setInitMethod(<string> settings['init_method'].encode())
-        pass
-        
-        
-        
-        
+        self.thisptr.setParameter(string(b'General_Name'), <string> settings['name'].encode())
+        self.thisptr.setParameter(string(b'General_Description'), <string> settings['description'].encode())

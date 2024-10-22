@@ -76,7 +76,7 @@ void StudyModel::setStringKeys()
 {
     Study::setStringKeys();
 
-    m_settingKey[Model_Name] = "Model_Name";
-	m_settingKey[Model_Description] = "Model_Description";
+    m_settingKey[Model_Name] = "Model_name";
+	m_settingKey[Model_Description] = "Model_description";
 }
 
