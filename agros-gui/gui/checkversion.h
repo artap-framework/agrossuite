@@ -25,19 +25,18 @@
 #include <QtNetwork>
 
 // check for new version
-void checkForNewVersion(bool quiet = false, bool isSolver = false);
+void checkForNewVersion(bool quiet = false);
 
 class CheckVersion : public QObject
 {
     Q_OBJECT
 public:
-    CheckVersion(QUrl url, bool isSolver = false);
+    CheckVersion(QUrl url);
     ~CheckVersion();
     void run(bool quiet);
 
 private:
     bool m_quiet;
-    bool m_solver;
     QUrl m_url;
     QNetworkAccessManager *m_manager;
     QNetworkReply *m_networkReply;

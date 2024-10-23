@@ -22,28 +22,25 @@
 #include "util/util.h"
 #include "util/system_utils.h"
 
-QString esc(const QString &str)
-{
-#if QT_VERSION < 0x050000
-    return Qt::escape(str);
-#else
-    return QString(str).toHtmlEscaped();
-#endif
-}
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
 
-static CheckVersion *checkVersion = NULL;
-void checkForNewVersion(bool quiet, bool isSolver)
+static CheckVersion *checkVersion = nullptr;
+void checkForNewVersion(bool quiet)
 {
     // download version
-    QUrl url("http://www.agros2d.org/version/log/version.php");
+    QUrl url("http://www.agros2d.org/web/version/check.php");
 
-    if (checkVersion == NULL)
-        checkVersion = new CheckVersion(url, isSolver);
+    if (checkVersion == nullptr)
+       checkVersion = new CheckVersion(url);
 
     checkVersion->run(quiet);
+
+    // CheckVersion checkVersion(url);
+    // checkVersion.run(quiet);
 }
 
-CheckVersion::CheckVersion(QUrl url, bool isSolver) : QObject(), m_url(url), m_solver(isSolver)
+CheckVersion::CheckVersion(QUrl url) : QObject(), m_url(url)
 {
     m_manager = new QNetworkAccessManager(this);
     connect(m_manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(downloadFinished(QNetworkReply *)));
@@ -59,11 +56,11 @@ void CheckVersion::run(bool quiet)
     m_quiet = quiet;
 
     QByteArray postData;
-    postData.append(QString("OS=%1&").arg(esc(SystemUtils::operatingSystem())).toLatin1());
-    postData.append(QString("PROCESSOR=%1&").arg(esc(SystemUtils::cpuType())).toLatin1());
+    postData.append(QString("OS=%1&").arg(SystemUtils::operatingSystem()).toHtmlEscaped().toLatin1());
+    postData.append(QString("PROCESSOR=%1&").arg(SystemUtils::cpuType()).toHtmlEscaped().toLatin1());
     postData.append(QString("THREADS=%1&").arg(QString::number(SystemUtils::numberOfThreads())).toLatin1());
     postData.append(QString("MEMORY=%1&").arg(QString::number(SystemUtils::totalMemorySize())).toLatin1());
-    postData.append(QString("AGROS_VERSION=%1&").arg(esc(QCoreApplication::applicationVersion())).toLatin1());
+    postData.append(QString("AGROS_VERSION=%1&").arg(QCoreApplication::applicationVersion()).toHtmlEscaped().toLatin1());
 
     QNetworkRequest req(m_url);
     req.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
@@ -79,11 +76,11 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
     if (!text.isEmpty())
     {
-        QRegularExpression rx("^(\\d{1,1}.\\d{1,1}.\\d{1,1}.\\d{8,8})");
+        QRegularExpression rx("\\d{4}\\.\\d{2}\\.\\d{2}");
         if (!QString(text).contains(rx))
         {
             // be quiet
-            qDebug() << text;
+            qWarning() << "Check version failed: " << text;
             return;
         }
 
@@ -92,28 +89,28 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
             QString str = tr("<b>New version available.</b><br/><br/>"
                              "Actual version: %1<br/>"
                              "Available version: %2<br/><br/>"
-                             "URL: <a href=\"http://www.agros2d.org/down/\">http://www.agros2d.org/down/</a>").
+                             "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
                     arg(versionString()).
                     arg(text);
 
-            // QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
+            QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
         }
         else if (!m_quiet)
         {
             QString str = tr("<b>You are using actual version.</b><br/><br/>"
                              "Actual version: %1<br/>"
                              "Available version: %2<br/><br/>"
-                             "URL: <a href=\"http://www.agros2d.org/down/\">http://www.agros2d.org/down/</a>").
+                             "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
                     arg(versionString()).
                     arg(text);
 
-            // QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
+            QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
         }
     }
 }
 
 void CheckVersion::handleError(QNetworkReply::NetworkError error)
 {
-    qDebug() << "An error ocurred (code #" << error << ").";
+    qCritical() << "An error ocurred (code #" << error << ").";
 }
 
