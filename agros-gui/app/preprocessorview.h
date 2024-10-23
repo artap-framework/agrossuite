@@ -118,6 +118,8 @@ private:
     QAction *actExportGeometryToSvg;
     QAction *actExportGeometryToPng;
     QAction *actExportGeometryToVTK;
+    QAction *actImportGeometryFromDXF;
+    QAction *actExportGeometryToDXF;
 
     QToolButton *toolButtonMaterials;
     QToolButton *toolButtonBoundaries;
@@ -155,6 +157,8 @@ private slots:
     void exportGeometryToSvg();
     void exportGeometryToPng();
     void exportGeometryToVTK();
+    void importGeometryFromDXF();
+    void exportGeometryToDXF();
 };
 
 #endif // PREPROCESSORVIEW_H

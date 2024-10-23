@@ -62,8 +62,6 @@ private slots:
     void doDocumentSave();
     void doDocumentSaveAs();
     bool doDocumentClose();
-    void doDocumentImportDXF();
-    void doDocumentExportDXF();
     void doCreatePythonFromModel();
     int checkModifiedQuestion();
 
@@ -108,8 +106,6 @@ private:
     QAction *actDocumentSave;    
     QAction *actDocumentSaveAs;
     QAction *actDocumentClose;
-    QAction *actDocumentImportDXF;
-    QAction *actDocumentExportDXF;
     QAction *actCreateFromModel;
 
     QAction *actExit;

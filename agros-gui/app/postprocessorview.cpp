@@ -447,38 +447,34 @@ void PostprocessorWidget::exportPostprocessorToPng()
     QString dir = settings.value("General/LastImageDir").toString();
 
     QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+    if (fn.isEmpty())
+        return;
 
-    if (!fn.isEmpty())
+    if (!fn.endsWith(".png"))
+        fn.append(".png");
+
+    switch (mode())
     {
-        if (!fn.endsWith(".png"))
-            fn.append(".png");
+    case PostprocessorWidgetMode_Mesh:
+        m_sceneViewMesh->saveImageToFile(fn);
+        break;
+    case PostprocessorWidgetMode_Post2D:
+        m_sceneViewPost2D->saveImageToFile(fn);
+        break;
+    case PostprocessorWidgetMode_Post3D:
+        m_sceneViewPost3D->saveImageToFile(fn);
+        break;
+    case PostprocessorWidgetMode_Chart:
+        m_sceneViewChart->grab().save(fn);
+        break;
+    default:
+        break;
+    }
 
-        switch (mode())
-        {
-        case PostprocessorWidgetMode_Mesh:
-            m_sceneViewMesh->saveImageToFile(fn);
-            break;
-        case PostprocessorWidgetMode_Post2D:
-            m_sceneViewPost2D->saveImageToFile(fn);
-            break;
-        case PostprocessorWidgetMode_Post3D:
-            m_sceneViewPost3D->saveImageToFile(fn);
-            break;
-        case PostprocessorWidgetMode_Chart:
-            m_sceneViewChart->grab().save(fn);
-            break;
-        default:
-            break;
-        }
-
-        if (!fn.isEmpty())
-        {
-            QFileInfo fileInfo(fn);
-            if (fileInfo.absoluteDir() != tempProblemDir())
-            {
-                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-            }
-        }
+    QFileInfo fileInfo(fn);
+    if (fileInfo.absoluteDir() != tempProblemDir())
+    {
+        settings.setValue("General/LastImageDir", fileInfo.absolutePath());
     }
 }
 

@@ -145,6 +145,13 @@ void PreprocessorWidget::createActions()
     actExportGeometryToVTK = new QAction(tr("Export geometry to VTK..."), this);
     connect(actExportGeometryToVTK, SIGNAL(triggered()), this, SLOT(exportGeometryToVTK()));
 
+    actImportGeometryFromDXF = new QAction(tr("Import geometry from DXF..."), this);
+    connect(actImportGeometryFromDXF, SIGNAL(triggered()), this, SLOT(importGeometryFromDXF()));
+
+    actExportGeometryToDXF = new QAction(tr("Export geometry to DXF..."), this);
+    connect(actExportGeometryToDXF, SIGNAL(triggered()), this, SLOT(exportGeometryToDXF()));
+
+
     // add to menu
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewRectangle);
     m_sceneViewProblem->menuScene()->insertAction(m_sceneViewProblem->menuScene()->actions().first(), actNewCircle);
@@ -272,9 +279,12 @@ void PreprocessorWidget::createControls()
     mnuExport->addAction(actExportGeometryToPng);
     mnuExport->addAction(actExportGeometryToSvg);
     mnuExport->addAction(actExportGeometryToVTK);
+    mnuExport->addSeparator();
+    mnuExport->addAction(actImportGeometryFromDXF);
+    mnuExport->addAction(actExportGeometryToDXF);
 
     auto *exportButton = new QToolButton();
-    exportButton->setText(tr("Export"));
+    exportButton->setText(tr("Import/Export"));
     exportButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     exportButton->setIconSize(QSize(24, 24));
     exportButton->setMenu(mnuExport);
@@ -1394,22 +1404,18 @@ void PreprocessorWidget::exportGeometryToSvg()
     QString dir = settings.value("General/LastImageDir").toString();
 
     QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("SVG files (*.svg)"));
+    if (fn.isEmpty())
+        return;
 
-    if (!fn.isEmpty())
+    if (!fn.endsWith(".svg"))
+        fn.append(".svg");
+
+    m_sceneViewProblem->saveGeometryToSvg(fn);
+
+    QFileInfo fileInfo(fn);
+    if (fileInfo.absoluteDir() != tempProblemDir())
     {
-        if (!fn.endsWith(".svg"))
-            fn.append(".svg");
-
-        m_sceneViewProblem->saveGeometryToSvg(fn);
-
-        if (!fn.isEmpty())
-        {
-            QFileInfo fileInfo(fn);
-            if (fileInfo.absoluteDir() != tempProblemDir())
-            {
-                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-            }
-        }
+        settings.setValue("General/LastImageDir", fileInfo.absolutePath());
     }
 }
 
@@ -1419,22 +1425,18 @@ void PreprocessorWidget::exportGeometryToPng()
     QString dir = settings.value("General/LastImageDir").toString();
 
     QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+    if (fn.isEmpty())
+        return;
 
-    if (!fn.isEmpty())
+    if (!fn.endsWith(".png"))
+        fn.append(".png");
+
+    m_sceneViewProblem->saveImageToFile(fn);
+
+    QFileInfo fileInfo(fn);
+    if (fileInfo.absoluteDir() != tempProblemDir())
     {
-        if (!fn.endsWith(".png"))
-            fn.append(".png");
-
-        m_sceneViewProblem->saveImageToFile(fn);
-
-        if (!fn.isEmpty())
-        {
-            QFileInfo fileInfo(fn);
-            if (fileInfo.absoluteDir() != tempProblemDir())
-            {
-                settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-            }
-        }
+        settings.setValue("General/LastImageDir", fileInfo.absolutePath());
     }
 }
 
@@ -1453,12 +1455,45 @@ void PreprocessorWidget::exportGeometryToVTK()
 
     Agros::problem()->scene()->exportVTKGeometry(fn);
 
-    if (!fn.isEmpty())
+    QFileInfo fileInfo(fn);
+    if (fileInfo.absoluteDir() != tempProblemDir())
     {
-        QFileInfo fileInfo(fn);
-        if (fileInfo.absoluteDir() != tempProblemDir())
-        {
-            settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
-        }
+        settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
     }
+}
+
+void PreprocessorWidget::importGeometryFromDXF()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastDXFDir").toString();
+
+    QString fn = QFileDialog::getOpenFileName(this, tr("Import DXF file"), dir, tr("DXF files (*.dxf)"));
+    if (fn.isEmpty())
+        return;
+
+    Agros::problem()->scene()->importFromDxf(fn);
+    m_sceneViewProblem->doZoomBestFit();
+
+    QFileInfo fileInfo(fn);
+    if (fileInfo.absoluteDir() != tempProblemDir())
+        settings.setValue("General/LastDXFDir", fileInfo.absolutePath());
+}
+
+void PreprocessorWidget::exportGeometryToDXF()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastDXFDir").toString();
+
+    QString fn = QFileDialog::getSaveFileName(this, tr("Export DXF file"), dir, tr("DXF files (*.dxf)"));
+    if (fn.isEmpty())
+        return;
+
+    QFileInfo fileInfo(fn);
+    if (!fn.endsWith(".dxf"))
+        fn.append(".dxf");
+
+    Agros::problem()->scene()->exportToDxf(fn);
+
+    if (fileInfo.absoluteDir() != tempProblemDir())
+        settings.setValue("General/LastDXFDir", fileInfo.absolutePath());
 }

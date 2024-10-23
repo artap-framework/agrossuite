@@ -166,12 +166,6 @@ void MainWindow::createActions()
     actDocumentClose->setShortcuts(QKeySequence::Close);
     connect(actDocumentClose, SIGNAL(triggered()), this, SLOT(doDocumentClose()));
 
-    actDocumentImportDXF = new QAction(tr("Import DXF..."), this);
-    connect(actDocumentImportDXF, SIGNAL(triggered()), this, SLOT(doDocumentImportDXF()));
-
-    actDocumentExportDXF = new QAction(tr("Export DXF..."), this);
-    connect(actDocumentExportDXF, SIGNAL(triggered()), this, SLOT(doDocumentExportDXF()));
-
     actCreateFromModel = new QAction(tr("&Create script from model"), this);
     actCreateFromModel->setShortcut(QKeySequence("Ctrl+M"));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
@@ -234,9 +228,6 @@ void MainWindow::createActions()
 void MainWindow::createMenus()
 {
     mnuRecentFiles = new QMenu(tr("&Recent files"), this);
-    QMenu *mnuFileImportExport = new QMenu(tr("Import/Export"), this);
-    mnuFileImportExport->addAction(actDocumentImportDXF);
-    mnuFileImportExport->addAction(actDocumentExportDXF);
 
     mnuFile = menuBar()->addMenu(tr("&File"));
     mnuFile->addAction(actDocumentNew);
@@ -247,8 +238,6 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
     mnuFile->addAction(actDeleteSolutions);
-    mnuFile->addSeparator();
-    mnuFile->addMenu(mnuFileImportExport);
     mnuFile->addSeparator();
 #ifndef Q_WS_MAC
     mnuFile->addSeparator();
@@ -528,40 +517,6 @@ bool MainWindow::doDocumentClose()
 
     exampleWidget->actExamples->trigger();
     return true;
-}
-
-void MainWindow::doDocumentImportDXF()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastDXFDir").toString();
-
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Import file"), dir, tr("DXF files (*.dxf)"));
-    if (!fileName.isEmpty())
-    {
-        Agros::problem()->scene()->importFromDxf(fileName);
-        problemWidget->sceneViewProblem()->doZoomBestFit();
-
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastDXFDir", fileInfo.absolutePath());
-    }
-}
-
-void MainWindow::doDocumentExportDXF()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastDXFDir").toString();
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export file"), dir, tr("DXF files (*.dxf)"));
-    if (!fileName.isEmpty())
-    {
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.suffix().toLower() != "dxf") fileName += ".dxf";
-        Agros::problem()->scene()->exportToDxf(fileName);
-
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastDXFDir", fileInfo.absolutePath());
-    }
 }
 
 void MainWindow::doCreatePythonFromModel()
