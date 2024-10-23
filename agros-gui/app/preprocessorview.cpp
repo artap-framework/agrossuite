@@ -136,8 +136,8 @@ void PreprocessorWidget::createActions()
     actExportGeometryToClipboard = new QAction(tr("Copy geometry to clipboard"), this);
     connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(exportGeometryToClipboard()));
 
-    actExportGeometryToPng = new QAction(tr("Export geometry to PNG..."), this);
-    connect(actExportGeometryToPng, SIGNAL(triggered()), this, SLOT(exportGeometryToPng()));
+    actExportGeometryToBitmap = new QAction(tr("Export geometry to PNG..."), this);
+    connect(actExportGeometryToBitmap, SIGNAL(triggered()), this, SLOT(exportGeometryToBitmap()));
 
     actExportGeometryToSvg = new QAction(tr("Export geometry to SVG..."), this);
     connect(actExportGeometryToSvg, SIGNAL(triggered()), this, SLOT(exportGeometryToSvg()));
@@ -276,7 +276,7 @@ void PreprocessorWidget::createControls()
     auto *mnuExport = new QMenu(this);
     mnuExport->addAction(actExportGeometryToClipboard);
     mnuExport->addSeparator();
-    mnuExport->addAction(actExportGeometryToPng);
+    mnuExport->addAction(actExportGeometryToBitmap);
     mnuExport->addAction(actExportGeometryToSvg);
     mnuExport->addAction(actExportGeometryToVTK);
     mnuExport->addSeparator();
@@ -1419,17 +1419,19 @@ void PreprocessorWidget::exportGeometryToSvg()
     }
 }
 
-void PreprocessorWidget::exportGeometryToPng()
+void PreprocessorWidget::exportGeometryToBitmap()
 {
     QSettings settings;
     QString dir = settings.value("General/LastImageDir").toString();
 
-    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+    QString selectedFilter;
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, "PNG files (*.png);;JPG files (*.jpg);;BMP files (*.bmp)", &selectedFilter);
     if (fn.isEmpty())
         return;
 
-    if (!fn.endsWith(".png"))
-        fn.append(".png");
+    QString ext = selectedFilter.last(5).first(4);
+    if (!fn.endsWith(ext))
+        fn.append(ext);
 
     m_sceneViewProblem->saveImageToFile(fn);
 

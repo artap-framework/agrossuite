@@ -116,7 +116,7 @@ private:
 
     QAction *actExportGeometryToClipboard;
     QAction *actExportGeometryToSvg;
-    QAction *actExportGeometryToPng;
+    QAction *actExportGeometryToBitmap;
     QAction *actExportGeometryToVTK;
     QAction *actImportGeometryFromDXF;
     QAction *actExportGeometryToDXF;
@@ -155,7 +155,7 @@ private slots:
 
     void exportGeometryToClipboard();
     void exportGeometryToSvg();
-    void exportGeometryToPng();
+    void exportGeometryToBitmap();
     void exportGeometryToVTK();
     void importGeometryFromDXF();
     void exportGeometryToDXF();

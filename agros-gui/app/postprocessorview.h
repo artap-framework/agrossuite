@@ -85,7 +85,7 @@ public slots:
 
     void createVideo();
     void exportPostprocessorToClipboard();
-    void exportPostprocessorToPng();
+    void exportPostprocessorToBitmap();
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
@@ -121,7 +121,7 @@ private:
     // export
     QAction *actExportVideo;
     QAction *actExportPostprocessorToClipboard;
-    QAction *actExportPostprocessorToPng;
+    QAction *actExportPostprocessorToBitmap;
 
     void createControls();
 

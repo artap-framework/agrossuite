@@ -109,17 +109,11 @@ void PostprocessorWidget::createControls()
     btnApply = new QPushButton(tr("Apply"));
     connect(btnApply, SIGNAL(clicked()), SLOT(apply()));
 
-
-    QAction *actExportGeometryToClipboard;
-    QAction *actExportGeometryToSvg;
-    QAction *actExportGeometryToPng;
-    QAction *actExportGeometryToVTK;
-
     actExportPostprocessorToClipboard = new QAction(tr("Copy view to clipboard"), this);
     connect(actExportPostprocessorToClipboard, SIGNAL(triggered()), this, SLOT(exportPostprocessorToClipboard()));
 
-    actExportPostprocessorToPng = new QAction(tr("Export view to PNG..."), this);
-    connect(actExportPostprocessorToPng, SIGNAL(triggered()), this, SLOT(exportPostprocessorToPng()));
+    actExportPostprocessorToBitmap = new QAction(tr("Export view to bitmap..."), this);
+    connect(actExportPostprocessorToBitmap, SIGNAL(triggered()), this, SLOT(exportPostprocessorToBitmap()));
 
     actExportVideo = new QAction(tr("Create video..."), this);
     connect(actExportVideo, SIGNAL(triggered()), this, SLOT(createVideo()));
@@ -156,7 +150,7 @@ void PostprocessorWidget::createControls()
     auto *mnuExport = new QMenu(this);
     mnuExport->addAction(actExportPostprocessorToClipboard);
     mnuExport->addSeparator();
-    mnuExport->addAction(actExportPostprocessorToPng);
+    mnuExport->addAction(actExportPostprocessorToBitmap);
     mnuExport->addSeparator();
     mnuExport->addAction(m_sceneViewPost2D->actExportVTKScalar);
     mnuExport->addSeparator();
@@ -441,17 +435,19 @@ void PostprocessorWidget::exportPostprocessorToClipboard()
     QApplication::clipboard()->setImage(pixmap.toImage());
 }
 
-void PostprocessorWidget::exportPostprocessorToPng()
+void PostprocessorWidget::exportPostprocessorToBitmap()
 {
     QSettings settings;
     QString dir = settings.value("General/LastImageDir").toString();
 
-    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export geometry to file"), dir, tr("PNG files (*.png)"));
+    QString selectedFilter;
+    QString fn = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Export view to file"), dir, "PNG files (*.png);;JPG files (*.jpg);;BMP files (*.bmp)", &selectedFilter);
     if (fn.isEmpty())
         return;
 
-    if (!fn.endsWith(".png"))
-        fn.append(".png");
+    QString ext = selectedFilter.last(5).first(4);
+    if (!fn.endsWith(ext))
+        fn.append(ext);
 
     switch (mode())
     {
