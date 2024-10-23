@@ -172,7 +172,8 @@ void SceneViewProblem::doSceneObjectProperties()
                 if (Agros::problem()->scene()->nodes->at(i)->isSelected())
                 {
                     SceneNodeDialog *dialog = new SceneNodeDialog(Agros::problem()->scene()->nodes->at(i), this);
-                    dialog->exec();
+                    if (dialog->exec() == QDialog::Accepted)
+                        emit sceneGeometryChanged();
                 }
             }
         }
@@ -191,7 +192,8 @@ void SceneViewProblem::doSceneObjectProperties()
                 if (Agros::problem()->scene()->faces->at(i)->isSelected())
                 {
                     SceneFaceDialog *dialog = new SceneFaceDialog(Agros::problem()->scene()->faces->at(i), this);
-                    dialog->exec();
+                    if (dialog->exec() == QDialog::Accepted)
+                        emit sceneGeometryChanged();
                 }
             }
         }
@@ -201,7 +203,8 @@ void SceneViewProblem::doSceneObjectProperties()
         if (Agros::problem()->scene()->selectedCount() > 1)
         {
             SceneLabelSelectDialog *dialog = new SceneLabelSelectDialog(Agros::problem()->scene()->labels->selected(), this);
-            dialog->exec();
+            if (dialog->exec() == QDialog::Accepted)
+                emit sceneGeometryChanged();
         }
         if (Agros::problem()->scene()->selectedCount() == 1)
         {
@@ -210,7 +213,8 @@ void SceneViewProblem::doSceneObjectProperties()
                 if (Agros::problem()->scene()->labels->at(i)->isSelected())
                 {
                     SceneLabelDialog *dialog = new SceneLabelDialog(Agros::problem()->scene()->labels->at(i), this);
-                    dialog->exec();
+                    if (dialog->exec() == QDialog::Accepted)
+                        emit sceneGeometryChanged();
                 }
             }
         }
@@ -228,7 +232,9 @@ void SceneViewProblem::doSceneEdgeSwapDirection()
                 if (Agros::problem()->scene()->faces->at(i)->isSelected())
                 {
                     Agros::problem()->scene()->faces->at(i)->swapDirection();
+
                     update();
+                    emit sceneGeometryChanged();
                 }
 }
 
