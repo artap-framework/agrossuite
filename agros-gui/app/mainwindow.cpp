@@ -69,9 +69,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // preprocessor
     problemWidget = new PreprocessorWidget(this);
+    connect(problemWidget, SIGNAL(changed()), this, SLOT(setControls()));
+
     // postprocessor
     postprocessorWidget = new PostprocessorWidget();
-
     connect(postprocessorWidget, SIGNAL(changed()), this, SLOT(setControls()));
     connect(postprocessorWidget, SIGNAL(modeChanged(PostprocessorWidgetMode)), this, SLOT(setControls()));
 
@@ -97,12 +98,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // preprocessor
     connect(problemWidget->sceneViewProblem(), SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), problemWidget, SLOT(loadTooltip(SceneGeometryMode)));
 
-    problemWidget->sceneViewProblem()->clear();
-
     Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
-    problemWidget->sceneViewProblem()->doZoomBestFit();
 
     // set recent files
     setRecentFiles();
@@ -119,7 +117,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
 
+    refresh();
     setControls();
+
+    problemWidget->sceneViewProblem()->doZoomBestFit();
 
     doApplyStyle();
 }
@@ -232,8 +233,6 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
-    menuBar()->clear();
-
     mnuRecentFiles = new QMenu(tr("&Recent files"), this);
     QMenu *mnuFileImportExport = new QMenu(tr("Import/Export"), this);
     mnuFileImportExport->addAction(actDocumentImportDXF);
@@ -250,7 +249,6 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDeleteSolutions);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
-    // mnuFile->addMenu(mnuServer);
     mnuFile->addSeparator();
 #ifndef Q_WS_MAC
     mnuFile->addSeparator();
@@ -276,6 +274,13 @@ void MainWindow::createMenus()
     mnuHelp->addSeparator();
     mnuHelp->addAction(actShortcuts);
     mnuHelp->addAction(actAbout);   // will be added to "Agros" MacOSX menu
+
+    // menu bar
+    menuBar()->clear();
+    menuBar()->addMenu(mnuFile);
+    menuBar()->addMenu(mnuEdit);
+    menuBar()->addMenu(mnuTools);
+    menuBar()->addMenu(mnuHelp);
 }
 
 void MainWindow::createMain()
@@ -351,7 +356,7 @@ void MainWindow::setRecentFiles()
         if (!QFile::exists(fileInfo.absoluteFilePath()))
             continue;
 
-        QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+        auto *actMenuRecentItem = new QAction(recentFiles[i], this);
         actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
         mnuRecentFiles->addAction(actMenuRecentItem);
     }
@@ -393,6 +398,9 @@ void MainWindow::doDocumentNew()
     // clear preprocessor
     Agros::problem()->clearFieldsAndConfig();
 
+    refresh();
+    setControls();
+
     problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
     problemWidget->sceneViewProblem()->doZoomBestFit();
 }
@@ -406,21 +414,17 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             return;
     }
 
-    QSettings settings;
-    QString fileNameDocument;
-
-    if (fileName.isEmpty())
+    QString fileNameDocument = fileName;
+    if (fileNameDocument.isEmpty())
     {
+        QSettings settings;
         QString dir = settings.value("General/LastProblemDir", "data").toString();
 
         fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("agros files (*.ags *.a2d);;agros data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
     }
-    else
-    {
-        fileNameDocument = fileName;
-    }
 
-    if (fileNameDocument.isEmpty()) return;
+    if (fileNameDocument.isEmpty())
+        return;
 
     if (QFile::exists(fileNameDocument))
     {
@@ -431,6 +435,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
             setRecentFiles();
 
+            refresh();
             problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
             problemWidget->sceneViewProblem()->doZoomBestFit();
 
@@ -478,9 +483,8 @@ void MainWindow::doDeleteSolutions()
     // clear all computations
     Agros::clearComputations();
 
-    optiLab->optiLabWidget()->refresh();
-    problemWidget->sceneViewProblem()->refresh();
     setControls();
+    refresh();
 }
 
 void MainWindow::doDocumentSaveAs()
@@ -517,6 +521,10 @@ bool MainWindow::doDocumentClose()
 
     // clear problem
     Agros::problem()->clearFieldsAndConfig();
+
+    refresh();
+    setControls();
+    problemWidget->sceneViewProblem()->doZoomBestFit();
 
     exampleWidget->actExamples->trigger();
     return true;
@@ -645,7 +653,7 @@ void MainWindow::doOptions()
     ConfigComputerDialog configDialog(this);
     if (configDialog.exec())
     {
-        problemWidget->sceneViewProblem()->refresh();
+        refresh();
         setControls();
     }
 }
@@ -661,9 +669,16 @@ void MainWindow::doShowLog()
     showLogViewDialog();
 }
 
-void MainWindow::clear()
+void MainWindow::refresh()
 {
     setControls();
+
+    // update preprocessor
+    problemWidget->refresh();
+    // update postprocessor
+    postprocessorWidget->refresh();
+    // update optilab
+    optiLab->refresh();
 }
 
 void MainWindow::doApplyStyle()
@@ -684,7 +699,6 @@ void MainWindow::setEnabledControls(bool state)
 void MainWindow::setControls()
 {
     setUpdatesEnabled(false);
-    setEnabled(true);
 
     actDeleteSolutions->setEnabled(!Agros::computations().isEmpty());
 
@@ -696,8 +710,6 @@ void MainWindow::setControls()
     optiLab->optiLabWidget()->actRunStudy->setEnabled(optiLab->actSceneModeOptiLab->isChecked());
     optiLab->optiLabWidget()->actRunStudy->setVisible(optiLab->actSceneModeOptiLab->isChecked());
 
-    postprocessorWidget->refresh();
-
     if (exampleWidget->actExamples->isChecked())
     {
         tabControlsLayout->setCurrentWidget(exampleWidget);
@@ -705,7 +717,6 @@ void MainWindow::setControls()
     else if (problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked())
     {
         tabControlsLayout->setCurrentWidget(problemWidget);
-        // problemWidget->sceneViewProblem()->actSceneZoomRegion = actSceneZoomRegion;
     }
     else if (postprocessorWidget->actSceneModeResults->isChecked())
     {
@@ -716,28 +727,21 @@ void MainWindow::setControls()
         tabControlsLayout->setCurrentWidget(optiLab);
     }
 
-    // menu bar
-    menuBar()->clear();
-    menuBar()->addMenu(mnuFile);
-    menuBar()->addMenu(mnuEdit);
-    menuBar()->addMenu(mnuTools);
-    menuBar()->addMenu(mnuHelp);
-
     // window title
-    setWindowTitle(QString("Agros - %1").arg(Agros::problem()->archiveFileName()));
+    setWindowTitle(QString("agros - %1%2").arg(Agros::problem()->archiveFileName()).arg(Agros::problem()->hasChanged() ? " *" : ""));
 
     // update preprocessor
-    problemWidget->refresh();
+    // problemWidget->refresh();
     // update postprocessor
-    postprocessorWidget->refresh();
+    // postprocessorWidget->refresh();
     // update optilab
-    optiLab->refresh();
+    // optiLab->refresh();
 
     if (Agros::configComputer()->value(Config::Config_ReloadStyle).toBool())
-        timerApplyStyle->start(1000);
+        if (!timerApplyStyle->isActive())
+            timerApplyStyle->start(1000);
     else
         timerApplyStyle->stop();
-
 
     setUpdatesEnabled(true);
 }

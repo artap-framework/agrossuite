@@ -284,6 +284,8 @@ void SceneViewProblem::doDeleteSelected()
 
     problem()->scene()->invalidate();
     update();
+
+    emit sceneGeometryChanged();
 }
 
 void SceneViewProblem::doClearSelected()
@@ -823,7 +825,8 @@ void SceneViewProblem::mousePressEvent(QMouseEvent *event)
     }
 
     refreshActions();
-    emit this->sceneGeometryChanged();
+
+    // emit sceneGeometryChanged();
     SceneViewCommon2D::mousePressEvent(event);
 }
 
@@ -853,6 +856,7 @@ void SceneViewProblem::mouseReleaseEvent(QMouseEvent *event)
 
     refreshActions();
 
+    emit sceneGeometryChanged();
     SceneViewCommon2D::mouseReleaseEvent(event);
 }
 
@@ -866,6 +870,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
         {
             // select scene objects
             Agros::problem()->scene()->selectNone();
+
             if (m_sceneMode == SceneGeometryMode_OperateOnNodes)
             {
                 // select the closest node
@@ -879,6 +884,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
+                        emit sceneGeometryChanged();
                     }
                 }
             }
@@ -895,6 +901,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
+                        emit sceneGeometryChanged();
                     }
                 }
             }
@@ -911,10 +918,12 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
+                        emit sceneGeometryChanged();
                     }
                 }
             }
-            Agros::problem()->scene()->selectNone();
+
+            // Agros::problem()->scene()->selectNone();
             update();
         }
     }
@@ -1581,7 +1590,7 @@ bool SceneViewProblem::moveSelectedEdges(SceneTransformMode mode, Point point, d
 
     for(int i = 0; i < newEdgeEndPoints.size(); i++)
     {
-        SceneFace* sceneEdge = Agros::problem()->scene()->getFace(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
+        auto *sceneEdge = Agros::problem()->scene()->getFace(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
         if (sceneEdge)
             sceneEdge->setSelected(true);
     }
@@ -1623,9 +1632,8 @@ bool SceneViewProblem::moveSelectedLabels(SceneTransformMode mode, Point point, 
             {
                 newPoints.push_back(newPoint);
                 newAreas.push_back(label->area());
-                if(withMarkers)
+                if (withMarkers)
                     newMarkers.append(label->markersKeys());
-
             }
         }
         else

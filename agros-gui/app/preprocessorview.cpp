@@ -57,10 +57,10 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
 
     // context menu
     mnuPreprocessor = new QMenu(this);
-    mnuFields = new QMenu(tr("New fields"), this);
+    mnuFields = new QMenu(tr("New field"), this);
     mnuMaterials = new QMenu(tr("New materials"), this);
     mnuBoundaries = new QMenu(tr("New boundaries"), this);
-    connect(this, SIGNAL(refreshGUI()), m_sceneViewProblem, SLOT(refresh()));
+    connect(this, SIGNAL(changed()), m_sceneViewProblem, SLOT(refresh()));
 
     // boundary conditions, materials and geometry information
     createControls();
@@ -178,19 +178,19 @@ void PreprocessorWidget::createActions()
     {
         it.next();
 
-        StringAction* actionField = new StringAction(this, it.key(), it.value());
+        auto *actionField = new StringAction(this, it.key(), it.value());
         actionField->setIcon(icon("fields/" + it.key()));
         actionField->setIconVisibleInMenu(true);
         connect(actionField, SIGNAL(triggered(QString)), this, SLOT(doNewField(QString)));
         actNewFields[it.key()] = actionField;
 
-        StringAction* actionBoundary = new StringAction(this, it.key(), it.value());
+        auto *actionBoundary = new StringAction(this, it.key(), it.value());
         actionBoundary->setIcon(icon("fields/" + it.key()));
         actionBoundary->setIconVisibleInMenu(true);
         connect(actionBoundary, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
         actNewBoundaries[it.key()] = actionBoundary;
 
-        StringAction* actionMaterial = new StringAction(this, it.key(), it.value());
+        auto *actionMaterial = new StringAction(this, it.key(), it.value());
         actionMaterial->setIcon(icon("fields/" + it.key()));
         actionMaterial->setIconVisibleInMenu(true);
         connect(actionMaterial, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
@@ -314,7 +314,7 @@ void PreprocessorWidget::createControls()
     auto *toolButtonFields = new QToolButton();
     toolButtonFields->setText(tr("Field"));
     toolButtonFields->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolButtonFields->setToolTip(tr("New fields"));
+    toolButtonFields->setToolTip(tr("New field"));
     toolButtonFields->setMenu(mnuFields);
     toolButtonFields->setAutoRaise(true);
     toolButtonFields->setIcon(icon("menu_field"));
@@ -549,7 +549,7 @@ void PreprocessorWidget::refresh()
 
     // functions
     ProblemFunctions *functions = Agros::problem()->config()->functions();
-    foreach(auto i, functionNode->takeChildren()) delete i;
+    foreach (auto i, functionNode->takeChildren()) delete i;
     if (functions->items().count() > 0)
     {
         foreach (ProblemFunction *function, functions->items())
@@ -563,7 +563,7 @@ void PreprocessorWidget::refresh()
     }
 
     // field and markers
-    foreach(auto i, fieldsNode->takeChildren()) delete i;
+    foreach (auto i, fieldsNode->takeChildren()) delete i;
     foreach (FieldInfo *fieldInfo, Agros::problem()->fieldInfos())
     {
         // field
@@ -622,7 +622,7 @@ void PreprocessorWidget::refresh()
         }
     }
 
-    foreach(auto i, nodesNode->takeChildren()) delete i;
+    foreach (auto i, nodesNode->takeChildren()) delete i;
     int inode = 0;
     foreach (SceneNode *node, Agros::problem()->scene()->nodes->items())
     {
@@ -649,7 +649,7 @@ void PreprocessorWidget::refresh()
     }
 
     int ilabel = 0;
-    foreach(auto i, labelsNode->takeChildren()) delete i;
+    foreach (auto i, labelsNode->takeChildren()) delete i;
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         auto *item = new QTreeWidgetItem(labelsNode);
@@ -682,6 +682,9 @@ void PreprocessorWidget::refresh()
 
     // create menu
     createMenu();
+
+    // refresh view
+    m_sceneViewProblem->refresh();
 }
 
 void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
@@ -833,7 +836,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
         }
 
-        emit refreshGUI();
+        emit changed();
     }
 }
 
@@ -956,7 +959,7 @@ void PreprocessorWidget::doProperties()
             }
         }
 
-        emit refreshGUI();
+        emit changed();
     }
 }
 
@@ -1077,8 +1080,7 @@ void PreprocessorWidget::doDelete()
         }
 
         refresh();
-
-        emit refreshGUI();
+        emit changed();
     }
 }
 
@@ -1088,7 +1090,7 @@ void PreprocessorWidget::doNewParameter()
     if (dialog.exec() == QDialog::Accepted)
     {
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
 }
 
@@ -1102,7 +1104,7 @@ void PreprocessorWidget::doNewFunctionAnalytic()
         Agros::problem()->config()->functions()->add(function);
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1133,7 +1135,7 @@ void PreprocessorWidget::doNewField(const QString &field)
         Agros::problem()->addField(fieldInfo);
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1161,7 +1163,7 @@ void PreprocessorWidget::doNewNode(const Point &point)
             undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1180,7 +1182,7 @@ void PreprocessorWidget::doNewEdge()
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit refreshGUI();
+        emit changed();
 
         if (edgeAdded == edge)
             undoStack()->push(getAddCommand(edge));
@@ -1205,7 +1207,7 @@ void PreprocessorWidget::doNewLabel(const Point &point)
             undoStack()->push(getAddCommand(label));
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1260,7 +1262,7 @@ void PreprocessorWidget::doNewRectangle()
             undoStack()->push(getAddCommand(edgeL));
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1318,7 +1320,7 @@ void PreprocessorWidget::doNewCircle()
             undoStack()->push(getAddCommand(edgeL));
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1347,7 +1349,7 @@ void PreprocessorWidget::doNewBoundary(const QString &field)
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {
@@ -1369,7 +1371,7 @@ void PreprocessorWidget::doNewMaterial(const QString &field)
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit refreshGUI();
+        emit changed();
     }
     else
     {

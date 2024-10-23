@@ -85,7 +85,7 @@ private slots:
     void doApplyStyle();
     void setEnabledControls(bool state);
     void setControls();
-    void clear();
+    void refresh();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

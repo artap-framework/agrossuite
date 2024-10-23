@@ -33,7 +33,7 @@ class PreprocessorWidget : public QWidget
     Q_OBJECT
 
 signals:
-    void refreshGUI();
+    void changed();
 
 public slots:    
     void refresh();
