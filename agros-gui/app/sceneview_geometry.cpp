@@ -183,7 +183,8 @@ void SceneViewProblem::doSceneObjectProperties()
         if (Agros::problem()->scene()->selectedCount() > 1)
         {
             SceneEdgeSelectDialog *dialog = new SceneEdgeSelectDialog(Agros::problem()->scene()->faces->selected(), this);
-            dialog->exec();
+            if (dialog->exec() == QDialog::Accepted)
+                emit sceneGeometryChanged();
         }
         if (Agros::problem()->scene()->selectedCount() == 1)
         {
