@@ -999,15 +999,15 @@ void SceneViewProblem::paintRulersHintsEdges()
 {
     loadProjection2d(true);
 
-    Point cornerMin = transform(Point(0, 0));
-    Point cornerMax = transform(Point(width(), height()));
+    const Point cornerMin = transform(Point(0, 0));
+    const Point cornerMax = transform(Point(width(), height()));
 
     glColor3d(0.0, 0.53, 0.0);
 
-    Point p = transform(m_lastPos.x(), m_lastPos.y());
-    Point rulersAreaScreen = rulersAreaSize();
-    Point rulersArea(2.0/width()*rulersAreaScreen.x/m_scale2d*aspect(),
-                     2.0/height()*rulersAreaScreen.y/m_scale2d);
+    const Point p = transform(m_lastPos.x(), m_lastPos.y());
+    const Point rulersAreaScreen = rulersAreaSize();
+    const Point rulersArea(2.0/width()*rulersAreaScreen.x/m_scale2d*aspect(),
+                           2.0/height()*rulersAreaScreen.y/m_scale2d);
 
     double tickSize = rulersArea.y / 3.0;
 
@@ -1054,9 +1054,10 @@ void SceneViewProblem::paintRulersHintsEdges()
         glScaled(2.0 / width(), 2.0 / height(), 1.0);
         glTranslated(- width() / 2.0, -height() / 2.0, 0.0);
 
-        Point scr = untransform(snapPoint.x, snapPoint.y);
-        printRulersAt(scr.x + 1.5*m_labelRulersSize,
-                      scr.y + 1.5*m_labelRulersSize * 0.7,
+        const int labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
+        const Point scr = untransform(snapPoint.x, snapPoint.y);
+        printRulersAt(scr.x + 1.5*labelRulersSize,
+                      scr.y + 1.5*labelRulersSize * 0.7,
                       QString("%1, %2").arg(snapPoint.x).arg(snapPoint.y));
     }
 }
@@ -1085,7 +1086,10 @@ void SceneViewProblem::paintGL()
     }
 
     // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
+    {
+        paintAxes();
+    }
 
     paintSelectRegion();
     paintZoomRegion();
@@ -1096,6 +1100,7 @@ void SceneViewProblem::paintGL()
 void SceneViewProblem::paintGeometry()
 {
     loadProjection2d(true);
+    const int labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
 
     // edges
     foreach (SceneFace *edge, Agros::problem()->scene()->faces->items())
@@ -1370,9 +1375,8 @@ void SceneViewProblem::paintGeometry()
                 str = str.left(str.length() - 2);
 
             Point scr = untransform(label->point().x, label->point().y);
-
-            printRulersAt(scr.x - 1.5*m_labelRulersSize * str.length() / 2.0,
-                          scr.y - 1.5*m_labelRulersSize * 1.2, str);
+            printRulersAt(scr.x - 1.5*labelRulersSize * str.length() / 2.0,
+                          scr.y - 1.5*labelRulersSize * 1.2, str);
         }
     }
 }

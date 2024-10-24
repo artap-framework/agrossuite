@@ -223,16 +223,18 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon* sceneView
     glTranslated(-sceneView->width() / 2.0, -sceneView->height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = 9.5 * sceneView->m_labelPostSize;
-    int textHeight = 1.8 * sceneView->m_labelPostSize;
-    Point scaleSize = Point(45.0 + textWidth, 20 * textHeight); // height() - 20.0
-    Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
-    double scaleLeft = (sceneView->width() - (45.0 + textWidth));
-    int numTicks = 11;
+    const int labelPostSize = Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt();
+    const int textWidth = 9.5 * labelPostSize;
+    const int textHeight = 1.8 * labelPostSize;
+    const Point scaleSize = Point(45.0 + textWidth, 20 * textHeight); // height() - 20.0
+    const Point scaleBorder = Point(10.0, (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
+    const double scaleLeft = (sceneView->width() - (45.0 + textWidth));
+    const int numTicks = 11;
 
     // blended rectangle
-    sceneView->drawBlend(Point(scaleLeft, scaleBorder.y), Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y),
-        0.91, 0.91, 0.91);
+    sceneView->drawBlend(
+        Point(scaleLeft, scaleBorder.y),
+        Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y), 0.91, 0.91, 0.91);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -303,7 +305,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon* sceneView
         if (fabs(value) < EPS_ZERO) value = 0.0;
         double tickY = (scaleSize.y - 60.0) / (numTicks - 1.0);
 
-        sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? 1.1*sceneView->m_labelPostSize : 0.0),
+        sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? 1.1*labelPostSize : 0.0),
                                scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
                                QString::number(value, 'e', SCALARDECIMALPLACE));
     }
@@ -316,7 +318,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon* sceneView
             arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
             arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
 
-    sceneView->printPostAt(scaleLeft + scaleSize.x / 2.0 - 1.5*sceneView->m_labelPostSize,
+    sceneView->printPostAt(scaleLeft + scaleSize.x / 2.0 - 1.5*labelPostSize,
                            scaleBorder.y + scaleSize.y - 20.0,
                            str);
 }

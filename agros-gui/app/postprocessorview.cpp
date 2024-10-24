@@ -296,6 +296,58 @@ void PostprocessorWidget::refresh()
         }
     }
 
+    mnuZoom->clear();
+    switch (m_postMode)
+    {
+    case PostprocessorWidgetMode_Mesh:
+        {
+            tabControlWidgetLayout->setCurrentWidget(m_meshWidget);
+            tabViewLayout->setCurrentWidget(m_sceneViewMesh);
+            m_sceneViewMesh->refresh();
+
+            zoomButton->setEnabled(true);
+            mnuZoom->addAction(m_sceneViewMesh->actSceneZoomBestFit);
+            mnuZoom->addAction(m_sceneViewMesh->actSceneZoomIn);
+            mnuZoom->addAction(m_sceneViewMesh->actSceneZoomOut);
+        }
+        break;
+    case PostprocessorWidgetMode_Post2D:
+        {
+            tabControlWidgetLayout->setCurrentWidget(m_post2DWidget);
+            tabViewLayout->setCurrentWidget(m_sceneViewPost2D);
+            m_sceneViewPost2D->refresh();
+
+            zoomButton->setEnabled(true);
+            mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomBestFit);
+            mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomIn);
+            mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomOut);
+        }
+        break;
+
+    case PostprocessorWidgetMode_Post3D:
+        {
+            tabControlWidgetLayout->setCurrentWidget(m_post3DWidget);
+            tabViewLayout->setCurrentWidget(m_sceneViewPost3D);
+            m_sceneViewPost3D->refresh();
+
+            zoomButton->setEnabled(true);
+            mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomBestFit);
+            mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomIn);
+            mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomOut);
+        }
+        break;
+    case PostprocessorWidgetMode_Chart:
+        {
+            tabControlWidgetLayout->setCurrentWidget(m_chartWidget);
+            tabViewLayout->setCurrentWidget(m_sceneViewChart);
+
+            zoomButton->setEnabled(false);
+        }
+        break;
+    default:
+        break;
+    }
+
     if (m_currentComputation.isNull())
         return;
 
@@ -303,58 +355,6 @@ void PostprocessorWidget::refresh()
     m_post2DWidget->load();
     m_post3DWidget->load();
     m_chartWidget->load();
-
-    mnuZoom->clear();
-    switch (m_postMode)
-    {
-    case PostprocessorWidgetMode_Mesh:
-    {
-        tabControlWidgetLayout->setCurrentWidget(m_meshWidget);
-        tabViewLayout->setCurrentWidget(m_sceneViewMesh);
-        m_sceneViewMesh->refresh();
-
-        zoomButton->setEnabled(true);
-        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomBestFit);
-        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomIn);
-        mnuZoom->addAction(m_sceneViewMesh->actSceneZoomOut);
-    }
-    break;
-    case PostprocessorWidgetMode_Post2D:
-    {
-        tabControlWidgetLayout->setCurrentWidget(m_post2DWidget);
-        tabViewLayout->setCurrentWidget(m_sceneViewPost2D);
-        m_sceneViewPost2D->refresh();
-
-        zoomButton->setEnabled(true);
-        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomBestFit);
-        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomIn);
-        mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomOut);
-    }
-    break;
-
-    case PostprocessorWidgetMode_Post3D:
-    {
-        tabControlWidgetLayout->setCurrentWidget(m_post3DWidget);
-        tabViewLayout->setCurrentWidget(m_sceneViewPost3D);
-        m_sceneViewPost3D->refresh();
-
-        zoomButton->setEnabled(true);
-        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomBestFit);
-        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomIn);
-        mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomOut);
-    }
-    break;
-    case PostprocessorWidgetMode_Chart:
-    {
-        tabControlWidgetLayout->setCurrentWidget(m_chartWidget);
-        tabViewLayout->setCurrentWidget(m_sceneViewChart);
-
-        zoomButton->setEnabled(false);
-    }
-    break;
-    default:
-        break;
-    }
 
     if (computationChanged)
         apply();
@@ -491,7 +491,7 @@ void PostprocessorWidget::doPostModeSet(QAction *action)
         m_postMode = PostprocessorWidgetMode_Post2D;
     }
 
-    update();
+    refresh();
 
     emit modeChanged(m_postMode);
 }

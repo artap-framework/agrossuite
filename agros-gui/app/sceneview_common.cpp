@@ -81,8 +81,6 @@ const GLint viewport[4], GLdouble * winx, GLdouble * winy, GLdouble * winz)
 SceneViewCommon::SceneViewCommon(QWidget *parent)
     : QOpenGLWidget(parent),
       actSceneZoomRegion(NULL),
-      m_labelRulersSize(0),
-      m_labelPostSize(0),
       m_lastPos(QPoint()),
       m_zoomRegion(false),
       m_zoomRegionPos(QPointF()),
@@ -151,15 +149,13 @@ void SceneViewCommon::setupViewport(int w, int h)
 }
 
 void SceneViewCommon::printRulersAt(int penX, int penY, const QString &text)
-{    
-    m_labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
-    printAt(penX, penY, text, m_labelRulersSize);
+{
+    printAt(penX, penY, text, Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt());
 }
 
 void SceneViewCommon::printPostAt(int penX, int penY, const QString &text)
 {
-    m_labelPostSize = Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt();
-    printAt(penX, penY, text, m_labelPostSize);
+    printAt(penX, penY, text, Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt());
 }
 
 QPixmap SceneViewCommon::renderScenePixmap(int w, int h, bool useContext)

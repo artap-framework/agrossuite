@@ -49,13 +49,12 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 
-    void setZoom(double power);
+    void setZoom(double power) override;
 
     virtual void paintGL() = 0;
 
     void paintZoomRegion();
 
-    void paintBackgroundPixmap(); // pixmap background
     void paintGrid(); // paint grid
     void paintAxes();  // paint axes
     void paintRulers(); // paint rulers
@@ -67,7 +66,7 @@ protected:
     Point untransform(const Point &point) const;
 
     // rulers
-    Point rulersAreaSize();
+    Point rulersAreaSize() const;
 };
 
 #endif // SCENEVIEWCOMMON2D_H

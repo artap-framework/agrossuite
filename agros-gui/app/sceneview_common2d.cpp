@@ -195,8 +195,9 @@ void SceneViewCommon2D::paintAxes()
 
     glDisable(GL_POLYGON_OFFSET_FILL);
 
-    printRulersAt(border.x + 38, border.y + 1 - 0.5*m_labelRulersSize, problem()->config()->labelX());
-    printRulersAt(border.x + 1 - 0.5*m_labelRulersSize, border.y + 38, problem()->config()->labelY());
+    const int labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
+    printRulersAt(border.x + 38, border.y + 1 - 0.5*labelRulersSize, problem()->config()->labelX());
+    printRulersAt(border.x + 1 - 0.5*labelRulersSize, border.y + 38, problem()->config()->labelY());
 }
 
 void SceneViewCommon2D::paintRulers()
@@ -209,6 +210,7 @@ void SceneViewCommon2D::paintRulers()
     Point cornerMin = transform(Point(0, 0));
     Point cornerMax = transform(Point(width(), height()));
 
+    const int labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
     double gridStep = problem()->config()->value(ProblemConfig::GridStep).toDouble();
     if (gridStep < EPS_ZERO)
         return;
@@ -335,7 +337,7 @@ void SceneViewCommon2D::paintRulers()
                     text = QString::number(i*gridStep, 'f', 6);
 
                 Point scr = untransform(i*gridStep, cornerMax.y);
-                printRulersAt(scr.x + 1.2*m_labelRulersSize,
+                printRulersAt(scr.x + 1.2*labelRulersSize,
                               scr.y + 2, QString(text + "        ").left(9));
             }
         }
@@ -355,7 +357,7 @@ void SceneViewCommon2D::paintRulers()
                     text = QString::number(i*gridStep, 'f', 7);
 
                 Point scr = untransform(cornerMin.x + rulersArea.x / 20.0, i*gridStep);
-                printRulersAt(scr.x, scr.y - 1.6*m_labelRulersSize,
+                printRulersAt(scr.x, scr.y - 1.6*labelRulersSize,
                               QString(((i >= 0) ? " " : "") + text + "        ").left(9));
             }
         }
@@ -521,10 +523,10 @@ void SceneViewCommon2D::keyReleaseEvent(QKeyEvent *event)
 }
 
 // rulers
-Point SceneViewCommon2D::rulersAreaSize()
+Point SceneViewCommon2D::rulersAreaSize() const
 {
-    return Point(0.8*m_labelRulersSize * 11,
-                 1.0*m_labelRulersSize * 3);
+    const int labelRulersSize = Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt();
+    return Point(0.8*labelRulersSize * 11, 1.0*labelRulersSize * 3);
 }
 
 void SceneViewCommon2D::setZoom(double power)

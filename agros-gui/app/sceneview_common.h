@@ -100,9 +100,6 @@ protected:
 
     void printAt(int penX, int penY, const QString &text, int fontSize);
 
-    int m_labelRulersSize;
-    int m_labelPostSize;
-
     void printRulersAt(int penX, int penY, const QString &text);
     void printPostAt(int penX, int penY, const QString &text);
 

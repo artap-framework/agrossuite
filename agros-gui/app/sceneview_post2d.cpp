@@ -207,6 +207,19 @@ void SceneViewPost2D::paintGL()
     // geometry
     paintGeometry();
 
+    // rulers
+    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
+    {
+        paintRulers();
+        paintRulersHints();
+    }
+
+    // axes
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
+    {
+        paintAxes();
+    }
+
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
     {
         if (actPostprocessorModeLocalPointValue->isChecked()) paintPostprocessorSelectedPoint();
@@ -221,31 +234,9 @@ void SceneViewPost2D::paintGL()
                                      m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
 
-    // rulers
-    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
-    {
-        paintRulers();
-        paintRulersHints();
-    }
 
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 
     paintZoomRegion();
-
-    if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
-    {
-        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
-        {
-            Module::LocalVariable localVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
-                                                                                                                                            m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString());
-            QString text = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString() != "" ? localVariable.name() : "";
-            if ((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
-                text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
-
-            // emit labelCenter(text);
-        }
-    }
 }
 
 void SceneViewPost2D::resizeGL(int w, int h)
@@ -960,7 +951,6 @@ void SceneViewPost2D::refresh()
     clearGLLists();
     setControls();
 
-    // if (!m_postprocessorWidget->currentComputation().isNull() && m_postprocessorWidget->currentComputation()->isSolved())
     SceneViewCommon::refresh();
 }
 

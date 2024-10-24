@@ -95,9 +95,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), problemWidget->sceneViewProblem(), SLOT(refresh()));
 
-    // preprocessor
-    connect(problemWidget->sceneViewProblem(), SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), problemWidget, SLOT(loadTooltip(SceneGeometryMode)));
-
     Agros::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();

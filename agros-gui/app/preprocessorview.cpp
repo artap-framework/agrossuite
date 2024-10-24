@@ -69,6 +69,8 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     connect(trvWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 
+    connect(m_sceneViewProblem, SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), this, SLOT(loadTooltip(SceneGeometryMode)));
+
     doItemChanged(NULL, NULL);
 }
 
@@ -136,7 +138,7 @@ void PreprocessorWidget::createActions()
     actExportGeometryToClipboard = new QAction(tr("Copy geometry to clipboard"), this);
     connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(exportGeometryToClipboard()));
 
-    actExportGeometryToBitmap = new QAction(tr("Export geometry to PNG..."), this);
+    actExportGeometryToBitmap = new QAction(tr("Export geometry to bitmap..."), this);
     connect(actExportGeometryToBitmap, SIGNAL(triggered()), this, SLOT(exportGeometryToBitmap()));
 
     actExportGeometryToSvg = new QAction(tr("Export geometry to SVG..."), this);
