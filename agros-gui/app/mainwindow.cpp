@@ -462,17 +462,6 @@ void MainWindow::doDocumentSave()
     }
 }
 
-void MainWindow::doDeleteSolutions()
-{
-    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
-
-    // clear all computations
-    Agros::clearComputations();
-
-    setControls();
-    refresh();
-}
-
 void MainWindow::doDocumentSaveAs()
 {
     QSettings settings;
@@ -488,6 +477,8 @@ void MainWindow::doDocumentSaveAs()
         {
             Agros::problem()->writeProblemToFile(fileName, false);
             setRecentFiles();
+
+            setControls();
         }
         catch (AgrosException &e)
         {
@@ -514,6 +505,17 @@ bool MainWindow::doDocumentClose()
 
     exampleWidget->actExamples->trigger();
     return true;
+}
+
+void MainWindow::doDeleteSolutions()
+{
+    problemWidget->sceneViewProblem()->actSceneModeProblem->trigger();
+
+    // clear all computations
+    Agros::clearComputations();
+
+    setControls();
+    refresh();
 }
 
 void MainWindow::doCreatePythonFromModel()
