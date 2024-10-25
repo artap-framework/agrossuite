@@ -450,6 +450,8 @@ void MainWindow::doDocumentSave()
         {
             // write to archive
             Agros::problem()->writeProblemToFile(Agros::problem()->archiveFileName(), false);
+
+            setControls();
         }
         catch (AgrosException &e)
         {
