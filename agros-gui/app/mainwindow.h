@@ -67,7 +67,7 @@ private slots:
 
     void doSolveCurrentComputation();
     void doSolveNewComputation();
-    void doSolveComputation(Computation *computation);
+    void doSolveComputation(const QSharedPointer<Computation>& computation);
     void doSolveFinished();
     void doDeleteSolutions();
 

@@ -108,8 +108,8 @@ class LogSolverDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogSolverDialog(Computation *computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
-    ~LogSolverDialog();
+    LogSolverDialog(const QSharedPointer<Computation>& computation, const QString &title = tr("Progress..."), ConnectLog * connectLog = 0);
+    ~LogSolverDialog() override;
 
 public slots:
     void closeLog();
@@ -151,7 +151,7 @@ private:
     ConnectLog *m_connectLog;
 
     // computation
-    Computation *m_computation;
+    QSharedPointer<Computation> m_computation;
 
     void createControls();
 

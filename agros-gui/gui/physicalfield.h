@@ -29,6 +29,7 @@ class PhysicalFieldWidget : public QWidget
     Q_OBJECT
 
 signals:
+    void computationChanged();
     void fieldChanged();
 
 public:

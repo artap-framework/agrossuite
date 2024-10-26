@@ -209,7 +209,7 @@ void MainWindow::createActions()
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
 
     // solve from optilab
-    connect(optiLab, SIGNAL(doSolveCurrentComputation(Computation *)), this, SLOT(doSolveComputation(Computation *)));
+    connect(optiLab, &OptiLab::solveCurrentComputation, this, &MainWindow::doSolveComputation);
 
     actSceneModeGroup = new QActionGroup(this);
     actSceneModeGroup->addAction(exampleWidget->actExamples);
@@ -561,17 +561,17 @@ void MainWindow::doSolveCurrentComputation()
 {
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(false);
-    doSolveComputation(computation.data());
+    doSolveComputation(computation);
 }
 
 void MainWindow::doSolveNewComputation()
 {
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
-    doSolveComputation(computation.data());
+    doSolveComputation(computation);
 }
 
-void MainWindow::doSolveComputation(Computation *computation)
+void MainWindow::doSolveComputation(const QSharedPointer<Computation>& computation)
 {
     logSolverDialog = new LogSolverDialog(computation, tr("Solver"), m_connectLog);
     logSolverDialog->show();

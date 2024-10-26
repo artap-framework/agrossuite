@@ -28,7 +28,7 @@
 
 #include "sceneview_common.h"
 
-VideoDialog::VideoDialog(SceneViewCommon *sceneView, Computation *computation, QWidget *parent)
+VideoDialog::VideoDialog(SceneViewCommon *sceneView, QSharedPointer<Computation> computation, QWidget *parent)
     : QDialog(parent), m_sceneView(sceneView), m_computation(computation)
 {
     setModal(true);

@@ -150,6 +150,7 @@ void ResultsView::showPoint(const Point &point)
 
 void ResultsView::showRecipe()
 {
+    // bool available = someSolutionAvailable();
     if (!currentComputation())
         return;
 

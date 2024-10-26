@@ -261,6 +261,8 @@ void PhysicalFieldWidget::updateControls()
 
 void PhysicalFieldWidget::doComputation(int index)
 {
+    bool currentComputationChanged = false;
+
     if (Agros::computations().count() > 0)
     {
         // invalidate last field
@@ -272,6 +274,8 @@ void PhysicalFieldWidget::doComputation(int index)
             m_lastFieldAnalysisType = AnalysisType_Undefined;
             m_lastTimeStep = -1;
             m_lastAdaptiveStep = -1;
+
+            currentComputationChanged = true;
         }
 
         // set current computation
@@ -290,6 +294,9 @@ void PhysicalFieldWidget::doComputation(int index)
     }
 
     doFieldInfo();
+
+    if (currentComputationChanged)
+        emit computationChanged();
 }
 
 void PhysicalFieldWidget::doFieldInfo(int index)

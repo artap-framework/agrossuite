@@ -797,9 +797,7 @@ void OptiLab::doSolveCurrentComputation()
 {
     if (m_selectedComputation)
     {
-        Agros::problem()->setCurrentComputation(m_selectedComputation);
-
-        emit doSolveCurrentComputation(m_selectedComputation.data());
+        emit solveCurrentComputation(m_selectedComputation);
     }
 }
 

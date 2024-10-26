@@ -76,6 +76,10 @@ signals:
     void changed();
 
 public slots:
+    // field widget
+    void computationChanged();
+    void fieldChanged();
+    
     void refresh();
     void solveFinished();
     void apply();

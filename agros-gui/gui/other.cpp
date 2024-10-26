@@ -107,6 +107,12 @@ QFont defaultFixedFont(int size)
 
 // ************************************************************************************************************************
 
+SolveThread::SolveThread(const QSharedPointer<Computation> computation) : QThread(), m_computation(computation)
+{
+    Agros::problem()->setCurrentComputation(computation);
+    connect(this, SIGNAL(finished()), this, SLOT(finished()));
+}
+
 void SolveThread::run()
 {
     Agros::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));

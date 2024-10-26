@@ -56,10 +56,7 @@ class SolveThread : public QThread
     Q_OBJECT
 
 public:
-    SolveThread(Computation *computation) : QThread(), m_computation(computation)
-    {
-        connect(this, SIGNAL(finished()), this, SLOT(finished()));
-    }
+    SolveThread(const QSharedPointer<Computation> computation);
 
     inline void startCalculation() { start(QThread::TimeCriticalPriority); }
 
@@ -70,7 +67,7 @@ private slots:
     void finished();
 
  private:
-     Computation *m_computation;
+     QSharedPointer<Computation> m_computation;
 };
 
 class StringAction : public QAction

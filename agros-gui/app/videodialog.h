@@ -33,14 +33,14 @@ class VideoDialog : public QDialog
     Q_OBJECT
 
 public:
-    VideoDialog(SceneViewCommon *sceneView, Computation *computation, QWidget *parent = 0);
+    VideoDialog(SceneViewCommon *sceneView, QSharedPointer<Computation> computation, QWidget *parent = 0);
     ~VideoDialog();
 
     void showDialog();
 
 private:
     SceneViewCommon *m_sceneView;
-    Computation *m_computation;
+    QSharedPointer<Computation> m_computation;
 
     int m_timeSteps;
     int m_timeStepStore;

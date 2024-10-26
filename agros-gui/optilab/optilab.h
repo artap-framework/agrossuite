@@ -43,7 +43,7 @@ public:
     inline Study *selectedStudy() { return m_selectedStudy; }
 
 signals:
-    void doSolveCurrentComputation(Computation *computation);
+    void solveCurrentComputation(const QSharedPointer<Computation> computation);
 
 public slots:
     void refresh();

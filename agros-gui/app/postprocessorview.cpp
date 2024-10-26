@@ -83,7 +83,8 @@ PostprocessorWidget::PostprocessorWidget()
     connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doPostModeSet(QAction *)));
 
     m_fieldWidget = new PhysicalFieldWidget(this);
-    connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
+    connect(m_fieldWidget, &PhysicalFieldWidget::computationChanged, this, &PostprocessorWidget::computationChanged);
+    connect(m_fieldWidget, &PhysicalFieldWidget::fieldChanged, this, &PostprocessorWidget::fieldChanged);
 
     m_sceneViewMesh = new SceneViewMesh(this);
     m_meshWidget = new PostprocessorSceneMeshWidget(m_fieldWidget, m_sceneViewMesh);
@@ -203,6 +204,19 @@ void PostprocessorWidget::createControls()
     layoutMain->setStretch(1, 1);
 
     setLayout(layoutMain);
+}
+
+void PostprocessorWidget::computationChanged()
+{
+    m_currentComputation = m_fieldWidget->selectedComputation();
+    // qInfo() << "PostprocessorWidget::computationChanged(): " << m_currentComputation->problemDir();
+
+    refresh();
+}
+
+void PostprocessorWidget::fieldChanged()
+{
+    refresh();
 }
 
 void PostprocessorWidget::solveFinished()
@@ -389,13 +403,13 @@ void PostprocessorWidget::createVideo()
     switch (mode())
     {
     case PostprocessorWidgetMode_Mesh:
-        videoDialog = new VideoDialog(m_sceneViewMesh, currentComputation().data(), this);
+        videoDialog = new VideoDialog(m_sceneViewMesh, m_currentComputation, this);
         break;
     case PostprocessorWidgetMode_Post2D:
-        videoDialog = new VideoDialog(m_sceneViewPost2D, currentComputation().data(), this);
+        videoDialog = new VideoDialog(m_sceneViewPost2D, m_currentComputation, this);
         break;
     case PostprocessorWidgetMode_Post3D:
-        videoDialog = new VideoDialog(m_sceneViewPost3D, currentComputation().data(), this);
+        videoDialog = new VideoDialog(m_sceneViewPost3D, m_currentComputation, this);
         break;
     default:
         break;

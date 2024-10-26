@@ -286,7 +286,7 @@ void LogViewDialog::closeEvent(QCloseEvent *e)
 
 // **********************************************************************************************************************************************
 
-LogSolverDialog::LogSolverDialog(Computation *computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
+LogSolverDialog::LogSolverDialog(const QSharedPointer<Computation>& computation, const QString &title, ConnectLog *connectLog) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
     nonlinearChart(nullptr), nonlinearErrorSeries(nullptr), nonlinearProgress(nullptr),
     adaptivityChart(nullptr), adaptivityErrorSeries(nullptr), adaptivityDOFsSeries(nullptr), adaptivityProgress(nullptr),
