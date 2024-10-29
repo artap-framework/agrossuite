@@ -207,19 +207,6 @@ void SceneViewPost2D::paintGL()
     // geometry
     paintGeometry();
 
-    // rulers
-    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
-    {
-        paintRulers();
-        paintRulersHints();
-    }
-
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
-    {
-        paintAxes();
-    }
-
     if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
     {
         if (actPostprocessorModeLocalPointValue->isChecked()) paintPostprocessorSelectedPoint();
@@ -233,8 +220,19 @@ void SceneViewPost2D::paintGL()
                                      m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble(),
                                      m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
+    
+    // rulers
+    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
+    {
+        paintRulers();
+        paintRulersHints();
+    }
 
-
+    // axes
+    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
+    {
+        paintAxes();
+    }
 
     paintZoomRegion();
 }
@@ -842,7 +840,7 @@ void SceneViewPost2D::paintVectors()
     }
 }
 
-void SceneViewPost2D::paintPostprocessorSelectedVolume()
+void SceneViewPost2D::paintPostprocessorSelectedVolume() const
 {
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
@@ -881,7 +879,7 @@ void SceneViewPost2D::paintPostprocessorSelectedVolume()
     }
 }
 
-void SceneViewPost2D::paintPostprocessorSelectedSurface()
+void SceneViewPost2D::paintPostprocessorSelectedSurface() const
 {
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
@@ -923,7 +921,7 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface()
     }
 }
 
-void SceneViewPost2D::paintPostprocessorSelectedPoint()
+void SceneViewPost2D::paintPostprocessorSelectedPoint() const
 {
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 

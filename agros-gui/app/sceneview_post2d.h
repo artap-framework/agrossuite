@@ -75,9 +75,9 @@ protected:
     void paintContoursTri(const PostTriangle &triangle, double step);
     void paintVectors(); // paint vector field vectors
 
-    void paintPostprocessorSelectedVolume(); // paint selected volume for integration
-    void paintPostprocessorSelectedSurface(); // paint selected surface for integration
-    void paintPostprocessorSelectedPoint(); // paint point for local values
+    void paintPostprocessorSelectedVolume() const; // paint selected volume for integration
+    void paintPostprocessorSelectedSurface() const; // paint selected surface for integration
+    void paintPostprocessorSelectedPoint() const; // paint point for local values
 
 private:
     PostprocessorWidget *m_postprocessorWidget;
