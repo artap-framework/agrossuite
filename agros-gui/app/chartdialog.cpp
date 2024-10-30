@@ -43,7 +43,11 @@ SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidg
 {
     m_chartView = new ChartViewAxis(nullptr, this);
 
-    QHBoxLayout *layoutMain = new QHBoxLayout();
+    actExportData = new QAction(tr("Export chart data..."), this);
+    actExportData->setEnabled(true);
+    connect(actExportData, &QAction::triggered, this, &SceneViewChart::doExportData);
+
+    auto *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(m_chartView, 1);
 
@@ -62,8 +66,6 @@ void SceneViewChart::refresh()
 
     Module::LocalVariable physicFieldVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
                                                                                                                                    m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString());
-
-    emit labelCenter(physicFieldVariable.name());
 
     if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
         plotGeometry();

@@ -134,8 +134,6 @@ void SceneViewPost3D::paintGL()
             QString text = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.name();
             if ((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
                 text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
-
-            // emit labelCenter(text);
         }
     }
         break;

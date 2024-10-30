@@ -167,6 +167,8 @@ void PostprocessorWidget::createControls()
     mnuExport->addAction(m_sceneViewPost2D->actExportVTKScalar);
     mnuExport->addSeparator();
     mnuExport->addAction(actExportVideo);
+    mnuExport->addSeparator();
+    mnuExport->addAction(m_sceneViewChart->actExportData);
 
     auto *exportButton = new QToolButton();
     exportButton->setText(tr("Export"));
@@ -334,6 +336,10 @@ void PostprocessorWidget::refresh()
             mnuZoom->addAction(m_sceneViewMesh->actSceneZoomBestFit);
             mnuZoom->addAction(m_sceneViewMesh->actSceneZoomIn);
             mnuZoom->addAction(m_sceneViewMesh->actSceneZoomOut);
+
+            m_sceneViewPost2D->actExportVTKScalar->setEnabled(false);
+
+            m_sceneViewChart->actExportData->setEnabled(false);
         }
         break;
     case PostprocessorWidgetMode_Post2D:
@@ -346,6 +352,10 @@ void PostprocessorWidget::refresh()
             mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomBestFit);
             mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomIn);
             mnuZoom->addAction(m_sceneViewPost2D->actSceneZoomOut);
+
+            m_sceneViewPost2D->actExportVTKScalar->setEnabled(true);
+
+            m_sceneViewChart->actExportData->setEnabled(false);
         }
         break;
 
@@ -359,6 +369,10 @@ void PostprocessorWidget::refresh()
             mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomBestFit);
             mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomIn);
             mnuZoom->addAction(m_sceneViewPost3D->actSceneZoomOut);
+
+            m_sceneViewPost2D->actExportVTKScalar->setEnabled(false);
+
+            m_sceneViewChart->actExportData->setEnabled(false);
         }
         break;
     case PostprocessorWidgetMode_Chart:
@@ -367,6 +381,10 @@ void PostprocessorWidget::refresh()
             tabViewLayout->setCurrentWidget(m_sceneViewChart);
 
             zoomButton->setEnabled(false);
+
+            m_sceneViewPost2D->actExportVTKScalar->setEnabled(false);
+
+            m_sceneViewChart->actExportData->setEnabled(true);
         }
         break;
     default:

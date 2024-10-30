@@ -64,10 +64,6 @@ private:
 
     QTabWidget* tbxAnalysisType;
 
-    // buttons
-    QPushButton *btnOK;
-    QPushButton *btnExportData;
-
     // geometry
     QLabel *lblStartX;
     QLabel *lblStartY;

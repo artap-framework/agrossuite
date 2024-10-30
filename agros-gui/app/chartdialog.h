@@ -45,6 +45,9 @@ public:
 
     inline ChartViewAxis *chartView()  { return m_chartView; }
 
+    // actions
+    QAction *actExportData;
+
 signals:
     void labelCenter(const QString &center);
 

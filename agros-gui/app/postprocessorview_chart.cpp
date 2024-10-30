@@ -90,12 +90,6 @@ void PostprocessorSceneChartWidget::createControls()
     geometryViewer = new SceneViewChartSimpleGeometry(sceneChart->m_postprocessorWidget); // friend class
     geometryViewer->setMinimumHeight(100);
 
-    btnExportData = new QPushButton();
-    btnExportData->setDefault(false);
-    btnExportData->setEnabled(false);
-    btnExportData->setText(tr("Export"));
-    connect(btnExportData, SIGNAL(clicked()), sceneChart, SLOT(doExportData()));
-
     // geometry
     lblStartX = new QLabel("X:");
     lblStartY = new QLabel("Y:");
@@ -191,17 +185,6 @@ void PostprocessorSceneChartWidget::createControls()
     QGroupBox *grpTime = new QGroupBox(tr("Point"));
     grpTime->setLayout(layoutTime);
 
-    // button bar
-    QHBoxLayout *layoutButton = new QHBoxLayout();
-    layoutButton->setContentsMargins(0, 0, 0, 0);
-    layoutButton->addStretch();
-    layoutButton->addWidget(btnExportData);
-
-    QVBoxLayout *layoutChart = new QVBoxLayout();
-    layoutChart->setContentsMargins(0, 0, 0, 0);
-    layoutChart->addWidget(geometryViewer, 1);
-    layoutChart->addLayout(layoutButton);
-
     // controls geometry
     QVBoxLayout *controlsGeometryLayout = new QVBoxLayout();
     controlsGeometryLayout->addLayout(layoutStartEnd);
@@ -228,7 +211,7 @@ void PostprocessorSceneChartWidget::createControls()
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addLayout(layoutVariable);
     layoutMain->addWidget(tbxAnalysisType);
-    layoutMain->addLayout(layoutChart, 1);
+    layoutMain->addWidget(geometryViewer, 1);
 
     setLayout(layoutMain);
 }
@@ -347,8 +330,6 @@ void PostprocessorSceneChartWidget::load()
         tbxAnalysisType->setCurrentWidget(widGeometry);
     else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
-
-    btnExportData->setEnabled(sceneChart->chartView()->chart()->series().size() > 0);
 }
 
 void PostprocessorSceneChartWidget::save()
