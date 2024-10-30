@@ -69,17 +69,11 @@ PreprocessorWidget::PreprocessorWidget(QWidget *parent): QWidget(parent)
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     connect(trvWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
 
-    connect(m_sceneViewProblem, SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), this, SLOT(loadTooltip(SceneGeometryMode)));
-
     doItemChanged(NULL, NULL);
 }
 
 PreprocessorWidget::~PreprocessorWidget()
 {
-    QSettings settings;
-    settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
-    settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
-
     // clear fields
     foreach (QAction *action, actNewFields.values())
         delete action;
@@ -451,32 +445,6 @@ void PreprocessorWidget::createControls()
     labelsNode->setIcon(0, icon("geometry_label"));
     labelsNode->setFont(0, fnt);
 
-    txtViewNodes = new QTextEdit(this);
-    txtViewNodes->setReadOnly(true);
-    txtViewNodes->setVisible(false);
-    txtViewNodes->setText(createTooltipOperateOnNodes());
-
-    txtViewEdges = new QTextEdit(this);
-    txtViewEdges->setReadOnly(true);
-    txtViewEdges->setVisible(false);
-    txtViewEdges->setText(createTooltipOperateOnEdges());
-
-    txtViewLabels = new QTextEdit(this);
-    txtViewLabels->setReadOnly(true);
-    txtViewLabels->setVisible(false);
-    txtViewLabels->setText(createTooltipOperateOnLabels());
-
-    loadTooltip(SceneGeometryMode_OperateOnNodes);
-
-    auto *layoutView = new QHBoxLayout();
-    layoutView->setContentsMargins(0, 0, 0, 0);
-    layoutView->addWidget(txtViewNodes);
-    layoutView->addWidget(txtViewEdges);
-    layoutView->addWidget(txtViewLabels);
-
-    auto viewWidget = new QWidget();
-    viewWidget->setLayout(layoutView);
-
     txtGridStep = new QLineEdit("0.1");
     txtGridStep->setValidator(new QDoubleValidator(txtGridStep));
     chkSnapToGrid = new QCheckBox(tr("Snap to grid"));
@@ -495,19 +463,10 @@ void PreprocessorWidget::createControls()
     auto *widgetTreeView = new QWidget();
     widgetTreeView->setLayout(layoutTreeView);
 
-    splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(widgetTreeView);
-    splitter->addWidget(viewWidget);
-    splitter->setStretchFactor(0, 2);
-    splitter->setStretchFactor(1, 1);
-    splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
-    splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
-
     auto *layoutLeft = new QVBoxLayout();
     layoutLeft->setContentsMargins(2, 2, 2, 3);
     layoutLeft->addWidget(toolBarLeft);
-    layoutLeft->addWidget(splitter);
+    layoutLeft->addWidget(widgetTreeView);
 
     auto *layoutRight = new QVBoxLayout();
     layoutRight->addWidget(toolBarRight);
@@ -698,13 +657,6 @@ void PreprocessorWidget::refresh()
 
     // refresh view
     m_sceneViewProblem->refresh();
-}
-
-void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
-{
-    txtViewNodes->setVisible(sceneMode == SceneGeometryMode_OperateOnNodes);
-    txtViewEdges->setVisible(sceneMode == SceneGeometryMode_OperateOnEdges);
-    txtViewLabels->setVisible(sceneMode == SceneGeometryMode_OperateOnLabels);
 }
 
 QString PreprocessorWidget::problemPropertiesToString()

@@ -37,7 +37,6 @@ signals:
 
 public slots:    
     void refresh();
-    void loadTooltip(SceneGeometryMode sceneMode);
 
     void doProperties();
     void doDelete();
@@ -91,11 +90,6 @@ private:
     };
 
     SceneViewProblem *m_sceneViewProblem;
-
-    QTextEdit *txtViewNodes;
-    QTextEdit *txtViewEdges;
-    QTextEdit *txtViewLabels;
-    QSplitter *splitter;
 
     QTreeWidget *trvWidget;
     QTreeWidgetItem *problemNode;
