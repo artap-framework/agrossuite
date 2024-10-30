@@ -107,10 +107,20 @@ PostprocessorWidget::PostprocessorWidget()
 void PostprocessorWidget::createControls()
 {    
     // dialog buttons
-    btnApply = new QPushButton(tr("Apply"));
-    connect(btnApply, SIGNAL(clicked()), SLOT(apply()));
+    auto *actApply = new QAction(icon("main_solve"), tr("Apply changes"), this);
+    actApply->setShortcut(QKeySequence("Alt+A"));
+    connect(actApply, &QAction::triggered, this, &PostprocessorWidget::apply);
+
+    // right toolbar
+    auto *toolBarApply = new QToolBar();
+    toolBarApply->setContentsMargins(0, 0, 10, 0);
+    // toolBarApply->setProperty("modulebar", true);
+    // toolBarApply->setProperty("os", operatingSystem());
+    toolBarApply->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBarApply->addAction(actApply);
 
     actExportPostprocessorToClipboard = new QAction(tr("Copy view to clipboard"), this);
+    actExportPostprocessorToClipboard->setShortcut(QKeySequence("Alt+C"));
     connect(actExportPostprocessorToClipboard, SIGNAL(triggered()), this, SLOT(exportPostprocessorToClipboard()));
 
     actExportPostprocessorToBitmap = new QAction(tr("Export view to bitmap..."), this);
@@ -120,9 +130,9 @@ void PostprocessorWidget::createControls()
     connect(actExportVideo, SIGNAL(triggered()), this, SLOT(createVideo()));
 
     auto *layoutButtons = new QHBoxLayout();
-    layoutButtons->setContentsMargins(10, 2, 10, 6);
+    layoutButtons->setContentsMargins(0, 0, 0, 0);
     layoutButtons->addStretch();
-    layoutButtons->addWidget(btnApply);
+    layoutButtons->addWidget(toolBarApply);
 
     tabControlWidgetLayout = new QStackedLayout();
     tabControlWidgetLayout->addWidget(m_meshWidget);
@@ -134,8 +144,9 @@ void PostprocessorWidget::createControls()
     // layoutLeft->setContentsMargins(2, 2, 2, 3);
     layoutLeft->setContentsMargins(0, 0, 0, 0);
     layoutLeft->addWidget(m_fieldWidget);
-    layoutLeft->addLayout(tabControlWidgetLayout);
     layoutLeft->addLayout(layoutButtons);
+    layoutLeft->addLayout(tabControlWidgetLayout);
+    // layoutLeft->addLayout(layoutButtons);
 
     tabViewLayout = new QStackedLayout();
     tabViewLayout->addWidget(m_sceneViewMesh);

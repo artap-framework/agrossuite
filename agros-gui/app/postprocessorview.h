@@ -95,8 +95,6 @@ private:
     PhysicalFieldWidget *m_fieldWidget;
     QSharedPointer<Computation> m_currentComputation;
 
-    QPushButton *btnApply;
-
     QToolBar *toolBarRight;
 
     QActionGroup *actOperateGroup;

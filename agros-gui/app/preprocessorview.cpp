@@ -136,6 +136,7 @@ void PreprocessorWidget::createActions()
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
 
     actExportGeometryToClipboard = new QAction(tr("Copy geometry to clipboard"), this);
+    actExportGeometryToClipboard->setShortcut(QKeySequence("Alt+C"));
     connect(actExportGeometryToClipboard, SIGNAL(triggered()), this, SLOT(exportGeometryToClipboard()));
 
     actExportGeometryToBitmap = new QAction(tr("Export geometry to bitmap..."), this);
