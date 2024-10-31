@@ -305,7 +305,9 @@ QString StudyOpenGA::algorithmString(const QString &algorithm)
 
 void StudyOpenGA::solve()
 {
-    m_computationSets.clear();
+	// start computation
+	Study::solve();
+
     m_isSolving = true;
 	localSteps = 0;
 
@@ -346,6 +348,7 @@ void StudyOpenGA::solve()
 	localStudy->removeEmptyComputationSets();
 
 	m_isSolving = false;
+
 }
 
 void StudyOpenGA::setDefaultValues()

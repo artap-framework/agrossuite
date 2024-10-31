@@ -37,6 +37,9 @@ SweepProblem::SweepProblem(StudySweep *study) : m_study(study), m_steps(0)
 
 double SweepProblem::evaluate(const vectord& x)
 {
+    if (m_study->isAborted())
+        return numeric_limits<double>::max();
+
     // computation
     QSharedPointer<Computation> computation = Agros::problem()->createComputation(true);
 
@@ -76,7 +79,6 @@ SweepProblemRandom::SweepProblemRandom(StudySweep *study) : SweepProblem(study)
 
 void SweepProblemRandom::evaluateRandom()
 {
-    // TODO: more options for uniform sampling
     int numSamples = m_study->value(Study::Sweep_num_samples).toInt();
 
     for (int i = 0; i < numSamples; i++)
@@ -173,7 +175,9 @@ QString StudySweep::initMethodString(int method) const
 
 void StudySweep::solve()
 {
-    m_computationSets.clear();
+    // start computation
+    Study::solve();
+
     m_isSolving = true;
 
     addComputationSet(tr("Sweep"));
@@ -221,6 +225,7 @@ void StudySweep::solve()
     this->removeEmptyComputationSets();
 
     m_isSolving = false;
+    m_abort = false;
 }
 
 void StudySweep::setDefaultValues()

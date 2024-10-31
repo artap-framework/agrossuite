@@ -238,7 +238,9 @@ int StudyBayesOpt::estimatedNumberOfSteps() const
 
 void StudyBayesOpt::solve()
 {
-    m_computationSets.clear();
+    // start computation
+    Study::solve();
+
     m_isSolving = true;
 
     // parameters
@@ -285,6 +287,7 @@ void StudyBayesOpt::solve()
     // vectord result = bayesOptProblem.getFinalResult();
 
     m_isSolving = false;
+    m_abort = false;
 }
 
 void StudyBayesOpt::setDefaultValues()

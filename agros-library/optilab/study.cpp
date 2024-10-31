@@ -138,6 +138,13 @@ QVariant Study::variant()
     return v;
 }
 
+void Study::solve()
+{
+    // clear computations
+    m_computationSets.clear();
+    m_abort = false;
+}
+
 void Study::clear()
 {
     // set default values and types

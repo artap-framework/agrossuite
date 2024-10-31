@@ -210,4 +210,12 @@ public:
     }
 };
 
+class AgrosOptilabAbortException : public AgrosException
+{
+public:
+    AgrosOptilabAbortException(const QString &what) : AgrosException(what)
+    {
+    }
+};
+
 #endif // UTIL_H

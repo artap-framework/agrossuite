@@ -68,15 +68,17 @@ public:
         {
             m_study->evaluateStep(computation);
             double value = m_study->evaluateSingleGoal(computation);
+            if (!m_study->isAborted())
+            {
+                if (m_study->value(Study::General_ClearSolution).toBool())
+                    computation->clearSolution();
 
-            if (m_study->value(Study::General_ClearSolution).toBool())
-                computation->clearSolution();
+                // add computation
+                m_study->addComputation(computation);
 
-            // add computation
-            m_study->addComputation(computation);
-
-            m_steps++;
-            // qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+                m_steps++;
+                // qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+            }
 
             return value;
         }
@@ -159,7 +161,9 @@ QString StudyNLopt::algorithmString(int algorithm) const
 
 void StudyNLopt::solve()
 {
-    m_computationSets.clear();
+    // start computation
+    Study::solve();
+
     m_isSolving = true;
 
     addComputationSet(tr("Steps"));
@@ -194,6 +198,7 @@ void StudyNLopt::solve()
         nlopt::result result = nLoptProblem.opt.optimize(initialGuess, minimum);
 
         m_isSolving = false;
+        m_abort = false;
 
         if (result > 0)
         {
@@ -205,20 +210,19 @@ void StudyNLopt::solve()
                 Agros::log()->printMessage(tr("NLopt"), tr("Parameter tolerance reached"));
             else if (result == nlopt::MAXEVAL_REACHED)
                 Agros::log()->printMessage(tr("NLopt"), tr("Maximum iterations reached"));
-
-            // sort computations
-            // QString parameterName = m_functionals[0].name();
-            // m_computationSets.last().sort(parameterName);
+            else
+                Agros::log()->printError(tr("NLopt"), tr("Uknown error: ") + QString::number(result));
         }
         else
         {
-            qDebug() << "err: " << result;
+            qCritical() << "err: " << result;
         }
     }
     catch (nlopt::forced_stop &e)
     {
         Agros::log()->printError(tr("NLopt"), e.what());
         m_isSolving = false;
+        m_abort = false;
     }
 }
 

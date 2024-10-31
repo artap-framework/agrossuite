@@ -33,7 +33,9 @@ StudyModel::StudyModel() : Study()
 
 void StudyModel::solve()
 {
-    m_computationSets.clear();
+    // start computation
+    Study::solve();
+
     m_isSolving = true;
 
     addComputationSet(tr("Model"));
@@ -62,6 +64,7 @@ void StudyModel::solve()
 	this->removeEmptyComputationSets();
 
 	m_isSolving = false;
+	m_abort = false;
 }
 
 void StudyModel::setDefaultValues()

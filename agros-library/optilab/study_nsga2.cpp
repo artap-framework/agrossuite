@@ -99,7 +99,9 @@ int StudyNSGA2::estimatedNumberOfSteps() const
 
 void StudyNSGA2::solve()
 {
-    m_computationSets.clear();
+    // start computation
+    Study::solve();
+
     m_isSolving = true;
 
     nsga2::individual_config conf;
@@ -149,15 +151,14 @@ void StudyNSGA2::solve()
         localNSGA2->evolve();
 
         m_isSolving = false;
-
-        // sort computations
-        // QString parameterName = m_functionals[0].name();
-        // m_computationSets.last().sort(parameterName);
+        m_abort = false;
     }
     catch (nsga2::nsga2exception &e)
     {
         Agros::log()->printError(tr("NSGA2"), e.what());
+
         m_isSolving = false;
+        m_abort = false;
     }
 
     delete localNSGA2;

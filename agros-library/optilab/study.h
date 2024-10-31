@@ -267,7 +267,7 @@ public:
     virtual StudyType type() = 0;
 
     void clear();
-    virtual void solve() = 0;
+    virtual void solve();
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
