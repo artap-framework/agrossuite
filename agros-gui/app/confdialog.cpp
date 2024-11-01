@@ -46,6 +46,9 @@ void ConfigComputerDialog::load()
     // show result in line edit value widget
     chkLineEditValueShowResult->setChecked(Agros::configComputer()->value(Config::Config_ShowResults).toBool());
 
+    // new version
+    chkCheckNewVersion->setChecked(Agros::configComputer()->value(Config::Config_CheckNewVersion).toBool());
+
     // development
     chkDiscreteSaveMatrixRHS->setChecked(Agros::configComputer()->value(Config::Config_LinearSystemSave).toBool());
     cmbDumpFormat->setCurrentIndex(cmbDumpFormat->findData((MatrixExportFormat) Agros::configComputer()->value(Config::Config_LinearSystemFormat).toInt(), Qt::UserRole));
@@ -78,6 +81,9 @@ void ConfigComputerDialog::save()
 
     // show result in line edit value widget
     Agros::configComputer()->setValue(Config::Config_ShowResults, chkLineEditValueShowResult->isChecked());
+
+    // check version
+    Agros::configComputer()->setValue(Config::Config_CheckNewVersion, chkCheckNewVersion->isChecked());
 
     // development
     Agros::configComputer()->setValue(Config::Config_LinearSystemSave, chkDiscreteSaveMatrixRHS->isChecked());
@@ -136,12 +142,14 @@ QWidget *ConfigComputerDialog::createMainWidget()
 
     // other
     chkLineEditValueShowResult = new QCheckBox(tr("Show value result in line edit input"));
+    chkCheckNewVersion = new QCheckBox(tr("Check new version"));
 
     chkLogStdOut = new QCheckBox(tr("Print application log to standard output"));
     chkApplyStyle = new QCheckBox(tr("Reload stylesheet continuously"));
 
     QVBoxLayout *layoutOther = new QVBoxLayout();
     layoutOther->addWidget(chkLineEditValueShowResult);
+    layoutOther->addWidget(chkCheckNewVersion);
     layoutOther->addWidget(chkLogStdOut);
     layoutOther->addWidget(chkApplyStyle);
 

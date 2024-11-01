@@ -54,7 +54,8 @@ public:
         Config_RulersFontPointSize,
         Config_PostFontPointSize,        
         Config_ShowRulers,
-        Config_ShowAxes
+        Config_ShowAxes,
+        Config_CheckNewVersion,
     };
 
     inline QVariant value(Type type) {  return m_setting[type]; }

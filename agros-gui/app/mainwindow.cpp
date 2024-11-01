@@ -104,11 +104,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // accept drops
     setAcceptDrops(true);
-
-    // macx
-    setUnifiedTitleAndToolBarOnMac(true);
-
-    checkForNewVersion(true);
+    
+    // check version without diaglog
+    checkForNewVersion(!Agros::configComputer()->value(Config::Config_CheckNewVersion).toBool());
 
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());

@@ -91,7 +91,8 @@ void Config::setStringKeys()
     m_settingKey[Config_ShowRulers] = "Config_ShowRulers";
     m_settingKey[Config_ShowAxes] = "Config_ShowAxes";
     m_settingKey[Config_RulersFontPointSize] = "Config_RulersFontPointSize";
-    m_settingKey[Config_PostFontPointSize] = "Config_PostFontPointSize";    
+    m_settingKey[Config_PostFontPointSize] = "Config_PostFontPointSize";
+    m_settingKey[Config_CheckNewVersion] = "Config_CheckNewVersion";
 }
 
 void Config::setDefaultValues()
@@ -110,4 +111,5 @@ void Config::setDefaultValues()
     m_settingDefault[Config_ShowAxes] = true;
     m_settingDefault[Config_RulersFontPointSize] = 12;
     m_settingDefault[Config_PostFontPointSize] = 16;
+    m_settingDefault[Config_CheckNewVersion] = true;
 }
