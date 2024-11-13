@@ -43,25 +43,6 @@ SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
     setMinimumSize(150, 200);
 }
 
-void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
-{
-    if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
-        return;
-
-    double sceneWidth = end.x - start.x;
-    double sceneHeight = end.y - start.y;
-
-    double maxScene = ((width() / height()) < (sceneWidth / sceneHeight)) ? sceneWidth/aspect() : sceneHeight;
-
-    if (maxScene > 0.0)
-        m_scale2d = 1.8/maxScene;
-
-    m_offset2d.x = (start.x + end.x) / 2.0;
-    m_offset2d.y = (start.y + end.y) / 2.0;
-
-    setZoom(0);
-}
-
 void SceneViewSimpleGeometry::refresh()
 {
     if (!m_problem.isNull())
@@ -81,11 +62,16 @@ void SceneViewSimpleGeometry::paintGL()
     glClearColor(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2], 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glDisable(GL_DEPTH_TEST);
+
+    // grid
+    paintGrid();
+
     // geometry
-    paintGeometry();
+    paintGeometrySimple();
 }
 
-void SceneViewSimpleGeometry::paintGeometry()
+void SceneViewSimpleGeometry::paintGeometrySimple()
 {
     if (m_problem.isNull())
         return;
@@ -155,6 +141,27 @@ void SceneViewSimpleGeometry::paintGeometry()
         // therefore catch exceptions and do nothing
     }
 }
+
+
+void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
+{
+    if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
+        return;
+
+    double sceneWidth = end.x - start.x;
+    double sceneHeight = end.y - start.y;
+
+    double maxScene = ((width() / height()) < (sceneWidth / sceneHeight)) ? sceneWidth/aspect() : sceneHeight;
+
+    if (maxScene > 0.0)
+        m_scale2d = 1.8/maxScene;
+
+    m_offset2d.x = (start.x + end.x) / 2.0;
+    m_offset2d.y = (start.y + end.y) / 2.0;
+
+    setZoom(0);
+}
+
 
 // *********************************************************************************************************
 

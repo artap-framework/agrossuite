@@ -62,6 +62,7 @@ SET(SOURCES main.cpp
     app/sceneview_common.cpp
     app/sceneview_geometry.cpp
     app/sceneview_geometry_simple.cpp
+    app/sceneview_study.cpp
     app/sceneview_mesh.cpp
     #app/sceneview_particle.cpp
     app/sceneview_post2d.cpp
@@ -71,7 +72,7 @@ SET(SOURCES main.cpp
     app/scriptgeneratordialog.cpp
     app/videodialog.cpp
     optilab/optilab.cpp
-        optilab/optilab_study.cpp
+    optilab/optilab_study.cpp
     optilab/study_dialog.cpp
     optilab/study_methoddialog.cpp)
 
@@ -120,6 +121,7 @@ SET(HEADERS gui/about.h
     app/sceneview_data.h
     app/sceneview_geometry.h
     app/sceneview_geometry_simple.h
+    app/sceneview_study.h
     app/sceneview_mesh.h
     #app/sceneview_particle.h
     app/sceneview_post2d.h
@@ -129,7 +131,7 @@ SET(HEADERS gui/about.h
     app/scriptgeneratordialog.h
     app/videodialog.h    
     optilab/optilab.h
-        optilab/optilab_study.h
+    optilab/optilab_study.h
     optilab/study_dialog.h
     optilab/study_methoddialog.h)
 

@@ -50,7 +50,7 @@ protected:
     virtual ProblemBase *problem() const { return m_problem.data(); }
 
     void paintGL();
-    void paintGeometry(); // paint nodes, edges and labels
+    void paintGeometrySimple(); // paint nodes, edges and labels
 };
 
 class SceneViewChartSimpleGeometry : public SceneViewCommon2D

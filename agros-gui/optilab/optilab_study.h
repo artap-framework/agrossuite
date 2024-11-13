@@ -29,14 +29,14 @@
 class OptiLab;
 class Study;
 class Computation;
-class SceneViewSimpleGeometry;
+class SceneViewStudy;
 
 class OptiLabStudy : public QWidget
 {
     Q_OBJECT
 public:
     OptiLabStudy(QWidget *parent = 0);
-    ~OptiLabStudy();
+    ~OptiLabStudy() override;
 
     QAction *actSceneModeOptiLabStudy;
 
@@ -55,7 +55,7 @@ private:
         OptilabRecipe,
     };
 
-    OptiLab *m_optilab;
+    SceneViewStudy *m_sceneViewStudy;
 
     QToolBar *toolBarLeft;
     QToolButton *toolButtonStudies;
@@ -76,7 +76,6 @@ private:
     QAction *actDuplicate;
 
     void createControls();
-    QWidget *createControlsOptilab();
 
 signals:
     void studySelected(Study *study);

@@ -114,7 +114,6 @@ QWidget *OptiLab::createControlsChart()
 {
     actExportToCsv = new QAction(tr("Export data to CSV..."), this);
     actExportToCsv->setIcon(icon("geometry_zoom"));
-    actExportToCsv->setEnabled(false);
     connect(actExportToCsv, SIGNAL(triggered(bool)), this, SLOT(exportData()));
 
     actChartRescale = new QAction(tr("Rescale chart"), this);
@@ -332,7 +331,7 @@ QWidget *OptiLab::createControlsResults()
 
     auto *layoutResults = new QVBoxLayout();
     layoutResults->setContentsMargins(2, 2, 2, 2);
-    layoutResults->addWidget(trvResults, 4);
+    layoutResults->addWidget(trvResults, 2);
     layoutResults->addWidget(geometryViewer, 1);
 
     auto *widgetSolution = new QWidget();

@@ -20,6 +20,7 @@
 #include "optilab_study.h"
 
 #include "optilab.h"
+#include "app/sceneview_study.h"
 #include "optilab/parameter.h"
 #include "optilab/study.h"
 #include "optilab/study_dialog.h"
@@ -68,18 +69,6 @@ OptiLabStudy::~OptiLabStudy()
 
 void OptiLabStudy::createControls()
 {
-    auto *layout = new QHBoxLayout();
-    layout->setContentsMargins(2, 2, 2, 3);
-    layout->addWidget(createControlsOptilab());
-    layout->addWidget(new QLabel(""), 1);
-
-    setLayout(layout);
-}
-
-QWidget *OptiLabStudy::createControlsOptilab()
-{
-    QSettings settings;
-
     actSceneModeOptiLabStudy = new QAction(icon("main_optilab"), tr("Study"), this);
     actSceneModeOptiLabStudy->setShortcut(Qt::Key_F4);
     actSceneModeOptiLabStudy->setCheckable(true);
@@ -191,10 +180,17 @@ QWidget *OptiLabStudy::createControlsOptilab()
     layoutStudies->addWidget(trvOptilab, 3);
 
     auto *widgetStudies = new QWidget(this);
-    widgetStudies->setMinimumWidth(350);
+    widgetStudies->setMinimumWidth(400);
     widgetStudies->setLayout(layoutStudies);
 
-    return widgetStudies;
+    m_sceneViewStudy = new SceneViewStudy(this);
+
+    auto *layout = new QHBoxLayout();
+    layout->setContentsMargins(2, 2, 2, 3);
+    layout->addWidget(widgetStudies);
+    layout->addWidget(m_sceneViewStudy, 1);
+
+    setLayout(layout);
 }
 
 void OptiLabStudy::refresh()
@@ -260,7 +256,10 @@ void OptiLabStudy::refresh()
         studyNode->setExpanded(true);
         // select first study if empty
         if (selectedItem.isEmpty())
+        {
             selectedItem = treeItemToFullPath(studyNode);
+            m_sceneViewStudy->doZoomBestFit();
+        }
 
         auto studyPropertiesNode = new QTreeWidgetItem(studyNode);
         studyPropertiesNode->setText(0, tr("Properties"));
