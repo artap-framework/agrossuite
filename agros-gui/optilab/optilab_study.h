@@ -88,7 +88,6 @@ private slots:
     void doItemDelete();
     void doItemDuplicate();
     void doItemContextMenu(const QPoint &pos);
-    void exportData();
 
     void doNewRecipeLocalValue();
     void doNewRecipeSurfaceIntegral();

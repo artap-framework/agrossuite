@@ -51,6 +51,8 @@ public slots:
     void doSolveCurrentComputation();
     void doChartRefreshed();
 
+    void exportData();
+
 private:
     QList<QSharedPointer<Computation> > m_studyComputations;
     QSharedPointer<Computation> m_selectedComputation;
