@@ -83,7 +83,6 @@ void SceneViewPost3D::createActionsPost3D()
 {
     // scene mode
     actSceneModePost3D = new QAction(tr("Post 3D"), this);
-    actSceneModePost3D->setShortcut(tr("Ctrl+5"));
     actSceneModePost3D->setCheckable(true);
 }
 

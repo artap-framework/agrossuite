@@ -95,24 +95,24 @@ ProblemBase *SceneViewProblem::problem() const
 void SceneViewProblem::createActionsGeometry()
 {
     actSceneModeProblem = new QAction(icon("main_problem"), tr("Problem"), this);
-    actSceneModeProblem->setShortcut(tr("Ctrl+2"));
+    actSceneModeProblem->setShortcut(Qt::Key_F2);
     actSceneModeProblem->setCheckable(true);
 
     // scene - operate on items
     actOperateOnNodes = new QAction(icon("geometry_node"), tr("&Nodes"), this);
     actOperateOnNodes->setToolTip(createTooltipOperateOnNodes());
-    actOperateOnNodes->setShortcut(Qt::Key_F2);
+    actOperateOnNodes->setShortcut(Qt::Key_N);
     actOperateOnNodes->setCheckable(true);
     actOperateOnNodes->setChecked(true);
 
     actOperateOnEdges = new QAction(icon("geometry_edge"), tr("&Edges"), this);
     actOperateOnEdges->setToolTip(createTooltipOperateOnEdges());
-    actOperateOnEdges->setShortcut(Qt::Key_F3);
+    actOperateOnEdges->setShortcut(Qt::Key_E);
     actOperateOnEdges->setCheckable(true);
 
     actOperateOnLabels = new QAction(icon("geometry_label"), tr("&Labels"), this);
     actOperateOnLabels->setToolTip(createTooltipOperateOnLabels());
-    actOperateOnLabels->setShortcut(Qt::Key_F4);
+    actOperateOnLabels->setShortcut(Qt::Key_L);
     actOperateOnLabels->setCheckable(true);
 
     actOperateGroup = new QActionGroup(this);

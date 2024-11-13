@@ -18,7 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "optilab.h"
-#include "optilab_widget.h"
+#include "optilab_study.h"
 #include "optilab/parameter.h"
 #include "optilab/study.h"
 #include "optilab/study_dialog.h"
@@ -96,17 +96,14 @@ private:
 
 // ***************************************************************************************************************************************
 
-OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedStudy(nullptr), m_selectedComputation(nullptr)
+OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedComputation(nullptr)
 {
     actSceneModeOptiLab = new QAction(icon("main_optilab"), tr("OptiLab"), this);
-    actSceneModeOptiLab->setShortcut(Qt::Key_F8);
+    actSceneModeOptiLab->setShortcut(Qt::Key_F5);
     actSceneModeOptiLab->setCheckable(true);
-
-    m_optiLabWidget = new OptiLabWidget(this);
+    actSceneModeOptiLab->setEnabled(false);
 
     createControls();
-
-    connect(m_optiLabWidget, SIGNAL(studySelected(Study *)), this, SLOT(doStudySelected(Study *)));
 }
 
 OptiLab::~OptiLab()
@@ -115,6 +112,11 @@ OptiLab::~OptiLab()
 
 QWidget *OptiLab::createControlsChart()
 {
+    actExportToCsv = new QAction(tr("Export data to CSV..."), this);
+    actExportToCsv->setIcon(icon("geometry_zoom"));
+    actExportToCsv->setEnabled(false);
+    connect(actExportToCsv, SIGNAL(triggered(bool)), this, SLOT(exportData()));
+
     actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
@@ -271,7 +273,7 @@ QWidget *OptiLab::createControlsChart()
 
     // export
     auto *mnuExport = new QMenu(this);
-    mnuExport->addAction(m_optiLabWidget->actExportToCsv);
+    mnuExport->addAction(actExportToCsv);
 
     auto *exportButton = new QToolButton();
     exportButton->setText(tr("Export"));
@@ -310,23 +312,6 @@ QWidget *OptiLab::createControlsChart()
     return widRight;
 }
 
-QWidget *OptiLab::createControlsChartControl()
-{
-    cmbAxisX = new QComboBox(this);
-    connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
-    cmbAxisY = new QComboBox(this);
-    connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
-
-    auto *layoutChart = new QFormLayout();
-    layoutChart->addRow(tr("Horizontal axis:"), cmbAxisX);
-    layoutChart->addRow(tr("Vertical axis:"), cmbAxisY);
-
-    auto *widgetChart = new QWidget();
-    widgetChart->setLayout(layoutChart);
-
-    return widgetChart;
-}
-
 QWidget *OptiLab::createControlsResults()
 {
     // treeview
@@ -358,20 +343,40 @@ QWidget *OptiLab::createControlsResults()
 
 void OptiLab::createControls()
 {
-    btnComputationSolve = new QPushButton(tr("Show selected solution"));
-    connect(btnComputationSolve, SIGNAL(clicked()), this, SLOT(doSolveCurrentComputation()));
+    actComputationSolve = new QAction(icon("main_solve"), tr("Show selected solution"), this);
+    // actComputationSolve->setShortcut(QKeySequence("Alt+A"));
+    connect(actComputationSolve, &QAction::triggered, this, &OptiLab::doSolveCurrentComputation);
+
+    // right toolbar
+    auto *toolBarApply = new QToolBar();
+    toolBarApply->setContentsMargins(0, 0, 10, 0);
+    toolBarApply->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBarApply->addAction(actComputationSolve);
 
     auto *layoutButtons = new QHBoxLayout();
-    layoutButtons->setContentsMargins(10, 2, 10, 6);
+    layoutButtons->setContentsMargins(0, 0, 0, 0);
     layoutButtons->addStretch();
-    layoutButtons->addWidget(btnComputationSolve);
+    layoutButtons->addWidget(toolBarApply);
+
+    cmbStudies = new QComboBox(this);
+    connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(doStudyChanged(int)));
+    lblNumberOfSolutions = new QLabel(this);
+
+    cmbAxisX = new QComboBox(this);
+    connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
+    cmbAxisY = new QComboBox(this);
+    connect(cmbAxisY, SIGNAL(currentIndexChanged(int)), this, SLOT(axisYChanged(int)));
+
+    auto *layoutCombo = new QFormLayout();
+    layoutCombo->addRow(tr("Studies:"), cmbStudies);
+    layoutCombo->addRow(tr("Number of Solutions:"), lblNumberOfSolutions);
+    layoutCombo->addRow(tr("Horizontal axis:"), cmbAxisX);
+    layoutCombo->addRow(tr("Vertical axis:"), cmbAxisY);
 
     auto layoutLeft = new QVBoxLayout();
-    layoutLeft->setContentsMargins(0, 0, 0, 0);
-    layoutLeft->addWidget(m_optiLabWidget, 4);
-    layoutLeft->addWidget(createControlsChartControl(), 0);
+    layoutLeft->addLayout(layoutCombo);
+    layoutLeft->addLayout(layoutButtons);
     layoutLeft->addWidget(createControlsResults(), 3);
-    layoutLeft->addLayout(layoutButtons, 0);
 
     auto *widLeft = new QWidget();
     widLeft->setMinimumWidth(400);
@@ -389,7 +394,50 @@ void OptiLab::createControls()
 
 void OptiLab::refresh()
 {
-    optiLabWidget()->refresh();
+    bool enabled = false;
+    for (int i = 0; i < Agros::problem()->studies()->items().count(); i++)
+    {
+        Study *study = Agros::problem()->studies()->items().at(i);
+
+        if (study->computationsCount() > 0)
+        {
+            enabled = true;
+            break;
+        }
+    }
+
+    actSceneModeOptiLab->setEnabled(enabled);
+
+    Study *selectedStudy = nullptr;
+    if (cmbStudies->currentIndex() != -1)
+        selectedStudy = cmbStudies->itemData(cmbStudies->currentIndex()).value<Study *>();
+
+    cmbStudies->clear();
+    for (int i = 0; i < Agros::problem()->studies()->items().count(); i++)
+    {
+        Study *study = Agros::problem()->studies()->items().at(i);
+
+        // only studies with computations
+        if (study->computationsCount() > 0)
+            cmbStudies->addItem(studyTypeString(study->type()), QVariant::fromValue(study));
+    }
+
+    if (selectedStudy)
+    {
+        if (cmbStudies->count() > 0)
+        {
+            for (int i = 0; i < Agros::problem()->studies()->items().count(); i++)
+            {
+                Study *study = Agros::problem()->studies()->items().at(i);
+
+                if (study == selectedStudy)
+                {
+                    cmbStudies->setCurrentIndex(i);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void OptiLab::chartContextMenu(const QPoint &pos)
@@ -421,35 +469,53 @@ void OptiLab::chartShowParetoFront(int state)
     doChartRefreshed();
 }
 
+void OptiLab::doStudySolved(Study *study)
+{
+    refresh();
+    doStudySelected(study);
+
+    actSceneModeOptiLab->trigger();
+}
+
+void OptiLab::doStudyChanged(int index)
+{
+    if (index < 0 || index >= cmbStudies->count())
+        return;
+
+    Study *study = cmbStudies->itemData(index).value<Study *>();
+    doStudySelected(study);
+}
+
 void OptiLab::doStudySelected(Study *study)
 {
-    m_selectedStudy = study;
-
     // computations
-    QString selectedComputationProblemDir = "";
-    if (m_selectedComputation)
-        selectedComputationProblemDir = m_selectedComputation->problemDir();
-    m_selectedStudyProblemDirs.clear();
+    QSharedPointer<Computation> currentComputation = nullptr;
+    m_studyComputations.clear();
+    bool selectedComputationIsInStudy = false;
 
     // study
-    if (m_selectedStudy)
+    if (study)
     {
-        double min = selectedComputationProblemDir.isEmpty() ? numeric_limits<double>::max() : 0.0;
+        double min = numeric_limits<double>::max();
 
         // fill tree view
-        QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
+        QList<ComputationSet> computationSets = study->computationSets();
         for (int i = 0; i < computationSets.size(); i++)
         {
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
-                m_selectedStudyProblemDirs.append(computation->problemDir());
+                m_studyComputations.append(computation);
+
+                // selected computation is in study
+                if (computation == m_selectedComputation)
+                    selectedComputationIsInStudy = true;
 
                 // select minimum
-                double localMin = m_selectedStudy->evaluateSingleGoal(computation);
+                double localMin = study->evaluateSingleGoal(computation);
                 if (localMin < min)
                 {
                     min = localMin;
-                    selectedComputationProblemDir = computation->problemDir();
+                    currentComputation = computation;
                 }
             }
         }
@@ -476,7 +542,7 @@ void OptiLab::doStudySelected(Study *study)
         cmbAxisY->addItem(tr("steps"), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Steps, "")));
 
         // parameters
-        foreach (Parameter parameter, m_selectedStudy->parameters())
+        foreach (Parameter parameter, study->parameters())
         {
             cmbAxisX->addItem(tr("%1 (parameter)").arg(parameter.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Parameter, parameter.name())));
             cmbAxisY->addItem(tr("%1 (parameter)").arg(parameter.name()), QVariant::fromValue(QPair<Study::ResultType, QString>(Study::ResultType::ResultType_Parameter, parameter.name())));
@@ -501,31 +567,65 @@ void OptiLab::doStudySelected(Study *study)
             cmbAxisX->setCurrentText(currentNameX);
         if (!currentNameY.isEmpty())
             cmbAxisY->setCurrentText(currentNameY);
+
+        if (study->computationSets().count() > 0)
+        {
+            lblNumberOfSolutions->setText(QString::number(study->computationsCount()));
+        }
+        else
+        {
+            lblNumberOfSolutions->setText("0");
+
+            trvResults->clear();
+            geometryViewer->setProblem(nullptr);
+        }
+    }
+    else
+    {
+        lblNumberOfSolutions->setText("");
+        cmbAxisX->clear();
+        cmbAxisY->clear();
+
+        trvResults->clear();
+        geometryViewer->setProblem(nullptr);
     }
 
     // actions
-    btnComputationSolve->setEnabled(false);
+    actComputationSolve->setEnabled(false);
     actResultsFindMinimum->setEnabled(false);
     actResultsFindMaximum->setEnabled(false);
+    actChartRescale->setEnabled(false);
+    actChartShowTrend->setEnabled(false);
+    actChartShowAverageValue->setEnabled(false);
+    actChartShowParetoFront->setEnabled(false);
 
-    cmbAxisX->setEnabled(m_selectedStudy != nullptr);
-    cmbAxisY->setEnabled(m_selectedStudy != nullptr);
-    trvResults->setEnabled(m_selectedStudy != nullptr);
-    chartView->setEnabled(m_selectedStudy != nullptr);
+    actSceneZoomIn->setEnabled(false);
+    actSceneZoomOut->setEnabled(false);
+    actSceneZoomBestFit->setEnabled(false);
+
+    cmbAxisX->setEnabled(study != nullptr);
+    cmbAxisY->setEnabled(study != nullptr);
+    trvResults->setEnabled(study != nullptr);
+    chartView->setEnabled(study != nullptr);
 
     // select current computation
-    if (m_selectedStudyProblemDirs.count() > 0 && !selectedComputationProblemDir.isEmpty())
+    if (m_selectedComputation.isNull() || !selectedComputationIsInStudy)
     {
-        doComputationSelected(selectedComputationProblemDir);
+        if (!currentComputation.isNull())
+            m_selectedComputation = currentComputation;
+    }
+    else if (!selectedComputationIsInStudy)
+    {
+        m_selectedComputation = nullptr;
+    }
+
+    if (m_studyComputations.count() > 0 && !m_selectedComputation.isNull())
+    {
+        doComputationSelected(m_selectedComputation);
 
         // replot chart
         chartView->fitToData();
         geometryViewer->doZoomBestFit();
-    }
-    else
-    {
-        trvResults->clear();
-        geometryViewer->setProblem(nullptr);
     }
 }
 
@@ -542,7 +642,12 @@ void OptiLab::doChartRefreshed()
     trendLineSeries->clear();
     paretoFrontSeries->clear();
 
-    QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
+    if (cmbStudies->count() == 0)
+        return;
+
+    Study *study = cmbStudies->itemData(cmbStudies->currentIndex()).value<Study *>();
+
+    QList<ComputationSet> computationSets = study->computationSets();
     if (computationSets.count() == 0)
     {
         // fit and replot chart
@@ -551,6 +656,8 @@ void OptiLab::doChartRefreshed()
 
         return;
     }
+
+
 
     // axis x label
     axisX->setTitleText(cmbAxisX->currentText());
@@ -569,7 +676,7 @@ void OptiLab::doChartRefreshed()
     QVector<double> linRegDataY;
 
     // data
-    QList<QSharedPointer<Computation> > paretoFront = m_selectedStudy->nondominatedSort(computationSets);
+    QList<QSharedPointer<Computation> > paretoFront = study->nondominatedSort(computationSets);
     QVector<double> paretoDataX;
     QVector<double> paretoDataY;
 
@@ -691,7 +798,7 @@ void OptiLab::chartClicked(const QPointF &point)
 {
     int index = findPointIndex(point);
     if (index != -1)
-        doComputationSelected(m_selectedStudyProblemDirs[index]);
+        doComputationSelected(m_studyComputations[index]);
 }
 
 void OptiLab::chartHovered(const QPointF &point, bool state)
@@ -710,12 +817,12 @@ void OptiLab::chartHovered(const QPointF &point, bool state)
     }
 }
 
-void OptiLab::doComputationSelected(const QString &problemDir)
+void OptiLab::doComputationSelected(const QSharedPointer<Computation> computation)
 {
-    QMap<QString, QSharedPointer<Computation> > computations = Agros::computations();
-    if (computations.count() > 0)
+    m_selectedComputation = computation;
+    if (!m_selectedComputation.isNull())
     {
-        m_selectedComputation = computations[problemDir];
+        Study *study = cmbStudies->itemData(cmbStudies->currentIndex()).value<Study *>();
 
         // cache value
         auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
@@ -738,7 +845,7 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         parametersNode->setExpanded(true);
 
         QMap<QString, ProblemParameter> parameters = m_selectedComputation->config()->parameters()->items();
-        foreach (Parameter parameter, m_selectedStudy->parameters())
+        foreach (Parameter parameter, study->parameters())
         {
             auto *parameterNode = new QTreeWidgetItem(parametersNode);
             parameterNode->setText(0, parameter.name());
@@ -787,9 +894,19 @@ void OptiLab::doComputationSelected(const QString &problemDir)
         doChartRefreshed();
 
         // actions
-        btnComputationSolve->setEnabled(true);
+        actComputationSolve->setEnabled(true);
         actResultsFindMinimum->setEnabled(true);
         actResultsFindMaximum->setEnabled(true);
+        actChartRescale->setEnabled(true);
+        actChartShowTrend->setEnabled(true);
+        actChartShowAverageValue->setEnabled(true);
+        actChartShowParetoFront->setEnabled(true);
+
+        actSceneZoomIn->setEnabled(true);
+        actSceneZoomOut->setEnabled(true);
+        actSceneZoomBestFit->setEnabled(true);
+
+        trvResults->setEnabled(study != nullptr);
     }
 }
 
@@ -803,9 +920,11 @@ void OptiLab::doSolveCurrentComputation()
 
 void OptiLab::doResultChanged()
 {
-    if (m_selectedStudy)
+    if (cmbStudies->count() > 0)
     {
-        QList<ComputationSet> computationSets = m_selectedStudy->computationSets();
+        Study *study = cmbStudies->itemData(cmbStudies->currentIndex()).value<Study *>();
+
+        QList<ComputationSet> computationSets = study->computationSets();
 
         auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
         Study::ResultType type = currentDataAxisY.first;
@@ -846,17 +965,22 @@ void OptiLab::resultsFindMaximum(bool checked)
 
 void OptiLab::resultsFindExtrem(bool minimum)
 {
-    if (cmbAxisY->currentIndex() != -1)
+    if (cmbStudies->count() > 0)
     {
-        auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
-        Study::ResultType currentDataResultAxisY = currentDataAxisY.first;
-        QString currentDataNameY = currentDataAxisY.second;
+        Study *study = cmbStudies->itemData(cmbStudies->currentIndex()).value<Study *>();
 
-        // extreme
-        QSharedPointer<Computation> selectedComputation = m_selectedStudy->findExtreme(currentDataResultAxisY, currentDataNameY, minimum);
+        if (cmbAxisY->currentIndex() != -1)
+        {
+            auto currentDataAxisY = cmbAxisY->currentData().value<QPair<Study::ResultType, QString> >();
+            Study::ResultType currentDataResultAxisY = currentDataAxisY.first;
+            QString currentDataNameY = currentDataAxisY.second;
 
-        if (!selectedComputation.isNull())
-            doComputationSelected(selectedComputation->problemDir());
+            // extreme
+            QSharedPointer<Computation> selectedComputation = study->findExtreme(currentDataResultAxisY, currentDataNameY, minimum);
+
+            if (!selectedComputation.isNull())
+                doComputationSelected(selectedComputation);
+        }
     }
 }
 

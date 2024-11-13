@@ -80,7 +80,7 @@ ExamplesWidget::~ExamplesWidget()
 void ExamplesWidget::createActions()
 {
     actExamples = new QAction(icon("main_welcome"), tr("Welcome"), this);
-    actExamples->setShortcut(tr("Ctrl+1"));
+    actExamples->setShortcut(Qt::Key_F1);
     actExamples->setCheckable(true);
 }
 

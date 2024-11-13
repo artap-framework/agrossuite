@@ -29,6 +29,7 @@ class SceneViewPost2D;
 class SceneViewPost3D;
 class SceneViewMesh;
 class OptiLab;
+class OptiLabStudy;
 class SettingsWidget;
 class ExamplesWidget;
 class ResultsView;
@@ -137,6 +138,8 @@ private:
     // scene mode
     QActionGroup *actSceneModeGroup;
 
+    //
+    OptiLabStudy *optiLabStudy;
     OptiLab *optiLab;
 
     QWidget *viewControls;

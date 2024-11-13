@@ -31,15 +31,16 @@ class Study;
 class Computation;
 class SceneViewSimpleGeometry;
 
-class OptiLabWidget : public QWidget
+class OptiLabStudy : public QWidget
 {
     Q_OBJECT
 public:
-    OptiLabWidget(OptiLab *parent);
-    ~OptiLabWidget();
+    OptiLabStudy(QWidget *parent = 0);
+    ~OptiLabStudy();
+
+    QAction *actSceneModeOptiLabStudy;
 
     QAction *actRunStudy;
-    QAction *actExportToCsv;
 
 public slots:
     void refresh();
@@ -79,6 +80,7 @@ private:
 
 signals:
     void studySelected(Study *study);
+    void studySolved(Study *study);
 
 private slots:
     void doItemDoubleClicked(QTreeWidgetItem *item, int role);

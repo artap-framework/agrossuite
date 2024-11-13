@@ -50,7 +50,7 @@
 #include "chartdialog.h"
 #include "confdialog.h"
 #include "optilab/optilab.h"
-#include "optilab/optilab_widget.h"
+#include "optilab/optilab_study.h"
 #include "materialbrowserdialog.h"
 #include "chartdialog.h"
 #include "examplesdialog.h"
@@ -86,7 +86,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     (dynamic_cast<LogGui * > (Agros::log()))->setConnectLog(m_connectLog);
 
     // OptiLab
+    optiLabStudy = new OptiLabStudy(this);
     optiLab = new OptiLab(this);
+    connect(optiLabStudy, SIGNAL(studySolved(Study *)), optiLab, SLOT(doStudySolved(Study *)));
 
     createActions();
     createMenus();
@@ -213,6 +215,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(exampleWidget->actExamples);
     actSceneModeGroup->addAction(problemWidget->sceneViewProblem()->actSceneModeProblem);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModeResults);
+    actSceneModeGroup->addAction(optiLabStudy->actSceneModeOptiLabStudy);
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
 
     // apply stylesheet
@@ -273,6 +276,7 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(exampleWidget);
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
+    tabControlsLayout->addWidget(optiLabStudy);
     tabControlsLayout->addWidget(optiLab);
 
     viewControls = new QWidget();
@@ -294,11 +298,12 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(problemWidget->sceneViewProblem()->actSceneModeProblem);
     tlbLeftBar->addAction(postprocessorWidget->actSceneModeResults);
     tlbLeftBar->addSeparator();
+    tlbLeftBar->addAction(optiLabStudy->actSceneModeOptiLabStudy);
     tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(actSolve);
     tlbLeftBar->addAction(actSolveNewComputation);
-    tlbLeftBar->addAction(optiLab->optiLabWidget()->actRunStudy);
+    tlbLeftBar->addAction(optiLabStudy->actRunStudy);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
@@ -631,6 +636,8 @@ void MainWindow::refresh()
     problemWidget->refresh();
     // update postprocessor
     postprocessorWidget->refresh();
+    // update optilab study
+    optiLabStudy->refresh();
     // update optilab
     optiLab->refresh();
 }
@@ -661,8 +668,8 @@ void MainWindow::setControls()
     actSolve->setVisible(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
     actSolveNewComputation->setEnabled(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
     actSolveNewComputation->setVisible(problemWidget->sceneViewProblem()->actSceneModeProblem->isChecked());
-    optiLab->optiLabWidget()->actRunStudy->setEnabled(optiLab->actSceneModeOptiLab->isChecked());
-    optiLab->optiLabWidget()->actRunStudy->setVisible(optiLab->actSceneModeOptiLab->isChecked());
+    optiLabStudy->actRunStudy->setEnabled(optiLabStudy->actSceneModeOptiLabStudy->isChecked());
+    optiLabStudy->actRunStudy->setVisible(optiLabStudy->actSceneModeOptiLabStudy->isChecked());
 
     if (exampleWidget->actExamples->isChecked())
     {
@@ -676,6 +683,10 @@ void MainWindow::setControls()
     {
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
     }
+    else if (optiLabStudy->actSceneModeOptiLabStudy->isChecked())
+    {
+        tabControlsLayout->setCurrentWidget(optiLabStudy);
+    }
     else if (optiLab->actSceneModeOptiLab->isChecked())
     {
         tabControlsLayout->setCurrentWidget(optiLab);
@@ -683,13 +694,6 @@ void MainWindow::setControls()
 
     // window title
     setWindowTitle(QString("agros - %1%2").arg(Agros::problem()->archiveFileName()).arg(Agros::problem()->hasChanged() ? " *" : ""));
-
-    // update preprocessor
-    // problemWidget->refresh();
-    // update postprocessor
-    // postprocessorWidget->refresh();
-    // update optilab
-    // optiLab->refresh();
 
     if (Agros::configComputer()->value(Config::Config_ReloadStyle).toBool())
         if (!timerApplyStyle->isActive())

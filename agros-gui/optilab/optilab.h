@@ -25,11 +25,9 @@
 #include "gui/other.h"
 #include "gui/chart.h"
 
-class OptiLab;
 class Study;
 class Computation;
 class SceneViewSimpleGeometry;
-class OptiLabWidget;
 
 class OptiLab : public QWidget
 {
@@ -39,8 +37,6 @@ public:
     ~OptiLab();
 
     QAction *actSceneModeOptiLab;
-    inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
-    inline Study *selectedStudy() { return m_selectedStudy; }
 
 signals:
     void solveCurrentComputation(const QSharedPointer<Computation> computation);
@@ -48,32 +44,32 @@ signals:
 public slots:
     void refresh();
 
+    void doStudySolved(Study *study);
     void doStudySelected(Study *study);
-    void doComputationSelected(const QString &problemDir);
+    void doStudyChanged(int index);
+    void doComputationSelected(const QSharedPointer<Computation> computation);
     void doSolveCurrentComputation();
     void doChartRefreshed();
 
 private:
-    Study *m_selectedStudy;
-    QStringList m_selectedStudyProblemDirs;
+    QList<QSharedPointer<Computation> > m_studyComputations;
     QSharedPointer<Computation> m_selectedComputation;
 
-    OptiLabWidget *m_optiLabWidget;
     SceneViewSimpleGeometry *geometryViewer;
+
+    QComboBox *cmbStudies;
+    QLabel *lblNumberOfSolutions;
 
     QComboBox *cmbAxisX;
     QComboBox *cmbAxisY;
 
     // computation
-    QPushButton *btnComputationSolve;
+    QAction *actComputationSolve;
 
     // results
     QTreeWidget *trvResults;
 
     QToolBar *toolBarRight;
-
-    QAction *actResultsFindMinimum;
-    QAction *actResultsFindMaximum;
 
     ChartView *chartView;
     QValueAxis *axisX;
@@ -91,6 +87,9 @@ private:
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
+
+    QAction *actResultsFindMinimum;
+    QAction *actResultsFindMaximum;
     QAction *actChartRescale;
     QAction *actChartShowTrend;
     QAction *actChartShowAverageValue;
@@ -100,9 +99,10 @@ private:
     QAction *actSceneZoomOut;
     QAction *actSceneZoomBestFit;
 
+    QAction *actExportToCsv;
+
     void createControls();
     QWidget *createControlsChart();
-    QWidget *createControlsChartControl();
     QWidget *createControlsResults();
 
     void resultsFindExtrem(bool minimum);
