@@ -26,7 +26,7 @@
 #include <QtWidgets/QMessageBox>
 
 static CheckVersion *checkVersion = nullptr;
-void checkForNewVersion(bool quiet)
+void checkForNewVersion(bool showActualVersion)
 {
     // download version
     QUrl url("http://www.agros2d.org/web/version/check.php");
@@ -34,7 +34,7 @@ void checkForNewVersion(bool quiet)
     if (checkVersion == nullptr)
        checkVersion = new CheckVersion(url);
 
-    checkVersion->run(quiet);
+    checkVersion->run(showActualVersion);
 
     // CheckVersion checkVersion(url);
     // checkVersion.run(quiet);
@@ -51,9 +51,9 @@ CheckVersion::~CheckVersion()
     delete m_manager;
 }
 
-void CheckVersion::run(bool quiet)
+void CheckVersion::run(bool showActualVersion)
 {
-    m_quiet = quiet;
+    m_showActualVersion = showActualVersion;
 
     QByteArray postData;
     postData.append(QString("OS=%1&").arg(SystemUtils::operatingSystem()).toHtmlEscaped().toLatin1());
@@ -95,7 +95,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
             QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
         }
-        else if (!m_quiet)
+        if (m_showActualVersion)
         {
             QString str = tr("<b>You are using actual version.</b><br/><br/>"
                              "Actual version: %1<br/>"

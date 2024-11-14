@@ -108,7 +108,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     setAcceptDrops(true);
     
     // check version without diaglog
-    checkForNewVersion(!Agros::configComputer()->value(Config::Config_CheckNewVersion).toBool());
+    if (Agros::configComputer()->value(Config::Config_CheckNewVersion).toBool())
+        checkForNewVersion(false);
 
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
