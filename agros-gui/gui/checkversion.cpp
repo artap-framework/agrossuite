@@ -81,6 +81,7 @@ void CheckVersion::run(bool quiet, bool showActualVersion)
 void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 {
     QString text = networkReply->readAll().trimmed();
+    qInfo() << text;
 
     if (!text.isEmpty())
     {
@@ -95,7 +96,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
         // qInfo() << text << versionString() << (text > versionString());
 
-        if (m_quiet)
+        if (!m_quiet)
         {
             if (text > versionString())
             {
