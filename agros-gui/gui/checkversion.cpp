@@ -22,6 +22,7 @@
 #include "util/util.h"
 #include "util/system_utils.h"
 
+#include <QScreen>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 
@@ -29,7 +30,8 @@ static CheckVersion *checkVersion = nullptr;
 void checkForNewVersion(bool showActualVersion)
 {
     // download version
-    QUrl url("http://www.agros2d.org/web/version/check.php");
+    // QUrl url("https://www.agros2d.org/web/version/check.php");
+    QUrl url("https://www.agros2d.org/web/version/version.php");
 
     if (checkVersion == nullptr)
        checkVersion = new CheckVersion(url);
@@ -55,15 +57,18 @@ void CheckVersion::run(bool showActualVersion)
 {
     m_showActualVersion = showActualVersion;
 
-    QByteArray postData;
-    postData.append(QString("OS=%1&").arg(SystemUtils::operatingSystem()).toHtmlEscaped().toLatin1());
-    postData.append(QString("PROCESSOR=%1&").arg(SystemUtils::cpuType()).toHtmlEscaped().toLatin1());
-    postData.append(QString("THREADS=%1&").arg(QString::number(SystemUtils::numberOfThreads())).toLatin1());
-    postData.append(QString("MEMORY=%1&").arg(QString::number(SystemUtils::totalMemorySize())).toLatin1());
-    postData.append(QString("AGROS_VERSION=%1&").arg(QCoreApplication::applicationVersion()).toHtmlEscaped().toLatin1());
+    QUrlQuery query;
+    query.addQueryItem("OS", SystemUtils::operatingSystem());
+    query.addQueryItem("PROCESSOR", SystemUtils::cpuType());
+    query.addQueryItem("THREADS", QString::number(SystemUtils::numberOfThreads()));
+    query.addQueryItem("MEMORY", QString::number(SystemUtils::totalMemorySize()));
+    query.addQueryItem("RESOLUTION", QString("%1x%2").arg(QGuiApplication::primaryScreen()->availableGeometry().width()).arg(QGuiApplication::primaryScreen()->availableGeometry().height()));
+    query.addQueryItem("AGROS_VERSION", QCoreApplication::applicationVersion());
+
+    QByteArray postData = query.toString(QUrl::FullyEncoded).toUtf8();
 
     QNetworkRequest req(m_url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/x-www-form-urlencoded"));
+    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/x-www-form-urlencoded");
 
     m_networkReply = m_manager->post(req, postData);
 
@@ -84,6 +89,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
             return;
         }
 
+        // qInfo() << text << versionString() << (text > versionString());
         if (text > versionString())
         {
             QString str = tr("<b>New version available.</b><br/><br/>"
@@ -95,7 +101,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
             QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
         }
-        if (m_showActualVersion)
+        else if (m_showActualVersion)
         {
             QString str = tr("<b>You are using actual version.</b><br/><br/>"
                              "Actual version: %1<br/>"
