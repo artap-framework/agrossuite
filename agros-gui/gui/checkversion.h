@@ -25,7 +25,7 @@
 #include <QtNetwork>
 
 // check for new version
-void checkForNewVersion(bool showActualVersion = true);
+void checkNewVersion(bool quiet = true, bool showActualVersion = true);
 
 class CheckVersion : public QObject
 {
@@ -33,10 +33,12 @@ class CheckVersion : public QObject
 public:
     CheckVersion(QUrl url);
     ~CheckVersion();
-    void run(bool showActualVersion);
+    void run(bool quiet, bool showActualVersion);
 
 private:
+    bool m_quiet;
     bool m_showActualVersion;
+
     QUrl m_url;
     QNetworkAccessManager *m_manager;
     QNetworkReply *m_networkReply;
