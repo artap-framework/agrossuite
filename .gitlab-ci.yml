@@ -326,3 +326,21 @@ deploy-windows:
       - cd setup
       - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
  
+
+deploy-windows-wheel:
+  stage: deploy
+  needs: ["test-windows", "test-windows-tutorials", "test-windows-import-a2d"]
+  tags:
+    - agros
+    - win11
+
+  script: 
+    - cd build/agros-python/
+    - .\env\Scripts\activate
+    # upload to pypi
+    - pip install twine
+    - cd agrossuite    
+    - python setup.py bdist_wheel
+    - cd dist
+    - python -m twine upload ./agrossuite-*.whl
+    - cd ../..
