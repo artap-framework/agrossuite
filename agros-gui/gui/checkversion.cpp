@@ -19,15 +19,17 @@
 
 #include "checkversion.h"
 
+#include "util/global.h"
 #include "util/util.h"
 #include "util/system_utils.h"
+#include "logview.h"
 
 #include <QScreen>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 
 static CheckVersion *checkVersion = nullptr;
-void checkForNewVersion(bool showActualVersion)
+void checkNewVersion(bool quiet, bool showActualVersion)
 {
     // download version
     // QUrl url("https://www.agros2d.org/web/version/check.php");
@@ -36,7 +38,7 @@ void checkForNewVersion(bool showActualVersion)
     if (checkVersion == nullptr)
        checkVersion = new CheckVersion(url);
 
-    checkVersion->run(showActualVersion);
+    checkVersion->run(quiet, showActualVersion);
 
     // CheckVersion checkVersion(url);
     // checkVersion.run(quiet);
@@ -53,8 +55,9 @@ CheckVersion::~CheckVersion()
     delete m_manager;
 }
 
-void CheckVersion::run(bool showActualVersion)
+void CheckVersion::run(bool quiet, bool showActualVersion)
 {
+    m_quiet = quiet;
     m_showActualVersion = showActualVersion;
 
     QUrlQuery query;
@@ -78,6 +81,7 @@ void CheckVersion::run(bool showActualVersion)
 void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 {
     QString text = networkReply->readAll().trimmed();
+    qInfo() << text;
 
     if (!text.isEmpty())
     {
@@ -85,32 +89,41 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
         if (!QString(text).contains(rx))
         {
             // be quiet
-            qWarning() << "Check version failed: " << text;
+            Agros::log()->printError(tr("Check version"), tr("Check version failed: %1").arg(text));
+            qCritical() << "Check version failed: " << text;
             return;
         }
 
         // qInfo() << text << versionString() << (text > versionString());
-        if (text > versionString())
-        {
-            QString str = tr("<b>New version available.</b><br/><br/>"
-                             "Actual version: %1<br/>"
-                             "Available version: %2<br/><br/>"
-                             "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
-                    arg(versionString()).
-                    arg(text);
 
-            QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
-        }
-        else if (m_showActualVersion)
+        if (!m_quiet)
         {
-            QString str = tr("<b>You are using actual version.</b><br/><br/>"
-                             "Actual version: %1<br/>"
-                             "Available version: %2<br/><br/>"
-                             "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
-                    arg(versionString()).
-                    arg(text);
+            if (text > versionString())
+            {
+                QString str = tr("<b>New version available.</b><br/><br/>"
+                                 "Actual version: %1<br/>"
+                                 "Available version: %2<br/><br/>"
+                                 "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
+                        arg(versionString()).
+                        arg(text);
 
-            QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
+                QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
+            }
+            else if ((text == versionString()) && (m_showActualVersion))
+            {
+                QString str = tr("<b>You are using actual version.</b><br/><br/>"
+                                 "Actual version: %1<br/>"
+                                 "Available version: %2<br/><br/>"
+                                 "URL: <a href=\"https://www.agros2d.org/web/#download\">https://www.agros2d.org/web/#download</a>").
+                        arg(versionString()).
+                        arg(text);
+
+                QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
+            }
+            else
+            {
+                Agros::log()->printError(tr("Check version"), tr("Parse error: %1").arg(text));
+            }
         }
     }
 }

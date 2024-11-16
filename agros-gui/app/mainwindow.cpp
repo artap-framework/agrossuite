@@ -109,7 +109,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     
     // check version without diaglog
     if (Agros::configComputer()->value(Config::Config_CheckNewVersion).toBool())
-        checkForNewVersion(false);
+        checkNewVersion(false, false);
+    else
+        checkNewVersion(true, false);
 
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
@@ -707,7 +709,7 @@ void MainWindow::setControls()
 
 void MainWindow::doCheckVersion()
 {
-    checkForNewVersion();
+    checkNewVersion(false, true);
 }
 
 void MainWindow::doAbout()

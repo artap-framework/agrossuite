@@ -142,7 +142,7 @@ QWidget *ConfigComputerDialog::createMainWidget()
 
     // other
     chkLineEditValueShowResult = new QCheckBox(tr("Show value result in line edit input"));
-    chkCheckNewVersion = new QCheckBox(tr("Check new version"));
+    chkCheckNewVersion = new QCheckBox(tr("Check a new version at launch"));
 
     chkLogStdOut = new QCheckBox(tr("Print application log to standard output"));
     chkApplyStyle = new QCheckBox(tr("Reload stylesheet continuously"));
