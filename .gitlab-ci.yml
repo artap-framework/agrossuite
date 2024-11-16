@@ -339,7 +339,8 @@ deploy-windows-wheel:
     - .\env\Scripts\activate
     # upload to pypi
     - pip install twine
-    - cd agrossuite    
+    - cd agrossuite
+    - Remove-Item -Path .\_skbuild\ -Recurse    
     - python setup.py bdist_wheel
     - cd dist
     - python -m twine upload ./agrossuite-*.whl
