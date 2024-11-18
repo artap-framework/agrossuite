@@ -81,8 +81,7 @@ void CheckVersion::run(bool quiet, bool showActualVersion)
 void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 {
     QString text = networkReply->readAll().trimmed();
-    qInfo() << text;
-
+ 
     if (!text.isEmpty())
     {
         QRegularExpression rx("\\d{4}\\.\\d{2}\\.\\d{2}");

@@ -166,7 +166,7 @@ public:
 
     // check and apply parameters
     QStringList checkAndApplyParameters(const QMap<QString, ProblemParameter> &parameters);
-    QStringList checkAndParameters(bool printError = false);
+    QStringList checkParameters(bool printError = false);
 
     // field
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }

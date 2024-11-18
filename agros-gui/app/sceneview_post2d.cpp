@@ -884,7 +884,8 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface() const
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
     // edges
-    foreach (SceneFace *edge, m_postprocessorWidget->currentComputation()->scene()->faces->items()) {
+    foreach (SceneFace *edge, m_postprocessorWidget->currentComputation()->scene()->faces->items())
+    {
         glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
         glLineWidth(3.0);
 
@@ -896,17 +897,6 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface() const
                 glVertex2d(edge->nodeStart()->point().x, edge->nodeStart()->point().y);
                 glVertex2d(edge->nodeEnd()->point().x, edge->nodeEnd()->point().y);
                 glEnd();
-
-                // connect with inner label, outer normal should be in opposite dirrection, but not allways, depends on geometry!
-                /*
-                glLineWidth(2.0);
-                glBegin(GL_LINES);
-                glVertex2d((edge->nodeStart()->point().x + edge->nodeEnd()->point().x) / 2., (edge->nodeStart()->point().y + edge->nodeEnd()->point().y) / 2.);
-                SceneLabel* label = Agros::m_postprocessorWidget->currentComputation()->scene()->labels->at(edge->innerLabelIdx());
-                glVertex2d(label->point().x, label->point().y);
-
-                glEnd();
-                */
             }
             else
             {

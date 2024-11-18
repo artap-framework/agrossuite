@@ -337,6 +337,8 @@ void OptiLabStudy::refresh()
             ++it;
         }
     }
+
+    m_sceneViewStudy->refresh();
 }
 
 void OptiLabStudy::solveStudy()
@@ -384,6 +386,9 @@ void OptiLabStudy::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *prev
     actRunStudy->setEnabled(false);
     actDuplicate->setEnabled(false);
 
+    m_sceneViewStudy->setRecipe(nullptr);
+    m_sceneViewStudy->setParameter(nullptr);
+
     Study *selected = nullptr;
     if (trvOptilab->currentItem())
     {
@@ -405,6 +410,11 @@ void OptiLabStudy::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *prev
             actDelete->setEnabled(true);
             actNewParameter->setEnabled(true);
             actNewGoalFunction->setEnabled(true);
+
+            Study *study = Agros::problem()->studies()->items().at(trvOptilab->currentItem()->data(2, Qt::UserRole).toInt());
+            QString parameter = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
+            if (!parameter.isEmpty())
+                m_sceneViewStudy->setParameter(&study->parameter(parameter));
         }
         else if (type == OptiLabStudy::OptilabGoalFunction)
         {
@@ -419,6 +429,9 @@ void OptiLabStudy::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *prev
             // optilab - recipe
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            ResultRecipe *recipe = Agros::problem()->recipes()->recipe(trvOptilab->currentItem()->data(0, Qt::UserRole).toString());
+            m_sceneViewStudy->setRecipe(recipe);
         }
 
         // change study
@@ -431,6 +444,8 @@ void OptiLabStudy::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *prev
     if (selected)
         actRunStudy->setEnabled(true);
     studySelected(selected);
+
+    m_sceneViewStudy->refresh();
 }
 
 void OptiLabStudy::doItemProperties()

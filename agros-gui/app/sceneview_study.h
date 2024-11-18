@@ -26,6 +26,9 @@
 #include "postprocessorview_chart.h"
 #include "solver/problem.h"
 
+class Study;
+class Parameter;
+class ResultRecipe;
 class PostprocessorWidget;
 
 class SceneViewStudy : public SceneViewProblem
@@ -40,9 +43,27 @@ public:
     SceneViewStudy(QWidget *parent);
     virtual ~SceneViewStudy() {}
 
+    inline void setRecipe(ResultRecipe *recipe) { m_recipe = recipe; }
+    inline void setParameter(Parameter *parameter) { m_parameter = parameter; }
+
+private:
+    void setParameter(const QString &parameter);
+
 protected:
     void paintGL();
-    void paintGeometryStudy(); // paint nodes, edges and labels
+
+    void paintGeometryStudy();
+    void paintGeometryStudyEdges(const double color[]);
+    void paintGeometryStudyVolume() const;
+
+    void paintGeometryStudySelectedPoint(const Point &selectedPoint) const;
+    void paintGeometryStudySelectedEdges(QList<int> selectedEdges = QList<int>()) const;
+    void paintGeometryStudySelectedVolume(QList<int> selectedLabels = QList<int>()) const;
+
+    QSharedPointer<Computation> m_currentComputation;
+
+    ResultRecipe *m_recipe;
+    Parameter *m_parameter;
 };
 
 

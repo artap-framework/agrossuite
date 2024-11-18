@@ -115,7 +115,7 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
 
     // layout scalar field
     cmbPostScalarFieldVariable = new QComboBox();
-    connect(cmbPostScalarFieldVariable, SIGNAL(currentIndexChanged(int)), this, SLOT(doScalarFieldVariable(int)));
+    connect(cmbPostScalarFieldVariable, SIGNAL(currentIndexChanged(int)), this, SLOT(doScaFlarFieldVariable(int)));
     cmbPostScalarFieldVariableComp = new QComboBox();
 
     QGridLayout *layoutScalarField = new QGridLayout();

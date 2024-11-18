@@ -606,7 +606,7 @@ QStringList ProblemBase::checkAndApplyParameters(const QMap<QString, ProblemPara
     m_config->parameters()->set(parameters.values());
 
     // apply new parameters
-    QStringList err = checkAndParameters(true);
+    QStringList err = checkParameters(true);
     bool successfulRun = err.isEmpty();
 
     // restore original parameters
@@ -615,7 +615,7 @@ QStringList ProblemBase::checkAndApplyParameters(const QMap<QString, ProblemPara
         m_config->parameters()->set(parametersOriginal.values());
 
         // apply original parameters
-        checkAndParameters();
+        checkParameters();
     }
     else
     {
@@ -626,7 +626,7 @@ QStringList ProblemBase::checkAndApplyParameters(const QMap<QString, ProblemPara
     return err;
 }
 
-QStringList ProblemBase::checkAndParameters(bool printError)
+QStringList ProblemBase::checkParameters(bool printError)
 {
     QStringList str;
 

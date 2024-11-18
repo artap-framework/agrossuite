@@ -1199,8 +1199,6 @@ void SceneViewProblem::paintGeometry()
     }
 
     // labels
-    double dxlabel = 1.3/width() * LABELSIZE/m_scale2d*aspect();
-    double dylabel = 1.3/height() * LABELSIZE/m_scale2d*aspect();
     foreach (SceneLabel *label, Agros::problem()->scene()->labels->items())
     {
         glColor3d(COLORLABEL[0], COLORLABEL[1], COLORLABEL[2]);
@@ -1209,31 +1207,11 @@ void SceneViewProblem::paintGeometry()
         glVertex2d(label->point().x, label->point().y);
         glEnd();
 
-        // glLineWidth(1.0);
-        // glBegin(GL_POLYGON);
-        // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + dxlabel*fastcos(i/180.0*M_PI), label->point().y + dylabel*fastsin(i/180.0*M_PI));
-        // glEnd();
-
-        // glBegin(GL_TRIANGLES);
-        // glVertex2d(label->point().x + dxlabel/2.0, label->point().y - dylabel/3.0);
-        // glVertex2d(label->point().x - dxlabel/2.0, label->point().y - dylabel/3.0);
-        // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0);
-        // glEnd();
-
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
         glPointSize(LABELSIZE - 2.0);
         glBegin(GL_POINTS);
         glVertex2d(label->point().x, label->point().y);
         glEnd();
-
-        // glBegin(GL_POLYGON);
-        // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
-        // glEnd();
-        // glBegin(GL_TRIANGLES);
-        // glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-        // glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-        // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
-        // glEnd();
 
         if ((label->isSelected()) || (label->isHighlighted()))
         {
@@ -1246,16 +1224,6 @@ void SceneViewProblem::paintGeometry()
             glBegin(GL_POINTS);
             glVertex2d(label->point().x, label->point().y);
             glEnd();
-
-            // glBegin(GL_POLYGON);
-            // for (int i = 0; i<360; i = i + 20) glVertex2d(label->point().x + 0.6*dxlabel*fastcos(i/180.0*M_PI), label->point().y + 0.6*dylabel*fastsin(i/180.0*M_PI));
-            // glEnd();
-
-            // glBegin(GL_TRIANGLES);
-            // glVertex2d(label->point().x + dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-            // glVertex2d(label->point().x - dxlabel/2.0 * 0.4, label->point().y - dylabel/3.0 * 0.4);
-            // glVertex2d(label->point().x, label->point().y + dylabel*2.0/3.0 * 0.4);
-            // glEnd();
         }
 
         // area size
@@ -1321,31 +1289,6 @@ void SceneViewProblem::paintGeometry()
             glDisable(GL_BLEND);
             glDisable(GL_POLYGON_OFFSET_FILL);
         }
-
-        // FIX: temp
-        /*
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        QMapIterator<SceneLabel*, QList<Triangle> > j(labels);
-        while (j.hasNext())
-        {
-            j.next();
-
-            glColor4f(0.3, 0.1, 0.7, 0.55);
-
-            glBegin(GL_TRIANGLES);
-            foreach (Triangle triangle, j.value())
-            {
-                glVertex2d(triangle.a.x, triangle.a.y);
-                glVertex2d(triangle.b.x, triangle.b.y);
-                glVertex2d(triangle.c.x, triangle.c.y);
-            }
-            glEnd();
-        }
-
-        glDisable(GL_POLYGON_OFFSET_FILL);
-        */
     }
     catch (AgrosException& ame)
     {

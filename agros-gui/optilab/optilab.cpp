@@ -368,7 +368,7 @@ void OptiLab::createControls()
 
     auto *layoutCombo = new QFormLayout();
     layoutCombo->addRow(tr("Studies:"), cmbStudies);
-    layoutCombo->addRow(tr("Number of Solutions:"), lblNumberOfSolutions);
+    layoutCombo->addRow(tr("Number of solutions:"), lblNumberOfSolutions);
     layoutCombo->addRow(tr("Horizontal axis:"), cmbAxisX);
     layoutCombo->addRow(tr("Vertical axis:"), cmbAxisY);
 
