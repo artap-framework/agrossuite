@@ -1,4 +1,4 @@
-    // This file is part of Agros.
+// This file is part of Agros.
 //
 // Agros is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,17 +39,18 @@
 #include "scenemarkerdialog.h"
 
 
-SceneViewStudy::SceneViewStudy(QWidget *parent)
-    : SceneViewProblem(parent), m_currentComputation(nullptr), m_recipe(nullptr), m_parameter(nullptr)
+SceneViewStudy::SceneViewStudy(QWidget *parent, bool showRulers)
+    : SceneViewProblem(parent), m_currentComputation(nullptr), m_recipe(nullptr), m_parameter(nullptr), m_showRulers(showRulers)
 {
     setMinimumSize(150, 200);
+
+    m_currentComputation = QSharedPointer<Computation>(new Computation());
 }
 
 void SceneViewStudy::refresh()
 {
     SceneViewCommon::refresh();
 
-    m_currentComputation = QSharedPointer<Computation>(new Computation());
     m_currentComputation->readFromProblem();
 }
 
@@ -75,16 +76,19 @@ void SceneViewStudy::paintGL()
     paintGeometryStudy();
 
     // rulers
-    if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
+    if (m_showRulers)
     {
-        paintRulers();
-        paintRulersHintsEdges();
-    }
+        if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
+        {
+            paintRulers();
+            paintRulersHintsEdges();
+        }
 
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
-    {
-        paintAxes();
+        // axes
+        if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
+        {
+            paintAxes();
+        }
     }
 }
 
@@ -94,8 +98,8 @@ void SceneViewStudy::paintGeometryStudy()
 
     if (m_parameter)
     {
-        const double colorLower[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
-        const double colorUpper[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
+        constexpr double colorLower[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
+        constexpr double colorUpper[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
 
         auto parameters = Agros::problem()->config()->parameters()->items();
 
@@ -197,8 +201,6 @@ void SceneViewStudy::paintGeometryStudySelectedVolume(QList<int> selectedLabels)
 {
     if (m_currentComputation->scene()->crossings().isEmpty())
     {
-        qInfo() << selectedLabels;
-
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -215,7 +217,6 @@ void SceneViewStudy::paintGeometryStudySelectedVolume(QList<int> selectedLabels)
 
             auto *label = i.key();
             int index = m_currentComputation->scene()->labels->items().indexOf(label);
-            qInfo() << index;
             if (selectedLabels.contains(index))
                 glColor4f(0.3f, 0.1f, 0.7f, 0.55f);
             else

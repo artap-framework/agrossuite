@@ -20,6 +20,7 @@
 #ifndef RECIPEDIALOG_H
 #define RECIPEDIALOG_H
 
+#include "app/sceneview_study.h"
 #include "util/util.h"
 #include "gui/other.h"
 #include "solver/problem_result.h"
@@ -77,9 +78,9 @@ protected:
     LineEditDouble *txtPointX;
     LineEditDouble *txtPointY;
 
-    inline LocalValueRecipe *recipe() { return dynamic_cast<LocalValueRecipe *>(m_recipe); }
+    inline LocalValueRecipe *recipe() const { return dynamic_cast<LocalValueRecipe *>(m_recipe); }
 
-    virtual QWidget *createRecipeControls();
+    QWidget *createRecipeControls() override;
 
 protected slots:
     void fieldChanged(int index);
@@ -97,14 +98,18 @@ public:
 protected:
     QListWidget *lstEdges;
 
-    inline SurfaceIntegralRecipe *recipe() { return dynamic_cast<SurfaceIntegralRecipe *>(m_recipe); }
+    inline SurfaceIntegralRecipe *recipe() const { return dynamic_cast<SurfaceIntegralRecipe *>(m_recipe); }
 
-    virtual QWidget *createRecipeControls();
+    QWidget *createRecipeControls() override;
+
+    SceneViewStudy *m_sceneViewStudy;
+    QSharedPointer<SurfaceIntegralRecipe> m_recipeView;
 
 protected slots:
-    void fieldChanged(int index);
+    void fieldChanged(int index) override;
+    void edgesChanged(QListWidgetItem *item) const;
 
-    virtual bool save();
+    bool save() override;
 };
 
 class VolumeIntegralRecipeDialog : public RecipeDialog
@@ -116,14 +121,18 @@ public:
 protected:
     QListWidget *lstVolumes;
 
-    inline VolumeIntegralRecipe *recipe() { return dynamic_cast<VolumeIntegralRecipe *>(m_recipe); }
+    inline VolumeIntegralRecipe *recipe() const { return dynamic_cast<VolumeIntegralRecipe *>(m_recipe); }
 
-    virtual QWidget *createRecipeControls();
+    QWidget *createRecipeControls() override;
+
+    SceneViewStudy *m_sceneViewStudy;
+    QSharedPointer<VolumeIntegralRecipe> m_recipeView;
 
 protected slots:
-    void fieldChanged(int index);
+    void fieldChanged(int index) override;
+    void volumeChanged(QListWidgetItem *item) const;
 
-    virtual bool save();
+    bool save() override;
 };
 
 #endif // RECIPEDIALOG_H

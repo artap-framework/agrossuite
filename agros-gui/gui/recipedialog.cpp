@@ -97,12 +97,12 @@ void RecipeDialog::createControls()
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(doReject()));
 
-    QVBoxLayout *layoutParametersWidget = new QVBoxLayout();
+    auto *layoutParametersWidget = new QVBoxLayout();
     layoutParametersWidget->addWidget(grpName);
     layoutParametersWidget->addWidget(grpField);
     layoutParametersWidget->addWidget(createRecipeControls());
     layoutParametersWidget->addWidget(lblError);
-    layoutParametersWidget->addStretch();
+    // layoutParametersWidget->addStretch();
     layoutParametersWidget->addWidget(buttonBox);
 
     setLayout(layoutParametersWidget);
@@ -282,9 +282,10 @@ bool LocalValueRecipeDialog::save()
 // *************************************************************************************
 
 SurfaceIntegralRecipeDialog::SurfaceIntegralRecipeDialog(SurfaceIntegralRecipe *recipe, QWidget *parent)
-    : RecipeDialog(recipe, parent)
+    : RecipeDialog(recipe, parent), m_sceneViewStudy(nullptr)
 {
-
+    m_recipeView = QSharedPointer<SurfaceIntegralRecipe>(new SurfaceIntegralRecipe());
+    m_sceneViewStudy = new SceneViewStudy(this, false);
 }
 
 QWidget *SurfaceIntegralRecipeDialog::createRecipeControls()
@@ -293,7 +294,6 @@ QWidget *SurfaceIntegralRecipeDialog::createRecipeControls()
     cmbVariableComp->setVisible(false);
 
     lstEdges = new QListWidget(this);
-
     for (int i = 0; i < Agros::problem()->scene()->faces->items().count(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstEdges);
@@ -301,9 +301,15 @@ QWidget *SurfaceIntegralRecipeDialog::createRecipeControls()
         item->setData(Qt::UserRole, i);
         item->setCheckState(recipe()->edges().contains(i) ? Qt::Checked : Qt::Unchecked);
     }
+    connect(lstEdges, &QListWidget::itemChanged, this, &SurfaceIntegralRecipeDialog::edgesChanged);
 
-    QGridLayout *edgesLayout = new QGridLayout();
-    edgesLayout->addWidget(lstEdges, 0, 0);
+    // fit view
+    edgesChanged(nullptr);
+    m_sceneViewStudy->doZoomBestFit();
+
+    auto *edgesLayout = new QHBoxLayout();
+    edgesLayout->addWidget(lstEdges, 0);
+    edgesLayout->addWidget(m_sceneViewStudy, 1);
 
     QGroupBox *grpEdges = new QGroupBox(tr("Edges"));
     grpEdges->setLayout(edgesLayout);
@@ -341,10 +347,28 @@ bool SurfaceIntegralRecipeDialog::save()
         }
 
         return true;
-
     }
 
     return false;
+}
+
+void SurfaceIntegralRecipeDialog::edgesChanged(QListWidgetItem *item) const
+{
+    m_recipeView->setName(txtName->text());
+    m_recipeView->setFieldId(cmbField->currentData().toString());
+    m_recipeView->setVariable(cmbVariable->currentData().toString());
+    m_recipeView->setTimeStep(txtTimeStep->value());
+    m_recipeView->setAdaptivityStep(txtAdaptivityStep->value());
+
+    m_recipeView->clear();
+    for (int i = 0; i < lstEdges->count(); i++)
+    {
+        if (lstEdges->item(i)->checkState() == Qt::Checked)
+            m_recipeView->addEdge(i);
+    }
+
+    m_sceneViewStudy->setRecipe(m_recipeView.data());
+    m_sceneViewStudy->refresh();
 }
 
 // *************************************************************************************
@@ -352,7 +376,8 @@ bool SurfaceIntegralRecipeDialog::save()
 VolumeIntegralRecipeDialog::VolumeIntegralRecipeDialog(VolumeIntegralRecipe *recipe, QWidget *parent)
     : RecipeDialog(recipe, parent)
 {
-
+    m_recipeView = QSharedPointer<VolumeIntegralRecipe>(new VolumeIntegralRecipe());
+    m_sceneViewStudy = new SceneViewStudy(this, false);
 }
 
 QWidget *VolumeIntegralRecipeDialog::createRecipeControls()
@@ -361,7 +386,6 @@ QWidget *VolumeIntegralRecipeDialog::createRecipeControls()
     cmbVariableComp->setVisible(false);
 
     lstVolumes = new QListWidget(this);
-
     for (int i = 0; i < Agros::problem()->scene()->labels->items().count(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstVolumes);
@@ -369,9 +393,15 @@ QWidget *VolumeIntegralRecipeDialog::createRecipeControls()
         item->setData(Qt::UserRole, i);
         item->setCheckState(recipe()->labels().contains(i) ? Qt::Checked : Qt::Unchecked);
     }
+    connect(lstVolumes, &QListWidget::itemChanged, this, &VolumeIntegralRecipeDialog::volumeChanged);
 
-    QGridLayout *volumesLayout = new QGridLayout();
-    volumesLayout->addWidget(lstVolumes, 0, 0);
+    // fit view
+    volumeChanged(nullptr);
+    m_sceneViewStudy->doZoomBestFit();
+
+    auto *volumesLayout = new QHBoxLayout();
+    volumesLayout->addWidget(lstVolumes, 0);
+    volumesLayout->addWidget(m_sceneViewStudy, 1);
 
     QGroupBox *grpVolumes = new QGroupBox(tr("Labels"));
     grpVolumes->setLayout(volumesLayout);
@@ -412,4 +442,23 @@ bool VolumeIntegralRecipeDialog::save()
     }
 
     return false;
+}
+
+void VolumeIntegralRecipeDialog::volumeChanged(QListWidgetItem *item) const
+{
+    m_recipeView->setName(txtName->text());
+    m_recipeView->setFieldId(cmbField->currentData().toString());
+    m_recipeView->setVariable(cmbVariable->currentData().toString());
+    m_recipeView->setTimeStep(txtTimeStep->value());
+    m_recipeView->setAdaptivityStep(txtAdaptivityStep->value());
+
+    m_recipeView->clear();
+    for (int i = 0; i < lstVolumes->count(); i++)
+    {
+        if (lstVolumes->item(i)->checkState() == Qt::Checked)
+            m_recipeView->addLabel(i);
+    }
+
+    m_sceneViewStudy->setRecipe(m_recipeView.data());
+    m_sceneViewStudy->refresh();
 }

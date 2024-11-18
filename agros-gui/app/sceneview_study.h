@@ -40,7 +40,7 @@ public slots:
     virtual void refresh();
 
 public:
-    SceneViewStudy(QWidget *parent);
+    SceneViewStudy(QWidget *parent, bool showRulers = true);
     virtual ~SceneViewStudy() {}
 
     inline void setRecipe(ResultRecipe *recipe) { m_recipe = recipe; }
@@ -64,6 +64,8 @@ protected:
 
     ResultRecipe *m_recipe;
     Parameter *m_parameter;
+
+    bool m_showRulers;
 };
 
 
