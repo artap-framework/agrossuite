@@ -279,6 +279,10 @@ test-windows:
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v --reruns 5 --only-rerun AssertionError --only-rerun ValueError
     - cd ..
     - cd ..
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
 
 test-windows-tutorials:
   stage: test
@@ -296,6 +300,10 @@ test-windows-tutorials:
     - python tutorials.py
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v
     - cd ../..
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
     
 test-windows-import-a2d:
   stage: test
@@ -313,6 +321,10 @@ test-windows-import-a2d:
     - python tutorials_a2d.py
     - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v 
     - cd ../..    
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
 
 deploy-windows:
     stage: deploy
@@ -325,4 +337,28 @@ deploy-windows:
       - iscc.exe agros.iss
       - cd setup
       - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
+
+    artifacts:
+      paths:
+        - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+        - .\dealii\build\include
  
+
+deploy-windows-wheel:
+  stage: deploy
+  needs: ["test-windows", "test-windows-tutorials", "test-windows-import-a2d"]
+  tags:
+    - agros
+    - win11
+
+  script: 
+    - cd build/agros-python/
+    - .\env\Scripts\activate
+    # upload to pypi
+    - pip install twine
+    - cd agrossuite
+    - Remove-Item -Path .\_skbuild\ -Recurse    
+    - python setup.py bdist_wheel
+    - cd dist
+    - python -m twine upload ./agrossuite-*.whl
+    - cd ../..
