@@ -31,7 +31,7 @@ class Parameter;
 class ResultRecipe;
 class PostprocessorWidget;
 
-class SceneViewStudy : public SceneViewProblem
+class SceneViewStudy : public SceneViewCommon2D
 {
     Q_OBJECT
 
@@ -40,32 +40,49 @@ public slots:
     virtual void refresh();
 
 public:
+    enum InteractionMode
+    {
+        NoInteraction = -1,
+        SelectPoint = 0,
+        SelectSurface = 1,
+        SelectVolume = 2
+    };
+
     SceneViewStudy(QWidget *parent, bool showRulers = true);
     virtual ~SceneViewStudy() {}
 
+    inline void setInteractionMode(InteractionMode userMode) { m_userMode = userMode; }
     inline void setRecipe(ResultRecipe *recipe) { m_recipe = recipe; }
     inline void setParameter(Parameter *parameter) { m_parameter = parameter; }
+    inline void setSelectedPoint(const Point &selectedPoint) { m_selectedPoint = selectedPoint; }
+
+    virtual ProblemBase *problem() const;
 
 private:
-    void setParameter(const QString &parameter);
 
 protected:
     void paintGL();
+
+    void mousePressEvent(QMouseEvent *event);
+
+    void doZoomRegion(const Point &start, const Point &end) override;
 
     void paintGeometryStudy();
     void paintGeometryStudyEdges(const double color[]);
     void paintGeometryStudyVolume() const;
 
     void paintGeometryStudySelectedPoint(const Point &selectedPoint) const;
-    void paintGeometryStudySelectedEdges(QList<int> selectedEdges = QList<int>()) const;
-    void paintGeometryStudySelectedVolume(QList<int> selectedLabels = QList<int>()) const;
+    void paintGeometryStudySelectedEdges() const;
+    void paintGeometryStudySelectedVolume() const;
 
     QSharedPointer<Computation> m_currentComputation;
 
     ResultRecipe *m_recipe;
     Parameter *m_parameter;
+    Point m_selectedPoint;
 
     bool m_showRulers;
+    InteractionMode m_userMode;
 };
 
 

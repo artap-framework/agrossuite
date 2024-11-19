@@ -159,9 +159,6 @@ void SceneViewMesh::paintGL()
         paintRulersHints();
     }
 
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
-
     paintZoomRegion();
 }
 

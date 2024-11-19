@@ -63,8 +63,7 @@ private:
     QSpinBox *txtPostFontSizes;
 
     // workspace other
-    QCheckBox *chkShowAxes;
-    QCheckBox *chkShowRulers;
+    QCheckBox *chkShowRulersAndAxes;
 
     void load();
     void save();

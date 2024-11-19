@@ -1085,12 +1085,6 @@ void SceneViewProblem::paintGL()
         paintRulersHintsEdges();
     }
 
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
-    {
-        paintAxes();
-    }
-
     paintSelectRegion();
     paintZoomRegion();
     paintSnapToGrid();

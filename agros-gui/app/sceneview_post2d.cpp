@@ -228,12 +228,6 @@ void SceneViewPost2D::paintGL()
         paintRulersHints();
     }
 
-    // axes
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
-    {
-        paintAxes();
-    }
-
     paintZoomRegion();
 }
 
@@ -688,146 +682,6 @@ void SceneViewPost2D::paintVectors()
         }
         glEnd();
 
-        /*
-        QList<dealii::Point<2> > points;
-        QList<dealii::Tensor<1, 2> > gradients;
-        for (int i = 0; i < countX; i++)
-        {
-            for (int j = 0; j < countY; j++)
-            {
-                try
-                {
-                    dealii::Point<2> point(rect.start.x + i * gs + ((j % 2 == 0) ? 0 : gs / 2.0), rect.start.y + j * gs);
-                    dealii::Tensor<1, 2> grad = localvalues.gradient(point);
-
-                    points.append(point);
-                    gradients.append(grad);
-
-                    if (grad.norm() > rangeMax) rangeMax = grad.norm();
-                    if (grad.norm() < rangeMin) rangeMin = grad.norm();
-                }
-                catch (const dealii::GridTools::ExcPointNotFound<2> &e)
-                {
-                    continue;
-                }
-            }
-        }
-
-        //Add 20% margin to the range
-        double vectorRange = rangeMax - rangeMin;
-        rangeMin = rangeMin - 0.2*vectorRange;
-        rangeMax = rangeMax + 0.2*vectorRange;
-
-        // qDebug() << "SceneViewCommon::paintVectors(), min = " << vectorRangeMin << ", max = " << vectorRangeMax;
-
-        double irange = 1.0 / (rangeMax - rangeMin);
-        // if (fabs(vectorRangeMin - vectorRangeMax) < EPS_ZERO) return;
-
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        glBegin(GL_TRIANGLES);
-        for (int i = 0; i < points.size(); i++)
-        {
-            Point point = Point(points[i][0], points[i][1]);
-
-            double dx = gradients[i][0];
-            double dy = gradients[i][1];
-
-            double value = sqrt(dx*dx + dy*dy);
-            double angle = atan2(dy, dx);
-
-            if ((m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorProportional).toBool()) && (fabs(rangeMin - rangeMax) > EPS_ZERO))
-            {
-                if ((value / rangeMax) < 1e-6)
-                {
-                    dx = 0.0;
-                    dy = 0.0;
-                }
-                else
-                {
-                    dx = ((value - rangeMin) * irange) * m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
-                    dy = ((value - rangeMin) * irange) * m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
-                }
-            }
-            else
-            {
-                dx = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
-                dy = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
-            }
-
-            double dm = sqrt(dx*dx + dy*dy);
-            // qDebug() << dx << dy << dm;
-
-            // color
-            if ((m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorColor).toBool())
-                    && (fabs(rangeMin - rangeMax) > EPS_ZERO))
-            {
-                double color = 0.7 - 0.7 * (value - rangeMin) * irange;
-                glColor3d(color, color, color);
-            }
-            else
-            {
-                glColor3d(COLORVECTORS[0], COLORVECTORS[1], COLORVECTORS[2]);
-            }
-
-            // tail
-            Point shiftCenter(0.0, 0.0);
-            if ((VectorCenter) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Head)
-                shiftCenter = Point(- 2.0*dm * cos(angle), - 2.0*dm * sin(angle)); // head
-            if ((VectorCenter) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Center)
-                shiftCenter = Point(- dm * cos(angle), - dm * sin(angle)); // center
-
-            if ((VectorType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Arrow)
-            {
-                // arrow and shaft
-                // head for an arrow
-                double vh1x = point.x + dm/5.0 * cos(angle - M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
-                double vh1y = point.y + dm/5.0 * sin(angle - M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
-                double vh2x = point.x + dm/5.0 * cos(angle + M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
-                double vh2y = point.y + dm/5.0 * sin(angle + M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
-                double vh3x = point.x + 2.0 * dm * cos(angle) + shiftCenter.x;
-                double vh3y = point.y + 2.0 * dm * sin(angle) + shiftCenter.y;
-
-                glVertex2d(vh1x, vh1y);
-                glVertex2d(vh2x, vh2y);
-                glVertex2d(vh3x, vh3y);
-
-                // shaft for an arrow
-                double vs1x = point.x + dm/15.0 * cos(angle + M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
-                double vs1y = point.y + dm/15.0 * sin(angle + M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
-                double vs2x = point.x + dm/15.0 * cos(angle - M_PI/2.0) + dm * cos(angle) + shiftCenter.x;
-                double vs2y = point.y + dm/15.0 * sin(angle - M_PI/2.0) + dm * sin(angle) + shiftCenter.y;
-                double vs3x = vs1x - dm * cos(angle);
-                double vs3y = vs1y - dm * sin(angle);
-                double vs4x = vs2x - dm * cos(angle);
-                double vs4y = vs2y - dm * sin(angle);
-
-                glVertex2d(vs1x, vs1y);
-                glVertex2d(vs2x, vs2y);
-                glVertex2d(vs3x, vs3y);
-                glVertex2d(vs4x, vs4y);
-                glVertex2d(vs3x, vs3y);
-                glVertex2d(vs2x, vs2y);
-            }
-            else if ((VectorType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Cone)
-            {
-                // cone
-                double vh1x = point.x + dm/3.5 * cos(angle - M_PI/2.0) + shiftCenter.x;
-                double vh1y = point.y + dm/3.5 * sin(angle - M_PI/2.0) + shiftCenter.y;
-                double vh2x = point.x + dm/3.5 * cos(angle + M_PI/2.0) + shiftCenter.x;
-                double vh2y = point.y + dm/3.5 * sin(angle + M_PI/2.0) + shiftCenter.y;
-                double vh3x = point.x + 2.0 * dm * cos(angle) + shiftCenter.x;
-                double vh3y = point.y + 2.0 * dm * sin(angle) + shiftCenter.y;
-
-                glVertex2d(vh1x, vh1y);
-                glVertex2d(vh2x, vh2y);
-                glVertex2d(vh3x, vh3y);
-            }
-        }
-        glEnd();
-        */
-
         glDisable(GL_POLYGON_OFFSET_FILL);
 
         glEndList();
@@ -883,12 +737,12 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface() const
 {
     if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
+    glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
+    glLineWidth(3.0);
+
     // edges
     foreach (SceneFace *edge, m_postprocessorWidget->currentComputation()->scene()->faces->items())
     {
-        glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
-        glLineWidth(3.0);
-
         if (edge->isSelected())
         {
             if (edge->isStraight())
@@ -907,8 +761,9 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface() const
                 drawArc(center, radius, startAngle, edge->angle());
             }
         }
-        glLineWidth(1.0);
     }
+
+    glLineWidth(1.0);
 }
 
 void SceneViewPost2D::paintPostprocessorSelectedPoint() const

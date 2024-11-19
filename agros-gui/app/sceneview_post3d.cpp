@@ -137,8 +137,6 @@ void SceneViewPost3D::paintGL()
     }
         break;
     }
-
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 }
 
 void SceneViewPost3D::initLighting()

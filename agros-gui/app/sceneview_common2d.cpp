@@ -362,6 +362,9 @@ void SceneViewCommon2D::paintRulers()
             }
         }
     }
+
+    // paint axes
+    paintAxes();
 }
 
 void SceneViewCommon2D::paintRulersHints()
@@ -546,8 +549,10 @@ void SceneViewCommon2D::doZoomRegion(const Point &start, const Point &end)
     double sceneWidth = end.x - start.x;
     double sceneHeight = end.y - start.y;
 
-    double w = (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? width() - rulersAreaScreen.x : width();
-    double h = (Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? height() - rulersAreaScreen.y : height();
+    auto showRulers = Agros::configComputer()->value(Config::Config_ShowRulers).toBool();
+
+    double w = (showRulers) ? width() - rulersAreaScreen.x : width();
+    double h = (showRulers) ? height() - rulersAreaScreen.y : height();
     double maxScene = ((w / h) < (sceneWidth / sceneHeight)) ? sceneWidth/aspect() : sceneHeight;
 
     if (maxScene > 0.0)
@@ -556,8 +561,8 @@ void SceneViewCommon2D::doZoomRegion(const Point &start, const Point &end)
     Point rulersArea(2.0/width()*rulersAreaScreen.x/m_scale2d*aspect(),
                      2.0/height()*rulersAreaScreen.y/m_scale2d);
 
-    m_offset2d.x = ((Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? start.x + end.x - rulersArea.x : start.x + end.x) / 2.0;
-    m_offset2d.y = ((Agros::configComputer()->value(Config::Config_ShowRulers).toBool()) ? start.y + end.y - rulersArea.y : start.y + end.y) / 2.0;
+    m_offset2d.x = ((showRulers) ? start.x + end.x - rulersArea.x : start.x + end.x) / 2.0;
+    m_offset2d.y = ((showRulers) ? start.y + end.y - rulersArea.y : start.y + end.y) / 2.0;
 
     setZoom(0);
 }

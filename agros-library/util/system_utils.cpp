@@ -289,22 +289,5 @@ size_t SystemUtils::totalMemorySize()
 
 QString SystemUtils::operatingSystem()
 {
-#ifdef Q_WS_WIN
-    return QSysInfo::productVersion();    
-#endif
-#ifdef Q_WS_X11
-    FILE* pipe = popen("lsb_release -ds", "r");
-    if (!pipe)
-        return "ERROR";
-    char buffer[128];
-    std::string result = "";
-    while (!feof(pipe))
-    {
-        if (fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
-    }
-    pclose(pipe);
-
-    return QString::fromStdString(result).trimmed();
-#endif
+    return QSysInfo::productType() + " " + QSysInfo::productVersion();
 }

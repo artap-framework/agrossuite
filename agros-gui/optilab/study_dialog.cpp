@@ -506,6 +506,7 @@ void StudyDialog::createControls()
 
     auto *layout = new QVBoxLayout();
     layout->addWidget(widgetStudy);
+    layout->addStretch();
     layout->addLayout(layoutButtonBox);
 
     setLayout(layout);

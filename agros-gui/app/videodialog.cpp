@@ -43,7 +43,6 @@ VideoDialog::VideoDialog(SceneViewCommon *sceneView, QSharedPointer<Computation>
     m_adaptiveStepStore = m_computation->postDeal()->activeAdaptivityStep();
 
     m_showRulersStore = Agros::configComputer()->value(Config::Config_ShowRulers).toBool();
-    m_showAxesStore = Agros::configComputer()->value(Config::Config_ShowAxes).toBool();
 
     // timer create images
     timer = new QTimer(this);
@@ -63,7 +62,6 @@ VideoDialog::~VideoDialog()
     m_computation->postDeal()->setActiveAdaptivityStep(m_adaptiveStepStore);
 
     Agros::configComputer()->setValue(Config::Config_ShowRulers, m_showRulersStore);
-    Agros::configComputer()->setValue(Config::Config_ShowAxes, m_showAxesStore);
 
     m_computation->postDeal()->refresh();
 
@@ -157,8 +155,6 @@ void VideoDialog::createControls()
 
     chkFigureShowRulers = new QCheckBox(tr("Show rulers"));
     chkFigureShowRulers->setChecked(settings.value("VideoDialog/ShowRulers", Agros::configComputer()->value(Config::Config_ShowRulers).toBool()).toBool());
-    chkFigureShowAxes = new QCheckBox(tr("Show axes"));
-    chkFigureShowAxes->setChecked(settings.value("VideoDialog/ShowAxes", Agros::configComputer()->value(Config::Config_ShowAxes).toBool()).toBool());
 
     QHBoxLayout *layoutButtonViewport = new QHBoxLayout();
     layoutButtonViewport->addStretch();
@@ -260,7 +256,6 @@ void VideoDialog::transientAnimateNextStep()
 void VideoDialog::setTransientStep(int transientStep)
 {
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
-    Agros::configComputer()->setValue(Config::Config_ShowAxes, chkFigureShowAxes->isChecked());
 
     m_computation->postDeal()->setActiveTimeStep(transientStep);
     m_computation->postDeal()->setActiveAdaptivityStep(m_computation->solutionStore()->lastAdaptiveStep(m_computation->postDeal()->activeViewField(), transientStep));
@@ -310,7 +305,6 @@ void VideoDialog::adaptiveAnimateNextStep()
 void VideoDialog::setAdaptiveStep(int adaptiveStep)
 {
     Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
-    Agros::configComputer()->setValue(Config::Config_ShowAxes, chkFigureShowAxes->isChecked());
 
     m_computation->postDeal()->setActiveAdaptivityStep(adaptiveStep - 1);
     m_computation->postDeal()->refresh();

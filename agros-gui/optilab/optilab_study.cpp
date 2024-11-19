@@ -254,11 +254,11 @@ void OptiLabStudy::refresh()
         studyNode->setData(1, Qt::UserRole, OptiLabStudy::OptilabStudy);
         studyNode->setData(2, Qt::UserRole, k);
         studyNode->setExpanded(true);
+
         // select first study if empty
         if (selectedItem.isEmpty())
         {
             selectedItem = treeItemToFullPath(studyNode);
-            m_sceneViewStudy->doZoomBestFit();
         }
 
         auto studyPropertiesNode = new QTreeWidgetItem(studyNode);
@@ -331,6 +331,9 @@ void OptiLabStudy::refresh()
                 selectedItem = itemSelectedTree;
                 trvOptilab->setCurrentItem(item);
                 doItemChanged(item, NULL);
+
+                // zoom to fit
+                m_sceneViewStudy->doZoomBestFit();
 
                 break;
             }
@@ -544,7 +547,6 @@ void OptiLabStudy::doItemDelete()
             QString parameter = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
 
             study->removeParameter(parameter);
-            refresh();
         }
         else if (type == OptiLabStudy::OptilabGoalFunction)
         {
@@ -553,7 +555,6 @@ void OptiLabStudy::doItemDelete()
             QString goal = trvOptilab->currentItem()->data(0, Qt::UserRole).toString();
 
             study->removeGoalFunction(goal);
-            refresh();
         }
         else if (type == OptiLabStudy::OptilabRecipe)
         {

@@ -33,7 +33,7 @@ public:
     SceneViewCommon2D(QWidget *parent = 0);
     virtual ~SceneViewCommon2D();
 
-    void doZoomRegion(const Point &start, const Point &end);
+    void doZoomRegion(const Point &start, const Point &end) override;
 
 protected:
     double m_scale2d; // scale

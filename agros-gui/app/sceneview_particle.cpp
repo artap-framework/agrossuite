@@ -133,8 +133,6 @@ void SceneViewParticleTracing::paintGL()
     }
 
     emit labelCenter(tr("Particle tracing"));
-
-    if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
 }
 
 void SceneViewParticleTracing::resizeGL(int w, int h)

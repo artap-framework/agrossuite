@@ -40,11 +40,92 @@
 
 
 SceneViewStudy::SceneViewStudy(QWidget *parent, bool showRulers)
-    : SceneViewProblem(parent), m_currentComputation(nullptr), m_recipe(nullptr), m_parameter(nullptr), m_showRulers(showRulers)
+    : SceneViewCommon2D(parent), m_currentComputation(nullptr), m_recipe(nullptr), m_parameter(nullptr), m_showRulers(showRulers), m_userMode(NoInteraction)
 {
-    setMinimumSize(150, 200);
+    setMinimumSize(300, 300);
 
     m_currentComputation = QSharedPointer<Computation>(new Computation());
+    m_currentComputation->readFromProblem();
+}
+
+ProblemBase *SceneViewStudy::problem() const
+{
+    return static_cast<ProblemBase *>(m_currentComputation.data());
+}
+
+void SceneViewStudy::mousePressEvent(QMouseEvent *event)
+{
+    SceneViewCommon2D::mousePressEvent(event);
+
+    if (m_userMode == NoInteraction)
+        return;
+
+    m_lastPos = event->pos();
+    Point p = transform(Point(event->pos().x(), event->pos().y()));
+
+    if (event->buttons() & Qt::LeftButton)
+    {
+        // local point value
+        if (m_userMode == SelectPoint)
+        {
+            m_selectedPoint = p;
+            emit mousePressed(p);
+
+            update();
+        }
+
+        // select volume integral area
+        if (m_userMode == SelectVolume)
+        {
+            // find marker
+            SceneLabel *label = SceneLabel::findLabelAtPoint(m_currentComputation->scene(), p);
+            if (label)
+            {
+                label->setSelected(!label->isSelected());
+
+                update();
+                emit mousePressed();
+            }
+        }
+
+        // select surface integral area
+        if (m_userMode == SelectSurface)
+        {
+            //  find edge marker
+            SceneFace *edge = SceneFace::findClosestFace(m_currentComputation->scene(), p);
+
+            edge->setSelected(!edge->isSelected());
+            update();
+
+            emit mousePressed();
+        }
+    }
+}
+
+void SceneViewStudy::doZoomRegion(const Point &start, const Point &end)
+{
+    if (m_userMode == NoInteraction)
+    {
+        SceneViewCommon2D::doZoomRegion(start, end);
+    }
+    else
+    {
+        if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
+            return;
+
+        double sceneWidth = end.x - start.x;
+        double sceneHeight = end.y - start.y;
+
+        double maxScene = ((width() / height()) < (sceneWidth / sceneHeight)) ? sceneWidth/aspect() : sceneHeight;
+
+        if (maxScene > 0.0)
+            m_scale2d = 1.8/maxScene;
+
+        m_offset2d.x = (start.x + end.x) / 2.0;
+        m_offset2d.y = (start.y + end.y) / 2.0;
+
+        setZoom(0);
+    }
 }
 
 void SceneViewStudy::refresh()
@@ -81,79 +162,97 @@ void SceneViewStudy::paintGL()
         if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
         {
             paintRulers();
-            paintRulersHintsEdges();
-        }
-
-        // axes
-        if (Agros::configComputer()->value(Config::Config_ShowAxes).toBool())
-        {
-            paintAxes();
         }
     }
 }
 
 void SceneViewStudy::paintGeometryStudy()
 {
-    m_currentComputation->scene()->selectNone();
-
-    if (m_parameter)
+    if (m_userMode == NoInteraction)
     {
-        constexpr double colorLower[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
-        constexpr double colorUpper[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
+        m_currentComputation->scene()->selectNone();
 
-        auto parameters = Agros::problem()->config()->parameters()->items();
+        if (m_parameter)
+        {
+            constexpr double colorLower[3] = { 86 / 255.0, 92 / 255.0, 12 / 255.0 };
+            constexpr double colorUpper[3] = { 100 / 255.0, 0 / 255.0, 100 / 255.0 };
 
-        parameters[m_parameter->name()].setValue(m_parameter->lowerBound());
-        m_currentComputation->checkAndApplyParameters(parameters);
-        paintGeometryStudyEdges(colorLower);
+            auto parameters = Agros::problem()->config()->parameters()->items();
 
-        parameters[m_parameter->name()].setValue(m_parameter->upperBound());
-        m_currentComputation->checkAndApplyParameters(parameters);
-        paintGeometryStudyEdges(colorUpper);
+            // parameters[m_parameter->name()].setValue(m_parameter->lowerBound());
+            parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 1.05);
+            m_currentComputation->checkAndApplyParameters(parameters);
+            paintGeometryStudyEdges(colorLower);
 
-        // paint original geometry
-        m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
+            // parameters[m_parameter->name()].setValue(m_parameter->upperBound());
+            parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 0.95);
+            m_currentComputation->checkAndApplyParameters(parameters);
+            paintGeometryStudyEdges(colorUpper);
+
+            // paint original geometry
+            m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
+            paintGeometryStudyEdges(COLOREDGE);
+
+            // paint volume
+            paintGeometryStudyVolume();
+        }
+
+        // recipes
+        if (m_recipe)
+        {
+            // paint volume
+            paintGeometryStudyVolume();
+
+            // paint original geometry
+            m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
+            paintGeometryStudyEdges(COLOREDGE);
+
+            if (auto *localRecipe = dynamic_cast<LocalValueRecipe *>(m_recipe))
+            {
+                // localRecipe
+                paintGeometryStudySelectedPoint(localRecipe->point());
+            }
+            else if (auto *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(m_recipe))
+            {
+                // surfaceRecipe
+                foreach (int edgeIndex, surfaceRecipe->edges())
+                    m_currentComputation->scene()->faces->items().at(edgeIndex)->setSelected(true);
+                paintGeometryStudySelectedEdges();
+            }
+            else if (auto *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(m_recipe))
+            {
+                // volumeRecipe
+                foreach (int labelIndex, volumeRecipe->labels())
+                    m_currentComputation->scene()->labels->items().at(labelIndex)->setSelected(true);
+                paintGeometryStudySelectedVolume();
+            }
+        }
+
+        if (!m_parameter && !m_recipe)
+        {
+            // paint original geometry
+            m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
+            paintGeometryStudyEdges(COLOREDGE);
+
+            // paint volume
+            paintGeometryStudyVolume();
+        }
+    }
+    else if (m_userMode == SelectPoint)
+    {
         paintGeometryStudyEdges(COLOREDGE);
-
-        // paint volume
+        paintGeometryStudyVolume();
+        paintGeometryStudySelectedPoint(m_selectedPoint);
+    }
+    else if (m_userMode == SelectSurface)
+    {
+        paintGeometryStudySelectedEdges();
         paintGeometryStudyVolume();
     }
-
-    // recipes
-    if (m_recipe)
+    else if (m_userMode == SelectVolume)
     {
-        // paint volume
-        paintGeometryStudyVolume();
-
-        // paint original geometry
-        m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
         paintGeometryStudyEdges(COLOREDGE);
-
-        if (auto *localRecipe = dynamic_cast<LocalValueRecipe *>(m_recipe))
-        {
-            // localRecipe
-            paintGeometryStudySelectedPoint(localRecipe->point());
-        }
-        else if (auto *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(m_recipe))
-        {
-            // surfaceRecipe
-            paintGeometryStudySelectedEdges(surfaceRecipe->edges());
-        }
-        else if (auto *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(m_recipe))
-        {
-            // volumeRecipe
-            paintGeometryStudySelectedVolume(volumeRecipe->labels());
-        }
-    }
-
-    if (!m_recipe && !m_parameter)
-    {
-        // paint original geometry
-        m_currentComputation->checkAndApplyParameters(Agros::problem()->config()->parameters()->items());
-        paintGeometryStudyEdges(COLOREDGE);
-
-        // paint volume
-        paintGeometryStudyVolume();
+        paintGeometryStudySelectedVolume();
     }
 }
 
@@ -167,37 +266,42 @@ void SceneViewStudy::paintGeometryStudySelectedPoint(const Point &selectedPoint)
     glEnd();
 }
 
-void SceneViewStudy::paintGeometryStudySelectedEdges(QList<int> selectedEdges) const
+void SceneViewStudy::paintGeometryStudySelectedEdges() const
 {
     for (int i = 0; i < m_currentComputation->scene()->faces->items().count(); i++)
     {
         auto *edge = m_currentComputation->scene()->faces->items().at(i);
 
-        if (selectedEdges.contains(i))
+        if (edge->isSelected())
         {
             glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
             glLineWidth(EDGEWIDTH + 2.0);
+        }
+        else
+        {
+            glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
+            glLineWidth(EDGEWIDTH);
+        }
 
-            if (edge->isStraight())
-            {
-                glBegin(GL_LINES);
-                glVertex2d(edge->nodeStart()->point().x, edge->nodeStart()->point().y);
-                glVertex2d(edge->nodeEnd()->point().x, edge->nodeEnd()->point().y);
-                glEnd();
-            }
-            else
-            {
-                Point center = edge->center();
-                double radius = edge->radius();
-                double startAngle = atan2(center.y - edge->nodeStart()->point().y, center.x - edge->nodeStart()->point().x) / M_PI*180.0 - 180.0;
+        if (edge->isStraight())
+        {
+            glBegin(GL_LINES);
+            glVertex2d(edge->nodeStart()->point().x, edge->nodeStart()->point().y);
+            glVertex2d(edge->nodeEnd()->point().x, edge->nodeEnd()->point().y);
+            glEnd();
+        }
+        else
+        {
+            Point center = edge->center();
+            double radius = edge->radius();
+            double startAngle = atan2(center.y - edge->nodeStart()->point().y, center.x - edge->nodeStart()->point().x) / M_PI*180.0 - 180.0;
 
-                drawArc(center, radius, startAngle, edge->angle());
-            }
+            drawArc(center, radius, startAngle, edge->angle());
         }
     }
 }
 
-void SceneViewStudy::paintGeometryStudySelectedVolume(QList<int> selectedLabels) const
+void SceneViewStudy::paintGeometryStudySelectedVolume() const
 {
     if (m_currentComputation->scene()->crossings().isEmpty())
     {
@@ -216,8 +320,7 @@ void SceneViewStudy::paintGeometryStudySelectedVolume(QList<int> selectedLabels)
             i.next();
 
             auto *label = i.key();
-            int index = m_currentComputation->scene()->labels->items().indexOf(label);
-            if (selectedLabels.contains(index))
+            if (label->isSelected())
                 glColor4f(0.3f, 0.1f, 0.7f, 0.55f);
             else
                 glColor4f(0.3f, 0.1f, 0.7, 0.10f);

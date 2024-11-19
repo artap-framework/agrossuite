@@ -82,9 +82,14 @@ protected:
 
     QWidget *createRecipeControls() override;
 
+    SceneViewStudy *m_sceneViewStudy;
+
 protected slots:
     void fieldChanged(int index);
     void variableChanged(int index);
+
+    void selectedPoint(const Point &p) const;
+    void doEditingFinished() const;
 
     virtual bool save();
 };
@@ -96,18 +101,14 @@ public:
     SurfaceIntegralRecipeDialog(SurfaceIntegralRecipe *recipe, QWidget *parent);
 
 protected:
-    QListWidget *lstEdges;
-
     inline SurfaceIntegralRecipe *recipe() const { return dynamic_cast<SurfaceIntegralRecipe *>(m_recipe); }
 
     QWidget *createRecipeControls() override;
 
     SceneViewStudy *m_sceneViewStudy;
-    QSharedPointer<SurfaceIntegralRecipe> m_recipeView;
 
 protected slots:
     void fieldChanged(int index) override;
-    void edgesChanged(QListWidgetItem *item) const;
 
     bool save() override;
 };
@@ -119,18 +120,14 @@ public:
     VolumeIntegralRecipeDialog(VolumeIntegralRecipe *recipe, QWidget *parent);
 
 protected:
-    QListWidget *lstVolumes;
-
     inline VolumeIntegralRecipe *recipe() const { return dynamic_cast<VolumeIntegralRecipe *>(m_recipe); }
 
     QWidget *createRecipeControls() override;
 
     SceneViewStudy *m_sceneViewStudy;
-    QSharedPointer<VolumeIntegralRecipe> m_recipeView;
 
 protected slots:
     void fieldChanged(int index) override;
-    void volumeChanged(QListWidgetItem *item) const;
 
     bool save() override;
 };

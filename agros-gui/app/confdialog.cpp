@@ -63,8 +63,7 @@ void ConfigComputerDialog::load()
     chkApplyStyle->setChecked(Agros::configComputer()->value(Config::Config_ReloadStyle).toBool());
 
     // workspace
-    chkShowAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowAxes).toBool());
-    chkShowRulers->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
+    chkShowRulersAndAxes->setChecked(Agros::configComputer()->value(Config::Config_ShowRulers).toBool());
 
     txtRulersFontSizes->setValue(Agros::configComputer()->value(Config::Config_RulersFontPointSize).toInt());
     txtPostFontSizes->setValue(Agros::configComputer()->value(Config::Config_PostFontPointSize).toInt());
@@ -99,8 +98,7 @@ void ConfigComputerDialog::save()
     Agros::configComputer()->setValue(Config::Config_ReloadStyle, chkApplyStyle->isChecked());
 
     // workspace
-    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulers->isChecked());
-    Agros::configComputer()->setValue(Config::Config_ShowAxes, chkShowAxes->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkShowRulersAndAxes->isChecked());
 
     Agros::configComputer()->setValue(Config::Config_RulersFontPointSize, txtRulersFontSizes->value());
     Agros::configComputer()->setValue(Config::Config_PostFontPointSize, txtPostFontSizes->value());
@@ -157,12 +155,10 @@ QWidget *ConfigComputerDialog::createMainWidget()
     grpOther->setLayout(layoutOther);
 
     // workspace
-    chkShowRulers = new QCheckBox(tr("Show rulers"));
-    chkShowAxes = new QCheckBox(tr("Show axes"));
+    chkShowRulersAndAxes = new QCheckBox(tr("Show rulers"));
 
     QGridLayout *layoutGrid = new QGridLayout();
-    layoutGrid->addWidget(chkShowAxes, 0, 0);
-    layoutGrid->addWidget(chkShowRulers, 1, 0);
+    layoutGrid->addWidget(chkShowRulersAndAxes, 1, 0);
 
     QGroupBox *grpGrid = new QGroupBox(tr("Grid"));
     grpGrid->setLayout(layoutGrid);
