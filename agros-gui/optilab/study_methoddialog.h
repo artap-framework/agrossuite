@@ -30,7 +30,7 @@
 #include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
-#include <optilab/study_openga.h>
+#include <optilab/study_pagmo2.h>
 #include <optilab/study_model.h>
 
 class StudySweepDialog : public StudyDialog
@@ -75,13 +75,13 @@ private:
     QRadioButton *radCrowdObjective;
 };
 
-class StudyOpenGADialog : public StudyDialog
+class StudyPagmoDialog : public StudyDialog
 {
 public:
-    StudyOpenGADialog(Study *study, QWidget *parent = 0);
+    StudyPagmoDialog(Study *study, QWidget *parent = 0);
 
 protected:
-    virtual inline StudyOpenGA *study() { return dynamic_cast<StudyOpenGA *>(m_study); }
+    virtual inline StudyPagmo *study() { return dynamic_cast<StudyPagmo *>(m_study); }
 
     virtual QLayout *createStudyControls();
 

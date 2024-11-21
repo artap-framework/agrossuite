@@ -29,12 +29,14 @@
 #include "study_nsga2.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
-#include "study_openga.h"
+#include "study_pagmo2.h"
 #include "study_model.h"
 
 #include "util/util_expr.h"
 
 #include <limits>
+
+#include "study_pagmo2.h"
 
 // consts
 const QString NAME = "name";
@@ -106,8 +108,8 @@ Study *Study::factory(StudyType type)
         study = new StudyBayesOpt();
     else if (type == StudyType_NLopt)
         study = new StudyNLopt();
-    else if (type == StudyType_OpenGA)
-        study = new StudyOpenGA();
+    else if (type == StudyType_Pagmo)
+        study = new StudyPagmo();
     else if (type == StudyType_Model)
         study = new StudyModel();
     else

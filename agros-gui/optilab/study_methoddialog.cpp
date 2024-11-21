@@ -176,13 +176,13 @@ void StudyNSGA2Dialog::save()
 
 // *****************************************************************************************************
 
-StudyOpenGADialog::StudyOpenGADialog(Study *study, QWidget *parent)
+StudyPagmoDialog::StudyPagmoDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
 
 }
 
-QLayout *StudyOpenGADialog::createStudyControls()
+QLayout *StudyPagmoDialog::createStudyControls()
 {
     cmbAlgorithm = new QComboBox(this);
     foreach (QString key, study()->algorithmStringKeys())
@@ -237,28 +237,28 @@ QLayout *StudyOpenGADialog::createStudyControls()
     return layoutMain;
 }
 
-void StudyOpenGADialog::load()
+void StudyPagmoDialog::load()
 {
     StudyDialog::load();
 
-    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::OpenGA_algorithm).toString()));
-    txtPopSize->setValue(study()->value(Study::OpenGA_popsize).toInt());
-    txtNGen->setValue(study()->value(Study::OpenGA_ngen).toInt());
-    txtEliteCount->setValue(study()->value(Study::OpenGA_elite_count).toInt());
-    txtCrossoverFraction->setValue(study()->value(Study::OpenGA_crossover_fraction).toDouble());
-    txtMutationRate->setValue(study()->value(Study::OpenGA_mutation_rate).toDouble());
+    // cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::Pagmo_algorithm).toString()));
+    // txtPopSize->setValue(study()->value(Study::Pagmo_popsize).toInt());
+    // txtNGen->setValue(study()->value(Study::Pagmo_ngen).toInt());
+    // txtEliteCount->setValue(study()->value(Study::Pagmo_elite_count).toInt());
+    // txtCrossoverFraction->setValue(study()->value(Study::Pagmo_crossover_fraction).toDouble());
+    // txtMutationRate->setValue(study()->value(Study::Pagmo_mutation_rate).toDouble());
 }
 
-void StudyOpenGADialog::save()
+void StudyPagmoDialog::save()
 {
     StudyDialog::save();
 
-    study()->setValue(Study::OpenGA_algorithm, cmbAlgorithm->currentData().toString());
-    study()->setValue(Study::OpenGA_popsize, txtPopSize->value());
-    study()->setValue(Study::OpenGA_ngen, txtNGen->value());
-    study()->setValue(Study::OpenGA_elite_count, txtEliteCount->value());
-    study()->setValue(Study::OpenGA_crossover_fraction, txtCrossoverFraction->value());
-    study()->setValue(Study::OpenGA_mutation_rate, txtMutationRate->value());
+    // study()->setValue(Study::Pagmo_algorithm, cmbAlgorithm->currentData().toString());
+    // study()->setValue(Study::Pagmo_popsize, txtPopSize->value());
+    // study()->setValue(Study::Pagmo_ngen, txtNGen->value());
+    // study()->setValue(Study::Pagmo_elite_count, txtEliteCount->value());
+    // study()->setValue(Study::Pagmo_crossover_fraction, txtCrossoverFraction->value());
+    // study()->setValue(Study::Pagmo_mutation_rate, txtMutationRate->value());
 }
 
 // *****************************************************************************************************

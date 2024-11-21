@@ -293,7 +293,7 @@ enum StudyType
     StudyType_NSGA2,
     StudyType_BayesOpt,
     StudyType_NLopt,
-    StudyType_OpenGA,
+    StudyType_Pagmo,
     StudyType_Model
 };
 

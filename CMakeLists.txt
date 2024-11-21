@@ -65,13 +65,12 @@ SET(AGROS_PYTHON agros_python)
 SET(CTEMPLATE_LIBRARY agros_3rdparty_ctemplate)
 SET(DXFLIB_LIBRARY agros_3rdparty_dxflib)
 SET(QUAZIP_LIBRARY agros_3rdparty_quazip)
-SET(QTSINGLEAPPLICATION_LIBRARY agros_3rdparty_qtsingleapplication)
 SET(MATIO_LIBRARY agros_3rdparty_matio)
 SET(TRIANGLE_LIBRARY agros_3rdparty_triangle)
 SET(NLOPTLIB_LIBRARY agros_3rdparty_nlopt2)
 SET(BAYESOPTLIB_LIBRARY agros_3rdparty_bayesopt)
 SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
-SET(SPDLOG_LIBRARY agros_3rdparty_spdlog)
+SET(PAGMO2_LIBRARY agros_3rdparty_pagmo2)
 
 # curl
 find_package(CURL REQUIRED)
@@ -143,6 +142,7 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdparty/libdxfrw)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qsingleapplication)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/quazip)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/matio)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/pagmo2/include)
 
 # Subdirectories.
 ADD_SUBDIRECTORY(3rdparty)

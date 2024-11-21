@@ -54,12 +54,13 @@ set(BAYESOPT_BUILD_SHARED OFF) # "Build BayesOpt as a shared library?"
 ELSE()
 set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 ENDIF()
+
 #  experimental - testing Win compilation
-# set (BOOST_ROOT ../../dealii/bundled/boost-1.70.0)
-set (BOOST_INCLUDEDIR ../../dealii/bundled/boost-1.70.0/include)
+# set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/")
+# set(BOOST_INCLUDEDIR ../../dealii/bundled/boost-1.70.0/include)
 #  -------------------------------------  
 
-find_package( Boost REQUIRED )
+find_package(Boost REQUIRED)
 if(Boost_FOUND)
    include_directories(${Boost_INCLUDE_DIRS})
 else(Boost_FOUND)

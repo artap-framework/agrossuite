@@ -322,7 +322,7 @@ void initLists()
     studyTypeList.insert(StudyType_NSGA2, "nsga2");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
-    studyTypeList.insert(StudyType_OpenGA, "openga");
+    studyTypeList.insert(StudyType_Pagmo, "pagmo");
     studyTypeList.insert(StudyType_Model, "model");
 
     // computation result type
@@ -809,8 +809,8 @@ QString studyTypeString(StudyType type)
         return QObject::tr("BayesOpt (Bayesian optimization)");
     case StudyType_NLopt:
         return QObject::tr("NLopt (nonlinear optimization)");
-    case StudyType_OpenGA:
-        return QObject::tr("OpenGA (genetic algorithm)");
+    case StudyType_Pagmo:
+        return QObject::tr("pagmo (global and local solvers)");
     case StudyType_Model:
         return QObject::tr("Model (agros server)");
     default:
