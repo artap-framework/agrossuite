@@ -22,7 +22,10 @@ build-linux:
     - export CCACHE_DIR="$PWD/ccache"
     - ccache --show-stats  
   script: 
-    - git submodule update --init 
+    - git submodule update --init
+    # dirty hack to fix dealii serialization (due to pagmo library)
+    - cp -f dealii/include/deal.II/base/utilities.h dealii/include/deal.II/base/utilities.h.bak
+    - cp resources_source/dealii/include/deal.II/base/utilities.h dealii/include/deal.II/base/utilities.h
     - cd dealii 
     - mkdir -p build 
     - cd build 
