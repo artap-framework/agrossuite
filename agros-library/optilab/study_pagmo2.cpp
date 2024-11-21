@@ -53,8 +53,6 @@ struct ProblemPagmo
 	// Implementation of the objective function.
 	pagmo::vector_double fitness(const pagmo::vector_double &dv) const
 	{
-		qInfo() << "dv: " << dv;
-
 		if (localStudy->isAborted())
 		{
 			return {numeric_limits<double>::max()};

@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.8)
 # https://cmake.org/cmake/help/latest/policy/CMP0069.html
 cmake_policy(SET CMP0069 NEW)
 
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
+
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set
 # CMAKE_BUILD_TYPE itself (it does so for nmake).
@@ -173,13 +175,15 @@ endif ()
 # fails, fall back to our own FindTBB.cmake. This is of course
 # not an ideal solution, but it should work until oneTBB
 # becomes widely deployed.
-find_package(TBB QUIET CONFIG)
-if(NOT TBB_FOUND)
-    message(STATUS "TBB not found using config mode, retrying in module mode.")
-    find_package(TBB REQUIRED MODULE)
-else()
-    message(STATUS "TBB found using config mode.")
-endif()
+#SET(TBB_ROOT "${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/")
+#message(TBB_ROOT: ${TBB_ROOT})
+#find_package(TBB QUIET CONFIG)
+#if(NOT TBB_FOUND)
+#    message(STATUS "TBB not found using config mode, retrying in module mode.")
+#    find_package(TBB REQUIRED MODULE)
+#else()
+#    message(STATUS "TBB found using config mode.")
+#endif()
 
 # Eigen3
 if(PAGMO_WITH_EIGEN3)
@@ -393,7 +397,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE BOOST_ALLOW_DEPRECATED_HEADER
 # NOTE: TBB is a private dependency because
 # all uses of TBB are limited to the .cpp files,
 # thus fully encapsulated in the pagmo library.
-target_link_libraries(${PROJECT_NAME} PRIVATE TBB::tbb)
+# target_link_libraries(${PROJECT_NAME} PRIVATE TBB::tbb)
+target_link_libraries(${PROJECT_NAME} PRIVATE)
 
 if(PAGMO_WITH_EIGEN3)
     # Link pagmo to eigen3.
