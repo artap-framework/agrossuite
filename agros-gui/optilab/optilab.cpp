@@ -98,7 +98,7 @@ private:
 
 OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_selectedComputation(nullptr)
 {
-    actSceneModeOptiLab = new QAction(icon("main_optilab"), tr("OptiLab"), this);
+    actSceneModeOptiLab = new QAction(icon("menu_study"), tr("OptiLab"), this);
     actSceneModeOptiLab->setShortcut(Qt::Key_F5);
     actSceneModeOptiLab->setCheckable(true);
     actSceneModeOptiLab->setEnabled(false);
@@ -359,7 +359,6 @@ void OptiLab::createControls()
 
     cmbStudies = new QComboBox(this);
     connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(doStudyChanged(int)));
-    lblNumberOfSolutions = new QLabel(this);
 
     cmbAxisX = new QComboBox(this);
     connect(cmbAxisX, SIGNAL(currentIndexChanged(int)), this, SLOT(axisXChanged(int)));
@@ -368,7 +367,6 @@ void OptiLab::createControls()
 
     auto *layoutCombo = new QFormLayout();
     layoutCombo->addRow(tr("Studies:"), cmbStudies);
-    layoutCombo->addRow(tr("Number of solutions:"), lblNumberOfSolutions);
     layoutCombo->addRow(tr("Horizontal axis:"), cmbAxisX);
     layoutCombo->addRow(tr("Vertical axis:"), cmbAxisY);
 
@@ -567,21 +565,14 @@ void OptiLab::doStudySelected(Study *study)
         if (!currentNameY.isEmpty())
             cmbAxisY->setCurrentText(currentNameY);
 
-        if (study->computationSets().count() > 0)
+        if (study->computationSets().count() == 0)
         {
-            lblNumberOfSolutions->setText(QString::number(study->computationsCount()));
-        }
-        else
-        {
-            lblNumberOfSolutions->setText("0");
-
             trvResults->clear();
             geometryViewer->setProblem(nullptr);
         }
     }
     else
     {
-        lblNumberOfSolutions->setText("");
         cmbAxisX->clear();
         cmbAxisY->clear();
 
@@ -835,6 +826,16 @@ void OptiLab::doComputationSelected(const QSharedPointer<Computation> computatio
         // fill treeview
         QFont fnt = trvResults->font();
         fnt.setBold(true);
+
+        auto *statisticsNode = new QTreeWidgetItem(trvResults);
+        statisticsNode->setText(0, tr("Statistics"));
+        statisticsNode->setFont(0, fnt);
+        statisticsNode->setIcon(0, icon("field_properties"))  ;
+        statisticsNode->setExpanded(true);
+
+        auto *solutionsNode = new QTreeWidgetItem(statisticsNode);
+        solutionsNode->setText(0, tr("Number of computations"));
+        solutionsNode->setText(1, QString::number(study->computationsCount()));
 
         // parameters
         auto *parametersNode = new QTreeWidgetItem(trvResults);

@@ -27,10 +27,10 @@
 
 #include "optilab/study.h"
 #include "optilab/study_bayesopt.h"
-#include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_sweep.h"
 #include "optilab/study_model.h"
+#include "optilab/study_pagmo2.h"
 
 #include "nlopt.hpp"
 
@@ -131,14 +131,17 @@ public:
     void setAlgorithm(const std::string &algorithm);
 };
 
-class AGROS_LIBRARY_API PyStudyNSGA2 : public PyStudy
+class AGROS_LIBRARY_API PyStudyPagmo : public PyStudy
 {
 public:
-    PyStudyNSGA2(int index = -1);
-    virtual ~PyStudyNSGA2() {}
+    PyStudyPagmo(int index = -1);
+    virtual ~PyStudyPagmo() {}
 
-    virtual StudyNSGA2 *study() { return static_cast<StudyNSGA2 *>(m_study); }
-    virtual StudyNSGA2 *study() const { return static_cast<StudyNSGA2 *>(m_study); }
+    virtual StudyPagmo *study() { return static_cast<StudyPagmo *>(m_study); }
+    virtual StudyPagmo *study() const { return static_cast<StudyPagmo *>(m_study); }
+
+    inline std::string getAlgorithm() const { return m_study->value(Study::Pagmo_algorithm).toString().toStdString(); }
+    void setAlgorithm(const std::string &algorithm);
 };
 
 class AGROS_LIBRARY_API PyStudySweep : public PyStudy

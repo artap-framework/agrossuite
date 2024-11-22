@@ -304,20 +304,34 @@ void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
     }
 }
 
-// NSGA2 **************************************************************
+// Pagmo **************************************************************
 
-PyStudyNSGA2::PyStudyNSGA2(int index) : PyStudy()
+PyStudyPagmo::PyStudyPagmo(int index) : PyStudy()
 {
     // add study
     if (index == -1)
     {
-        m_study = Study::factory(StudyType_NSGA2);
+        m_study = Study::factory(StudyType_Pagmo);
         Agros::problem()->studies()->addStudy(m_study);
     }
     else
     {
         if (index < Agros::problem()->studies()->items().count())
             m_study = Agros::problem()->studies()->items().at(index);
+    }
+}
+
+void PyStudyPagmo::setAlgorithm(const std::string &algorithm)
+{
+    if (study()->algorithmStringKeys().contains(QString::fromStdString(algorithm)))
+        m_study->setValue(Study::Pagmo_algorithm, QString::fromStdString(algorithm));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->algorithmStringKeys())
+            list.append(key);
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
     }
 }
 

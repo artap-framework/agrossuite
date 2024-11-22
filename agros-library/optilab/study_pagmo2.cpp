@@ -31,13 +31,24 @@
 #include <initializer_list>
 #include <iostream>
 #include <utility>
+#include <boost/math/constants/constants.hpp>
 
 #include <pagmo/problem.hpp>
 #include <pagmo/types.hpp>
 
 #include <pagmo/algorithm.hpp>
-#include <pagmo/algorithms/pso.hpp>
 #include <pagmo/population.hpp>
+#include <pagmo/algorithms/pso.hpp>
+#include <pagmo/algorithms/bee_colony.hpp>
+#include <pagmo/algorithms/gaco.hpp>
+#include <pagmo/algorithms/de.hpp>
+#include <pagmo/algorithms/gwo.hpp>
+#include <pagmo/algorithms/sga.hpp>
+#include <pagmo/algorithms/simulated_annealing.hpp>
+#include <pagmo/algorithms/moead.hpp>
+#include <pagmo/algorithms/maco.hpp>
+#include <pagmo/algorithms/nspso.hpp>
+#include <pagmo/algorithms/nsga2.hpp>
 
 static StudyPagmo *localStudy = nullptr;
 static int localSteps = 0;
@@ -45,11 +56,6 @@ static int localSteps = 0;
 
 struct ProblemPagmo
 {
-	// Implementation of the objective function.
-	// pagmo::vector_double fitness(const pagmo::vector_double &dv) const
-	// {
-	// 	return {dv[0] * dv[3] * (dv[0] + dv[1] + dv[2]) + dv[2]};
-	// }
 	// Implementation of the objective function.
 	pagmo::vector_double fitness(const pagmo::vector_double &dv) const
 	{
@@ -72,20 +78,47 @@ struct ProblemPagmo
 		try
 		{
 			localStudy->evaluateStep(computation);
-			double value = localStudy->evaluateSingleGoal(computation);
-			if (!localStudy->isAborted())
+
+			if (localStudy->isSingleObjective(localStudy->value(Study::Pagmo_algorithm).toString()))
 			{
-				if (localStudy->value(Study::General_ClearSolution).toBool())
-					computation->clearSolution();
+				double value = localStudy->evaluateSingleGoal(computation);
+				if (!localStudy->isAborted())
+				{
+					if (localStudy->value(Study::General_ClearSolution).toBool())
+						computation->clearSolution();
 
-				// add computation
-				localStudy->addComputation(computation);
+					// add computation
+					localStudy->addComputation(computation);
 
-				localSteps++;
-				// qInfo() << "NLOpt: step " << m_steps << "/" << localStudy->estimatedNumberOfSteps();
+					localSteps++;
+					// qInfo() << "NLOpt: step " << m_steps << "/" << localStudy->estimatedNumberOfSteps();
+				}
+				return {value};
 			}
+			else if (localStudy->isMultiObjective(localStudy->value(Study::Pagmo_algorithm).toString()))
+			{
+				QList<double> value = localStudy->evaluateMultiGoal(computation);
+				if (!localStudy->isAborted())
+				{
+					if (localStudy->value(Study::General_ClearSolution).toBool())
+						computation->clearSolution();
 
-			return {value};
+					// add computation
+					localStudy->addComputation(computation);
+
+					localSteps++;
+					// qInfo() << "NLOpt: step " << m_steps << "/" << localStudy->estimatedNumberOfSteps();
+				}
+
+				pagmo::vector_double valueOut(value.count());
+				for (int i = 0; i < value.count(); i++)
+					valueOut[i] = value[i];
+				return valueOut;
+			}
+			else
+			{
+				assert(0);
+			}
 		}
 		catch (AgrosOptilabEvaluationException &e)
 		{
@@ -97,7 +130,7 @@ struct ProblemPagmo
 	// Implementation of the box bounds.
 	std::pair<pagmo::vector_double, pagmo::vector_double> get_bounds() const
 	{
-		qInfo() << localStudy->bounds();
+		// qInfo() << localStudy->bounds();
 		return localStudy->bounds();
 	}
 
@@ -122,74 +155,188 @@ StudyPagmo::StudyPagmo() : Study()
 
 int StudyPagmo::estimatedNumberOfSteps() const
 {
-	return value(OpenGA_popsize).toInt() * value(OpenGA_ngen).toInt();
+	return value(Pagmo_popsize).toInt() * value(Pagmo_ngen).toInt();
 }
 
 QStringList StudyPagmo::algorithmStringKeys()
 {
 	QStringList list;
-	// list << algorithmToString(EA::GA_MODE::SOGA);
-	// list << algorithmToString(EA::GA_MODE::NSGA_III);
+	// single objective
+	list.append("de");
+	list.append("gwo");
+	list.append("pso");
+	list.append("sga");
+	list.append("sa");
+	list.append("bee");
+	// multi objective
+	list.append("nsga2");
+	list.append("moead");
+	list.append("maco");
+	list.append("nspso");
 
 	return list;
 }
 
 QString StudyPagmo::algorithmString(const QString &algorithm)
 {
-	// const EA::GA_MODE alg = stringToAlgorithm(algorithm);
-	// if (alg == EA::GA_MODE::SOGA)
-	// 	return QObject::tr("Single objective GA");
-	// if (alg == EA::GA_MODE::NSGA_III)
-	// 	return QObject::tr("NSGA III");
-
-	// assert(0);
+	if (algorithm == "de")
+		return tr("Differential Evolution (SO)");
+	else if (algorithm == "gwo")
+		return tr("Grey Wolf Optimizer (SO)");
+	else if (algorithm == "pso")
+		return tr("Particle Swarm Optimization (SO)");
+	else if (algorithm == "sga")
+		return tr("Simple Genetic Algorithm (SO)");
+	else if (algorithm == "sa")
+		return tr("Simulated Annealing (SO)");
+	else if (algorithm == "bee")
+		return tr("Artificial Bee Colony (SO)");
+	else if (algorithm == "nsga2")
+		return tr("Non-dominated Sorting Genetic Algorithm II (MO)");
+	else if (algorithm == "moead")
+		return tr("Multi-Objective Evolutionary Algorithm based on Decomposition (MO)");
+	else if (algorithm == "maco")
+		return tr("Multi-objective Ant Colony Optimization (MO)");
+	else if (algorithm == "nspso")
+		return tr("Non-dominated Sorting Particle Swarm Optimization (MO)");
 	return "";
+}
+
+
+bool StudyPagmo::isSingleObjective(const QString &algorithm)
+{
+    if (algorithm == "de")
+		return true;
+	else if (algorithm == "gwo")
+	 	return true;
+	else if (algorithm == "pso")
+		return true;
+	else if (algorithm == "sga")
+		return true;
+	else if (algorithm == "sa")
+	 	return true;
+	else if (algorithm == "bee")
+		return true;
+	else if (algorithm == "nsga2")
+		return false;
+	else if (algorithm == "moead")
+		return false;
+	else if (algorithm == "maco")
+		return false;
+	else if (algorithm == "nspso")
+		return false;
+
+	assert(0);
+	return false;
+}
+
+bool StudyPagmo::isMultiObjective(const QString &algorithm)
+{
+	if (algorithm == "de")
+		return false;
+	else if (algorithm == "gwo")
+		return false;
+	else if (algorithm == "pso")
+		return true;
+	else if (algorithm == "sga")
+		return false;
+	else if (algorithm == "sa")
+		return false;
+	else if (algorithm == "bee")
+		return false;
+	else if (algorithm == "nsga2")
+		return true;
+	else if (algorithm == "moead")
+		return true;
+	else if (algorithm == "maco")
+		return true;
+	else if (algorithm == "nspso")
+		return true;
+
+	assert(0);
+	return false;
 }
 
 void StudyPagmo::solve()
 {
+	if ((goalFunctions().count() == 1) && !isSingleObjective(value(Study::Pagmo_algorithm).toString()))
+	{
+		m_hasError = true;
+		Agros::log()->printError(tr("Study"), tr("Single objective optimization is not implemented for algorithm '%1'.").arg(value(Study::Pagmo_algorithm).toString()));
+	}
+	else if ((goalFunctions().count() > 1) && !isMultiObjective(value(Study::Pagmo_algorithm).toString()))
+	{
+		m_hasError = true;
+		Agros::log()->printError(tr("Study"), tr("Multi objective optimization is not implemented for algorithm '%1'.").arg(value(Study::Pagmo_algorithm).toString()));
+	}
+
 	// start computation
 	Study::solve();
 
     m_isSolving = true;
-	qInfo() << "Pagmo";
 
-	// Construct a pagmo::problem from our example problem.
-	pagmo::problem p{ProblemPagmo{}};
+	try
+	{
+		// Construct a pagmo::problem
+		pagmo::problem p{ProblemPagmo{}};
 
-	// Compute the value of the objective function
-	// in the point (1, 2, 3, 4).
-	// std::cout << "Value of the objfun in (1, 2, 3, 4): " << p.fitness({0.002, 0.002, 0.002, 0.002, 0.002})[0] << '\n';
+		// 2 - Instantiate a pagmo algorithm
+		pagmo::algorithm algo;
 
-	// Fetch the lower/upper bounds for the first variable.
-	std::cout << "Lower bounds: [" << p.get_lb()[0] << "]\n";
-	std::cout << "Upper bounds: [" << p.get_ub()[0] << "]\n\n";
+		auto algorithmName = value(Study::Pagmo_algorithm).toString();
 
-	// 2 - Instantiate a pagmo algorithm
-	pagmo::algorithm algo{pagmo::pso(10)};
+		if (algorithmName == "gaco")
+			algo = pagmo::algorithm{pagmo::gaco((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "de")
+			algo = pagmo::algorithm{pagmo::de((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "gwo")
+			algo = pagmo::algorithm{pagmo::gwo((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "pso")
+			algo = pagmo::algorithm{pagmo::pso((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "sga")
+			algo = pagmo::algorithm{pagmo::sga((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "sa")
+			algo = pagmo::algorithm{pagmo::simulated_annealing((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "bee")
+			algo = pagmo::algorithm{pagmo::bee_colony((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "nsga2")
+			algo = pagmo::algorithm{pagmo::nsga2((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "moead")
+			algo = pagmo::algorithm{pagmo::moead((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "maco")
+			algo = pagmo::algorithm{pagmo::maco((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else if (algorithmName == "nspso")
+			algo = pagmo::algorithm{pagmo::nspso((unsigned int) value(Study::Pagmo_ngen).toInt())};
+		else
+			Agros::log()->printError(tr("Study"), tr("Unknown algorithm: %1").arg(algorithmName));
 
-	// 3 - Instantiate a population
-	pagmo::population pop{p, 10};
+		// 3 - Instantiate a population
+		pagmo::population pop{p, (unsigned int) value(Study::Pagmo_popsize).toInt()};
 
-	// 4 - Evolve the population
-	pop = algo.evolve(pop);
+		// 4 - Evolve the population
+		pop = algo.evolve(pop);
 
-	// 5 - Output the population
-	std::cout << "The population: \n" << pop;
+		// 5 - Output the population
+		std::cout << "The population: \n" << pop;
 
-	// Print p to screen.
-	std::cout << p << '\n';
+		// Print p to screen.
+		std::cout << p << '\n';
 
-	qInfo() << "Pagmo - OK";
+		addComputationSet(tr("Values"));
 
-	addComputationSet(tr("Initial values"));
+		// remove empty computation sets
+		localStudy->removeEmptyComputationSets();
 
+		m_hasError = false;
+	}
+	catch (std::exception &e)
+	{
+		m_hasError = true;
 
-	// remove empty computation sets
-	// localStudy->removeEmptyComputationSets();
+		Agros::log()->printError(tr("Study pagmo"), e.what());
+	}
 
 	m_isSolving = false;
-
 }
 
 std::pair<std::vector<double>, std::vector<double> > StudyPagmo::bounds()
@@ -213,24 +360,17 @@ void StudyPagmo::setDefaultValues()
 {
     Study::setDefaultValues();
 
-	// m_settingDefault[OpenGA_algorithm] = algorithmToString(EA::GA_MODE::SOGA);
-	// m_settingDefault[OpenGA_algorithm] = algorithmToString(EA::GA_MODE::NSGA_III);
-	m_settingDefault[OpenGA_popsize] = 10;
-	m_settingDefault[OpenGA_ngen] = 20;
-	m_settingDefault[OpenGA_elite_count] = 5;
-	m_settingDefault[OpenGA_mutation_rate] = 0.4;
-	m_settingDefault[OpenGA_crossover_fraction] = 0.7;
+	m_settingDefault[Pagmo_algorithm] = "gwo";
+	m_settingDefault[Pagmo_popsize] = 10;
+	m_settingDefault[Pagmo_ngen] = 20;
 }
 
 void StudyPagmo::setStringKeys()
 {
     Study::setStringKeys();
 
-    m_settingKey[OpenGA_algorithm] = "OpenGA_algorithm";
-	m_settingKey[OpenGA_popsize] = "OpenGA_popsize";
-	m_settingKey[OpenGA_ngen] = "OpenGA_ngen";
-	m_settingKey[OpenGA_elite_count] = "OpenGA_elite_count";
-	m_settingKey[OpenGA_mutation_rate] = "OpenGA_mutation_rate";
-	m_settingKey[OpenGA_crossover_fraction] = "OpenGA_crossover_fraction";
+    m_settingKey[Pagmo_algorithm] = "Pagmo_algorithm";
+	m_settingKey[Pagmo_popsize] = "Pagmo_popsize";
+	m_settingKey[Pagmo_ngen] = "Pagmo_ngen";
 }
 

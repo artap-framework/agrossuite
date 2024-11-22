@@ -51,8 +51,11 @@ cdef extern from "../../agros-python/pythonlab/pystudy.h":
         string getAlgorithm()
         void setAlgorithm(string &algorithm) except +
 
-    cdef cppclass PyStudyNSGA2(PyStudy):
-        PyStudyNSGA2(int index)
+    cdef cppclass PyStudyPagmo(PyStudy):
+        PyStudyPagmo(int index)
+
+        string getAlgorithm()
+        void setAlgorithm(string &algorithm) except +
 
     cdef cppclass PyStudySweep(PyStudy):
         PyStudySweep(int index)
@@ -243,43 +246,24 @@ cdef class __StudyNLopt__(__Study__):
 
         (<PyStudyNLopt*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
 
-cdef class __StudyNSGA2__(__Study__):
+cdef class __StudyPagmo__(__Study__):
     def __cinit__(self, index = -1):
-        self.thisptr = new PyStudyNSGA2(index)
+        self.thisptr = new PyStudyPagmo(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)
 
     def __get_settings__(self):
-        return {'popsize' : self.thisptr.getIntParameter(b'NSGA2_popsize'),
-                'ngen' : self.thisptr.getIntParameter(b'NSGA2_ngen'),
-                'pcross' : self.thisptr.getDoubleParameter(b'NSGA2_pcross'),
-                'pmut' : self.thisptr.getDoubleParameter(b'NSGA2_pmut'),
-                'eta_c' : self.thisptr.getDoubleParameter(b'NSGA2_eta_c'),
-                'eta_m' : self.thisptr.getDoubleParameter(b'NSGA2_eta_m'),
-                'crowdobj' : self.thisptr.getBoolParameter(b'NSGA2_crowdobj')}
+        return {'algorithm' : (<PyStudyPagmo*> self.thisptr).getAlgorithm().decode(),
+                'popsize' : self.thisptr.getIntParameter(b'Pagmo_popsize'),
+                'ngen' : self.thisptr.getIntParameter(b'Pagmo_ngen'))}
 
     def __set_settings__(self, settings):
         positive_value(settings['popsize'], 'popsize')
-        self.thisptr.setParameter(string(b'NSGA2_popsize'), <int> settings['popsize'])
+        self.thisptr.setParameter(string(b'Pagmo_popsize'), <int> settings['popsize'])
 
         positive_value(settings['ngen'], 'ngen')
-        self.thisptr.setParameter(string(b'NSGA2_ngen'), <int> settings['ngen'])
-
-        positive_value(settings['pcross'], 'pcross')
-        self.thisptr.setParameter(string(b'NSGA2_pcross'), <double> settings['pcross'])
-
-        positive_value(settings['pmut'], 'pmut')
-        self.thisptr.setParameter(string(b'NSGA2_pmut'), <double> settings['pmut'])
-
-        positive_value(settings['eta_c'], 'eta_c')
-        self.thisptr.setParameter(string(b'NSGA2_eta_c'), <double> settings['eta_c'])
-
-        positive_value(settings['eta_m'], 'eta_m')
-        self.thisptr.setParameter(string(b'NSGA2_eta_m'), <double> settings['eta_m'])
-
-        positive_value(settings['crowdobj'], 'crowdobj')
-        self.thisptr.setParameter(string(b'NSGA2_crowdobj'), <bool> settings['crowdobj'])
+        self.thisptr.setParameter(string(b'Pagmo_ngen'), <int> settings['ngen'])
 
 cdef class __StudySweep__(__Study__):
     def __cinit__(self, index = -1):

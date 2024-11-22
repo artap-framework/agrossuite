@@ -36,6 +36,8 @@ public:
 
     static QString algorithmString(const QString &algorithm);
     static QStringList algorithmStringKeys();
+    static bool isSingleObjective(const QString &algorithm);
+    static bool isMultiObjective(const QString &algorithm);
 
     std::pair<std::vector<double>, std::vector<double> > bounds();
 

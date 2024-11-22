@@ -250,12 +250,9 @@ public:
         NSGA2_eta_m,
         NSGA2_crowdobj,
 
-        OpenGA_algorithm,
-        OpenGA_popsize,
-        OpenGA_ngen,
-        OpenGA_elite_count,
-        OpenGA_mutation_rate,
-        OpenGA_crossover_fraction,
+        Pagmo_algorithm,
+        Pagmo_popsize,
+        Pagmo_ngen,
 
         Model_Name,
         Model_Description,

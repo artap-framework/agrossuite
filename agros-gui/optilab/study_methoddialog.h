@@ -27,7 +27,6 @@
 #include "optilab/study_dialog.h"
 
 #include "optilab/study_sweep.h"
-#include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
 #include <optilab/study_pagmo2.h>
@@ -51,30 +50,6 @@ private:
     QComboBox *cmbInitMethod;
 };
 
-class StudyNSGA2Dialog : public StudyDialog
-{
-public:
-    StudyNSGA2Dialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyNSGA2 *study() { return dynamic_cast<StudyNSGA2 *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtPopSize;
-    QSpinBox *txtNGen;
-    LineEditDouble *txtPCross;
-    LineEditDouble *txtPMut;
-    LineEditDouble *txtEtaC;
-    LineEditDouble *txtEtaM;
-    QRadioButton *radCrowdParameters;
-    QRadioButton *radCrowdObjective;
-};
-
 class StudyPagmoDialog : public StudyDialog
 {
 public:
@@ -91,9 +66,6 @@ protected:
 private:
     QSpinBox *txtPopSize;
     QSpinBox *txtNGen;
-    QSpinBox *txtEliteCount;
-    LineEditDouble *txtCrossoverFraction;
-    LineEditDouble *txtMutationRate;
     QComboBox *cmbAlgorithm;
 };
 

@@ -319,7 +319,6 @@ void initLists()
 
     // study type
     studyTypeList.insert(StudyType_Sweep, "sweep");
-    studyTypeList.insert(StudyType_NSGA2, "nsga2");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
     studyTypeList.insert(StudyType_Pagmo, "pagmo");
@@ -803,8 +802,6 @@ QString studyTypeString(StudyType type)
     {
     case StudyType_Sweep:
         return QObject::tr("Sweep");
-    case StudyType_NSGA2:
-        return QObject::tr("NSGA2 (naturally multiobjective)");
     case StudyType_BayesOpt:
         return QObject::tr("BayesOpt (Bayesian optimization)");
     case StudyType_NLopt:

@@ -69,7 +69,6 @@ SET(MATIO_LIBRARY agros_3rdparty_matio)
 SET(TRIANGLE_LIBRARY agros_3rdparty_triangle)
 SET(NLOPTLIB_LIBRARY agros_3rdparty_nlopt2)
 SET(BAYESOPTLIB_LIBRARY agros_3rdparty_bayesopt)
-SET(NSGA2_LIBRARY agros_3rdparty_nsga2)
 SET(PAGMO2_LIBRARY agros_3rdparty_pagmo2)
 
 # curl

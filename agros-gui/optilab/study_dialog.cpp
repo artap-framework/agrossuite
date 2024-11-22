@@ -27,7 +27,6 @@
 #include "optilab/study.h"
 
 #include "optilab/study_sweep.h"
-#include "optilab/study_nsga2.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
 #include "optilab/study_methoddialog.h"
@@ -438,9 +437,7 @@ void StudySelectDialog::doItemDoubleClicked(QListWidgetItem *item)
 
 StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
 {    
-    if (study->type() == StudyType_NSGA2)
-        return new StudyNSGA2Dialog(study, parent);
-    else if (study->type() == StudyType_BayesOpt)
+    if (study->type() == StudyType_BayesOpt)
         return new StudyBayesOptDialog(study, parent);
     else if (study->type() == StudyType_NLopt)
         return new StudyNLoptDialog(study, parent);

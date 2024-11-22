@@ -74,108 +74,6 @@ void StudySweepDialog::save()
     study()->setValue(Study::Sweep_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toString());
 }
 
-// *****************************************************************************************************
-
-StudyNSGA2Dialog::StudyNSGA2Dialog(Study *study, QWidget *parent)
-    : StudyDialog(study, parent)
-{
-
-}
-
-QLayout *StudyNSGA2Dialog::createStudyControls()
-{
-    txtPopSize = new QSpinBox(this);
-    txtPopSize->setMinimum(4);
-    txtPopSize->setMaximum(4*1000);
-    txtPopSize->setSingleStep(4);
-
-    txtNGen = new QSpinBox(this);
-    txtNGen->setMinimum(1);
-    txtNGen->setMaximum(1000);
-
-    txtPCross = new LineEditDouble(0.0);
-    txtPCross->setBottom(0.6);
-    txtPCross->setTop(1.0);
-    txtPMut = new LineEditDouble(0.0);
-    txtPMut->setBottom(1e-3);
-    txtEtaC = new LineEditDouble(0.0);
-    txtEtaC->setBottom(5);
-    txtEtaC->setTop(20);
-    txtEtaM = new LineEditDouble(0.0);
-    txtEtaM->setBottom(5);
-    txtEtaM->setTop(20);
-
-    radCrowdParameters = new QRadioButton(tr("Crowd over the parameters"));
-    radCrowdObjective = new QRadioButton(tr("Crowd over the objective function"));
-
-    QButtonGroup *crowdGroup = new QButtonGroup(this);
-    crowdGroup->addButton(radCrowdParameters);
-    crowdGroup->addButton(radCrowdObjective);
-
-    QGridLayout *layoutInitialization = new QGridLayout();
-    layoutInitialization->addWidget(new QLabel(tr("Population size:")), 0, 0);
-    layoutInitialization->addWidget(txtPopSize, 0, 1);
-    layoutInitialization->addWidget(new QLabel(tr("Maximum number of generations:")), 1, 0);
-    layoutInitialization->addWidget(txtNGen, 1, 1);
-
-    QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
-    grpInitialization->setLayout(layoutInitialization);
-
-    QGridLayout *layoutConfig = new QGridLayout();
-    layoutConfig->addWidget(new QLabel(tr("Probability of crossover (0.6 - 1.0):")), 0, 0);
-    layoutConfig->addWidget(txtPCross, 0, 1);
-    layoutConfig->addWidget(new QLabel(tr("Probability of mutation (0.6 - 1.0):")), 1, 0);
-    layoutConfig->addWidget(txtPMut, 1, 1);
-    layoutConfig->addWidget(new QLabel(tr("Distribution index for crossover (5 - 20):")), 2, 0);
-    layoutConfig->addWidget(txtEtaC, 2, 1);
-    layoutConfig->addWidget(new QLabel(tr("Distribution index for mutation (5 - 20):")), 3, 0);
-    layoutConfig->addWidget(txtEtaM, 3, 1);
-    layoutConfig->addWidget(new QLabel(tr("Crowding:")), 4, 0);
-    layoutConfig->addWidget(radCrowdParameters, 4, 1);
-    layoutConfig->addWidget(radCrowdObjective, 5, 1);
-
-    QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
-    grpConfig->setLayout(layoutConfig);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->addWidget(grpInitialization);
-    layoutMain->addWidget(grpConfig);
-
-    return layoutMain;
-}
-
-void StudyNSGA2Dialog::load()
-{
-    StudyDialog::load();
-
-    txtPopSize->setValue(study()->value(Study::NSGA2_popsize).toInt());
-    txtNGen->setValue(study()->value(Study::NSGA2_ngen).toInt());
-    txtPCross->setValue(study()->value(Study::NSGA2_pcross).toDouble());
-    txtPMut->setValue(study()->value(Study::NSGA2_pmut).toDouble());
-    txtEtaC->setValue(study()->value(Study::NSGA2_eta_c).toDouble());
-    txtEtaM->setValue(study()->value(Study::NSGA2_eta_m).toDouble());
-    if (study()->value(Study::NSGA2_crowdobj).toBool())
-        radCrowdObjective->setChecked(true);
-    else
-        radCrowdParameters->setChecked(true);
-}
-
-void StudyNSGA2Dialog::save()
-{
-    StudyDialog::save();
-
-    study()->setValue(Study::NSGA2_popsize, txtPopSize->value());
-    study()->setValue(Study::NSGA2_ngen, txtNGen->value());
-    study()->setValue(Study::NSGA2_pcross, txtPCross->value());
-    study()->setValue(Study::NSGA2_pmut, txtPMut->value());
-    study()->setValue(Study::NSGA2_eta_c, txtEtaC->value());
-    study()->setValue(Study::NSGA2_eta_m, txtEtaM->value());
-    study()->setValue(Study::NSGA2_crowdobj, radCrowdObjective->isChecked());
-}
-
-
-// *****************************************************************************************************
-
 StudyPagmoDialog::StudyPagmoDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -197,17 +95,6 @@ QLayout *StudyPagmoDialog::createStudyControls()
     txtNGen->setMinimum(1);
     txtNGen->setMaximum(1000);
 
-    txtEliteCount = new QSpinBox(this);
-    txtEliteCount->setMinimum(2);
-    txtEliteCount->setMaximum(1000);
-
-    txtCrossoverFraction = new LineEditDouble(0.0);
-    txtCrossoverFraction->setBottom(0);
-    txtCrossoverFraction->setTop(1.0);
-    txtMutationRate = new LineEditDouble(0.0);
-    txtMutationRate->setBottom(0);
-    txtMutationRate->setTop(1.0);
-
     QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);
     layoutInitialization->addWidget(cmbAlgorithm, 0, 1);
@@ -215,24 +102,12 @@ QLayout *StudyPagmoDialog::createStudyControls()
     layoutInitialization->addWidget(txtPopSize, 1, 1);
     layoutInitialization->addWidget(new QLabel(tr("Maximum number of generations:")), 2, 0);
     layoutInitialization->addWidget(txtNGen, 2, 1);
-    layoutInitialization->addWidget(new QLabel(tr("Elite count:")), 3, 0);
-    layoutInitialization->addWidget(txtEliteCount, 3, 1);
 
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
 
-    QGridLayout *layoutConfig = new QGridLayout();
-    layoutConfig->addWidget(new QLabel(tr("Probability of crossover (0.0 - 1.0):")), 0, 0);
-    layoutConfig->addWidget(txtCrossoverFraction, 0, 1);
-    layoutConfig->addWidget(new QLabel(tr("Mutation rate (0.0 - 1.0):")), 1, 0);
-    layoutConfig->addWidget(txtMutationRate, 1, 1);
-
-    QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
-    grpConfig->setLayout(layoutConfig);
-
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
-    layoutMain->addWidget(grpConfig);
 
     return layoutMain;
 }
@@ -241,24 +116,18 @@ void StudyPagmoDialog::load()
 {
     StudyDialog::load();
 
-    // cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::Pagmo_algorithm).toString()));
-    // txtPopSize->setValue(study()->value(Study::Pagmo_popsize).toInt());
-    // txtNGen->setValue(study()->value(Study::Pagmo_ngen).toInt());
-    // txtEliteCount->setValue(study()->value(Study::Pagmo_elite_count).toInt());
-    // txtCrossoverFraction->setValue(study()->value(Study::Pagmo_crossover_fraction).toDouble());
-    // txtMutationRate->setValue(study()->value(Study::Pagmo_mutation_rate).toDouble());
+    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::Pagmo_algorithm).toString()));
+    txtPopSize->setValue(study()->value(Study::Pagmo_popsize).toInt());
+    txtNGen->setValue(study()->value(Study::Pagmo_ngen).toInt());
 }
 
 void StudyPagmoDialog::save()
 {
     StudyDialog::save();
 
-    // study()->setValue(Study::Pagmo_algorithm, cmbAlgorithm->currentData().toString());
-    // study()->setValue(Study::Pagmo_popsize, txtPopSize->value());
-    // study()->setValue(Study::Pagmo_ngen, txtNGen->value());
-    // study()->setValue(Study::Pagmo_elite_count, txtEliteCount->value());
-    // study()->setValue(Study::Pagmo_crossover_fraction, txtCrossoverFraction->value());
-    // study()->setValue(Study::Pagmo_mutation_rate, txtMutationRate->value());
+    study()->setValue(Study::Pagmo_algorithm, cmbAlgorithm->currentData().toString());
+    study()->setValue(Study::Pagmo_popsize, txtPopSize->value());
+    study()->setValue(Study::Pagmo_ngen, txtNGen->value());
 }
 
 // *****************************************************************************************************
@@ -323,7 +192,7 @@ void StudyNLoptDialog::load()
     txtXAbsTol->setValue(study()->value(Study::NLopt_xtol_abs).toDouble());
     txtFRelTol->setValue(study()->value(Study::NLopt_ftol_rel).toDouble());
     txtFAbsTol->setValue(study()->value(Study::NLopt_ftol_abs).toDouble());
-    txtNIterations->setValue(study()->value(Study::NLopt_n_iterations).toDouble());
+    txtNIterations->setValue(study()->value(Study::NLopt_n_iterations).toInt());
     cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::NLopt_algorithm).toString()));
 }
 

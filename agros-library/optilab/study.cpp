@@ -26,7 +26,6 @@
 #include "solver/problem_function.h"
 
 #include "study_sweep.h"
-#include "study_nsga2.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
 #include "study_pagmo2.h"
@@ -102,8 +101,6 @@ Study *Study::factory(StudyType type)
     Study *study = nullptr;
     if (type == StudyType_Sweep)
         study = new StudySweep();
-    else if (type == StudyType_NSGA2)
-        study = new StudyNSGA2();
     else if (type == StudyType_BayesOpt)
         study = new StudyBayesOpt();
     else if (type == StudyType_NLopt)

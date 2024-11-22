@@ -60,7 +60,6 @@ private:
     SceneViewSimpleGeometry *geometryViewer;
 
     QComboBox *cmbStudies;
-    QLabel *lblNumberOfSolutions;
 
     QComboBox *cmbAxisX;
     QComboBox *cmbAxisY;

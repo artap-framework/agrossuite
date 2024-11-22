@@ -226,8 +226,8 @@ cdef class __Problem__:
             return __StudyBayesOpt__()
         elif (type == "nlopt"):
             return __StudyNLopt__()
-        elif (type == "nsga2"):
-            return __StudyNSGA2__()
+        elif (type == "pagmo"):
+            return __StudyPagmo__()
         elif (type == "sweep"):
             return __StudySweep__()
         elif (type == "model"):
@@ -251,7 +251,7 @@ cdef class __Problem__:
         elif (type == "nlopt"):
             return __StudyNLopt__(index)
         elif (type == "nsga2"):
-            return __StudyNSGA2__(index)
+            return __StudyPagmo__(index)
         elif (type == "sweep"):
             return __StudySweep__(index)
         elif (type == "model"):
