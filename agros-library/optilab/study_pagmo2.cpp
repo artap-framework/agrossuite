@@ -317,10 +317,10 @@ void StudyPagmo::solve()
 		pop = algo.evolve(pop);
 
 		// 5 - Output the population
-		std::cout << "The population: \n" << pop;
+		// std::cout << "The population: \n" << pop;
 
 		// Print p to screen.
-		std::cout << p << '\n';
+		// std::cout << p << '\n';
 
 		addComputationSet(tr("Values"));
 

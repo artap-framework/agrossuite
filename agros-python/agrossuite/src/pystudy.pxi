@@ -256,7 +256,7 @@ cdef class __StudyPagmo__(__Study__):
     def __get_settings__(self):
         return {'algorithm' : (<PyStudyPagmo*> self.thisptr).getAlgorithm().decode(),
                 'popsize' : self.thisptr.getIntParameter(b'Pagmo_popsize'),
-                'ngen' : self.thisptr.getIntParameter(b'Pagmo_ngen'))}
+                'ngen' : self.thisptr.getIntParameter(b'Pagmo_ngen')}
 
     def __set_settings__(self, settings):
         positive_value(settings['popsize'], 'popsize')
@@ -264,6 +264,8 @@ cdef class __StudyPagmo__(__Study__):
 
         positive_value(settings['ngen'], 'ngen')
         self.thisptr.setParameter(string(b'Pagmo_ngen'), <int> settings['ngen'])
+
+        (<PyStudyPagmo*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
 
 cdef class __StudySweep__(__Study__):
     def __cinit__(self, index = -1):

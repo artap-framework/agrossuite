@@ -71,7 +71,7 @@ class TestNLoptBooth(AgrosTestCase):
         self.lower_then_test("OF", self.computation.results["OF"], 1e-10)
 
 
-class TestNSGA2Sphere(AgrosTestCase):
+class TestPagmoSphere(AgrosTestCase):
     def setUp(self):  
         # problem
         problem = agros.problem(clear = True)
@@ -79,32 +79,23 @@ class TestNSGA2Sphere(AgrosTestCase):
         problem.parameters["py"] = 0
         
         # studies
-        study_nsga2 = problem.add_study("nsga2")
-        study_nsga2.add_parameter("px", -10, 10)
-        study_nsga2.add_parameter("py", -10, 10)
-        study_nsga2.add_goal_function("OF", "(px-1.0)**2+(py+2.0)**2", 100)
+        study_pagmo = problem.add_study("pagmo")
+        study_pagmo.add_parameter("px", -10, 10)
+        study_pagmo.add_parameter("py", -10, 10)
+        study_pagmo.add_goal_function("OF", "(px-1.0)**2+(py+2.0)**2", 100)
 
-        study_nsga2.clear_solution = True
-        study_nsga2.solve_problem = False
-        
-        study_nsga2.settings["popsize"] = 20
-        study_nsga2.settings["ngen"] = 300
-        study_nsga2.settings["pcross"] = 0.6
-        study_nsga2.settings["pmut"] = 0.2
-        study_nsga2.settings["eta_c"] = 10
-        study_nsga2.settings["eta_m"] = 20
-        study_nsga2.settings["crowdobj"] = False
+        study_pagmo.clear_solution = True
+        study_pagmo.solve_problem = False
 
-        study_nsga2.solve()
+        study_pagmo.settings["algorithm"] = "gwo"
+        study_pagmo.settings["popsize"] = 10
+        study_pagmo.settings["ngen"] = 40
+
+        study_pagmo.solve()
         
-        self.computation = study_nsga2.find_extreme("goal", "OF", True)
-       
-    def test_values(self):    
-        self.value_test("px", self.computation.parameters["px"], 1.0)
-        self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 5e-2)
+        self.computation = study_pagmo.find_extreme("goal", "OF", True)
 
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-2) // 5e-2

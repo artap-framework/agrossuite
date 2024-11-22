@@ -242,14 +242,6 @@ public:
         BayesOpt_l_type,
         BayesOpt_sc_type,
 
-        NSGA2_popsize,
-        NSGA2_ngen,
-        NSGA2_pcross,
-        NSGA2_pmut,
-        NSGA2_eta_c,
-        NSGA2_eta_m,
-        NSGA2_crowdobj,
-
         Pagmo_algorithm,
         Pagmo_popsize,
         Pagmo_ngen,
