@@ -17,6 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+// hack to redefinition of serialize function
+#define PAGMO_S11N_HPP
 #include "study_pagmo2.h"
 
 #include "study.h"

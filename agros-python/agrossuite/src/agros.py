@@ -29,7 +29,7 @@ else:
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_matio.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_nlopt2.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_bayesopt.so")
-	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_pagmo2.so")
+	# ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_pagmo2.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_3rdparty_ctemplate.so")
 	ctypes.cdll.LoadLibrary(path + "/lib/libdeal_II.so.9.5.2")
 	ctypes.cdll.LoadLibrary(path + "/lib/libagros_library.so")

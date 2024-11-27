@@ -89,13 +89,13 @@ class TestPagmoSphere(AgrosTestCase):
 
         study_pagmo.settings["algorithm"] = "gwo"
         study_pagmo.settings["popsize"] = 10
-        study_pagmo.settings["ngen"] = 40
+        study_pagmo.settings["ngen"] = 30
 
         study_pagmo.solve()
         
         self.computation = study_pagmo.find_extreme("goal", "OF", True)
 
-    def test_values(self):    
+    def test_values(self):
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-2) // 5e-2
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-3)

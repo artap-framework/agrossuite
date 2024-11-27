@@ -23,9 +23,6 @@ build-linux:
     - ccache --show-stats  
   script: 
     - git submodule update --init
-    # dirty hack to fix dealii serialization (due to pagmo library)
-    - cp -f dealii/include/deal.II/base/utilities.h dealii/include/deal.II/base/utilities.h.bak
-    - cp resources_source/dealii/include/deal.II/base/utilities.h dealii/include/deal.II/base/utilities.h
     - cd dealii 
     - mkdir -p build 
     - cd build 
@@ -63,6 +60,7 @@ build-linux:
     # strip shared objects
     - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
+    - find agrossuite/_skbuild/ -name \*.a -execdir rm {} \;
     # remove old wheels
     - rm -rf *.whl	
     # build wheel
@@ -220,6 +218,7 @@ build-windows:
     - cd dealii
     - mkdir -p build
     - cd build
+    # -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_TBB="ON" 
     - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/include/zlib" -DZLIB_LIBRARY="C:/agros_dependencies/Release/libs/zlib.lib" .. | Out-Null
     - cmake --build . --config Release --parallel 12 -j 12 | Out-Null 
     # Build Agros

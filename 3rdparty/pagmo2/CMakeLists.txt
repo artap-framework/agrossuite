@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.8)
 # https://cmake.org/cmake/help/latest/policy/CMP0069.html
 cmake_policy(SET CMP0069 NEW)
 
+# include TBB
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
 
 # Set default build type to "Release".
@@ -18,12 +19,55 @@ endif()
 project(${PAGMO2_LIBRARY} VERSION 2.19.1 LANGUAGES CXX C)
 
 message("PAGMO2")
-#set(PAGMO_INSTALL_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/../../usr/lib)
+set(PAGMO_INSTALL_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/lib)
 #message("PAGMO_INSTALL_LIBDIR: ${PAGMO_INSTALL_LIBDIR}")
 
 # Setup module path.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules" "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/yacma")
 
+# bundled boost
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/3rdparty/boost/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
+set(src_boost_serialization
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/archive_exception.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_archive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_iarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_iserializer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_oarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_oserializer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_pointer_iserializer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_pointer_oserializer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_serializer_map.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_text_iprimitive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_text_oprimitive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_text_wiprimitive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_text_woprimitive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/basic_xml_archive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/binary_iarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/binary_oarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/binary_wiarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/binary_woarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/codecvt_null.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/extended_type_info.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/extended_type_info_no_rtti.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/extended_type_info_typeid.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/polymorphic_iarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/polymorphic_oarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/stl_port.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/text_iarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/text_oarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/text_wiarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/text_woarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/utf8_codecvt_facet.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/void_cast.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_archive_exception.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_grammar.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_iarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_oarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_wgrammar.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_wiarchive.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/boost/libs/serialization/src/xml_woarchive.cpp
+)
 message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
 enable_testing()
 
@@ -50,23 +94,25 @@ option(PAGMO_ENABLE_IPO "Enable IPO (requires CMake >= 3.9 and compiler support)
 mark_as_advanced(PAGMO_ENABLE_IPO)
 
 # Build static library instead of dynamic.
-option(PAGMO_BUILD_STATIC_LIBRARY "Build pagmo as a static library, instead of dynamic." OFF)
+option(PAGMO_BUILD_STATIC_LIBRARY "Build pagmo as a static library, instead of dynamic." ON)
 
 # Detect if we can enable the fork_island UDI.
-include(CheckIncludeFileCXX)
-include(CheckCXXSymbolExists)
-CHECK_INCLUDE_FILE_CXX("sys/types.h" PAGMO_HAVE_SYS_TYPES_H)
-CHECK_INCLUDE_FILE_CXX("sys/wait.h" PAGMO_HAVE_SYS_WAIT_H)
-CHECK_INCLUDE_FILE_CXX("unistd.h" PAGMO_HAVE_UNISTD_H)
-CHECK_CXX_SYMBOL_EXISTS(fork "unistd.h;sys/types.h" PAGMO_HAVE_FORK_SYSCALL)
-if(PAGMO_HAVE_SYS_TYPES_H AND PAGMO_HAVE_SYS_WAIT_H AND PAGMO_HAVE_UNISTD_H AND PAGMO_HAVE_FORK_SYSCALL)
-    message(STATUS "The fork_island UDI will be available.")
-    set(PAGMO_WITH_FORK_ISLAND YES)
-    set(PAGMO_ENABLE_FORK_ISLAND "#define PAGMO_WITH_FORK_ISLAND")
-else()
-    message(STATUS "The fork_island UDI will NOT be available.")
-    set(PAGMO_WITH_FORK_ISLAND NO)
-endif()
+#include(CheckIncludeFileCXX)
+#include(CheckCXXSymbolExists)
+#CHECK_INCLUDE_FILE_CXX("sys/types.h" PAGMO_HAVE_SYS_TYPES_H)
+#CHECK_INCLUDE_FILE_CXX("sys/wait.h" PAGMO_HAVE_SYS_WAIT_H)
+#CHECK_INCLUDE_FILE_CXX("unistd.h" PAGMO_HAVE_UNISTD_H)
+#CHECK_CXX_SYMBOL_EXISTS(fork "unistd.h;sys/types.h" PAGMO_HAVE_FORK_SYSCALL)
+#if(PAGMO_HAVE_SYS_TYPES_H AND PAGMO_HAVE_SYS_WAIT_H AND PAGMO_HAVE_UNISTD_H AND PAGMO_HAVE_FORK_SYSCALL)
+#    message(STATUS "The fork_island UDI will be available.")
+#    set(PAGMO_WITH_FORK_ISLAND YES)
+#    set(PAGMO_ENABLE_FORK_ISLAND "#define PAGMO_WITH_FORK_ISLAND")
+#else()
+#    message(STATUS "The fork_island UDI will NOT be available.")
+#    set(PAGMO_WITH_FORK_ISLAND NO)
+#endif()
+
+set(PAGMO_WITH_FORK_ISLAND NO)
 
 # Threading setup.
 # NOTE: do it before checking for the presence of pthread_atfork(),
@@ -98,7 +144,8 @@ include(CheckCXXCompilerFlag)
 # https://cmake.org/pipermail/cmake/2013-July/055375.html
 if(UNIX AND NOT APPLE)
     include(GNUInstallDirs)
-    set(_PAGMO_INSTALL_LIBDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}")
+    # set(_PAGMO_INSTALL_LIBDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}")
+    set(_PAGMO_INSTALL_LIBDIR_DEFAULT "lib")
 else()
     set(_PAGMO_INSTALL_LIBDIR_DEFAULT "lib")
 endif()
@@ -207,7 +254,7 @@ if(PAGMO_BUILD_TESTS)
 endif()
 
 # Boost setup.
-include(PagmoFindBoost)
+# include(PagmoFindBoost)
 
 # List of source files.
 set(PAGMO_SRC_FILES
@@ -339,9 +386,9 @@ if(PAGMO_BUILD_STATIC_LIBRARY)
     # Setup of the pagmo static library.
     message(STATUS "pagmo will be built as a static library.")
     set(PAGMO_STATIC_BUILD "#define PAGMO_STATIC_BUILD")
-    add_library(pagmo STATIC "${PAGMO_SRC_FILES}")
+    add_library(${PROJECT_NAME} STATIC "${PAGMO_SRC_FILES}" ${src_boost_serialization})
 else()
-    add_library(${PROJECT_NAME} SHARED "${PAGMO_SRC_FILES}")
+    add_library(${PROJECT_NAME} SHARED "${PAGMO_SRC_FILES}" ${src_boost_serialization})
     # set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION "9.0")
     # set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION 9)
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
