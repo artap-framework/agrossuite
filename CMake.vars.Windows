@@ -41,6 +41,8 @@ set(MUMPS_LIBRARIES
 
 link_directories("C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib" )
 link_directories("C:/Program Files (x86)/Intel/oneAPI/compiler/2024.0/lib")
+link_directories("C:/agros_dependencies/Release/libs")
+
 set(MKLROOT "C:/Program Files (x86)/Intel/oneAPI/mkl")
 set(BLAS_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_blas95_lp64.lib")
 set(LAPACK_LIBRARIES "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_intel_lp64.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core.lib" "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_sequential.lib")
