@@ -77,6 +77,6 @@ ELSE()
   SET(ZLIB_LIBRARY "${AGROS_DEPENDENCIES_LIBS_DIR}/zlibd.lib")
 ENDIF()
 
-SET(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include")
+SET(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/boost/include")
 SET(Vulkan_INCLUDE_DIR "${AGROS_DEPENDENCIES_INCLUDE_DIR}/vulkan")
 

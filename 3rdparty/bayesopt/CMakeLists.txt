@@ -59,11 +59,9 @@ ENDIF()
 # set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/")
 #  -------------------------------------
 
-IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
-  INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/3rdparty/boost/include/")
-  set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
-endif()
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/3rdparty/boost/include/")
+set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.70.0/include/")
 
 find_package(Boost REQUIRED)
 if(Boost_FOUND)
