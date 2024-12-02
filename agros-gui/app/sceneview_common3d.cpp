@@ -246,7 +246,7 @@ void SceneViewCommon3D::keyReleaseEvent(QKeyEvent *event)
     setToolTip("");
 
     QWidget::keyReleaseEvent(event);
-    emit mouseSceneModeChanged(MouseSceneMode_Nothing);
+    Q_EMIT mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
 
 void SceneViewCommon3D::mousePressEvent(QMouseEvent *event)
@@ -281,7 +281,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
         m_offset3d.x -= 2.0/width() * dx*aspect();
         m_offset3d.y += 2.0/height() * dy;
 
-        emit mouseSceneModeChanged(MouseSceneMode_Pan);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Pan);
 
         update();
     }
@@ -295,7 +295,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
         m_rotation3d.x -= dy;
         m_rotation3d.y += dx;
 
-        emit mouseSceneModeChanged(MouseSceneMode_Rotate);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Rotate);
 
         update();
     }
@@ -306,7 +306,7 @@ void SceneViewCommon3D::mouseMoveEvent(QMouseEvent *event)
 
         m_rotation3d.z -= dy;
 
-        emit mouseSceneModeChanged(MouseSceneMode_Rotate);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Rotate);
 
         update();
     }

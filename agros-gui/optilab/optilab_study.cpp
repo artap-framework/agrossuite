@@ -370,7 +370,7 @@ void OptiLabStudy::solveStudy()
             if (study->hasError())
                 showLogViewDialog();
             else
-                emit studySolved(study);
+                Q_EMIT studySolved(study);
         }
     }
 }

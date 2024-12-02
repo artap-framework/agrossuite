@@ -88,7 +88,7 @@ public:
     public slots:
         void doTriggered()
     {
-        emit triggered(m_key);
+        Q_EMIT triggered(m_key);
     }
 
     signals:

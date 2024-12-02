@@ -801,7 +801,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
         }
 
-        emit changed();
+        Q_EMIT changed();
     }
 }
 
@@ -924,7 +924,7 @@ void PreprocessorWidget::doProperties()
             }
         }
 
-        emit changed();
+        Q_EMIT changed();
     }
 }
 
@@ -1045,7 +1045,7 @@ void PreprocessorWidget::doDelete()
         }
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
 }
 
@@ -1055,7 +1055,7 @@ void PreprocessorWidget::doNewParameter()
     if (dialog.exec() == QDialog::Accepted)
     {
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
 }
 
@@ -1069,7 +1069,7 @@ void PreprocessorWidget::doNewFunctionAnalytic()
         Agros::problem()->config()->functions()->add(function);
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1100,7 +1100,7 @@ void PreprocessorWidget::doNewField(const QString &field)
         Agros::problem()->addField(fieldInfo);
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1128,7 +1128,7 @@ void PreprocessorWidget::doNewNode(const Point &point)
             undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1147,7 +1147,7 @@ void PreprocessorWidget::doNewEdge()
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
 
         if (edgeAdded == edge)
             undoStack()->push(getAddCommand(edge));
@@ -1172,7 +1172,7 @@ void PreprocessorWidget::doNewLabel(const Point &point)
             undoStack()->push(getAddCommand(label));
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1227,7 +1227,7 @@ void PreprocessorWidget::doNewRectangle()
             undoStack()->push(getAddCommand(edgeL));
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1285,7 +1285,7 @@ void PreprocessorWidget::doNewCircle()
             undoStack()->push(getAddCommand(edgeL));
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1314,7 +1314,7 @@ void PreprocessorWidget::doNewBoundary(const QString &field)
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {
@@ -1336,7 +1336,7 @@ void PreprocessorWidget::doNewMaterial(const QString &field)
         Agros::problem()->scene()->invalidate();
 
         refresh();
-        emit changed();
+        Q_EMIT changed();
     }
     else
     {

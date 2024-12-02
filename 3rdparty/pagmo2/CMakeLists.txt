@@ -5,7 +5,11 @@ cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0069 NEW)
 
 # include TBB
+if(MSVC)
+INCLUDE_DIRECTORIES("C:/Program Files (x86)/Intel/oneAPI/tbb/2021.12/include")
+else()
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb-2018_U2/include/")
+endif()
 
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set

@@ -119,7 +119,7 @@ void SceneViewPost2D::keyPressEvent(QKeyEvent *event)
                     if (label->isHole())
                         label->setSelected(false);
 
-                emit mousePressed();
+                Q_EMIT mousePressed();
             }
 
             // select surface integral area
@@ -127,7 +127,7 @@ void SceneViewPost2D::keyPressEvent(QKeyEvent *event)
             {
                 m_postprocessorWidget->currentComputation()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
 
-                emit mousePressed();
+                Q_EMIT mousePressed();
             }
 
             update();
@@ -150,7 +150,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
         if (actPostprocessorModeLocalPointValue->isChecked())
         {
             m_selectedPoint = p;
-            emit mousePressed(p);
+            Q_EMIT mousePressed(p);
 
             update();
         }
@@ -165,7 +165,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
                 label->setSelected(!label->isSelected());
 
                 update();
-                emit mousePressed();
+                Q_EMIT mousePressed();
             }
         }
 
@@ -178,7 +178,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             edge->setSelected(!edge->isSelected());
             update();
 
-            emit mousePressed();
+            Q_EMIT mousePressed();
         }
     }
 }
@@ -893,7 +893,7 @@ void SceneViewPost2D::selectByMarker()
 
     SceneMarkerSelectDialog sceneMarkerSelectDialog(this, mode, m_postprocessorWidget->currentComputation().data());
     if (sceneMarkerSelectDialog.exec() == QDialog::Accepted)
-        emit mousePressed();
+        Q_EMIT mousePressed();
 }
 
 void SceneViewPost2D::selectPoint()
@@ -901,7 +901,7 @@ void SceneViewPost2D::selectPoint()
     LocalPointValueDialog localPointValueDialog(m_selectedPoint, m_postprocessorWidget->currentComputation().data());
     if (localPointValueDialog.exec() == QDialog::Accepted)
     {
-        emit mousePressed(localPointValueDialog.point());
+        Q_EMIT mousePressed(localPointValueDialog.point());
         update();
     }
 }
@@ -909,13 +909,13 @@ void SceneViewPost2D::selectPoint()
 void SceneViewPost2D::doPostprocessorModeGroup(QAction *action)
 {
     if (actPostprocessorModeNothing->isChecked())
-        emit postprocessorModeGroupChanged(SceneModePostprocessor_Empty);
+        Q_EMIT postprocessorModeGroupChanged(SceneModePostprocessor_Empty);
     if (actPostprocessorModeLocalPointValue->isChecked())
-        emit postprocessorModeGroupChanged(SceneModePostprocessor_LocalValue);
+        Q_EMIT postprocessorModeGroupChanged(SceneModePostprocessor_LocalValue);
     if (actPostprocessorModeSurfaceIntegral->isChecked())
-        emit postprocessorModeGroupChanged(SceneModePostprocessor_SurfaceIntegral);
+        Q_EMIT postprocessorModeGroupChanged(SceneModePostprocessor_SurfaceIntegral);
     if (actPostprocessorModeVolumeIntegral->isChecked())
-        emit postprocessorModeGroupChanged(SceneModePostprocessor_VolumeIntegral);
+        Q_EMIT postprocessorModeGroupChanged(SceneModePostprocessor_VolumeIntegral);
 
     if (!m_postprocessorWidget->currentComputation().isNull())
         m_postprocessorWidget->currentComputation()->scene()->selectNone();

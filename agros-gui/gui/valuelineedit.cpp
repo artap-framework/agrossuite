@@ -159,7 +159,7 @@ Value ValueLineEdit::value()
 
 void ValueLineEdit::doCheckBoxStateChanged()
 {
-    emit enableFields(m_id, chkCheckBox->isChecked());
+    Q_EMIT enableFields(m_id, chkCheckBox->isChecked());
 }
 
 void ValueLineEdit::doEnableFields(QString id, bool checked)
@@ -186,7 +186,7 @@ bool ValueLineEdit::evaluate(bool quiet)
     if (m_isBool)
     {
         m_number = int(chkCheckBox->isChecked());
-        emit evaluated(false);
+        Q_EMIT evaluated(false);
         return true;
     }
     else
@@ -244,17 +244,17 @@ bool ValueLineEdit::evaluate(bool quiet)
 
         if (isOk)
         {
-            emit evaluated(false);
+            Q_EMIT evaluated(false);
             if (valueChanged)
             {
                 QString textValue = QString("%1").arg(m_number);
-                emit textChanged(textValue);
+                Q_EMIT textChanged(textValue);
             }
             return true;
         }
         else
         {
-            emit evaluated(true);
+            Q_EMIT evaluated(true);
             return false;
         }
     }
