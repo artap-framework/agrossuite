@@ -60,6 +60,7 @@ build-linux:
     # strip shared objects
     - mkdir -p agrossuite/_skbuild/ 
     - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
+    # remove static libs
     - find agrossuite/_skbuild/ -name \*.a -execdir rm {} \;
     # remove old wheels
     - rm -rf *.whl	
