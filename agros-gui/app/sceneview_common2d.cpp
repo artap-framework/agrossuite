@@ -418,11 +418,11 @@ void SceneViewCommon2D::paintZoomRegion()
 void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
 {
     if ((event->modifiers() & Qt::ControlModifier) && !(event->modifiers() & Qt::ShiftModifier))
-        emit mouseSceneModeChanged(MouseSceneMode_Add);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Add);
     if (!(event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
-        emit mouseSceneModeChanged(MouseSceneMode_Pan);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Pan);
     if ((event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
-        emit mouseSceneModeChanged(MouseSceneMode_Move);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Move);
 
     Point stepTemp = transform(Point(width(), height()));
     stepTemp.x = stepTemp.x - m_offset2d.x;
@@ -471,7 +471,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         if (problem())
         {
             problem()->scene()->selectNone();
-            emit mousePressed();
+            Q_EMIT mousePressed();
             update();
         }
     }
@@ -522,7 +522,7 @@ void SceneViewCommon2D::keyReleaseEvent(QKeyEvent *event)
     }
     QWidget::keyReleaseEvent(event);
 
-    emit mouseSceneModeChanged(MouseSceneMode_Nothing);
+    Q_EMIT mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
 
 // rulers
@@ -625,7 +625,7 @@ void SceneViewCommon2D::mouseReleaseEvent(QMouseEvent *event)
     m_zoomRegion = false;
     update();
 
-    emit mouseSceneModeChanged(MouseSceneMode_Nothing);
+    Q_EMIT mouseSceneModeChanged(MouseSceneMode_Nothing);
 }
 
 void SceneViewCommon2D::mouseMoveEvent(QMouseEvent *event)
@@ -652,11 +652,11 @@ void SceneViewCommon2D::mouseMoveEvent(QMouseEvent *event)
         m_offset2d.x -= 2.0/width() * dx/m_scale2d*aspect();
         m_offset2d.y += 2.0/height() * dy/m_scale2d;
 
-        emit mouseSceneModeChanged(MouseSceneMode_Pan);
+        Q_EMIT mouseSceneModeChanged(MouseSceneMode_Pan);
         update();
     }
 
-    emit mouseMoved(p);
+    Q_EMIT mouseMoved(p);
 
     if (Agros::configComputer()->value(Config::Config_ShowRulers).toBool())
         update();

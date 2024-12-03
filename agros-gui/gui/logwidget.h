@@ -198,12 +198,12 @@ public:
     void printWarning(const QString &module, const QString &message);
     void printDebug(const QString &module, const QString &message);
 
-    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {emit m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
-    inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {emit m_connectLog->updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep);}
-    inline void updateTransientChartInfo(double actualTime) { emit m_connectLog->updateTransientChart(actualTime);}
+    inline void updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector<double> steps, const QVector<double> relativeChangeOfSolutions) {Q_EMIT m_connectLog->updateNonlinearChart(phase, steps, relativeChangeOfSolutions);}
+    inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) {Q_EMIT m_connectLog->updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep);}
+    inline void updateTransientChartInfo(double actualTime) { Q_EMIT m_connectLog->updateTransientChart(actualTime);}
 
-    void appendImage(const QString &fileName) {emit m_connectLog->appendImg(fileName);}
-    void appendHtml(const QString &html) {emit m_connectLog->appendHtm(html);}
+    void appendImage(const QString &fileName) {Q_EMIT m_connectLog->appendImg(fileName);}
+    void appendHtml(const QString &html) {Q_EMIT m_connectLog->appendHtm(html);}
 
 protected:
     ConnectLog *m_connectLog;

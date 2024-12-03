@@ -132,7 +132,7 @@ void SceneViewParticleTracing::paintGL()
             paintParticleTracingColorBar(m_velocityMin, m_velocityMax);
     }
 
-    emit labelCenter(tr("Particle tracing"));
+    Q_EMIT labelCenter(tr("Particle tracing"));
 }
 
 void SceneViewParticleTracing::resizeGL(int w, int h)

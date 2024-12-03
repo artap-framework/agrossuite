@@ -269,7 +269,7 @@ void PostprocessorWidget::apply()
         m_sceneViewPost3D->refresh();
         m_sceneViewChart->refresh();
 
-        emit changed();
+        Q_EMIT changed();
     }
 }
 
@@ -532,7 +532,7 @@ void PostprocessorWidget::doPostModeSet(QAction *action)
 
     refresh();
 
-    emit modeChanged(m_postMode);
+    Q_EMIT modeChanged(m_postMode);
 }
 
 PostprocessorSceneWidget::PostprocessorSceneWidget(PhysicalFieldWidget *fieldWidget)

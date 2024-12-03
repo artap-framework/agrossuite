@@ -117,7 +117,7 @@ void CouplingsWidget::refresh()
 void CouplingsWidget::itemChanged(int index)
 {
     // qDebug() << "void CouplingsWidget::itemChanged(int index)";
-    emit changed();
+    Q_EMIT changed();
 }
 
 // ********************************************************************************************
@@ -328,7 +328,7 @@ void ProblemWidget::save()
     Agros::problem()->config()->blockSignals(false);
     Agros::problem()->config()->refresh();
 
-    emit changed();
+    Q_EMIT changed();
 }
 
 void ProblemWidget::transientChanged()

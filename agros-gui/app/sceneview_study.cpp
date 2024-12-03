@@ -69,7 +69,7 @@ void SceneViewStudy::mousePressEvent(QMouseEvent *event)
         if (m_userMode == SelectPoint)
         {
             m_selectedPoint = p;
-            emit mousePressed(p);
+            Q_EMIT mousePressed(p);
 
             update();
         }
@@ -84,7 +84,7 @@ void SceneViewStudy::mousePressEvent(QMouseEvent *event)
                 label->setSelected(!label->isSelected());
 
                 update();
-                emit mousePressed();
+                Q_EMIT mousePressed();
             }
         }
 
@@ -97,7 +97,7 @@ void SceneViewStudy::mousePressEvent(QMouseEvent *event)
             edge->setSelected(!edge->isSelected());
             update();
 
-            emit mousePressed();
+            Q_EMIT mousePressed();
         }
     }
 }

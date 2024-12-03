@@ -296,7 +296,7 @@ void PhysicalFieldWidget::doComputation(int index)
     doFieldInfo();
 
     if (currentComputationChanged)
-        emit computationChanged();
+        Q_EMIT computationChanged();
 }
 
 void PhysicalFieldWidget::doFieldInfo(int index)
@@ -323,7 +323,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
             m_lastFieldId = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
             m_lastFieldAnalysisType = fieldInfo->analysisType();
 
-            emit fieldChanged();
+            Q_EMIT fieldChanged();
         }
     }
     else

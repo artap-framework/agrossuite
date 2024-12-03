@@ -116,7 +116,7 @@ void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int colum
     {
         if (!m_selectedExampleFilename.isEmpty())
         {
-            emit problemOpen(m_selectedExampleFilename);
+            Q_EMIT problemOpen(m_selectedExampleFilename);
         }
     }
 }

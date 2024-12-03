@@ -173,7 +173,7 @@ void SceneViewProblem::doSceneObjectProperties()
                 {
                     SceneNodeDialog *dialog = new SceneNodeDialog(Agros::problem()->scene()->nodes->at(i), this);
                     if (dialog->exec() == QDialog::Accepted)
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                 }
             }
         }
@@ -184,7 +184,7 @@ void SceneViewProblem::doSceneObjectProperties()
         {
             SceneEdgeSelectDialog *dialog = new SceneEdgeSelectDialog(Agros::problem()->scene()->faces->selected(), this);
             if (dialog->exec() == QDialog::Accepted)
-                emit sceneGeometryChanged();
+                Q_EMIT sceneGeometryChanged();
         }
         if (Agros::problem()->scene()->selectedCount() == 1)
         {
@@ -194,7 +194,7 @@ void SceneViewProblem::doSceneObjectProperties()
                 {
                     SceneFaceDialog *dialog = new SceneFaceDialog(Agros::problem()->scene()->faces->at(i), this);
                     if (dialog->exec() == QDialog::Accepted)
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                 }
             }
         }
@@ -205,7 +205,7 @@ void SceneViewProblem::doSceneObjectProperties()
         {
             SceneLabelSelectDialog *dialog = new SceneLabelSelectDialog(Agros::problem()->scene()->labels->selected(), this);
             if (dialog->exec() == QDialog::Accepted)
-                emit sceneGeometryChanged();
+                Q_EMIT sceneGeometryChanged();
         }
         if (Agros::problem()->scene()->selectedCount() == 1)
         {
@@ -215,7 +215,7 @@ void SceneViewProblem::doSceneObjectProperties()
                 {
                     SceneLabelDialog *dialog = new SceneLabelDialog(Agros::problem()->scene()->labels->at(i), this);
                     if (dialog->exec() == QDialog::Accepted)
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                 }
             }
         }
@@ -235,7 +235,7 @@ void SceneViewProblem::doSceneEdgeSwapDirection()
                     Agros::problem()->scene()->faces->at(i)->swapDirection();
 
                     update();
-                    emit sceneGeometryChanged();
+                    Q_EMIT sceneGeometryChanged();
                 }
 }
 
@@ -292,7 +292,7 @@ void SceneViewProblem::doDeleteSelected()
     problem()->scene()->invalidate();
     update();
 
-    emit sceneGeometryChanged();
+    Q_EMIT sceneGeometryChanged();
 }
 
 void SceneViewProblem::doClearSelected()
@@ -385,7 +385,7 @@ void SceneViewProblem::doSceneGeometryModeSet(QAction *action)
 
     update();
 
-    emit sceneGeometryModeChanged(m_sceneMode);
+    Q_EMIT sceneGeometryModeChanged(m_sceneMode);
 }
 
 void SceneViewProblem::selectRegion(const Point &start, const Point &end)
@@ -671,11 +671,11 @@ void SceneViewProblem::mouseMoveEvent(QMouseEvent *event)
         snapPoint.x = floor(p.x / Agros::problem()->config()->value(ProblemConfig::GridStep).toDouble() + 0.5) * Agros::problem()->config()->value(ProblemConfig::GridStep).toDouble();
         snapPoint.y = floor(p.y / Agros::problem()->config()->value(ProblemConfig::GridStep).toDouble() + 0.5) * Agros::problem()->config()->value(ProblemConfig::GridStep).toDouble();
 
-        emit mouseMoved(snapPoint);
+        Q_EMIT mouseMoved(snapPoint);
     }
     else
     {
-        emit mouseMoved(p);
+        Q_EMIT mouseMoved(p);
     }
 }
 
@@ -833,7 +833,7 @@ void SceneViewProblem::mousePressEvent(QMouseEvent *event)
 
     refreshActions();
 
-    // emit sceneGeometryChanged();
+    // Q_EMIT sceneGeometryChanged();
     SceneViewCommon2D::mousePressEvent(event);
 }
 
@@ -863,7 +863,7 @@ void SceneViewProblem::mouseReleaseEvent(QMouseEvent *event)
 
     refreshActions();
 
-    emit sceneGeometryChanged();
+    Q_EMIT sceneGeometryChanged();
     SceneViewCommon2D::mouseReleaseEvent(event);
 }
 
@@ -891,7 +891,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                     }
                 }
             }
@@ -908,7 +908,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                     }
                 }
             }
@@ -925,7 +925,7 @@ void SceneViewProblem::mouseDoubleClickEvent(QMouseEvent *event)
                     if (dialog->exec() == QDialog::Accepted)
                     {
                         update();
-                        emit sceneGeometryChanged();
+                        Q_EMIT sceneGeometryChanged();
                     }
                 }
             }

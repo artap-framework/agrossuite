@@ -56,27 +56,27 @@ LogGui::LogGui()
 
 void LogGui::printHeading(const QString &message)
 {
-    emit m_connectLog->headingMsg(message);
+    Q_EMIT m_connectLog->headingMsg(message);
 }
 
 void LogGui::printMessage(const QString &module, const QString &message)
 {
-    emit m_connectLog->messageMsg(module, message);
+    Q_EMIT m_connectLog->messageMsg(module, message);
 }
 
 void LogGui::printError(const QString &module, const QString &message)
 {
-    emit m_connectLog->errorMsg(module, message);
+    Q_EMIT m_connectLog->errorMsg(module, message);
 }
 
 void LogGui::printWarning(const QString &module, const QString &message)
 {
-    emit m_connectLog->warningMsg(module, message);
+    Q_EMIT m_connectLog->warningMsg(module, message);
 }
 
 void LogGui::printDebug(const QString &module, const QString &message)
 {
-    emit m_connectLog->debugMsg(module, message);
+    Q_EMIT m_connectLog->debugMsg(module, message);
 }
 
 LogWidget::LogWidget(QWidget *parent, ConnectLog *connectLog) : QWidget(parent),

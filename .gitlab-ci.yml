@@ -220,7 +220,7 @@ build-windows:
     - mkdir -p build
     - cd build
     # -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_TBB="ON" 
-    - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_TBB="OFF" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/include/zlib" -DZLIB_LIBRARY="C:/agros_dependencies/Release/libs/zlib.lib" .. | Out-Null
+    - cmake -DCMAKE_CXX_FLAGS="/std-" -DCMAKE_CXX_FLAGS_RELEASE="/Od" -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" -DZLIB_INCLUDE_DIR="C:/agros_dependencies/include/zlib" -DZLIB_LIBRARY="C:/agros_dependencies/Release/libs/zlib.lib"  -DTBB_DIR="C:/Program Files (x86)/Intel/oneAPI/tbb/2021.12" ..
     - cmake --build . --config Release --parallel 12 -j 12 | Out-Null 
     # Build Agros
     - cd ..
@@ -228,19 +228,19 @@ build-windows:
     # - mkdir -p build
     - cd build
     - cmake -S .. -B . | Out-Null 
-    - cmake --build . --config Release --parallel 12  -j 12 
+    - cmake --build . --config Release --parallel 12  -j 12 | Out-Null 
     # Generation and build of plugins
-    - .\usr\bin\agros_generator.exe | Out-Null 
-    - cd plugins
-    - cmake .
-    - cmake --build . --config Release  --parallel 12 -j 12 
-    - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
     - xcopy "..\..\install\Others\*.dll" "..\build\usr\bin\" /Y
     - cd .\usr\bin
     - C:\Qt\6.5.3\msvc2019_64\bin\windeployqt.exe .
     - cd ..
     - cd .. 
+    - .\usr\bin\agros_generator.exe | Out-Null 
+    - cd plugins
+    - cmake .
+    - cmake --build . --config Release  --parallel 12 -j 12 
+    - cd ..
     - cd ..
    
   artifacts:

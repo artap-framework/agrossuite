@@ -914,7 +914,7 @@ void OptiLab::doSolveCurrentComputation()
 {
     if (m_selectedComputation)
     {
-        emit solveCurrentComputation(m_selectedComputation);
+        Q_EMIT solveCurrentComputation(m_selectedComputation);
     }
 }
 
