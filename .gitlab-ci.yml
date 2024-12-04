@@ -227,19 +227,19 @@ build-windows:
     # - mkdir -p build
     - cd build
     - cmake -S .. -B . | Out-Null 
-    - cmake --build . --config Release --parallel 12  -j 12 
+    - cmake --build . --config Release --parallel 12  -j 12 | Out-Null 
     # Generation and build of plugins
-    - .\usr\bin\agros_generator.exe | Out-Null 
-    - cd plugins
-    - cmake .
-    - cmake --build . --config Release  --parallel 12 -j 12 
-    - cd ..
     - xcopy "..\dealii\build\lib\deal_II.lib" ".\usr\lib\" /Y    
     - xcopy "..\..\install\Others\*.dll" "..\build\usr\bin\" /Y
     - cd .\usr\bin
     - C:\Qt\6.5.3\msvc2019_64\bin\windeployqt.exe .
     - cd ..
     - cd .. 
+    - .\usr\bin\agros_generator.exe | Out-Null 
+    - cd plugins
+    - cmake .
+    - cmake --build . --config Release  --parallel 12 -j 12 
+    - cd ..
     - cd ..
    
   artifacts:
