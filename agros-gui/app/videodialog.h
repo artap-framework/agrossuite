@@ -36,7 +36,7 @@ public:
     VideoDialog(SceneViewCommon *sceneView, QSharedPointer<Computation> computation, QWidget *parent = 0);
     ~VideoDialog();
 
-    void showDialog();
+    int showDialog();
 
 private:
     SceneViewCommon *m_sceneView;
@@ -62,8 +62,7 @@ private:
     QPushButton *btnGenerate;
 
     QCheckBox *chkSaveImages;
-    QCheckBox *chkFigureShowRulers;
-    QCheckBox *chkFigureShowAxes;
+    QCheckBox *chkFigureShowRulersAndAxis;
 
     // adaptivity
     QLabel *lblAdaptiveStep;
@@ -88,7 +87,7 @@ private slots:
     void setTransientStep(int transientStep);
 
     void doClose();
-    void doVideo();
+    void doShowVideo();
     void doOpenFolder();
 };
 
@@ -102,7 +101,7 @@ public:
     ImageSequenceDialog(QWidget *parent = 0);
     ~ImageSequenceDialog();
 
-    bool showDialog();
+    int showDialog();
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
@@ -121,10 +120,10 @@ private:
     QComboBox *cmbSpeed;
 
 private slots:
-    void updateImage();
-    void animate();
+    void updateImage() const;
+    void animate() const;
     void animateNextStep();
-    void animateSequence(int index);
+    void showImageAtIndex(int index);
 
     void doClose();
 };

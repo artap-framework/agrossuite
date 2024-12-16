@@ -53,8 +53,7 @@ VideoDialog::VideoDialog(SceneViewCommon *sceneView, QSharedPointer<Computation>
 VideoDialog::~VideoDialog()
 {
     QSettings settings;
-    settings.setValue("VideoDialog/ShowRulers", chkFigureShowRulers->isChecked());
-    settings.setValue("VideoDialog/ShowAxes", chkFigureShowAxes->isChecked());
+    settings.setValue("VideoDialog/ShowRulersAndAxis", chkFigureShowRulersAndAxis->isChecked());
     settings.setValue("VideoDialog/SaveImages", chkSaveImages->isChecked());
 
     // restore previous timestep
@@ -68,7 +67,7 @@ VideoDialog::~VideoDialog()
     delete timer;
 }
 
-void VideoDialog::showDialog()
+int VideoDialog::showDialog()
 {
     // time steps
     m_timeLevels = m_computation->timeStepLengths();
@@ -101,7 +100,7 @@ void VideoDialog::showDialog()
         QMessageBox::information(this, tr("Video Dialog"), tr("The active field is not time dependent or adaptive."));
 
         close();
-        return;
+        return QDialog::Rejected;
     }
 
     if (tabType->currentWidget() == tabTransient)
@@ -115,7 +114,7 @@ void VideoDialog::showDialog()
         connect(timer, SIGNAL(timeout()), this, SLOT(adaptiveAnimateNextStep()));
     }
 
-    exec();
+    return exec();
 }
 
 void VideoDialog::createControls()
@@ -134,7 +133,7 @@ void VideoDialog::createControls()
 
     QPushButton *btnVideo = new QPushButton(tr("Show video"));
     btnVideo->setDefault(true);
-    connect(btnVideo, SIGNAL(clicked()), this, SLOT(doVideo()));
+    connect(btnVideo, SIGNAL(clicked()), this, SLOT(doShowVideo()));
 
     QPushButton *btnOpenFolder = new QPushButton(tr("Open folder"));
     connect(btnOpenFolder, SIGNAL(clicked()), this, SLOT(doOpenFolder()));
@@ -153,8 +152,8 @@ void VideoDialog::createControls()
     chkSaveImages = new QCheckBox(tr("Save images to disk"));
     chkSaveImages->setChecked(settings.value("VideoDialog/SaveImages", true).toBool());
 
-    chkFigureShowRulers = new QCheckBox(tr("Show rulers"));
-    chkFigureShowRulers->setChecked(settings.value("VideoDialog/ShowRulers", Agros::configComputer()->value(Config::Config_ShowRulers).toBool()).toBool());
+    chkFigureShowRulersAndAxis = new QCheckBox(tr("Show rulers"));
+    chkFigureShowRulersAndAxis->setChecked(settings.value("VideoDialog/ShowRulersAndAxis", Agros::configComputer()->value(Config::Config_ShowRulers).toBool()).toBool());
 
     QHBoxLayout *layoutButtonViewport = new QHBoxLayout();
     layoutButtonViewport->addStretch();
@@ -164,8 +163,7 @@ void VideoDialog::createControls()
     layout->setColumnStretch(0, 1);
     layout->addWidget(tabType, 0, 0, 1, 2);
     layout->addWidget(chkSaveImages, 1, 0);
-    layout->addWidget(chkFigureShowRulers, 2, 1);
-    layout->addWidget(chkFigureShowAxes, 3, 1);
+    layout->addWidget(chkFigureShowRulersAndAxis, 2, 1);
     layout->addLayout(layoutButton, 10, 0, 1, 2);
 
     setLayout(layout);
@@ -255,7 +253,7 @@ void VideoDialog::transientAnimateNextStep()
 
 void VideoDialog::setTransientStep(int transientStep)
 {
-    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulersAndAxis->isChecked());
 
     m_computation->postDeal()->setActiveTimeStep(transientStep);
     m_computation->postDeal()->setActiveAdaptivityStep(m_computation->solutionStore()->lastAdaptiveStep(m_computation->postDeal()->activeViewField(), transientStep));
@@ -304,7 +302,7 @@ void VideoDialog::adaptiveAnimateNextStep()
 
 void VideoDialog::setAdaptiveStep(int adaptiveStep)
 {
-    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulers->isChecked());
+    Agros::configComputer()->setValue(Config::Config_ShowRulers, chkFigureShowRulersAndAxis->isChecked());
 
     m_computation->postDeal()->setActiveAdaptivityStep(adaptiveStep - 1);
     m_computation->postDeal()->refresh();
@@ -319,10 +317,12 @@ void VideoDialog::setAdaptiveStep(int adaptiveStep)
     QApplication::processEvents();
 }
 
-void VideoDialog::doVideo()
+void VideoDialog::doShowVideo()
 {
-    ImageSequenceDialog video;
-    video.exec();
+    auto *video = new ImageSequenceDialog(this);
+
+    video->exec();
+    delete video;
 }
 
 void VideoDialog::doOpenFolder()
@@ -354,7 +354,7 @@ ImageSequenceDialog::ImageSequenceDialog(QWidget *parent)
     sliderAnimateSequence = new QSlider(Qt::Horizontal);
     sliderAnimateSequence->setTickPosition(QSlider::TicksBelow);
     sliderAnimateSequence->setMaximum(m_images.count() - 1);
-    connect(sliderAnimateSequence, SIGNAL(valueChanged(int)), this, SLOT(animateSequence(int)));
+    connect(sliderAnimateSequence, SIGNAL(valueChanged(int)), this, SLOT(showImageAtIndex(int)));
 
     int speed = 300;
     cmbSpeed = new QComboBox();
@@ -382,7 +382,7 @@ ImageSequenceDialog::ImageSequenceDialog(QWidget *parent)
 
     lblStep = new QLabel();
 
-    QHBoxLayout *layoutControls = new QHBoxLayout();
+    auto *layoutControls = new QHBoxLayout();
     layoutControls->addWidget(sliderAnimateSequence);
     layoutControls->addWidget(lblStep);
     layoutControls->addWidget(new QLabel(tr("Speed:")));
@@ -393,7 +393,7 @@ ImageSequenceDialog::ImageSequenceDialog(QWidget *parent)
     lblImage = new QLabel();
     lblImage->setAlignment(Qt::AlignCenter);
 
-    QVBoxLayout *layoutViewport = new QVBoxLayout();
+    auto *layoutViewport = new QVBoxLayout();
     layoutViewport->addWidget(lblImage, Qt::AlignHCenter);
     layoutViewport->addLayout(layoutControls);
 
@@ -405,7 +405,7 @@ ImageSequenceDialog::ImageSequenceDialog(QWidget *parent)
     connect(timer, SIGNAL(timeout()), this, SLOT(animateNextStep()));
 
     if (m_images.count() > 0)
-        animateSequence(0);
+        showImageAtIndex(0);
 }
 
 ImageSequenceDialog::~ImageSequenceDialog()
@@ -414,7 +414,7 @@ ImageSequenceDialog::~ImageSequenceDialog()
     settings.setValue("ImageSequenceDialog/Speed", cmbSpeed->itemData(cmbSpeed->currentIndex()));
 }
 
-bool ImageSequenceDialog::showDialog()
+int ImageSequenceDialog::showDialog()
 {
     return exec();
 }
@@ -424,7 +424,7 @@ void ImageSequenceDialog::resizeEvent(QResizeEvent *event)
     updateImage();
 }
 
-void ImageSequenceDialog::animate()
+void ImageSequenceDialog::animate() const
 {
     if (timer->isActive())
     {
@@ -449,7 +449,7 @@ void ImageSequenceDialog::animateNextStep()
     if (sliderAnimateSequence->value() < m_images.count() - 1)
     {
         sliderAnimateSequence->setValue(sliderAnimateSequence->value() + 1);
-        animateSequence(sliderAnimateSequence->value());
+        showImageAtIndex(sliderAnimateSequence->value());
     }
     else
     {
@@ -457,7 +457,7 @@ void ImageSequenceDialog::animateNextStep()
     }
 }
 
-void ImageSequenceDialog::animateSequence(int index)
+void ImageSequenceDialog::showImageAtIndex(int index)
 {
     if (m_images.count() == 0)
         return;
@@ -472,12 +472,15 @@ void ImageSequenceDialog::animateSequence(int index)
     }
 }
 
-void ImageSequenceDialog::updateImage()
+void ImageSequenceDialog::updateImage() const
 {
+    if (m_currentImage.isNull())
+        return;
+
     lblImage->setPixmap(m_currentImage.scaled(lblImage->width(),
-                                              lblImage->height(),
-                                              Qt::KeepAspectRatio,
-                                              Qt::SmoothTransformation));
+                                                          lblImage->height(),
+                                                          Qt::KeepAspectRatio,
+                                                          Qt::SmoothTransformation));
 }
 
 void ImageSequenceDialog::doClose()

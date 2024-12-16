@@ -179,13 +179,13 @@ void SceneViewStudy::paintGeometryStudy()
 
             auto parameters = Agros::problem()->config()->parameters()->items();
 
-            // parameters[m_parameter->name()].setValue(m_parameter->lowerBound());
-            parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 1.05);
+            parameters[m_parameter->name()].setValue(m_parameter->lowerBound());
+            // parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 1.05);
             m_currentComputation->checkAndApplyParameters(parameters);
             paintGeometryStudyEdges(colorLower);
 
-            // parameters[m_parameter->name()].setValue(m_parameter->upperBound());
-            parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 0.95);
+            parameters[m_parameter->name()].setValue(m_parameter->upperBound());
+            // parameters[m_parameter->name()].setValue(Agros::problem()->config()->parameters()->number(m_parameter->name()) * 0.95);
             m_currentComputation->checkAndApplyParameters(parameters);
             paintGeometryStudyEdges(colorUpper);
 
