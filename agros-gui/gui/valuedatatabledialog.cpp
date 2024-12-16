@@ -95,6 +95,7 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
     if (x.size() != y.size())
     {
         btnPlot->setEnabled(false);
+        btnPlotAndFit->setEnabled(false);
         btnOk->setEnabled(false);
 
         lblInfoError->setText((x.size() > y.size()) ? tr("Size doesn't match (%1 > %2).").arg(x.size()).arg(y.size()) :
@@ -103,8 +104,8 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
     }
 
     int count = x.size();
-    double *keys = new double[count];
-    double *values = new double[count];
+    auto *keys = new double[count];
+    auto *values = new double[count];
 
     chartViewValue->setEnabled(true);
     chartViewDerivative->setEnabled(true);
@@ -113,32 +114,32 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
     {
         bool ok;
 
+        // parse X
         keys[i] = x[i].toDouble(&ok);
         if (!ok)
         {
-            lblInfoError->setText(tr("%1: cannot parse number (line %2).")
+            lblInfoError->setText(tr("%1: cannot parse X number (line %2).")
                                   .arg(labelX)
                                   .arg(i+1));
             procesOK = false;
             break;
         }
-        else
-        {
-            if ((i > 0) && (keys[i] < keys[i-1]))
-            {
-                lblInfoError->setText(tr("%1: points must be in ascending order (line %2).")
-                                      .arg(labelX)
-                                      .arg(i+1));
 
-                procesOK = false;
-                break;
-            }
+        if ((i > 0) && (keys[i] < keys[i-1]))
+        {
+            lblInfoError->setText(tr("%1: points must be in ascending order (line %2).")
+                                  .arg(labelX)
+                                  .arg(i+1));
+
+            procesOK = false;
+            break;
         }
 
+        // parse Y
         values[i] = y[i].toDouble(&ok);
         if (!ok)
         {
-            lblInfoError->setText(tr("%1: cannot parse number (line %2).")
+            lblInfoError->setText(tr("%1: cannot parse Y number (line %2).")
                                   .arg(labelY)
                                   .arg(i+1));
             procesOK = false;
@@ -156,6 +157,7 @@ bool ValueDataTableDialog::parseTable(bool addToTable)
     delete [] values;
 
     btnPlot->setEnabled(procesOK);
+    btnPlotAndFit->setEnabled(procesOK);
     btnOk->setEnabled(procesOK);
 
     return procesOK;
@@ -337,6 +339,8 @@ void ValueDataTableDialog::createControls()
     connect(btnClose, SIGNAL(clicked()), this, SLOT(doReject()));
     btnPlot = new QPushButton(tr("Plot"));
     connect(btnPlot, SIGNAL(clicked()), this, SLOT(doPlot()));
+    btnPlotAndFit = new QPushButton(tr("Plot and fit"));
+    connect(btnPlotAndFit, SIGNAL(clicked()), this, SLOT(doPlotAndFit()));
     QPushButton *btnMaterialBrowser = new QPushButton(tr("Material browser"));
     connect(btnMaterialBrowser, SIGNAL(clicked()), this, SLOT(doMaterialBrowser()));
 
@@ -344,6 +348,7 @@ void ValueDataTableDialog::createControls()
     layoutButtons->addStretch();
     layoutButtons->addWidget(btnMaterialBrowser);
     layoutButtons->addWidget(btnPlot);
+    layoutButtons->addWidget(btnPlotAndFit);
     layoutButtons->addWidget(btnOk);
     layoutButtons->addWidget(btnClose);
 
@@ -460,6 +465,17 @@ void ValueDataTableDialog::doPlot()
     // unblock signals
     chartValue->blockSignals(false);
     chartDerivative->blockSignals(false);
+}
+
+void ValueDataTableDialog::doPlotAndFit()
+{
+    doPlot();
+
+    // fit to chart
+    chartViewValue->fitToData();
+
+    // fit derivative
+    chartViewDerivative->fitToData();
 }
 
 void ValueDataTableDialog::doShowDerivativeClicked()

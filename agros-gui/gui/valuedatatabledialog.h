@@ -83,6 +83,7 @@ private:
     QPushButton *btnOk;
     QPushButton *btnClose;
     QPushButton *btnPlot;
+    QPushButton *btnPlotAndFit;
 
     DataTable m_table;
 
@@ -103,6 +104,7 @@ private slots:
     void highlightCurrentLineX();
     void highlightCurrentLineY();
     void doPlot();
+    void doPlotAndFit();
     void doShowDerivativeClicked();
     void doMaterialBrowser();
     void doTypeChanged();
