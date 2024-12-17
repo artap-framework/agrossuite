@@ -185,10 +185,37 @@ void OptiLabStudy::createControls()
 
     m_sceneViewStudy = new SceneViewStudy(this);
 
+    // zoom
+    auto *mnuZoom = new QMenu(this);
+    mnuZoom->addAction(m_sceneViewStudy->actSceneZoomBestFit);
+    mnuZoom->addAction(m_sceneViewStudy->actSceneZoomIn);
+    mnuZoom->addAction(m_sceneViewStudy->actSceneZoomOut);
+    mnuZoom->addAction(m_sceneViewStudy->actSceneZoomRegion);
+
+    auto *zoomButton = new QToolButton();
+    zoomButton->setText(tr("Zoom"));
+    zoomButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    zoomButton->setIconSize(QSize(24, 24));
+    zoomButton->setMenu(mnuZoom);
+    zoomButton->setAutoRaise(true);
+    zoomButton->setIcon(icon("geometry_zoom"));
+    zoomButton->setPopupMode(QToolButton::InstantPopup);
+
+    // right toolbar
+    toolBarRight = new QToolBar();
+    toolBarRight->setProperty("modulebar", true);
+    toolBarRight->setProperty("os", operatingSystem());
+    toolBarRight->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBarRight->addWidget(zoomButton);
+
+    auto *layoutRight = new QVBoxLayout();
+    layoutRight->addWidget(toolBarRight);
+    layoutRight->addWidget(m_sceneViewStudy);
+
     auto *layout = new QHBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(widgetStudies);
-    layout->addWidget(m_sceneViewStudy, 1);
+    layout->addLayout(layoutRight, 1);
 
     setLayout(layout);
 }

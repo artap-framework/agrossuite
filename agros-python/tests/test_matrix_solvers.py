@@ -77,7 +77,7 @@ class TestMatrixSolversInternal(TestMatrixSolversGeneral):
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "dealii sln failed.")                                                   
 
 
-class TestMatrixSolversExternal(TestMatrixSolversGeneral):
+class TestMatrixSolversExternalMUMPS(TestMatrixSolversGeneral):
     def setUp(self):  
         self.setUpGeneral()
 
@@ -90,3 +90,17 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
         # print(len(self.reference_sln))
         # print(len(sln))        
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "MUMPS (external) sln failed.")
+        
+class TestMatrixSolversExternalAMGCL(TestMatrixSolversGeneral):
+    def setUp(self):  
+        self.setUpGeneral()
+
+    def tearDown(self):
+        self.tearDownClass()
+        
+    def test_external_mumps(self):
+        # AMGCL
+        sln = self.model("external_plugin", "AMGCL")        
+        # print(len(self.reference_sln))
+        # print(len(sln))        
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "AMGCL (external) sln failed.")

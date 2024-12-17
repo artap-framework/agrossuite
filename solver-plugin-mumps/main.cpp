@@ -29,6 +29,10 @@
 #define JOB_SOLVE 6
 #define USE_COMM_WORLD -987654
 
+#define ICNTL(I) icntl[(I)-1] /* macro s.t. indices match documentation */
+#define INFOG(I) infog[(I)-1] /* macro s.t. indices match documentation */
+#define INFO(I) info[(I)-1]   /* macro s.t. indices match documentation */
+
 class MUMPSSolverInterface : public QObject, public PluginSolverInterface
 {
     Q_OBJECT
@@ -53,6 +57,19 @@ public:
         id.par = 1;
         id.sym = 0;
         id.comm_fortran = USE_COMM_WORLD;
+        id.ICNTL(48) = 1; // use multithreading
+        // id.ICNTL(16) = 4; // number of threads
+
+        // ReorderingStrategy::AUTOMATIC:
+        // id.ICNTL(28) = 0;
+        // id.ICNTL(7) = 7;
+        // id.ICNTL(29) = 0;
+
+        // ReorderingStrategy::PORD:
+        // id.ICNTL(28) = 1;
+        // id.ICNTL(7) = 4;
+
+        // qInfo() << "multithreading" << id.ICNTL(48) << ", number of threads" << id.ICNTL(16);
         dmumps_c(&id);
 
         // number of unknowns
@@ -85,10 +102,11 @@ public:
             id.rhs[i] = rhs(i);
 
         // no outputs
-        id.icntl[0] = -1;
-        id.icntl[1] = -1;
-        id.icntl[2] = -1;
-        id.icntl[3] =  0;
+        // id.ICNTL(1) = 6; // -1
+        id.ICNTL(1) = -1;
+        id.ICNTL(2) = -1;
+        id.ICNTL(3) = -1;
+        id.ICNTL(4) =  0;
 
         // call the MUMPS package.
         id.job = JOB_SOLVE;

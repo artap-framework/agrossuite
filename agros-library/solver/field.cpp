@@ -737,6 +737,6 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
-    m_settingDefault[LinearSolverExternalName] = "";
+    m_settingDefault[LinearSolverExternalName] = "MUMPS";
     m_settingDefault[TimeUnit] = "s";
 }

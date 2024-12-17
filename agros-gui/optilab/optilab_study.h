@@ -75,6 +75,8 @@ private:
     QAction *actDelete;
     QAction *actDuplicate;
 
+    QToolBar *toolBarRight;
+
     void createControls();
 
 signals:
