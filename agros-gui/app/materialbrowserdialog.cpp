@@ -1025,32 +1025,54 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
                     maxValue = fmax(maxValue, values[i]);
                 }
 
-                // QPen pen;
-                // pen.setColor(Qt::darkGray);
-                // pen.setWidth(2);
-                //
-                // QxCustomPlot customPlot;
-                // // create graph and assign data to it:
-                // customPlot.addGraph();
-                // customPlot.graph(0)->setData(keys, values);
-                // customPlot.graph(0)->setLineStyle(QCPGraph::lsLine);
-                // customPlot.graph(0)->setPen(pen);
-                // customPlot.graph(0)->setBrush(QBrush(QColor(255, 0, 0, 20)));
-                // // give the axes some labels:
-                // customPlot.xAxis->setLabel(QString("%0 (%1)").arg(prop.independent_shortname).arg(prop.independent_unit));
-                // customPlot.yAxis->setLabel(QString("%0 (%1)").arg(prop.shortname).arg(prop.unit));
-                // // set axes ranges, so we see all data:
-                // customPlot.xAxis->setRange(minKey, maxKey);
-                // customPlot.yAxis->setRange(minValue, maxValue);
-                // customPlot.graph(0)->rescaleAxes();
-                // customPlot.replot();
+                auto *chart = new QChart();
+                chart->legend()->hide();
+                // chart->setTitle(tr("Nonlinear solver"));
+
+                auto *chartView = new QChartView(chart);
+                chartView->setRenderHint(QPainter::Antialiasing);
+                chartView->resize(500, 180);
+
+                // axis x
+                auto *axisX = new QValueAxis;
+                axisX->setLabelFormat("%g");
+                axisX->setGridLineVisible(true);
+                axisX->setTitleText(QString("%0 (%1)").arg(prop.independent_shortname).arg(prop.independent_unit));
+                chart->addAxis(axisX, Qt::AlignBottom);
+
+                // axis y
+                auto *axisY = new QValueAxis;
+                axisY->setLabelFormat("%g");
+                axisY->setGridLineVisible(true);
+                axisY->setTitleText(QString("%0 (%1)").arg(prop.shortname).arg(prop.unit));
+                chart->addAxis(axisY, Qt::AlignLeft);
+
+                // attach axis
+                auto *series = new QLineSeries();
+                chart->addSeries(series);
+                series->attachAxis(axisX);
+                series->attachAxis(axisY);
+
+                for (int k = 0; k < keys.size(); k++)
+                    series->append(keys[k], values[k]);
+
+                // fit
+                axisX->setRange(minKey, maxKey);
+                axisY->setRange(minValue, maxValue);
 
                 QDateTime currentTime(QDateTime::currentDateTime());
                 QString fn = QString("%1/%2.png").arg(tempProblemDir()).arg(currentTime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
                 // customPlot.savePng(fn, 500, 180);
+                chartView->grab().save(fn);
                 propSection->SetValue("PROPERTY_NONLINEAR_PNG", fn.toStdString());
 
                 propSection->ShowSection("PROPERTY_NONLINEAR");
+
+                delete series;
+                delete axisX;
+                delete axisY;
+                delete chart;
+                delete chartView;
             }
         }
     }
