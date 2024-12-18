@@ -73,10 +73,12 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
 
         btnDataTableDelete = new QPushButton(icon("geometry_trash"), "");
         btnDataTableDelete->setMaximumSize(btnDataTableDelete->sizeHint());
+        btnDataTableDelete->setToolTip(tr("Remove data table"));
         connect(btnDataTableDelete, SIGNAL(clicked()), this, SLOT(doOpenDataTableDelete()));
 
         btnDataTableDialog = new QPushButton(icon("up-arrow"), "");
         btnDataTableDialog->setMaximumSize(btnDataTableDialog->sizeHint());
+        btnDataTableDialog->setToolTip(tr("Edit nonlinear material"));
         connect(btnDataTableDialog, SIGNAL(clicked()), this, SLOT(doOpenDataTableDialog()));
 
         // timedep value
