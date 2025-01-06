@@ -15,7 +15,6 @@ dt = datetime.datetime.now()
 setup(
     name="agrossuite",
     # version="{}.{}".format(dt.strftime('%Y.%m.%d'), dt.hour*60*60+dt.minute*60+dt.second),
-    dt = datetime.now()
     version = "{}".format(dt.strftime('%Y.%m.%d.%H%M')),
     author=u"Agros Suite",
     author_email="karban@fel.zcu.cz",
