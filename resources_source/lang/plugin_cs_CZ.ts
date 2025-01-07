@@ -284,7 +284,7 @@
     <message>
         <location filename="../../build/plugins/current/current_interface.cpp" line="185"/>
         <source>Electric current is a flow of electric charge through a medium. This charge is typically carried by moving electrons in a conductor such as wire. It can also be carried by ions in an electrolyte, or by both ions and electrons in a plasma.        </source>
-        <translation>Elektrický proud je tok elektrických nábojů určitým prostředím. Tento náboj je často nesen pohybujícími se elektrony ve vodiči, tedy drátu. Může být ale také nesen ionty v elektrolytu nebo ionty a elektrony v plazmě.</translation>
+        <translation>Elektrický proud je tok elektrických nábojů určitým prostředím. Tento náboj je často nesen pohybujícími se elektrony ve vodiči, tedy drátu. Může být ale také nesen ionty v elektrolytu nebo ionty a elektrony v plazmě.        </translation>
     </message>
     <message>
         <location filename="../../build/plugins/elasticity/elasticity_interface.cpp" line="200"/>
@@ -400,7 +400,7 @@
     <message>
         <location filename="../../build/plugins/elasticity/elasticity_interface.cpp" line="291"/>
         <source>Structural analysis is the determination of the effects of loads on physical structures and their components.    </source>
-        <translation>Strukturální analýza se zabývá určením učinků zatížení na fyzikální strukturu a její složky.</translation>
+        <translation>Strukturální analýza se zabývá určením učinků zatížení na fyzikální strukturu a její složky.    </translation>
     </message>
     <message>
         <location filename="../../build/plugins/electrostatic/electrostatic_interface.cpp" line="121"/>

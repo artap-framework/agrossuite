@@ -1448,10 +1448,8 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject& rootJson)
 
         // default solver
         auto solver = fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
-        qInfo() << "Solver" << solver;
         if (solver.isEmpty() || solver == "solver_MUMPS.ext")
             fieldInfo->setValue(FieldInfo::LinearSolverExternalName, QString::fromStdString("MUMPS"));
-        qInfo() << "Solver" << fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
 
         // polynomial order
         QJsonArray labelOrderJson = fieldJson[REFINEMENT_ORDER].toArray();
