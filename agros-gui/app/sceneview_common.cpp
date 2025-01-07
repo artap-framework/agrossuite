@@ -299,17 +299,6 @@ void SceneViewCommon::drawBlend(Point start, Point end, double red, double green
 void SceneViewCommon::saveImageToFile(const QString &fileName, int w, int h)
 {
     QPixmap pixmap = renderScenePixmap(w, h);
-    QImage original_image = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
-    QImage output_image(original_image.size(), QImage::Format_RGB32);
-
-    // Vytvoření painteru
-    QPainter painter(&output_image);
-    // Vyplnění bílým pozadím
-    painter.fillRect(output_image.rect(), Qt::white);
-    painter.drawImage(0, 0, original_image);
-    // Ukončení malování
-    painter.end();
-
-    if (!output_image.save(fileName, "PNG"))
-        Agros::log()->printError(tr("Problem"), tr("Image cannot be saved to the file '%1'.").arg(fileName));
+    QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
+    if (!image.save(fileName, "PNG"));
 }

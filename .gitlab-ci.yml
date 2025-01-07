@@ -275,7 +275,7 @@ test-windows:
     - pip install pytest-rerunfailures
     - pip install numpy
     - cd agrossuite
-    - Remove-Item -Path .\_skbuild\ -Recurse
+    # - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
     - cd .\env\Lib\site-packages\agrossuite\tests
@@ -360,7 +360,7 @@ deploy-windows-wheel:
     # upload to pypi
     - pip install twine
     - cd agrossuite
-    - Remove-Item -Path .\_skbuild\ -Recurse    
+    # - Remove-Item -Path .\_skbuild\ -Recurse    
     - python setup.py bdist_wheel
     - cd dist
     - python -m twine upload ./agrossuite-*.whl
