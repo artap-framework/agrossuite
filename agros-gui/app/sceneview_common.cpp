@@ -300,5 +300,6 @@ void SceneViewCommon::saveImageToFile(const QString &fileName, int w, int h)
 {
     QPixmap pixmap = renderScenePixmap(w, h);
     QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
-    if (!image.save(fileName, "PNG"));
+    if (!image.save(fileName))
+        Agros::log()->printError(tr("Problem"), tr("Image cannot be saved to the file '%1'.").arg(fileName));
 }
