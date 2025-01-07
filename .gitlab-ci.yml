@@ -275,7 +275,7 @@ test-windows:
     - pip install pytest-rerunfailures
     - pip install numpy
     - cd agrossuite
-    - Remove-Item -Path .\_skbuild\ -Recurse
+    # - Remove-Item -Path .\_skbuild\ -Recurse
     - pip install .    
     - cd ..
     - cd .\env\Lib\site-packages\agrossuite\tests
