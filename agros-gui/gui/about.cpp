@@ -223,5 +223,5 @@ QWidget *AboutDialog::createSysinfo()
 
 void AboutDialog::checkVersion()
 {
-    checkNewVersion();
+    checkNewVersion(false, true);
 }

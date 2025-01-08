@@ -53,8 +53,8 @@ private:
     QWidget *createLicense();
     QWidget *createSysinfo();
 
-    private slots:
-        void checkVersion();
+private slots:
+    void checkVersion();
 };
 
 #endif // GUI_ABOUT_H
