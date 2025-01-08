@@ -332,10 +332,10 @@ void ValueDataTableDialog::createControls()
     controlsLayout->addLayout(chartLayout, 1);
 
     // dialog buttons
-    btnOk = new QPushButton(tr("Ok"));
+    btnOk = new QPushButton(tr("Apply"));
     btnOk->setDefault(true);
     connect(btnOk, SIGNAL(clicked()), this, SLOT(doAccept()));
-    btnClose = new QPushButton(tr("Close"));
+    btnClose = new QPushButton(tr("Cancel"));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(doReject()));
     btnPlot = new QPushButton(tr("Plot"));
     connect(btnPlot, SIGNAL(clicked()), this, SLOT(doPlot()));
