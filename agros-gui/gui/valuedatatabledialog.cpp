@@ -520,7 +520,7 @@ void ValueDataTableDialog::doMaterialBrowser()
             lstY->appendPlainText(QString::number(materialBrowserDialog.y().at(i)));
         }
 
-        doPlot();
+        doPlotAndFit();
     }
 }
 

@@ -26,8 +26,10 @@
 	<tr><td><b>{{PROPERTY_CONSTANT_LABEL}}</b></td><td>{{PROPERTY_CONSTANT}} {{PROPERTY_UNIT}}</td></tr>
 	{{#PROPERTY_NONLINEAR}}
 	<tr><td colspan="2"><img src="{{PROPERTY_NONLINEAR_PNG}}"/></td></tr>
+	<!--
 	<tr><td><b>{{PROPERTY_INDEPENDENT_SHORTNAME_LABEL}}</b></td><td>{{PROPERTY_INDEPENDENT_SHORTNAME}}</td></tr>
 	<tr><td><b>{{PROPERTY_INDEPENDENT_UNIT_LABEL}}</b></td><td>{{PROPERTY_INDEPENDENT_UNIT}}</td></tr>
+	-->
 	<tr><td><b>&nbsp;</b></td><td>&nbsp;</td></tr>
 	{{/PROPERTY_NONLINEAR}}
 </table>

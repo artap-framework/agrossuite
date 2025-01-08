@@ -1013,17 +1013,27 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
             assert(keys.size() == values.size());
             if (keys.size() > 0)
             {
+                QString keysString;
+                QString valuesString;
+
                 double minKey = numeric_limits<double>::max();
                 double maxKey = -numeric_limits<double>::max();
                 double minValue = numeric_limits<double>::max();
                 double maxValue = -numeric_limits<double>::max();
+
                 for (int i = 0; i < keys.size(); i++)
                 {
+                    keysString += QString("%1").arg(keys[i]) + ((i < keys.size() - 1) ? "," : "");
+                    valuesString += QString("%1").arg(values[i]) + ((i < values.size() - 1) ? "," : "");
+
                     minKey = fmin(minKey, keys[i]);
                     maxKey = fmax(maxKey, keys[i]);
                     minValue = fmin(minValue, values[i]);
                     maxValue = fmax(maxValue, values[i]);
                 }
+
+                propSection->SetValue("PROPERTY_X", keysString.toStdString());
+                propSection->SetValue("PROPERTY_Y", valuesString.toStdString());
 
                 auto *chart = new QChart();
                 chart->legend()->hide();
@@ -1084,6 +1094,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
 
 void MaterialBrowserDialog::linkClicked(const QUrl &url)
 {
+    qInfo() << url.toString();
     QString search = "property?";
     if (url.toString().contains(search))
     {
