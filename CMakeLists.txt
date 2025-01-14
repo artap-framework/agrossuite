@@ -181,6 +181,7 @@ message("=====================")
 ADD_SUBDIRECTORY(agros-library)
 ADD_SUBDIRECTORY(solver-plugin-mumps)
 ADD_SUBDIRECTORY(solver-plugin-amgcl)
+ADD_SUBDIRECTORY(solver-plugin-external)
 
 ADD_SUBDIRECTORY(agros-generator)
 # GUI

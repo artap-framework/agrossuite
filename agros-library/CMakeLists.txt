@@ -62,6 +62,7 @@ SET(SOURCES
     solver/solutiontypes.cpp
     solver/solver.cpp
     solver/solver_utils.cpp
+    solver/solver_io.cpp
     solver/solver_nonlinear.cpp
     solver/linear_solver.cpp
     solver/linear_solver_external.cpp

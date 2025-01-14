@@ -102,6 +102,8 @@ private:
     QComboBox *cmbIterLinearSolverDealIIMethod;
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
     QComboBox *cmbExternalLinearSolverCommand;
+    QLineEdit *txtExternalLinearSolverWorkingDirectory;
+    QLineEdit *txtExternalLinearSolverExecutable;
 
     // equation
     QLabel *equationImage;

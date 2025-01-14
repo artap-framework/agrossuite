@@ -364,6 +364,8 @@ QWidget *FieldWidget::createLinearSolverWidget()
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
+    txtExternalLinearSolverWorkingDirectory = new QLineEdit();
+    txtExternalLinearSolverExecutable = new QLineEdit();
 
     auto *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
@@ -381,6 +383,10 @@ QWidget *FieldWidget::createLinearSolverWidget()
     auto *externalSolverLayout = new QGridLayout();
     externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
     externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Working directory:")), 1, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverWorkingDirectory, 1, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Executable:")), 2, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverExecutable, 2, 1);
 
     auto *externalSolverGroup = new QGroupBox(tr("External"));
     externalSolverGroup->setLayout(externalSolverLayout);
@@ -494,6 +500,8 @@ void FieldWidget::load()
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
     if (cmbExternalLinearSolverCommand->currentIndex() == -1)
         cmbExternalLinearSolverCommand->setCurrentIndex(0);
+    txtExternalLinearSolverWorkingDirectory->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalWorkingDirectory).toString());
+    txtExternalLinearSolverExecutable->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalExecutable).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -542,6 +550,8 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
     // external solver
     m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalWorkingDirectory, txtExternalLinearSolverWorkingDirectory->text());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalExecutable, txtExternalLinearSolverExecutable->text());
 
     return true;
 }
@@ -671,6 +681,8 @@ void FieldWidget::doLinearSolverChanged(int index)
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
     cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_PLUGIN);
+    txtExternalLinearSolverWorkingDirectory->setEnabled(solverType == SOLVER_PLUGIN);
+    txtExternalLinearSolverExecutable->setEnabled(solverType == SOLVER_PLUGIN);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

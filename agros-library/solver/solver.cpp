@@ -67,6 +67,7 @@
 #include <sstream>
 
 #include "solver.h"
+#include "solver_io.h"
 #include "solver_utils.h"
 #include "linear_solver.h"
 #include "solver/problem_config.h"

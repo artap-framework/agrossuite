@@ -24,7 +24,7 @@
 #include "scene.h"
 #include "scenemarker.h"
 #include "problem.h"
-#include "solver.h"
+#include "solver/solver.h"
 
 #undef signals
 #include <deal.II/dofs/dof_handler.h>
@@ -45,12 +45,6 @@
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/base/time_stepping.h>
 #define signals public
-
-
-void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QString &varName);
-void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, const QString &varName);
-void writeMatioMatrix(std::vector<dealii::Vector<double> > vecs, const QString &name, const QString &varName);
-void writeMatioMatrix(std::vector<dealii::Vector<int> > vecs, const QString &name, const QString &varName);
 
 class DoubleCellIterator
 {

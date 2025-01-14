@@ -48,6 +48,13 @@ public:
 
     virtual QString name() const = 0;
 
+    void setParameters(const QMap<QString, double> &parameters) { m_parameters = parameters; }
+    QMap<QString, double> parameters() const { return m_parameters; }
+    void setWorkingDirectory(const QString &workingDirectory) { m_workingDirectory = workingDirectory; }
+    QString workingDirectory() const { return m_workingDirectory; }
+    void setSolverExecutable(const QString &solverExecutable) { m_solverExecutable = solverExecutable; }
+    QString solverExecutable() const { return m_solverExecutable; }
+
     virtual void solve(dealii::SparseMatrix<double> &system,
                        dealii::Vector<double> &rhs,
                        dealii::Vector<double> &sln) = 0;
@@ -59,6 +66,11 @@ protected:
 
     void prepare_crs(const dealii::SparseMatrix<double> &matrix);
     void sort_arrays(const dealii::SparseMatrix<double> &matrix);
+
+    QMap<QString, double> m_parameters;
+    QString m_tempDir;
+    QString m_workingDirectory;
+    QString m_solverExecutable;
 };
 
 QT_BEGIN_NAMESPACE

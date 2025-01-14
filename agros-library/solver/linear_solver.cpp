@@ -75,7 +75,6 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     QStringList solvers = Agros::solvers().keys();
 
     QString solver = m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString();
-    qInfo() << "SolverLinearSolver::solveExternalPlugin" << solver;
 
     if (solver == "Eigen")
         if (solvers.contains("MUMPS"))
@@ -89,8 +88,20 @@ void SolverLinearSolver::solveExternalPlugin(dealii::SparseMatrix<double> &syste
     {
         Agros::log()->printMessage(QObject::tr("Solver"), QObject::tr("Linear solver - %1").arg(solver));
 
-        qInfo() << "SolverLinearSolver::solveExternalPlugin" << solver;
         PluginSolverInterface *s = Agros::loadSolver(solver);
+
+        // set current parameters
+        QMap<QString, double> currentParameters;
+        QMap<QString, ProblemParameter> parameters = Agros::problem()->currentComputation()->config()->parameters()->items();
+        foreach (ProblemParameter parameter, parameters)
+            currentParameters[parameter.name()] = parameter.value();
+        s->setParameters(currentParameters);
+        // set working directory
+        s->setWorkingDirectory(m_fieldInfo->value(FieldInfo::Type::LinearSolverExternalWorkingDirectory).toString());
+        // set solver executable
+        s->setSolverExecutable(m_fieldInfo->value(FieldInfo::Type::LinearSolverExternalExecutable).toString());
+
+        // solve system
         s->solve(system, rhs, sln);
     }
     else
