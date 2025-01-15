@@ -67,9 +67,17 @@ public:
         // exec run.sh
         auto command = QString("%1/run.sh").arg(m_workingDirectory);
         qInfo() << "Command: " << command;
+        QStringList args;
+        args << QString("-wd \"%1\"").arg(m_workingDirectory);
+        QString parameters = "{ ";
+        foreach (auto parameter, m_parameters.keys())
+            parameters += QString("'%1': %2, ").arg(parameter).arg(QString::number(m_parameters[parameter]));
+        parameters += " }";
+        args << QString("-p \"%1\"").arg(parameters);
+
         QProcess run;
         run.setWorkingDirectory(m_workingDirectory);
-        run.start(command, QStringList({"--working-directory", m_workingDirectory}));
+        run.start(command, args);
         if (!run.waitForStarted()) {
             qCritical() << "Could not run command: " << command;
         }
@@ -77,6 +85,7 @@ public:
         {
             run.waitForReadyRead();
             qInfo() << run.readAllStandardOutput();
+            qCritical() << run.readAllStandardError();
             run.waitForFinished();
 
             // read solution
