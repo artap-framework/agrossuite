@@ -36,7 +36,7 @@ StudySweepDialog::StudySweepDialog(Study *study, QWidget *parent)
 QLayout *StudySweepDialog::createStudyControls()
 {
     txtNumSamples = new QSpinBox(this);
-    txtNumSamples->setMinimum(1);
+    txtNumSamples->setMinimum(2);
     txtNumSamples->setMaximum(10000);
 
     cmbInitMethod = new QComboBox(this);

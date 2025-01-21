@@ -79,7 +79,7 @@ SweepProblemRandom::SweepProblemRandom(StudySweep *study) : SweepProblem(study)
 
 void SweepProblemRandom::evaluateRandom()
 {
-    int numSamples = m_study->value(Study::Sweep_num_samples).toInt();
+    int numSamples = m_study->estimatedNumberOfSteps();
 
     for (int i = 0; i < numSamples; i++)
     {
@@ -103,7 +103,7 @@ SweepProblemUniform::SweepProblemUniform(StudySweep *study) : SweepProblem(study
 void SweepProblemUniform::evaluateUniform()
 {
     // TODO: more options for uniform sampling
-    int numSamples = m_study->value(Study::Sweep_num_samples).toInt();
+    int numSamples = m_study->estimatedNumberOfSteps();
 
     for (int i = 0; i < numSamples; i++)
     {
@@ -153,7 +153,12 @@ StudySweep::StudySweep() : Study()
 
 int StudySweep::estimatedNumberOfSteps() const
 {
-    return value(Study::Sweep_num_samples).toInt();
+    int numSamples = value(Study::Sweep_num_samples).toInt();
+
+    if (numSamples < 2)
+        numSamples = 2;
+
+    return numSamples;
 }
 
 QString StudySweep::initMethodString(int method) const
@@ -196,7 +201,7 @@ void StudySweep::solve()
         // use bayesopt
         // parameters
         bayesopt::Parameters par = initialize_parameters_to_default();
-        par.n_init_samples = value(Sweep_num_samples).toInt();
+        par.n_init_samples = estimatedNumberOfSteps();
         par.n_iterations = 0;
         par.n_iter_relearn = 1000000;
         par.init_method = method;
