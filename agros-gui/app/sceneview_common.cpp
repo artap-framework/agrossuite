@@ -299,7 +299,8 @@ void SceneViewCommon::drawBlend(Point start, Point end, double red, double green
 void SceneViewCommon::saveImageToFile(const QString &fileName, int w, int h)
 {
     QPixmap pixmap = renderScenePixmap(w, h);
-    QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
+    // QImage image = pixmap.toImage().convertToFormat(QImage::Format_RGB32);
+    QImage image = pixmap.toImage();
     if (!image.save(fileName))
         Agros::log()->printError(tr("Problem"), tr("Image cannot be saved to the file '%1'.").arg(fileName));
 }
