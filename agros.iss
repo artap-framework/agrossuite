@@ -31,11 +31,10 @@ WizardSmallImageFile=resources_source\images\setup\SetupModernSmall.bmp
 [Files]
 ;Source: agros_library.dll; DestDir: {app}; DestName: agros_library.dll
 Source: .\build\usr\bin\agros.exe; DestDir: {app}; DestName: Agros.exe
-Source: .\build\usr\bin\solver_plugin_MUMPS.dll; DestDir: {app}/lib
 Source: .\build\usr\lib\*.dll; DestDir: {app}/lib
 Source: resources\images\agros.ico; DestDir: {app}; DestName: Agros.ico
 Source: resources\*; DestDir: {app}/resources; Flags: recursesubdirs
-Source: .\build\usr\bin\*; Excludes: "python3.dll, python312.dll, solver_plugin_MUMPS.dll"; DestDir: {app}; Flags: recursesubdirs; 
+Source: .\build\usr\bin\*; Excludes: "python3.dll, python312.dll"; DestDir: {app}; Flags: recursesubdirs; 
 Source: ..\install\Others\*; DestDir: {app}; Flags: recursesubdirs
 Source: "..\install\Microsoft\VC_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
