@@ -1505,10 +1505,10 @@ bool SceneCircleDialog::save()
 
     QString centerX = QString("%1").arg(txtPointX->value().text());
     QString centerY = QString("%1").arg(txtPointY->value().text());
-    QString nodeL = QString("%1-%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
-    QString nodeR = QString("%1+%2").arg(txtPointX->value().text()).arg(txtRadius->value().text());
-    QString nodeB = QString("%1-%2").arg(txtPointY->value().text()).arg(txtRadius->value().text());
-    QString nodeT = QString("%1+%2").arg(txtPointY->value().text()).arg(txtRadius->value().text());
+    QString nodeL = QString("(%1-%2)").arg(txtPointX->value().text()).arg(txtRadius->value().text());
+    QString nodeR = QString("(%1+%2)").arg(txtPointX->value().text()).arg(txtRadius->value().text());
+    QString nodeB = QString("(%1-%2)").arg(txtPointY->value().text()).arg(txtRadius->value().text());
+    QString nodeT = QString("(%1+%2)").arg(txtPointY->value().text()).arg(txtRadius->value().text());
 
     m_nodeL->setPointValue(PointValue(Value(Agros::problem(), nodeL), Value(Agros::problem(), centerY)));
     m_nodeR->setPointValue(PointValue(Value(Agros::problem(), nodeR), Value(Agros::problem(), centerY)));
