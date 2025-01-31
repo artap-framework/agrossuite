@@ -329,6 +329,28 @@ test-windows-import-a2d:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
 
+test-windows-gui:
+  stage: test
+  needs: ["build-windows"]
+  allow_failure: true
+  tags:
+    - agros
+    - win11
+
+  script: 
+    - cd build/agros-python
+    # Roman
+    # - .\env\Scripts\activate
+    # - cd tests-import-a2d
+    # generate test files
+    # - python tutorials_a2d.py
+    # - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v 
+    # - cd ../..    
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
+
 deploy-windows:
     stage: deploy
     needs: ["test-windows"]
