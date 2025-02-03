@@ -338,19 +338,15 @@ test-windows-gui:
     - win11
 
   script: 
-    - cd build/agros-python
-    # Roman
     - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
-    # - .\env\Scripts\activate
-    # - cd tests-import-a2d
-    # generate test files
-    # - python tutorials_a2d.py
-    # - pytest --junitxml=../../report.xml --disable-warnings --durations=0 -v 
-    # - cd ../..    
+    
   artifacts:
     paths:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
+      - C:\Users\vboxuser\Roman
+      - C:\Users\vboxuser\Desktop
+
 
 deploy-windows:
     stage: deploy
