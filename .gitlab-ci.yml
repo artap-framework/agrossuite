@@ -340,6 +340,7 @@ test-windows-gui:
   script: 
     - cd build/agros-python
     # Roman
+    - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
     # - .\env\Scripts\activate
     # - cd tests-import-a2d
     # generate test files
