@@ -339,7 +339,7 @@ test-windows-gui:
 
   script:
     - cd build/agros-python
-    - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
+    # - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
     
   artifacts:
     paths:
@@ -385,7 +385,3 @@ deploy-windows-wheel:
     - cd dist
     - python -m twine upload ./agrossuite-*.whl
     - cd ../..
-  artifacts:
-    paths:
-      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
-      - .\dealii\build\include
