@@ -350,21 +350,21 @@ test-windows-gui:
 
 
 deploy-windows:
-    stage: deploy
-    needs: ["test-windows"]
-    tags:      
-      - agros  		
-      - win11
+  stage: deploy
+  needs: ["test-windows"]
+  tags:      
+    - agros  		
+    - win11
 
-    script:
-      - iscc.exe agros.iss
-      - cd setup
-      - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
+  script:
+    - iscc.exe agros.iss
+    - cd setup
+    - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
 
-    artifacts:
-      paths:
-        - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
-        - .\dealii\build\include
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
  
 
 deploy-windows-wheel:
@@ -385,3 +385,7 @@ deploy-windows-wheel:
     - cd dist
     - python -m twine upload ./agrossuite-*.whl
     - cd ../..
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
