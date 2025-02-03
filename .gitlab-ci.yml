@@ -338,7 +338,6 @@ test-windows-gui:
     - win11
 
   script:
-    - cd build/agros-python
     # - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
     
   artifacts:
