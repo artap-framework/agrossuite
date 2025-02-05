@@ -48,6 +48,73 @@ build-linux:
     - cd ..
     # pip package
     # create python env
+    # - cd agros-python 
+    # - python3 -m venv env
+    # - source env/bin/activate
+    # - pip install wheel
+    # - pip install cython
+    # - pip install scikit-build
+    # - pip install pytest
+    # - pip install pytest-rerunfailures
+    # - pip install numpy
+    # strip shared objects
+    # - mkdir -p agrossuite/_skbuild/ 
+    # - find agrossuite/_skbuild/ -name \*.so -execdir strip {} \;
+    # remove static libs
+    # - find agrossuite/_skbuild/ -name \*.a -execdir rm {} \;
+    # remove old wheels
+    # - rm -rf *.whl	
+    # build wheel
+    # - pip wheel agrossuite/.
+    # install package
+    # - pip install agrossuite/. -v
+    # - cd ..
+    
+build-linux-pypi:
+  stage: build
+  tags:
+    - agros
+    - linux
+    - pypi
+  
+  # Use ccache transparently, and print stats before/after
+  before_script:
+    - export PATH="/usr/lib/ccache:$PATH"
+    - export CCACHE_BASEDIR="$PWD"
+    - export CCACHE_DIR="$PWD/ccache"
+    - export CCACHE_COMPILERCHECK=content
+    - ccache --zero-stats || true
+    - ccache --show-stats || true
+  after_script:
+    - export CCACHE_DIR="$PWD/ccache"
+    - ccache --show-stats  
+  script: 
+    - git submodule update --init
+    - cd dealii 
+    - mkdir -p build 
+    - cd build 
+    - cmake -DCMAKE_BUILD_TYPE="Release" -DDEAL_II_WITH_ZLIB="ON" -DDEAL_II_WITH_UMFPACK="OFF" -DDEAL_II_FORCE_BUNDLED_BOOST="ON" -DDEAL_II_FORCE_BUNDLED_THREADS="ON" -DDEAL_II_WITH_TBB="ON" -DDEAL_II_WITH_GMSH="OFF" -DDEAL_II_WITH_MUPARSER="OFF" -DDEAL_II_WITH_ARPACK="OFF" -DDEAL_II_COMPONENT_EXAMPLES="OFF" ..
+    - cmake --build . --config Release --parallel 10 -j 10
+    - cd ../../
+    #  agros
+    - mkdir -p build
+    # copy deal
+    - mkdir -p build/usr/lib 
+    - cp -f dealii/build/lib/libdeal_II.so.9.5.2 build/usr/lib/libdeal_II.so.9.5.2     
+    - cd build
+    # ******************* TODO: fix after fixing cmake for Python
+    - rm -rf agros-python
+    # *******************
+    - cmake ..     
+    - cmake --build . --config Release --parallel 10 -j 10
+    # generator
+    - ./usr/bin/agros_generator
+    - cd plugins
+    - cmake .
+    - cmake --build . --config Release --parallel 10 -j 10
+    - cd ..
+    # pip package
+    # create python env
     - cd agros-python 
     - python3 -m venv env
     - source env/bin/activate
@@ -67,8 +134,9 @@ build-linux:
     # build wheel
     # - pip wheel agrossuite/.
     # install package
-    - pip install agrossuite/. -v
-    - cd ..
+    # - pip install agrossuite/. -v
+    - python setup.py bdist_wheel
+    
     
 test-linux:
   stage: test
