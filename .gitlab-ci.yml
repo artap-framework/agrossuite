@@ -329,22 +329,41 @@ test-windows-import-a2d:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
 
+test-windows-gui:
+  stage: test
+  needs: ["build-windows"]
+  allow_failure: true
+  tags:
+    - agros
+    - win11
+
+  script:
+    - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
+    
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
+      # - C:\Users\vboxuser\Roman
+      # - C:\Users\vboxuser\Desktop
+
+
 deploy-windows:
-    stage: deploy
-    needs: ["test-windows"]
-    tags:      
-      - agros  		
-      - win11
+  stage: deploy
+  needs: ["test-windows"]
+  tags:      
+    - agros  		
+    - win11
 
-    script:
-      - iscc.exe agros.iss
-      - cd setup
-      - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
+  script:
+    - iscc.exe agros.iss
+    - cd setup
+    - curl.exe -T Agros.exe -u "${agros2d_ftp_user}:${agros2d_ftp_password}" ftp://agros2d.org/windows/   
 
-    artifacts:
-      paths:
-        - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
-        - .\dealii\build\include
+  artifacts:
+    paths:
+      - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
+      - .\dealii\build\include
  
 
 deploy-windows-wheel:
