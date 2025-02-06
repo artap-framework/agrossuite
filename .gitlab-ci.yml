@@ -415,7 +415,6 @@ test-windows-gui:
       # - C:\Users\vboxuser\Roman
       # - C:\Users\vboxuser\Desktop
 
-
 deploy-windows:
   stage: deploy
   needs: ["test-windows"]
