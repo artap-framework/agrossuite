@@ -414,6 +414,7 @@ test-windows-gui:
       - .\dealii\build\include
       - C:\Users\vboxuser\Roman
       - C:\Users\vboxuser\Desktop
+      - C:\Program Files\RealVNC\VNC Server
 
 deploy-windows:
   stage: deploy
