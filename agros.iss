@@ -13,8 +13,8 @@ DefaultGroupName=Agros
 LicenseFile=COPYING
 
 AppId=Agros
-AppPublisher=hpfem.org
-AppCopyright=hpfem.org
+AppPublisher=University of West Bohemia
+AppCopyright=University of West Bohemia
 AppPublisherURL=http://www.agros2d.org/
 AppMutex=Agros
 OutputDir=setup
