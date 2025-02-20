@@ -412,9 +412,10 @@ test-windows-gui:
     paths:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
-      # - C:\Users\vboxuser\Roman
-      # - C:\Users\vboxuser\Desktop
-
+      - C:\Users\vboxuser\Roman
+      - C:\Users\vboxuser\Desktop
+      - C:\Program Files\RealVNC\VNC Server
+      
 
 deploy-windows:
   stage: deploy
