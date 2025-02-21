@@ -22,7 +22,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://www.agros2d.org/",
-    python_requires='>3.11',
+    python_requires='>3.10',
     license="License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
     packages=["agrossuite"],
     package_dir={"agrossuite": "src"},
