@@ -1,15 +1,16 @@
 [Setup]
 
-#define AppName "Agros"
+#define AppName "agros"
 #define AppVersion GetVersionNumbersString(".\build\usr\bin\agros.exe")
 #define AppDate GetFileDateTimeString(".\build\usr\bin\agros.exe", "mm/dd/yyyy", "/", ":") 
 ; #define OutputBaseFileName "AgrosSuite" + "_" + AppVersion + "." + GetDateTimeString('yyyymmdd', '', '')
 #define OutputBaseFileName "Agros"
 
 AppName={#AppName}
-AppVerName={#AppName} {#AppVersion} ({#AppDate})
+AppVerName={#AppName} ({#AppDate})
+AppVersion={#AppVersion}
 OutputBaseFilename={#OutputBaseFileName}
-DefaultGroupName=Agros
+DefaultGroupName=agros
 LicenseFile=COPYING
 
 AppId=Agros

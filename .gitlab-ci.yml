@@ -136,7 +136,7 @@ build-linux:
 #    # install package
 #    # - pip install agrossuite/. -v
 #    - python setup.py bdist_wheel
-#    
+#
     
 test-linux:
   stage: test
