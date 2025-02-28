@@ -413,6 +413,7 @@ test-windows-gui:
     paths:
       - .\dealii\bundled\boost-1.70.0\include\boost\ptr_container
       - .\dealii\build\include
+      - C:\gitlab-runner
       - C:\Users\vboxuser\Roman
       - C:\Users\vboxuser\Desktop
       
