@@ -407,7 +407,6 @@ test-windows-gui:
 
   script:
     - java -jar C:\Users\vboxuser\Desktop\SikuliX.jar -r C:\Users\vboxuser\Roman\QuickTestWin11.sikuli
-    # - C:\Users\vboxuser\Desktop\start_testu.bat
     
   artifacts:
     paths:
